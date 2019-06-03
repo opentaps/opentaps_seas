@@ -263,7 +263,7 @@ You can also run your EconomizerRCx agent for all machines that fit Haystack tag
  $ python manage.py runscript run_service --script-args economizer_setup '{"equipment":"siteRef:@Econ-Demo-Site-A"}' 
  $ python manage.py runscript run_service --script-args economizer_setup '{"equipment":"tags:rooftop"}' 
 
-Or just run it for all your machines:
+Or just run it for all your machines::
 
  $ python manage.py runscript run_service --script-args economizer_setup '{"equipment":"all"}' 
 
