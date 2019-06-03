@@ -1,0 +1,1535 @@
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+
+import csv
+from io import TextIOWrapper
+import logging
+
+from datetime import datetime
+
+from . import utils
+from .forms import EntityLinkForm
+from .forms import EntityNoteDeleteForm
+from .forms import EntityNoteForm
+from .forms import EntityNoteUpdateForm
+from .forms import FileDeleteForm
+from .forms import FileUpdateForm
+from .forms import FileUploadForm
+from .forms import ModelCreateForm
+from .forms import ModelUpdateForm
+from .forms import SiteCreateForm
+from .forms import TagChangeForm
+from .forms import TagUpdateForm
+from .forms import TopicAssocForm
+from .forms import TopicImportForm
+from .forms import EquipmentCreateForm
+from .models import Entity
+from .models import EntityFile
+from .models import EntityNote
+from .models import EquipmentView
+from .models import Geo
+from .models import ListableEntity
+from .models import ModelView
+from .models import PointView
+from .models import SiteView
+from .models import Tag
+from .models import TimeZone
+from .models import Topic
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.core.files import File
+from django.db.models import ProtectedError
+from django.db.models import Q
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
+from django.http import StreamingHttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import slugify
+from django.urls import reverse
+from django.urls import reverse_lazy
+from django.utils.html import format_html
+from django.views.decorators.http import require_POST
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
+from django.views.generic.edit import FormView
+from django_filters import CharFilter
+from django_filters import FilterSet
+from django_filters.views import FilterView
+from django_tables2 import Column
+from django_tables2 import LinkColumn
+from django_tables2 import Table
+from django_tables2.utils import A  # alias for Accessor
+from django_tables2.views import SingleTableMixin
+from easy_thumbnails.files import get_thumbnailer
+from filer.models import Image as FilerFile
+from opentaps_seas.core.utils import create_grafana_dashboard
+
+logger = logging.getLogger(__name__)
+
+
+class WithBreadcrumbsMixin(object):
+    def get_breadcrumbs(self, context):
+        b = []
+        if self.model and self.model._meta and self.model._meta.verbose_name_plural:
+            b.append({'label': self.model._meta.verbose_name_plural.capitalize()})
+        return b
+
+    def render_to_response(self, context, **kwargs):
+        r = super().render_to_response(context, **kwargs)
+        context['breadcrumbs'] = self.get_breadcrumbs(context)
+        return r
+
+
+class TagFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = Tag
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(tag__icontains=value) | Q(description__icontains=value)
+        )
+
+
+class TagTable(Table):
+    tag = LinkColumn('core:tag_detail', args=[A('tag')])
+
+    class Meta:
+        order_by = 'tag'
+        model = Tag
+        fields = ('tag', 'kind', 'description', )
+
+
+class TagListTable(Table):
+    tag = Column(verbose_name='Tags')
+
+    class Meta:
+        order_by = 'tag'
+
+
+class TagBCMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:tag_list'), 'label': 'Tags'})
+        if context.get('object'):
+            b.append({'label': 'Tag {}'.format(context['object'].tag)})
+        return b
+
+
+class TagDetailView(LoginRequiredMixin, TagBCMixin, DetailView):
+    model = Tag
+    slug_field = "tag"
+    slug_url_kwarg = "tag"
+
+
+tag_detail_view = TagDetailView.as_view()
+
+
+class TagCreateView(LoginRequiredMixin, TagBCMixin, CreateView):
+    model = Tag
+    slug_field = "tag"
+    slug_url_kwarg = "tag"
+    template_name = 'core/tag_edit.html'
+    form_class = TagChangeForm
+
+
+tag_create_view = TagCreateView.as_view()
+
+
+class TagEditView(LoginRequiredMixin, TagBCMixin, UpdateView):
+    model = Tag
+    slug_field = "tag"
+    slug_url_kwarg = "tag"
+    template_name = 'core/tag_edit.html'
+    form_class = TagUpdateForm
+
+
+tag_edit_view = TagEditView.as_view()
+
+
+class TagDeleteView(LoginRequiredMixin, TagBCMixin, DeleteView):
+    model = Tag
+    slug_field = "tag"
+    slug_url_kwarg = "tag"
+    template_name = 'core/tag_delete.html'
+    success_url = reverse_lazy('core:tag_list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        try:
+            self.object.delete()
+        except ProtectedError:
+            messages.add_message(request, messages.ERROR, 'Can not delete: this Tag is being used!')
+            return HttpResponseRedirect(self.object.get_absolute_url())
+
+        return HttpResponseRedirect(success_url)
+
+
+tag_delete_view = TagDeleteView.as_view()
+
+
+class TagListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = Tag
+    table_class = TagTable
+    filterset_class = TagFilter
+    table_pagination = {'per_page': 15}
+    template_name = 'core/tag_list.html'
+
+
+tag_list_view = TagListView.as_view()
+
+
+class TagListJsonView(LoginRequiredMixin, ListView):
+    model = Tag
+
+    def render_to_response(self, context, **response_kwargs):
+        data = list(context['object_list'].values('tag', 'description', 'kind'))
+        return JsonResponse({'items': data})
+
+
+tag_list_json_view = TagListJsonView.as_view()
+
+
+class EntityFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = ListableEntity
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(entity_id__icontains=value) | Q(description__icontains=value)
+        )
+
+
+class EntityTable(Table):
+    entity_id = LinkColumn('core:entity_detail',
+                           args=[A('entity_id')],
+                           text=lambda record: record.object_id,
+                           verbose_name='Entity ID')
+    description = Column()
+
+    class Meta:
+        model = ListableEntity
+        fields = ('entity_id', 'description', )
+        order_by = 'description'
+
+
+class SiteTable(Table):
+    entity_id = LinkColumn('core:site_detail',
+                           args=[A('entity_id')],
+                           text=lambda record: record.object_id,
+                           verbose_name='Site ID')
+    description = Column()
+    area = Column()
+    city = Column()
+    state = Column()
+
+    class Meta:
+        model = SiteView
+        fields = ('entity_id', 'description', 'state', 'city', 'area', )
+        order_by = 'description'
+
+
+class SiteFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = SiteView
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(entity_id__icontains=value)
+            | Q(description__icontains=value)
+            | Q(city__icontains=value)
+            | Q(state__icontains=value)
+            | Q(area__icontains=value)
+        )
+
+
+class TopicTable(Table):
+    topic = Column()
+    point_description = LinkColumn('core:point_detail',
+                                   args=[A('entity_id')],
+                                   verbose_name='Data Point', orderable=False)
+    button = Column(accessor='topic', verbose_name='', default='', orderable=False)
+
+    def render_button(self, record):
+        p = record.get_related_point()
+        if p:
+            return ''
+        else:
+            return format_html('''
+                <a class="btn btn-secondary btn-sm" href="{}">
+                <i class="fa fa-plus"></i> Add
+                </a>'''.format(reverse(
+                    "core:topic_setup",
+                    kwargs={"topic": record.topic}),))
+
+    class Meta:
+        order_by = 'topic'
+
+
+class TopicFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = Topic
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(topic__icontains=value)
+        )
+
+
+class ModelTable(Table):
+    entity_id = LinkColumn('core:model_detail',
+                           args=[A('entity_id')],
+                           text=lambda record: record.object_id,
+                           verbose_name='Model ID')
+    description = Column()
+
+    class Meta:
+        order_by = 'entity_id'
+
+
+class ModelFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = ModelView
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(entity_id__icontains=value)
+            | Q(description__icontains=value)
+        )
+
+
+class EquipmentTable(Table):
+    entity_id = LinkColumn('core:site_equipment_detail',
+                           args=[A('site_id'), A('entity_id')],
+                           verbose_name='Equipment ID')
+    description = Column()
+
+    class Meta:
+        model = EquipmentView
+        fields = ('entity_id', 'description', )
+        order_by = 'description'
+
+
+class EquipmentFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = EquipmentView
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(entity_id__icontains=value)
+            | Q(description__icontains=value)
+        )
+
+
+class PointTable(Table):
+    description = LinkColumn('core:point_detail',
+                             args=[A('entity_id')],
+                             verbose_name='Data Point')
+    current_value = Column(verbose_name='Latest Value')
+
+    class Meta:
+        order_by = 'description'
+
+
+class WithFilesAndNotesAndTagsMixin(object):
+    @property
+    def entity_id_field(self):
+        return NotImplemented
+
+    def get_context_data(self, **kwargs):
+        context = super(WithFilesAndNotesAndTagsMixin, self).get_context_data(**kwargs)
+
+        # check for files
+        context['file_upload_form'] = {
+            'url': reverse("core:entity_file_upload", kwargs={"entity_id": self.kwargs[self.entity_id_field]}),
+            'link_add_url': reverse("core:entity_link", kwargs={"entity_id": self.kwargs[self.entity_id_field]}),
+            'params': [
+                {'key': 'entity_id', 'value': self.kwargs[self.entity_id_field]}
+            ]
+        }
+
+        # check for notes
+        context['notes_form'] = {
+            'url': reverse("core:entity_note", kwargs={"entity_id": self.kwargs[self.entity_id_field]}),
+            'params': [
+                {'key': 'entity_id', 'value': self.kwargs[self.entity_id_field]}
+            ]
+        }
+
+        # check for tags
+        context['tags'] = utils.get_tags_list_for_topic(self.kwargs[self.entity_id_field])
+        context['tags_form'] = {
+            'url': reverse("core:entity_tag", kwargs={"entity_id": self.kwargs[self.entity_id_field]})
+        }
+
+        # check head tags
+        h_tags = []
+        if hasattr(self, 'head_tags') and self.head_tags:
+            for htag in self.head_tags:
+                v = utils.get_tag(htag)
+                if v:
+                    t = {'tag': v.tag, 'description': v.description, 'details': v.details, 'kind': v.kind}
+                    ref = v.get_ref_entity()
+                    if ref:
+                        t['ref_entity'] = ref.as_dict()
+                    for tag in context['tags']:
+                        if tag['tag'] == htag:
+                            t['found'] = True
+                            if 'value' in tag:
+                                t['value'] = tag['value']
+                            if 'slug' in tag:
+                                t['slug'] = tag['slug']
+                            break
+                    h_tags.append(t)
+            context['head_tags'] = h_tags
+        return context
+
+
+class EntityListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = ListableEntity
+    table_class = EntityTable
+    filterset_class = EntityFilter
+    table_pagination = {'per_page': 15}
+    template_name = 'core/entity_list.html'
+
+
+entity_list_view = EntityListView.as_view()
+
+
+class EntityDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, WithBreadcrumbsMixin, DetailView):
+    model = Entity
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    entity_id_field = 'entity_id'
+
+    def get_breadcrumbs(self, context):
+        return [
+            {'url': reverse('core:entity_list'), 'label': 'Entities'},
+            {'label': 'Entity {}'.format(self.kwargs['entity_id'])}
+        ]
+
+    def render_to_response(self, context, **response_kwargs):
+        entity_id = self.kwargs['entity_id']
+        mtags = utils.get_mtags_for_topic(entity_id)
+        for tag in mtags:
+            for tag in tag.m_tags:
+                if tag == 'site':
+                    return HttpResponseRedirect(reverse("core:site_detail", kwargs={"site": entity_id}))
+                if tag == 'model':
+                    return HttpResponseRedirect(reverse("core:model_detail", kwargs={"entity_id": entity_id}))
+                if tag == 'equip':
+                    return HttpResponseRedirect(reverse("core:equipment_detail", kwargs={"equip": entity_id}))
+                if tag == 'point':
+                    return HttpResponseRedirect(reverse("core:point_detail", kwargs={"entity_id": entity_id}))
+
+        return super(EntityDetailView, self).render_to_response(context, **response_kwargs)
+
+
+entity_detail_view = EntityDetailView.as_view()
+
+
+class ModelBCMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:model_list'), 'label': 'Models'})
+        if context.get('object'):
+            b.append({'label': 'Model {}'.format(context['object'].entity_id)})
+        return b
+
+
+class ModelListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = ModelView
+    table_class = ModelTable
+    filterset_class = ModelFilter
+    table_pagination = {'per_page': 15}
+    template_name = 'core/model_list.html'
+
+
+model_list_view = ModelListView.as_view()
+
+
+class ModelListJsonView(LoginRequiredMixin, ListView):
+    model = ModelView
+
+    def render_to_response(self, context, **response_kwargs):
+        data = list(context['object_list'].values('entity_id', 'object_id', 'description'))
+        return JsonResponse({'items': data})
+
+
+model_list_json_view = ModelListJsonView.as_view()
+
+
+class ModelDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, ModelBCMixin, DetailView):
+    model = ModelView
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    entity_id_field = 'entity_id'
+    head_tags = ['dis', 'model']
+    template_name = 'core/model_detail.html'
+
+
+model_detail_view = ModelDetailView.as_view()
+
+
+class ModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
+    model = ModelView
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/model_edit.html'
+    form_class = ModelCreateForm
+
+
+model_create_view = ModelCreateView.as_view()
+
+
+class ModelEditView(LoginRequiredMixin, ModelBCMixin, UpdateView):
+    model = ModelView
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/model_edit.html'
+    form_class = ModelUpdateForm
+
+
+model_edit_view = ModelEditView.as_view()
+
+
+class ModelDeleteView(LoginRequiredMixin, ModelBCMixin, DeleteView):
+    model = ModelView
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/model_delete.html'
+    success_url = reverse_lazy('core:model_list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        try:
+            self.object.delete()
+        except ProtectedError:
+            messages.add_message(request, messages.ERROR, 'Can not delete: this Model is being used!')
+            return HttpResponseRedirect(self.object.get_absolute_url())
+
+        return HttpResponseRedirect(success_url)
+
+
+model_delete_view = ModelDeleteView.as_view()
+
+
+class SiteBCMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        if context.get('object'):
+            b.append({'label': 'Site {}'.format(context['object'].description or context['object'].entity_id)})
+        return b
+
+
+class SiteListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = SiteView
+    table_class = SiteTable
+    filterset_class = SiteFilter
+    table_pagination = {'per_page': 15}
+    template_name = 'core/site_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SiteListView, self).get_context_data(**kwargs)
+        table = context['table']
+
+        addr_locs = []
+        if table and table.paginated_rows:
+            counter = 0
+            for row in table.paginated_rows:
+                object_id = row.get_cell_value('entity_id')
+                site = None
+                try:
+                    site = SiteView.objects.get(object_id=object_id)
+                except Entity.DoesNotExist:
+                    pass
+                if not site:
+                    continue
+                description = row.get_cell_value('description')
+                if site.entity_id:
+                    tags = utils.get_tags_for_topic(site.entity_id)
+                    for tag in tags:
+                        addr_loc = utils.get_site_addr_loc(tag.kv_tags, site.entity_id, self.request.session)
+                        if addr_loc:
+                            addr_loc["index"] = counter
+                            if description:
+                                addr_loc["description"] = description
+                            addr_locs.append(addr_loc)
+                counter = counter + 1
+
+        if addr_locs and settings.GOOGLE_API_KEY:
+            context['addr_locs'] = addr_locs
+            context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
+
+        return context
+
+
+site_list_view = SiteListView.as_view()
+
+
+class SiteListJsonView(LoginRequiredMixin, ListView):
+    model = SiteView
+
+    def render_to_response(self, context, **response_kwargs):
+        data = list(context['object_list'].values('entity_id', 'object_id', 'description', 'city', 'state', 'area'))
+        return JsonResponse({'items': data})
+
+
+site_list_json_view = SiteListJsonView.as_view()
+
+
+class SiteCreateView(LoginRequiredMixin, SiteBCMixin, CreateView):
+    model = Entity
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/site_edit.html'
+    form_class = SiteCreateForm
+
+    def get_context_data(self, **kwargs):
+        context = super(SiteCreateView, self).get_context_data(**kwargs)
+        context['country_list'] = Geo.get_country_choices()
+
+        return context
+
+
+site_create_view = SiteCreateView.as_view()
+
+
+class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndTagsMixin, SiteBCMixin, DetailView):
+    model = SiteView
+    slug_field = "entity_id"
+    slug_url_kwarg = "site"
+    template_name = 'core/site_detail.html'
+    table_class = PointTable
+    entity_id_field = 'site'
+
+    def get_context_data(self, **kwargs):
+        context = super(SiteDetailView, self).get_context_data(**kwargs)
+        results = []
+        site = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
+        equipments = EquipmentView.objects.filter(site_id=site.object_id)
+        for e in equipments:
+            data_points = PointView.objects.filter(equipment_id=e.object_id).count()
+            results.append({'site': site, 'equipment': e, 'data_points': data_points})
+        context['equipments'] = results
+        context['link_add_url'] = reverse("core:equipment_create", kwargs={"site": self.kwargs['site']})
+
+        return context
+
+
+site_detail_view = SiteDetailView.as_view()
+
+
+class StateListJsonView(LoginRequiredMixin, ListView):
+    model = Geo
+
+    def render_to_response(self, context, **response_kwargs):
+        country = self.kwargs['country']
+        data = []
+        if country:
+            data = Geo.get_states_list(country)
+
+        return JsonResponse({'items': data})
+
+
+state_list_json_view = StateListJsonView.as_view()
+
+
+class TimezoneListJsonView(LoginRequiredMixin, ListView):
+    model = TimeZone
+
+    def render_to_response(self, context, **response_kwargs):
+        # note this can pass the geo_code_name as well
+        geo_id = self.kwargs['geo_id']
+        geo = Geo.objects.filter(geo_code_id=geo_id).first()
+        if not geo:
+            geo = Geo.objects.filter(geo_code_name=geo_id).first()
+        if geo:
+            geo_id = geo.geo_code_id
+        data = TimeZone.get_choices(geo_id)
+        # convert from ChoiceField choices to JSON
+
+        return JsonResponse({'items': [{'id': x[0], 'name': x[1]} for x in data]})
+
+
+timezone_list_json_view = TimezoneListJsonView.as_view()
+
+
+class EquipmentCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
+    model = Entity
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/equipment_edit.html'
+    form_class = EquipmentCreateForm
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        if context['object']:
+            site_desc = context['object'].entity_id
+            if context['object'].description:
+                site_desc = context['object'].description
+            b.append({'url': reverse('core:site_detail', kwargs={'site': context['object'].entity_id}),
+                      'label': 'Site {}'.format(site_desc)})
+        b.append({'label': 'Equipment'})
+        return b
+
+    def get_context_data(self, **kwargs):
+        context = super(EquipmentCreateView, self).get_context_data(**kwargs)
+        # add the parent Site
+        context['object'] = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
+
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(EquipmentCreateView, self).get_form_kwargs()
+        site = SiteView.objects.get(entity_id=self.kwargs['site'])
+        kwargs.update({'site_id': site.object_id})
+        return kwargs
+
+
+equipment_create_view = EquipmentCreateView.as_view()
+
+
+class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = Topic
+    table_class = TopicTable
+    filterset_class = TopicFilter
+    table_pagination = {'per_page': 15}
+    template_name = 'core/topic_list.html'
+
+
+topic_list_view = TopicListView.as_view()
+
+
+class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
+    model = Topic
+    template_name = 'core/topic_import.html'
+    form_class = TopicImportForm
+
+    def get_success_url(self):
+        return reverse("core:topic_list")
+
+    def form_valid(self, form):
+        prefix = form.cleaned_data['device_prefix']
+        file = form.cleaned_data['csv_file']
+        import_count = 0
+        error_count = 0
+        logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
+                    prefix, file.name, file.content_type, file.size)
+        f = TextIOWrapper(file.file, encoding=file.charset if file.charset else 'utf-8')
+        records = csv.DictReader(f)
+        for row in records:
+            if 'Volttron Point Name' in row:
+                topic = '/'.join([prefix, row['Volttron Point Name']])
+                entity_id = utils.make_random_id(topic)
+                name = row['Volttron Point Name']
+                # create the topic if it does not exist in the Crate Database
+                Topic.ensure_topic_exists(topic)
+                # update or create the Data Point
+                try:
+                    e = Entity.objects.get(topic=topic)
+                except Entity.DoesNotExist:
+                    e = Entity(entity_id=entity_id, topic=topic)
+                e.add_tag('point', commit=False)
+                e.add_tag('his', commit=False)
+                e.add_tag('dis', name, commit=False)
+                if row.get('Units'):
+                    e.add_tag('unit', row['Units'], commit=False)
+                # add all bacnet_fields
+                for k, v in row.items():
+                    field = k.lower()
+                    if 'point name' not in field:
+                        e.add_bacnet_field(field, v, commit=False)
+                logger.info('TopicImportForm: imported Data Point %s as %s with topic %s', entity_id, name, topic)
+                e.save()
+                import_count += 1
+            else:
+                error_count += 1
+                logger.error('TopicImportView cannot import row, no point name found, %s', row)
+
+        messages.success(self.request, 'Imported {} topics and Data Points with prefix {}'.format(import_count, prefix))
+        if error_count:
+            messages.warning(self.request, 'Could not Import {} records.'.format(error_count))
+        return super(TopicImportView, self).form_valid(form)
+
+
+topic_import_view = TopicImportView.as_view()
+
+
+class TopicSetupView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+    model = Topic
+    slug_field = "topic"
+    slug_url_kwarg = "topic"
+    template_name = 'core/topic_setup.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TopicSetupView, self).get_context_data(**kwargs)
+        # add the parent Site (optional)
+        try:
+            context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
+        except SiteView.DoesNotExist:
+            pass
+        try:
+            context['equipment'] = EquipmentView.objects.get(object_id=context['object'].equipment_id)
+        except EquipmentView.DoesNotExist:
+            pass
+        return context
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:topic_list'), 'label': 'Topics'})
+        if context.get('object'):
+            b.append({'label': context['object'].topic})
+        return b
+
+
+topic_setup_view = TopicSetupView.as_view()
+
+
+@login_required()
+def equipment_data_points_table(request, equip):
+    logger.info('equipment_data_points_table: equip = %s', equip)
+    equipment = get_object_or_404(EquipmentView, entity_id=equip)
+    data = PointView.objects.filter(equipment_id=equipment.object_id)
+    d2 = utils.add_current_values(data)
+    table = PointTable(d2, orderable=False)
+    return HttpResponse(table.as_html(request))
+
+
+class EquipmentListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = EquipmentView
+    table_class = EquipmentTable
+    filterset_class = EquipmentFilter
+    table_pagination = {'per_page': 15}
+    template_name = 'core/equipment_list.html'
+
+
+equipment_list_view = EquipmentListView.as_view()
+
+
+class EquipmentListJsonView(LoginRequiredMixin, ListView):
+    model = EquipmentView
+
+    def render_to_response(self, context, **response_kwargs):
+        qs = context['object_list']
+        site = None
+        if self.request:
+            site_id = self.request.GET.get('site')
+            if site_id:
+                try:
+                    site = SiteView.objects.get(entity_id=site_id)
+                except SiteView.DoesNotExist:
+                    site = SiteView.objects.get(object_id=site_id)
+        if site:
+            qs = qs.filter(site_id=site.object_id)
+
+        data = list(qs.values('entity_id', 'object_id', 'description'))
+        return JsonResponse({'items': data})
+
+
+equipment_list_json_view = EquipmentListJsonView.as_view()
+
+
+class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, WithBreadcrumbsMixin, DetailView):
+    model = EquipmentView
+    slug_field = "entity_id"
+    slug_url_kwarg = "equip"
+    template_name = 'core/equipment_detail.html'
+    entity_id_field = 'equip'
+    head_tags = ['modelRef']
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        if context.get('object') and context['object'].site_id:
+            try:
+                site = SiteView.objects.get(kv_tags__id=context['object'].site_id)
+                if site:
+                    site_desc = site.description or context['object'].site_id
+                    b.append({'url': reverse('core:site_detail', kwargs={'site': site.entity_id}),
+                              'label': 'Site {}'.format(site_desc)})
+            except Exception:
+                pass
+        b.append({'label': 'Equipment {}'.format(context['object'].description)})
+        return b
+
+    def get_context_data(self, **kwargs):
+        context = super(EquipmentDetailView, self).get_context_data(**kwargs)
+        # add the parent Site (optional)
+        try:
+            context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
+        except SiteView.DoesNotExist:
+            pass
+
+        context['data_points'] = PointView.objects.filter(equipment_id=context['object'].object_id).count()
+        return context
+
+
+equipment_detail_view = EquipmentDetailView.as_view()
+
+
+class EquipmentSiteDetailView(EquipmentDetailView):
+    def get_context_data(self, **kwargs):
+        context = super(EquipmentSiteDetailView, self).get_context_data(**kwargs)
+        # add the parent Site
+        context['site'] = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
+        return context
+
+
+equipment_site_detail_view = EquipmentSiteDetailView.as_view()
+
+
+class WithPointBreadcrumbsMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        if context.get('site'):
+            b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+            b.append({'url': reverse('core:site_detail', kwargs={'site': context['site'].entity_id}),
+                      'label': 'Site {}'.format(context['site'].description)})
+            if context.get('equipment'):
+                b.append({'url': reverse('core:site_equipment_detail', kwargs={
+                            'site': context['site'].entity_id,
+                            'equip': context['equipment'].entity_id}),
+                          'label': 'Equipment {}'.format(context['equipment'].description)})
+        else:
+            b.append({'url': reverse('core:entity_list'), 'label': 'Entities'})
+
+        if context.get('object'):
+            b.append({'label': 'Data Point {}'.format(context['object'].description)})
+        return b
+
+
+class EquipmentPointDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin,
+                               WithPointBreadcrumbsMixin, DetailView):
+    model = PointView
+    slug_field = "entity_id"
+    slug_url_kwarg = "point"
+    template_name = 'core/point_detail.html'
+    entity_id_field = 'point'
+
+    def get_context_data(self, **kwargs):
+        context = super(EquipmentPointDetailView, self).get_context_data(**kwargs)
+        context['grafana_url'] = settings.GRAFANA_BASE_URL + "/d/"
+        # add the parent Site
+        context['site'] = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
+
+        # add the parent Equipment
+        context['equipment'] = get_object_or_404(EquipmentView, entity_id=self.kwargs['equip'])
+
+        if context['object']:
+            context['charts'] = utils.charts_for_points([context['object']])
+
+        return context
+
+    def get_object(self, **kwargs):
+        p = super(EquipmentPointDetailView, self).get_object(**kwargs)
+        return utils.add_current_values([p])[0]
+
+
+equipment_point_detail_view = EquipmentPointDetailView.as_view()
+
+
+class PointDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, WithPointBreadcrumbsMixin, DetailView):
+    model = PointView
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/point_detail.html'
+    entity_id_field = 'entity_id'
+
+    def get_context_data(self, **kwargs):
+        context = super(PointDetailView, self).get_context_data(**kwargs)
+
+        # add the parent Site (optional)
+        try:
+            context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
+        except SiteView.DoesNotExist:
+            pass
+
+        # add the parent Equipment (optional)
+        try:
+            context['equipment'] = EquipmentView.objects.get(object_id=context['object'].equipment_id)
+        except EquipmentView.DoesNotExist:
+            pass
+
+        if context['object']:
+            context['charts'] = utils.charts_for_points([context['object']])
+
+        return context
+
+    def get_object(self, **kwargs):
+        p = super(PointDetailView, self).get_object(**kwargs)
+        return utils.add_current_values([p])[0]
+
+
+point_detail_view = PointDetailView.as_view()
+
+
+def point_data_json(request, point, site=None, equip=None):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    resolution = request.GET.get('res')
+    trange = request.GET.get('range')
+    p = PointView.objects.get(entity_id=point)
+    if p:
+        return JsonResponse({'values': utils.get_point_values(p, date_trunc=resolution, trange=trange)})
+    else:
+        logger.warning('No point found with entity_id = %s', point)
+        return JsonResponse({'error': 'Point data not found {} : {}'.format(equip, point)}, status=404)
+
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
+@login_required()
+def site_ahu_summary_json(request, site):
+    s = get_object_or_404(SiteView, entity_id=site)
+    ahus = EquipmentView.objects.filter(site_id=s.object_id).filter(m_tags__contains=['ahu'])
+    logger.info('site_ahu_summary_json found AHU equipments: %s', ahus)
+    results = {}
+    ahus_results = []
+    # get range of date, from data point values epoch
+    epoch_0 = None
+    epoch_1 = None
+    for e in ahus:
+        ahu_data_points = utils.get_ahu_current_values(e.object_id)
+        points = []
+        for k, point in ahu_data_points.items():
+            logger.info('ahu_data_point %s ==> %s', k, point)
+            v = point.current_value
+            epoch = v.get('epoch')
+            if epoch:
+                if not epoch_0 or epoch_0 > epoch:
+                    epoch_0 = epoch
+                if not epoch_1 or epoch_1 < epoch:
+                    epoch_1 = epoch
+            points.append({
+                'name': k,
+                'value': v,
+                'topic': point.topic,
+                'tags': point.m_tags,
+                'ts': utils.format_epoch(epoch) if epoch else None
+            })
+        ahus_results.append({
+            'equipment': {
+                'entity_id': e.entity_id,
+                'object_id': e.object_id,
+                'description': e.description
+            },
+            'data_points': points
+        })
+    logger.info('site_ahu_summary_json ahus_results: %s', ahus_results)
+    results['ahus'] = ahus_results
+    if epoch_0:
+        results['ahus_from'] = utils.format_epoch(epoch_0)
+    if epoch_1 != epoch_0:
+        results['ahus_to'] = utils.format_epoch(epoch_1)
+    return JsonResponse(results)
+
+
+@login_required()
+def site_pie_chart_data_json(request, site):
+    s = get_object_or_404(SiteView, entity_id=site)
+    equipments = EquipmentView.objects.filter(site_id=s.object_id)
+    pie = {}
+    if request.GET.get('cold_threshold'):
+        cold_threshold = float(request.GET.get('cold_threshold'))
+    else:
+        cold_threshold = 69
+    if request.GET.get('hot_threshold'):
+        hot_threshold = float(request.GET.get('hot_threshold'))
+    else:
+        hot_threshold = 75
+    for e in equipments:
+        data_points = PointView.objects.filter(equipment_id=e.object_id)
+        data_points = data_points.filter(m_tags__contains=['air', 'his', 'point', 'sensor', 'temp'])
+        for d in utils.add_current_values(data_points, raw=True):
+            cv = d.current_value.get('value', 'N/A')
+            logger.info('site_pie_chart_data_json got value %s -> %s', d.entity_id, cv)
+            if isinstance(cv, str):
+                try:
+                    cv = float(cv)
+                except ValueError:
+                    cv = 'N/A'
+            if 'N/A' == cv or cv > 200 or cv < -50:
+                if 'No Data' not in pie:
+                    pie['No Data'] = 1
+                else:
+                    pie['No Data'] += 1
+            elif cv < cold_threshold:
+                if 'Cold' not in pie:
+                    pie['Cold'] = 1
+                else:
+                    pie['Cold'] += 1
+            elif cv > hot_threshold:
+                if 'Hot' not in pie:
+                    pie['Hot'] = 1
+                else:
+                    pie['Hot'] += 1
+            else:
+                if 'Comfortable' not in pie:
+                    pie['Comfortable'] = 1
+                else:
+                    pie['Comfortable'] += 1
+    labels = []
+    values = []
+    logger.info('site_pie_chart_data_json pie: %s', pie)
+    for k, v in pie.items():
+        labels.append(k)
+        values.append(v)
+    return JsonResponse({'values': values, 'labels': labels})
+
+
+@login_required()
+def point_data_csv(request, point, site=None, equip=None):
+    resolution = request.GET.get('res')
+    trange = request.GET.get('range')
+    p = get_object_or_404(PointView, entity_id=point)
+    site = p.kv_tags['siteRef']
+    equip = p.kv_tags['equipRef']
+    rows = utils.get_point_values(p, date_trunc=resolution, trange=trange)
+    # limit output
+    if len(rows) > 65535:
+        del rows[:65535]
+
+    last_timestamp = "0"
+    if len(rows) > 0:
+        last_timestamp = rows[:-1][0][0]
+
+    value_title = 'value'
+    if p.unit:
+        value_title += ' ' + p.unit
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer)
+    response = StreamingHttpResponse(
+        (writer.writerow([datetime.utcfromtimestamp(int(row[0]) / 1000).strftime('%Y-%m-%d %H:%M:%S'), row[1]])
+            for row in rows),
+        content_type="text/csv")
+    response['Content-Disposition'] = 'attachment; filename="{}_{}_{}_{}_{}_{}.csv"'.format(
+        site, equip, point, resolution or utils.DEFAULT_RES, trange or utils.DEFAULT_RANGE, last_timestamp)
+    return response
+
+
+def _read_files(files, items, protect=False, parent=None):
+    for file in files:
+        d = {
+            'id': file.id,
+            'comments': file.comments,
+            'owner': file.owner.username,
+            'created': utils.format_date(file.created)
+        }
+        if file.uploaded_file_id:
+            d['url'] = file.uploaded_file.url
+            d['name'] = file.uploaded_file.original_filename
+            d['size'] = file.uploaded_file.size
+            if file.can_thumbnail:
+                d['thumbnail_url'] = get_thumbnailer(file.uploaded_file)['xs_thumb'].url
+        else:
+            d['url'] = file.link
+            d['name'] = file.link_name
+
+        if protect:
+            d['_protect'] = 1
+        if parent:
+            d['parent'] = parent
+        items.append(d)
+
+
+@login_required()
+def entity_file_upload(request, entity_id):
+    if request.method == 'GET':
+        items = []
+        model_id = utils.get_related_model_id(entity_id)
+        if model_id:
+            model = ModelView.objects.filter(object_id=model_id).values()[0]
+            # note: those should be read only
+            _read_files(EntityFile.objects.filter(entity_id=model['entity_id']), items, protect=True, parent=model)
+        _read_files(EntityFile.objects.filter(entity_id=entity_id), items)
+        return JsonResponse({'items': items})
+    elif request.method == 'POST':
+        if request.POST.get('update'):
+            form = FileUpdateForm(request.POST)
+            if form.is_valid():
+                e = EntityFile.objects.get(id=form.cleaned_data['id'], entity_id=form.cleaned_data['entity_id'])
+                e.comments = form.cleaned_data['comments']
+                e.save()
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        elif request.POST.get('delete'):
+            form = FileDeleteForm(request.POST)
+            if form.is_valid():
+                try:
+                    e = EntityFile.objects.get(id=form.cleaned_data['id'], entity_id=form.cleaned_data['entity_id'])
+                except EntityFile.DoesNotExist:
+                    return JsonResponse({'errors': 'EntityFile not found {} : {}'.format(
+                        form.cleaned_data['id'], form.cleaned_data['entity_id'])}, status=404)
+                e.delete()
+
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        else:
+            form = FileUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                f = form.cleaned_data['uploaded_file']
+                file_obj = File(f, name=f.name)
+                filer_file = FilerFile.objects.create(owner=request.user,
+                                                      original_filename=f.name,
+                                                      file=file_obj)
+                e = EntityFile.objects.create(entity_id=form.cleaned_data['entity_id'],
+                                              comments=form.cleaned_data['comments'],
+                                              owner=request.user,
+                                              uploaded_file=filer_file)
+                # note try to make the thumbnail after upload, but catch errors since it may not be an image
+                try:
+                    thumb = get_thumbnailer(e.uploaded_file)['xs_thumb'].url
+                    e.can_thumbnail = True
+                    e.save()
+                except Exception:
+                    thumb = None
+                return JsonResponse({'success': 1, 'results': [{
+                    'id': e.id,
+                    'comments': e.comments,
+                    'owner': e.owner.username,
+                    'created': utils.format_date(e.created),
+                    'thumbnail_url': thumb,
+                    'url': e.uploaded_file.url,
+                    'name': e.uploaded_file.original_filename,
+                    'size': e.uploaded_file.size,
+                }]})
+            else:
+                return JsonResponse({'errors': form.errors})
+
+
+def _read_notes(notes, items, protect=False, parent=None):
+    for note in notes:
+        d = {
+            'id': note.id,
+            'content': note.content,
+            'owner': note.owner.username,
+            'created': utils.format_date(note.created)
+        }
+        if protect:
+            d['_protect'] = 1
+        if parent:
+            d['parent'] = parent
+        items.append(d)
+
+
+@login_required()
+def entity_note(request, entity_id):
+    if request.method == 'GET':
+        items = []
+        model_id = utils.get_related_model_id(entity_id)
+        if model_id:
+            model = ModelView.objects.filter(object_id=model_id).values()[0]
+            # note: those should be read only
+            _read_notes(EntityNote.objects.filter(entity_id=model['entity_id']), items, protect=True, parent=model)
+
+        _read_notes(EntityNote.objects.filter(entity_id=entity_id), items)
+        return JsonResponse({'items': items})
+    elif request.method == 'POST':
+        if request.POST.get('update'):
+            form = EntityNoteUpdateForm(request.POST)
+            if form.is_valid():
+                try:
+                    e = EntityNote.objects.get(id=form.cleaned_data['id'], entity_id=form.cleaned_data['entity_id'])
+                except EntityNote.DoesNotExist:
+                    return JsonResponse({'errors': 'EntityNote not found {} : {}'.format(
+                        form.cleaned_data['id'], form.cleaned_data['entity_id'])}, status=404)
+                e.content = form.cleaned_data['content']
+                e.save()
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        elif request.POST.get('delete'):
+            form = EntityNoteDeleteForm(request.POST)
+            if form.is_valid():
+                EntityNote.objects.get(id=form.cleaned_data['id'], entity_id=form.cleaned_data['entity_id']).delete()
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        else:
+            form = EntityNoteForm(request.POST)
+            if form.is_valid():
+                e = form.save(commit=False)
+                e.owner = request.user
+                e.save()
+                return JsonResponse({'success': 1, 'results': [{
+                    'id': e.id,
+                    'content': e.content,
+                    'owner': e.owner.username,
+                    'created': utils.format_date(e.created)
+                }]})
+            else:
+                return JsonResponse({'errors': form.errors})
+
+
+@require_POST
+@login_required()
+def entity_link(request, entity_id):
+    if request.POST.get('update'):
+        try:
+            e = EntityFile.objects.get(id=request.POST.get('id'), entity_id=request.POST.get('entity_id'))
+        except EntityFile.DoesNotExist:
+            return JsonResponse({'errors': 'EntityFile not found {} : {}'.format(
+                request.POST.get('id'), request.POST.get('entity_id'))}, status=404)
+        form = EntityLinkForm(request.POST, instance=e)
+    else:
+        form = EntityLinkForm(request.POST)
+    if form.is_valid():
+        e = form.save(commit=False)
+        e.owner = request.user
+        e.save()
+        return JsonResponse({'success': 1, 'results': [{
+            'id': e.id,
+            'comments': e.comments,
+            'owner': e.owner.username,
+            'url': e.link,
+            'name': e.link_name,
+            'created': utils.format_date(e.created)
+        }]})
+    else:
+        return JsonResponse({'errors': form.errors})
+
+
+def _read_tags(tags, items, protect=False, parent=None):
+    for tag in tags:
+        # special case: do not inherit the Model marker
+        if protect and tag['tag'] in ['model', 'dis']:
+            continue
+        d = {
+            'tag': tag['tag'],
+            'details': tag['details'],
+            'description': tag['description'],
+        }
+        for t in ['kind', 'value', 'slug']:
+            if t in tag:
+                d[t] = tag[t]
+        if protect:
+            d['_protect'] = 1
+        if parent:
+            d['parent'] = parent
+        items.append(d)
+
+
+@login_required()
+def entity_tag(request, entity_id):
+    if request.method == 'GET':
+        items = []
+        model_id = utils.get_related_model_id(entity_id)
+        if model_id:
+            model = ModelView.objects.filter(object_id=model_id).values()[0]
+            # note: those should be read only
+            _read_tags(utils.get_tags_list_for_topic(model_id), items, protect=True, parent=model)
+
+        _read_tags(utils.get_tags_list_for_topic(entity_id), items)
+        return JsonResponse({'items': items})
+    elif request.method == 'POST':
+        tag = request.POST.get('tag')
+        value = request.POST.get('value')
+        try:
+            entity = Entity.objects.get(entity_id=entity_id)
+        except Entity.DoesNotExist:
+            return JsonResponse({'errors': 'Entity not found : {}'.format(entity_id)}, status=404)
+
+        try:
+            if request.POST.get('delete'):
+                entity.remove_tag(tag)
+                return JsonResponse({'success': 1})
+            else:
+                t = utils.get_tag(tag)
+                if t:
+                    # some basic validation
+                    try:
+                        t.valid_value(value)
+                    except ValidationError as e:
+                        return JsonResponse({'errors': {'value': [e.message]}})
+                    entity.add_tag(tag, value)
+                    t.value = value
+                    logger.info('entity_tag: got tag %s', t)
+                    ref = t.get_ref_entity()
+                    logger.info('entity_tag: got tag ref %s', ref)
+                    result = {
+                        'tag': tag,
+                        'description': t.description,
+                        'kind': t.kind,
+                        'value': value
+                    }
+                    if ref:
+                        result['ref'] = ref.as_dict()
+                        result['slug'] = ref.entity_id
+                    return JsonResponse({'success': 1, 'results': [result]})
+                else:
+                    return JsonResponse({'errors': 'Tag not found : {}'.format(tag)}, status=404)
+
+        except Exception:
+            logger.exception('Could not set the tag')
+            return JsonResponse({'errors': 'Could not perform the operation'})
+
+
+@require_POST
+@login_required()
+def topic_assoc(request, topic):
+    form = TopicAssocForm(request.POST)
+    if form.is_valid():
+        try:
+            Topic.objects.get(topic=topic)
+        except Topic.DoesNotExist:
+            return JsonResponse({'errors': 'Topic not found : {}'.format(topic)}, status=404)
+        site_id = form.cleaned_data['site_id']
+        equipment_id = form.cleaned_data['equipment_id']
+        site = None
+        site_entity_id = None
+        equipment = None
+        equipment_entity_id = None
+        # can use existing or create a new Site
+        if request.POST.get('_new_site'):
+            site_name = site_id
+            site_id = utils.make_random_id(site_name)
+            logger.info('topic_assoc check for NOT existing Site : %s', site_id)
+            try:
+                s = SiteView.objects.get(object_id=site_id)
+                site_entity_id = s.entity_id
+                return JsonResponse({
+                    'errors': {'site_id': ['Site already exists : {}'.format(site_id)]}})
+            except SiteView.DoesNotExist:
+                site = Entity(entity_id=slugify(site_id))
+                site.add_tag('site', commit=False)
+                site.add_tag('dis', site_name, commit=False)
+                site.add_tag('id', site_id, commit=False)
+        else:
+            logger.info('topic_assoc check for MUST exist Site : %s', site_id)
+            try:
+                s = SiteView.objects.get(object_id=site_id)
+                site_entity_id = s.entity_id
+            except SiteView.DoesNotExist:
+                return JsonResponse({
+                    'errors': {'site_id': ['Site not found : {}'.format(site_id)]}})
+        if request.POST.get('_new_equipment'):
+            equipment_name = equipment_id
+            equipment_id = utils.make_random_id(equipment_name)
+            logger.info('topic_assoc check for NOT existing Equipment : %s', equipment_id)
+            try:
+                eq = EquipmentView.objects.get(object_id=equipment_id)
+                equipment_entity_id = eq.entity_id
+                return JsonResponse({
+                    'errors': {'equipment_id': ['Equipment already exists : {}'.format(equipment_id)]}})
+            except EquipmentView.DoesNotExist:
+                equipment = Entity(entity_id=slugify(equipment_id))
+                equipment.add_tag('equip', commit=False)
+                equipment.add_tag('siteRef', site_id, commit=False)
+                equipment.add_tag('dis', equipment_name, commit=False)
+                equipment.add_tag('id', equipment_id, commit=False)
+        else:
+            logger.info('topic_assoc check for MUST exist Equipment : %s', equipment_id)
+            try:
+                eq = EquipmentView.objects.get(object_id=equipment_id, site_id=site_id)
+                equipment_entity_id = eq.entity_id
+            except EquipmentView.DoesNotExist:
+                return JsonResponse({
+                    'errors': {'equipment_id': ['Equipment not found : {}'.format(equipment_id)]}})
+        # all good
+        data_point_name = form.cleaned_data['data_point_name']
+        entity_id = slugify(data_point_name)
+
+        try:
+            Entity.objects.get(kv_tags__id=data_point_name)
+            return JsonResponse({
+                'errors': {'data_point_name': ['Entity already exists with ID : {}'.format(data_point_name)]}})
+        except Entity.DoesNotExist:
+            pass
+
+        if site:
+            logger.info('topic_assoc create Site : %s', site)
+            site_entity_id = site.entity_id
+            site.save()
+        if equipment:
+            logger.info('topic_assoc create Equipment : %s', equipment)
+            equipment_entity_id = equipment.entity_id
+            equipment.save()
+        e = Entity(entity_id=entity_id, topic=topic)
+        e.add_tag('point', commit=False)
+        e.add_tag('his', commit=False)
+        e.add_tag('id', data_point_name, commit=False)
+        e.add_tag('dis', data_point_name, commit=False)
+        e.add_tag('siteRef', site_id, commit=False)
+        e.add_tag('equipRef', equipment_id, commit=False)
+        e.save()
+        # create grafana dashboard
+        r = create_grafana_dashboard(topic)
+        if r:
+            result = r.json()
+            if r.status_code == 200:
+                if result["uid"]:
+                    e.dashboard_uid = result["uid"]
+                    e.save()
+                    logger.error('create_grafana_dashboard created dashboard uid : %s', result["uid"])
+                else:
+                    logger.error('create_grafana_dashboard did not return an uid : %s', result)
+            else:
+                logger.error('create_grafana_dashboard request status invalid : %s', r.status_code)
+
+        return JsonResponse({
+            'success': 1,
+            'site': {'slug': site_entity_id, 'id': site_id},
+            'equipment': {'slug': equipment_entity_id, 'id': equipment_id},
+            'point': {'slug': entity_id, 'id': data_point_name}
+        })
+    else:
+        return JsonResponse({'errors': form.errors})

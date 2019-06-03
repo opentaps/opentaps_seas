@@ -1,0 +1,161 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<div id="notes" class="card mb-3"  v-cloak>
+  <div class="card-body">
+    <h3>Notes</h3>
+    <div class="container notes-table ftable">
+      <div scope="row" v-for="(item, idx) in items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }">
+        <div class="owner-and-comments col-8 col-lg-auto row order-lg-2 order-1 text-nowrap m-0">${item.owner} <span class="ml-2 text-muted">${fmtdate(item.created)}</span></div>
+        <div :class="['buttons', 'col-auto', 'row', 'order-lg-3', 'order-2', 'text-nowrap', {'invisible': item._protect}]">
+          <button :disabled="item._protect" v-on:click="edit_note(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
+          <button :disabled="item._protect" v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+        </div>
+        <div class="comments col-12 col-lg-8 order-3 order-lg-1">
+          ${item.content}
+          <div v-if="item.parent" class="text-muted text-small text-wrap">
+            from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <note-form-modal title="Edit Note" :url="url" :csrfmiddlewaretoken="csrfmiddlewaretoken"></note-form-modal>
+    <!--Add-->
+    <form novalidate v-if="isInitial || isSaving" class="main-form">
+      <div v-b-toggle.collapse_notes_form>
+        <h4 class="form-title when-opened position-relative">
+          {{ form_title|default:"Add a note" }}
+          <b-button variant="outline-secondary" class="a-rt">Close <i class="fa fa-minus"></i></b-button>
+        </h4>
+        <div class="text-right when-closed">
+          <b-button variant="primary">
+            <i class="fa fa-plus"></i> {{ form_title|default:"Add a note" }}
+          </b-button>
+        </div>
+      </div>
+
+      <b-collapse id="collapse_notes_form">
+        <div class="container p-0">
+          <div class="col">
+            <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+              ${ errors.error }
+            </div>
+            <div class="form-group">
+              <label for="commentsInput">Content</label>
+              <textarea :class="{'form-control':1, 'is-invalid': errors.content}" id="commentsInput" name="comments" rows="3" v-model="content" placeholder="Your note..."></textarea>
+              <span v-for="err in errors.content" class="text-danger">${ err }</span>
+            </div>
+            <div class="form-group d-flex justify-content-around">
+              <button class="btn btn-secondary col-5" v-on:click.stop.prevent="reset()"><i class="fa fa-times mr-2"></i> Cancel</button>
+              <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-check mr-2"></i> Submit</button>
+            </div>
+          </div>
+        </div>
+      </b-collapse>
+    </form>
+  </div>
+</div>
+
+
+<script>
+(function() {
+  const CSRF_TOKEN = (function csrftoken() {
+    c = "{% csrf_token %}";
+    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
+    return c;
+  })();
+  Vue.component('note-form-modal', {
+    delimiters: ['$[', ']'],
+    extends: Vue.component('form-modal'),
+    data() {
+      return {
+        fields: [ { key: 'content', value: '', type: 'textarea', label: 'Content', placeholder: 'Your note ...'}]
+      }
+    },
+    created: function () {
+      eventHub.$on('showModal_note', this.showModal)
+    },
+    methods:{
+      post_show: function(item){
+        this.fields[0].value = item.content
+      },
+      pre_save: function(formData) {
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}');
+        {% endfor %}
+        formData.set('content', this.fields[0].value)
+      },
+      post_save: function(response) {
+        this.item.content = this.fields[0].value
+      }
+    }
+  });
+  new Vue({
+    delimiters: ['${', '}'],
+    extends: Vue.component('base-list-form'),
+    el: '#notes',
+    name: 'notes',
+    data() {
+      return {
+        url: `{{ form.url }}`,
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        content: '',
+      }
+    },
+    created: function() {
+      eventHub.$on('tag_changed', x => {
+        if (x.item.tag == 'modelRef') wait().then(this.reload())
+      })
+    },
+    methods: {
+      reset() {
+        // call base reset
+        this._reset()
+        this.content = '';
+      },
+      reload() {
+        this.reload_items()
+      },
+      model_link(item) {
+        return dutils.urls.model_link(item)
+      },
+      model_link_text(item) {
+        if (!item || !item.parent) return ''
+        return item.parent.object_id || item.parent.entity_id
+      },
+      edit_note(idx) {
+        item = this.items[idx];
+        eventHub.$emit('showModal_note', item)
+      },
+      pre_delete(formData, item, idx) {
+        formData.set('id', item.id)
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}')
+        {% endfor %}
+      },
+      pre_save(formData) {
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}');
+        {% endfor %}
+        formData.set('content', this.content);
+      },
+    }
+  });
+})();
+</script>

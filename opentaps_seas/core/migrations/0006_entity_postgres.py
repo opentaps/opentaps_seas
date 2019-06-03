@@ -1,0 +1,44 @@
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+
+from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import HStoreField
+from django.contrib.postgres.operations import HStoreExtension
+from django.db import models, migrations
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('core', '0005_change_pk_entity_id'),
+    ]
+
+    operations = [
+        HStoreExtension(),
+        migrations.CreateModel(
+            name='Entity',
+            fields=[
+                ('entity_id', models.CharField(max_length=255, primary_key=True)),
+                ('topic', models.CharField(max_length=255, blank=True, null=True)),
+                ('kv_tags', HStoreField(blank=True, null=True)),
+                ('m_tags', ArrayField(models.CharField(max_length=255, blank=True, null=True))),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+    ]

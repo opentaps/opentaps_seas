@@ -1,0 +1,314 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% if not nodecor %}
+<div id="tags" class="card mb-3" v-cloak>
+  <div class="card-body">
+    {% if not notitle %}
+      <{{ section_tag|default:'h3' }} class="pr mb-3">
+        {{ section_title|default:"Tags" }}
+      <div class="a-rt" v-if="!editingTags">
+        <button v-on:click="editingTags=true" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Tags</button>
+      </div>
+      </{{ section_tag|default:'h3' }}>
+    {% endif %}
+{% else %}
+<div id="tags" v-cloak>
+  {% if not notitle %}
+    <{{ section_tag|default:'h3' }} class="pr mb-3">
+      {{ section_title|default:"Tags" }}
+      <div class="a-rt" v-if="!editingTags">
+        <button v-on:click="editingTags=true" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Tags</button>
+      </div>
+    </{{ section_tag|default:'h3' }}>
+  {% endif %}
+{% endif %}
+
+    <div v-if="!editingTags">
+      <div class="container tags-list d-flex flex-wrap">
+        <div v-for="(item, idx) in sorted_items" class="tag d-inline-flex" v-if="should_display_tag(item)" v-bind:id="item.tag + idx">
+          <div class="tag-content d-inline-flex flex-wrap align-items-center text-nowrap">
+            <span v-if="!get_link(item)">${display_tag_short(item)}</span>
+            <a v-if="get_link(item)" :href="get_link(item)">${display_tag_short(item)}</a>
+            <div v-if="item.parent" class="text-muted text-small text-wrap ml-1">
+              from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+            </div>
+          </div>
+          <b-popover :target="item.tag + idx" triggers="hover focus">
+            <template slot="title">${item.tag}</template>
+            ${item.description}</br>
+            ${item.details}
+            <div v-if="get_link(item)">Links to: <a :href="get_link(item)">${display_tag_short(item)}</a></div>
+          </b-popover>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="editingTags">
+      <div class="container tags-table ftable">
+        <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
+          <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
+            <span v-if="!get_link(item)">${display_tag(item)}</span>
+            <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
+            <div v-if="item.parent" class="text-muted text-small text-wrap">
+              from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+            </div>
+          </div>
+          <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
+            <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
+            <button v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+      <!--Add-->
+      <form novalidate v-if="isInitial || isSaving" class="main-form">
+        <h4 class="form-title">{{ form_title|default:"Add a tag" }}</h4>
+
+        <div class="container p-0">
+          <div class="col">
+            <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+              ${ errors.error }
+            </div>
+            <div class="form-group">
+              <label for="tagInput">Tag</label>
+              <vue-bootstrap-typeahead
+                input-class="form-control"
+                :serializer="s => s.tag + ': ' + s.description"
+                id="tagInput"
+                ref="tagInput"
+                name="tag" v-model="tag"
+                @hit="selectedTag = $event"
+                :data="valid_tags" placeholder="Tag...">
+                <template slot="suggestion" slot-scope="{ data, htmlText }">
+                  <span v-html="htmlText"></span>&nbsp;<small>${ data.kind }</small>
+                </template>
+              </vue-bootstrap-typeahead>
+              <span v-for="err in errors.tag" class="text-danger">${ err }</span>
+            </div>
+
+            <tag-value-input
+              :csrfmiddlewaretoken="csrfmiddlewaretoken"
+              :selected-tag="selectedTag"
+              v-model="value"
+              :errors="errors.value"></tag-value-input>
+
+            <div class="form-group d-flex justify-content-around">
+              <button class="btn btn-secondary col-5" v-on:click.stop.prevent="reset_stop_edit()"><i class="fa fa-times mr-2"></i> Go Back</button>
+              <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-check mr-2"></i> Add Tag</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <tag-form-modal
+      title="Edit Tag"
+      :url="url"
+      :csrfmiddlewaretoken="csrfmiddlewaretoken"></tag-form-modal>
+{% if not nodecor %}
+  </div>
+{% endif %}
+</div>
+
+<script>
+(function() {
+  const CSRF_TOKEN = (function csrftoken() {
+    c = "{% csrf_token %}";
+    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
+    return c;
+  })();
+  Vue.component('tag-form-modal', {
+    delimiters: ['$[', ']'],
+    extends: Vue.component('form-modal'),
+    data() {
+      return {
+        fields: [
+          { key: 'value', value: '', type: 'tag', selectedTag: null },
+        ]
+      }
+    },
+    created: function () {
+      eventHub.$on('showModal_tag', this.showModal)
+    },
+    methods:{
+      post_show: function(item){
+        this.fields[0].selectedTag = item
+        this.fields[0].value = item.value ? item.value : ''
+      },
+      pre_save: function(formData, item) {
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}');
+        {% endfor %}
+        formData.set('tag', item.tag)
+        formData.set('value', this.fields[0].value)
+      },
+      post_save: function(response) {
+        console.log('post_save', response)
+        this.item.value = this.fields[0].value
+        if (response && response.results && response.results.length) {
+          this.item.ref = response.results[0].ref
+        } else {
+          this.item.ref = null
+        }
+        eventHub.$emit('tag_changed', {type: 'saved', item: this.item})
+      }
+    }
+  });
+  new Vue({
+    delimiters: ['${', '}'],
+    extends: Vue.component('base-list-form'),
+    el: '#tags',
+    name: 'tags',
+    data() {
+      return {
+        url: `{{ form.url }}`,
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        editingTags: false,
+        selectedTag: {},
+        tag: '',
+        value: '',
+        valid_tags: [],
+        head_tags: [
+        {% if head_tags %}
+          {% for tag in head_tags %}
+            '{{ tag.tag }}',
+          {% endfor %}
+        {% endif %}
+        ]
+      }
+    },
+    watch: {
+      selectedTag: function (val) {
+        if (this.errors.value) delete this.errors.value
+      },
+    },
+    created: function() {
+      axios.get('{% url 'core:tag_list_json' %}')
+        .then(x => this.valid_tags = x.data.items)
+        .catch(err => {
+          console.error('loading tags error :', err);
+        });
+      eventHub.$on('tag_changed', x => {
+        if (x.item.tag == 'modelRef') wait().then(this.reload())
+      })
+    },
+    computed: {
+      sorted_items() {
+        return this.items.sort((a,b) => {
+          if (a.value && !b.value) return -1
+          if (!a.value && b.value) return 1
+          return a.tag.localeCompare(b.tag)
+        })
+      },
+    },
+    methods: {
+      reset() {
+        // call base reset
+        this._reset()
+        this.selectedTag = {}
+        this.tag = ''
+        this.value = ''
+        if (this.$refs.tagInput) this.$refs.tagInput.inputValue = ''
+      },
+      reset_stop_edit() {
+        this.reset()
+        this.editingTags = false
+      },
+      reload() {
+        this.reload_items()
+      },
+      should_display_tag(tag) {
+        // do not display tags that are displayed as head tags already
+        if (this.head_tags.indexOf(tag.tag) > -1) return false;
+        // do not display a tag that was inherited if another same tag overrides it
+        if (!tag._protect) return true;
+        var i = this.items.find(x => !x._protect && x.tag == tag.tag);
+        return (!i);
+      },
+      model_link(item) {
+        return dutils.urls.model_link(item)
+      },
+      model_link_text(item) {
+        if (!item || !item.parent) return ''
+        return item.parent.object_id || item.parent.entity_id
+      },
+      get_link(tag) {
+        return dutils.urls.resolve_tag_linked_value(tag)
+      },
+      edit_tag(idx) {
+        item = this.items[idx];
+        eventHub.$emit('showModal_tag', item)
+      },
+      tag_needs_value(item) {
+        return (item && item.kind && item.kind != 'Marker')
+      },
+      display_tag(item) {
+        if (item.value) {
+          return (item.description || item.tag) + ': ' + item.value
+        } else {
+          return '✓ ' + (item.description || item.tag)
+        }
+      },
+      display_tag_short(item) {
+        if (item.value) {
+          return (item.tag) + ': ' + item.value
+        } else {
+          return '✓ ' + (item.tag)
+        }
+      },
+      pre_delete(formData, item, idx) {
+        formData.set('tag', item.tag)
+        if (item.value) formData.set('value', 1)
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}')
+        {% endfor %}
+      },
+      post_delete(item) {
+        eventHub.$emit('tag_changed', {type: 'deleted', item: item})
+      },
+      pre_save(formData) {
+        var i = this.items.find(x => !x._protect && x.tag == (this.selectedTag ? this.selectedTag.tag : this.tag));
+        if (i) return Promise.reject('This Tag is already set ' + (i.description || i.tag) + (i.value ? ': ' + i.value : ''))
+
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}');
+        {% endfor %}
+        formData.set('tag', (this.selectedTag ? this.selectedTag.tag : this.tag));
+        var need_val = this.tag_needs_value(this.selectedTag)
+        var has_val = this.value && this.value.length
+        if (need_val) {
+          if (has_val) {
+            formData.set('value', this.value)
+          } else {
+            return Promise.reject({error: 'This Tag requires a value', value: ['A value is required']})
+          }
+        }
+      },
+      post_save(item) {
+        var i = this.items.find(x => !x._protect && x.tag == item.tag)
+        if (!i) {
+          this.items.push(item)
+          console.log('Saved tag: ', item)
+          eventHub.$emit('tag_changed', {type: 'saved', item: item})
+        }
+      },
+    }
+  });
+})();
+</script>

@@ -1,0 +1,284 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% if equipments %}
+
+<div id="sitechart" class="container" v-cloak v-show="has_data">
+  <div class="card mb-3">
+    <div class="card-body p-sm-3 p-2">
+      <div class="row">
+        <div class="col-xl-3 col-12">
+          <div class="row m-0 justify-content-center align-items-stretch">
+            <apexchart
+              ref="site_pie_chart"
+              id="site_pie_chart"
+              type="pie"
+              :options="chartOptions"
+              :series="series"></apexchart>
+          </div>
+          <div class="main-form">
+            <div class="form-row">
+              <div class="col">
+                <div class="row mb-2 justify-content-center align-items-baseline">
+                  <label for="coldInput" class="mr-1">Cold</label>
+                  <input
+                    input-class="form-control"
+                    style="max-width:3em"
+                    type="number"
+                    id="coldInput"
+                    ref="coldInput"
+                    name="cold_threshold" v-model="cold_threshold"
+                    placeholder="69 Fahrenheit">
+                  </input>
+                  <label for="hotInput" class="mr-1 ml-1">Hot</label>
+                  <input
+                    input-class="form-control"
+                    style="max-width:3em"
+                    type="number"
+                    id="hotInput"
+                    ref="hotInput"
+                    name="hot_threshold" v-model="hot_threshold"
+                    placeholder="75 Fahrenheit">
+                  </input>
+                  <button v-on:click="refresh" class="ml-1 btn btn-secondary btn-sm"><i class="fas fa-sync"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col" style="max-height:30em;overflow:auto;font-size:small">
+          <table class="table table-striped">
+            <tr>
+              <td>Unit</td>
+              <td v-for="t in ahu_points">${ t }</td>
+            </tr>
+            <tr v-for="e in ahu_summary.ahus">
+              <td><a :href="link_equipment(e.equipment)">${ display_equipment(e.equipment) }</a></td>
+              <td v-for="t in ahu_points" v-bind:id="point_topic(e.data_points, t)">
+                ${ point_value(e.data_points, t) }
+                <b-popover :target="point_topic(e.data_points, t)" triggers="hover focus">
+                  <template slot="title">${point_topic(e.data_points, t)}</template>
+                  <div> <b>Value: ${point_value(e.data_points, t)}</b></div>
+                  <div> <i v-for="tag in point_tags(e.data_points, t)">${ tag } </i></div>
+                  <div v-if="point_ts(e.data_points, t)"> As of: <my-datetime :value="point_ts(e.data_points, t).time">${ point_ts(e.data_points, t).fmttime }</my-datetime></div>
+                </b-popover>
+              </td>
+            </tr>
+          </table>
+          <div v-if="ahu_summary.ahus_from">
+            <i>as of <my-datetime :value="ahu_summary.ahus_from.time">${ ahu_summary.ahus_from.fmttime }</my-datetime>
+              <span v-if="show_ahus_to(ahu_summary)">to <my-datetime :value="ahu_summary.ahus_to.time">${ ahu_summary.ahus_to.fmttime }</my-datetime></span>
+            </i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  // The global window.Apex variable below can be used to set common options for all charts on the page
+  Apex = {
+    dataLabels: {
+      enabled: false
+    },
+    toolbar: {
+      tools: {
+        selection: false
+      }
+    },
+    tooltip: {
+      followCursor: false,
+      theme: 'dark',
+      x: {
+        show: false
+      },
+      marker: {
+        show: false
+      },
+    },
+    grid: {
+      clipMarkers: false
+    },
+    xaxis: {
+      type: 'datetime',
+      tooltip: {
+        formatter: function(val, opts) {
+          return new Date(val);
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        minWidth: 60
+      }
+    }
+  }
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#sitechart',
+    components: {
+      apexchart: VueApexCharts,
+    },
+    data: {
+      ahu_points: [
+        'Space Air Temp',
+        'Return Air Temp',
+        'Supply Fan Speed',
+        'Cooling',
+        'Heating',
+        'CO2'
+      ],
+      ahuUrl: "{% url 'core:site_ahu_summary_json' site_id %}",
+      ahu_summary: {},
+      baseCsvUrl: "{% url 'core:site_pie_chart_data_json' site_id %}",
+      has_data: false,
+      cold_threshold: '69',
+      hot_threshold: '75',
+      series: [0],
+      chartOptions: {
+        dataLabels: {
+          enabled: true
+        },
+        legend: {
+          show: false,
+          formatter: function(seriesName, opts) {
+            return seriesName + " - " + opts.w.globals.series[opts.seriesIndex]
+          }
+        },
+        colors: [function({ value, seriesIndex, w }) {
+          name = w.config.labels[seriesIndex]
+          console.log('colors: ', value, seriesIndex, name)
+          if (name == 'No Data') {
+            return '#000000'
+          } else if (name == 'Comfortable') {
+            return '#2ecc40'
+          } else if (name == 'Hot') {
+            return '#c70039'
+          } else if (name == 'Cold') {
+            return '#39cccc'
+          }
+        }],
+        labels: ['Comfortable', 'Cold']
+      },
+    },
+    watch: {
+        cold_threshold: function(val, oldVal) {
+          this.refresh();
+        },
+        hot_threshold: function(val, oldVal) {
+          this.refresh();
+        }
+    },
+    mounted() {
+      this.init();
+    },
+    methods: {
+      init() {
+        this.refresh();
+        this.fetchAhuSummary();
+      },
+      display_equipment(e) {
+        return e.description || e.entity_id
+      },
+      link_equipment(e) {
+        return dutils.urls.resolve('equipment_detail', { id: e.entity_id })
+      },
+      point_tags(points, name) {
+        for (var i=0; i<points.length; i++) {
+          var point = points[i]
+          if (point.name == name) {
+            return point.tags
+          }
+        }
+      },
+      point_ts(points, name) {
+        for (var i=0; i<points.length; i++) {
+          var point = points[i]
+          if (point.name == name) {
+            return point.ts
+          }
+        }
+      },
+      point_topic(points, name) {
+        for (var i=0; i<points.length; i++) {
+          var point = points[i]
+          if (point.name == name) {
+            return point.topic
+          }
+        }
+      },
+      point_value(points, name) {
+        for (var i=0; i<points.length; i++) {
+          var point = points[i]
+          if (point.name == name) {
+            if (name.indexOf('Temp') > -1) {
+              if (parseFloat(point.value.value) > 1000) return;
+            }
+            if (name.indexOf('CO2') > -1) {
+              if (parseFloat(point.value.value) > 20000) return;
+            }
+            return this.display_point_value(point.value)
+          }
+        }
+      },
+      display_point_value(p) {
+        if (p.value && 'undefined' != p.value) {
+          return p.value + (p.unit ? p.unit : '')
+        }
+      },
+      show_ahus_to(data) {
+        return data.ahus_from && data.ahus_to && data.ahus_to.fmttime != data.ahus_from.fmttime
+      },
+      refresh() {
+        console.log('Start refresh charts ...');
+        url = this.baseCsvUrl + this.getUrlArgs();
+        console.log('Fetching Site chart from ', url);
+        axios.get(url).then(response => {
+          console.log('Got Site chart data: ', response.data);
+          this.series = response.data.values;
+          this.chartOptions = {labels: response.data.labels};
+          this.has_data = this.series.length;
+          console.log('Got Site chart: ', this.chartOptions, this.series);
+          });
+        console.log('Done refresh chart.');
+      },
+      getUrlArgs() {
+        url = '?cold_threshold=' + this.cold_threshold;
+        url += '&hot_threshold=' + this.hot_threshold;
+        return url;
+      },
+      fetchAhuSummary() {
+        console.log('Start refresh AHU summary ...');
+        url = this.ahuUrl;
+        console.log('Fetching Site AHU summary from ', url);
+        axios.get(url).then(response => {
+          this.ahu_summary = response.data;
+          console.log('Got Site AHU summary: ', this.ahu_summary);
+          });
+        console.log('Done refresh AHU summary.');
+      }
+    }
+
+  })
+</script>
+{% endif %}
+

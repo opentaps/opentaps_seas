@@ -1,0 +1,244 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% if charts %}
+<div id="charts" class="container">
+  <div class="row m-0" style="align-items: stretch">
+
+    {% if charts|length == 1 %}
+    {% for chart in charts %}
+    <div class="col-lg-3 pl-0 pr-0 pr-lg-1 mb-3" style="display: flex">
+      <div class="card w-100">
+        <div class="card-body p-0 pt-3 pb-2">
+          <div class="h-100 d-flex flex-column justify-content-between">
+            <h2 class="text-center">Latest Value</h2>
+            <div>
+              <div class="text-center" style="font-size:3em">{{ chart.current_value.value }} {{ chart.current_value.unit }}</div>
+              <div ref="time" class="text-center" data-time="{{ chart.current_value.epoch }}">{{ chart.current_value.time }}</div>
+              <div ref="timezone" class="text-center text-muted text-small">UTC</div>
+            </div>
+            <div>&nbsp;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="col-lg-9 pl-0 pl-lg-2 pr-0 mb-3">
+      <div class="card">
+        <div class="card-body p-sm-3 p-2">
+          <h2>
+            <div class="row m-0">
+              <div>Historical Values</div>
+              {% if object.dashboard_uid %}
+              <div class="text-right flex-grow-1">
+                <a href="{{ grafana_url }}{{ object.dashboard_uid }}" target="_blank"><img width="32" src="{% static 'images/grafana_icon.svg' %}" /></a>
+              </div>
+              {% endif %}
+            </div>
+          </h2>
+          <p class="ml-2">
+            <b-dropdown id="ddown1" :text="'By: ' + selectedResolution" class="m-md-2" size="sm">
+              <b-dropdown-item v-for="item in resolutions" v-on:click="selectedResolution = item">By: ${item}</b-dropdown-item>
+            </b-dropdown>
+
+            <b-dropdown id="ddown2" :text="'For: ' + selectedRange" class="m-md-2" size="sm">
+              <b-dropdown-item v-for="item in ranges" v-on:click="selectedRange = item">${item}</b-dropdown-item>
+            </b-dropdown>
+
+            <button v-on:click="refresh" class="btn btn-secondary btn-sm"><i class="fas fa-sync"></i></button>
+          </p>
+          {% for chart in charts %}
+            <div>
+              <div id="chart-line{{ chart.index }}">
+                <apexchart ref="chart_{{chart.index}}" id="chart_{{chart.index}}" type=area height=240 :options="chartOptions{{ chart.index }}" :series="series{{ chart.index }}" ></apexchart>
+              </div>
+              <div class="text-right"><a :href="csvUrl{{ chart.index }}"><i class="fas fa-download"></i> Download CSV</a></div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  // The global window.Apex variable below can be used to set common options for all charts on the page
+  Apex = {
+    dataLabels: {
+      enabled: false
+    },
+    toolbar: {
+      tools: {
+        selection: false
+      }
+    },
+    tooltip: {
+      followCursor: false,
+      theme: 'dark',
+      x: {
+        show: false
+      },
+      marker: {
+        show: false
+      },
+    },
+    grid: {
+      clipMarkers: false
+    },
+    xaxis: {
+      type: 'datetime',
+      tooltip: {
+        formatter: function(val, opts) {
+          return new Date(val);
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        minWidth: 60
+      }
+    }
+  }
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#charts',
+    components: {
+      apexchart: VueApexCharts,
+    },
+    data: {
+      resolutions: ['day', 'hour', 'minute', 'second'],
+      ranges: ['1 month', '7 days', '24h', '12h', '6h', '3h', '1h', '30m', '10m'],
+      selectedResolution: 'minute',
+      selectedRange: '24h',
+      {% for chart in charts %}
+      baseCsvUrl{{ chart.index }}: "{% url 'core:point_data_csv' chart.point_id %}",
+      csvUrl{{ chart.index }}: "",
+      series{{ chart.index }}: [{
+          name: '{{ chart.unit }}',
+          data: []
+        },
+      ],
+      chartOptions{{ chart.index }}: {
+        title: { text: '{{ chart.title }}' },
+        markers: { size: 0 },
+        yaxis: {
+        {% if chart.isBool %}
+          min: 0,
+          max: 1,
+          tickAmount: 1,
+        {% else %}
+          tickAmount: 3,
+        {% endif %}
+        },
+        {% if chart.isBool %}
+        stroke: {
+          curve: 'stepline',
+        },
+        {% endif %}
+        chart: {
+          id: 'chart_{{ chart.index }}',
+          group: 'chartgroup',
+        },
+      },
+      {% endfor %}
+    },
+    watch: {
+        selectedResolution: function(val, oldVal) {
+          this.refresh();
+        },
+        selectedRange: function(val, oldVal) {
+          this.refresh();
+        }
+    },
+    mounted() {
+      this.init();
+    },
+    methods: {
+      init() {
+        console.log('Vue mounted.');
+        console.log(this.$refs.time)
+        console.log(this.$refs.time.innerHTML)
+        e = parseInt(this.$refs.time.getAttribute('data-time'));
+        m = moment(e)
+        this.$refs.time.innerHTML = m.format('L HH:mm:ss')
+        console.log(this.$refs.timezone)
+        d = Date().toLocaleString()
+        i = d.indexOf('(')
+        if (i > -1) {
+          this.$refs.timezone.innerHTML = d.substring(i+1, d.length-1)
+        } else {
+          this.$refs.timezone.innerHTML = moment.tz.guess()
+        }
+        this.refresh();
+      },
+      clear() {
+        console.log('Clear charts.');
+        {% for chart in charts %}
+        console.log('Clear chart series{{ chart.index }}.', this.series{{ chart.index }});
+        this.series{{ chart.index }}[0].data.splice(0);
+        {% endfor %}
+      },
+      refresh() {
+        console.log('Start refresh charts ...');
+        {% for chart in charts %}
+        this.csvUrl{{ chart.index }} = this.baseCsvUrl{{ chart.index }} + this.getUrlArgs();
+        this.series{{ chart.index }}[0].data.splice(0);
+        this.fetchData{{ chart.index }}();
+        {% endfor %}
+        console.log('Done refresh charts.');
+      },
+      getUrlArgs() {
+        url = '';
+        p = false;
+        if ('minute' !== this.selectedResolution) {
+          url += '?res=' + this.selectedResolution;
+          p = true;
+        }
+        if ('24h' !== this.selectedRange) {
+          if (!p) url += '?';
+          else url += '&';
+          p = true;
+          url += 'range=' + this.selectedRange;
+        }
+        return url;
+      },
+      {% for chart in charts %}
+      fetchData{{ chart.index }}() {
+        url = '{{chart.url}}' + this.getUrlArgs();
+        console.log('Fetching chart {{ chart.index }} from ', url);
+        axios.get(url).then(response => {
+          if (response.data.values.length < 20) {
+            this.$refs['chart_{{ chart.index }}'].updateOptions({markers: {size: 5}});
+          } else {
+            this.$refs['chart_{{ chart.index }}'].updateOptions({markers: {size: 0}});
+          }
+          this.series{{ chart.index }}[0].data = response.data.values;
+          });
+      },
+      {% endfor %}
+    }
+
+  })
+</script>
+{% endif %}
+

@@ -1,0 +1,51 @@
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+
+
+pytz==2018.9  # https://github.com/stub42/pytz
+python-slugify==2.0.1  # https://github.com/un33k/python-slugify
+Pillow==5.4.1  # https://github.com/python-pillow/Pillow
+argon2-cffi==19.1.0  # https://github.com/hynek/argon2_cffi
+redis>=2.10.6, < 3  # pyup: < 3 # https://github.com/antirez/redis
+
+crate==0.22.1
+
+# Django
+# ------------------------------------------------------------------------------
+django==2.0.13  # pyup: < 2.1  # https://www.djangoproject.com/
+django-environ==0.4.5  # https://github.com/joke2k/django-environ
+django-model-utils==3.1.2  # https://github.com/jazzband/django-model-utils
+django-allauth==0.38.0  # https://github.com/pennersr/django-allauth
+django-crispy-forms==1.7.2  # https://github.com/django-crispy-forms/django-crispy-forms
+django-redis==4.10.0  # https://github.com/niwinz/django-redis
+django-tables2==2.0.5 # https://github.com/jieter/django-tables2
+django-filter==2.1.0
+django-bootstrap4==0.0.7
+
+# Django REST Framework
+djangorestframework==3.9.1  # https://github.com/encode/django-rest-framework
+coreapi==2.3.3  # https://github.com/core-api/python-client
+
+# support for postgres Array / HStore
+django-contrib-postgres==0.0.1
+
+#filer
+boto3==1.9.109
+django-storages==1.7.1
+django-filer==1.4.4
+
+geocoder==1.38.1

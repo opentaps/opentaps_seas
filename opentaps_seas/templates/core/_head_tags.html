@@ -1,0 +1,48 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<div id="headTags" class="container" v-cloak>
+  {% for tag in head_tags %}
+  <tag-edit
+  :url="url"
+  :csrfmiddlewaretoken="csrfmiddlewaretoken"
+  :tag="{ tag: '{{tag.tag}}', details: '{{tag.details|default:tag.description|default:tag.tag}}', description: '{{tag.description|default:tag.tag}}' {% if tag.kind %}, kind: '{{tag.kind}}' {% endif %} {% if tag.value %}, value: '{{ tag.value }}' {% endif %} {% if tag.found %}, found: '{{ tag.found }}' {% endif %} {% if tag.ref_entity %}, ref: {{ tag.ref_entity }}{% endif %} {% if tag.slug %}, slug: '{{ tag.slug }}'{% endif %} }"></tag-edit>
+  {% endfor %}
+</div>
+
+<script>
+(function() {
+  const CSRF_TOKEN = (function csrftoken() {
+    c = "{% csrf_token %}";
+    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
+    return c;
+  })();
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#headTags',
+    name: 'headTags',
+    data() {
+      return {
+        url: `{{ form.url }}`,
+        csrfmiddlewaretoken: CSRF_TOKEN,
+      }
+    },
+  })
+})();
+</script>

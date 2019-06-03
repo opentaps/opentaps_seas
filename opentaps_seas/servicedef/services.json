@@ -1,0 +1,100 @@
+{
+    "economizer_setup": {
+        "engine": "opentaps_seas.volttron.forms.VolttronAppConfigService",
+        "input": {
+            "platform": {
+                "type": "string",
+                "default": ""
+            },
+            "agent": {
+                "type": "string",
+                "default": "economizer"
+            },
+            "equipment": {
+                "type": "equipment"
+            },
+            "MixedAirTemperature": {
+                "type": "datapoint",
+                "default": "tags:mixed, air, temp"
+            },
+            "ReturnAirTemperature": {
+                "type": "datapoint",
+                "default": "tags:return, air, temp"
+            },
+            "OutdoorAirTemperature": {
+                "type": "datapoint",
+                "default": "tags:outside, air, temp"
+            },
+            "OutdoorDamperSignal": {
+                "type": "datapoint",
+                "default": "tags:outside, air, damper"
+            },
+            "SupplyFanStatus": {
+                "type": "datapoint",
+                "default": "tags:fan, run"
+            },
+            "SupplyFanSpeed": {
+                "type": "datapoint",
+                "default": "tags:fan, speed"
+            },
+            "CoolingValvePosition": {
+                "type": "datapoint",
+                "default": "tags:cool"
+            }
+        },
+
+        "output": {
+            "Economizing When Unit Should Not Dx Message": {
+                "type": "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Economizing When Unit Should Not Dx/diagnostic message",
+                "tags": "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, diagnosticMessage"
+            },
+            "Not Economizing When Unit Should Dx Message": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Not Economizing When Unit Should Dx/diagnostic message",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, diagnosticMessage"
+            },
+            "Temperature Sensor Dx Message": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Temperature Sensor Dx/diagnostic message",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, diagnosticMessage"
+            },
+            "Insufficient Outdoor-air Intake Dx Message": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Insufficient Outdoor-air Intake Dx/diagnostic message",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, diagnosticMessage"
+            },
+            "Excess Outdoor-air Intake Dx Message": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Excess Outdoor-air Intake Dx/diagnostic message",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, diagnosticMessage"
+            },
+
+            "Economizing When Unit Should Not Dx Energy Impact": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Economizing When Unit Should Not Dx/energy impact",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, energyImpact"
+            },
+            "Not Economizing When Unit Should Dx Energy Impact": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Not Economizing When Unit Should Dx/energy impact",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, energyImpact"
+            },
+            "Temperature Sensor Dx Energy Impact": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Temperature Sensor Dx/energy impact",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, energyImpact"
+            },
+            "Insufficient Outdoor-air Intake Dx Energy Impact": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Insufficient Outdoor-air Intake Dx/energy impact",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, energyImpact"
+            },
+            "Excess Outdoor-air Intake Dx Energy Impact": {
+                "type" : "datapoint",
+                "topic": "record/Economizer_RCx/{base}/{equipment.kv_tags[id]}/Excess Outdoor-air Intake Dx/energy impact",
+                "tags" : "appName: Economizer_Rcx, siteRef: {equipment.kv_tags[siteRef]}, equipRef: {equipment.kv_tags[id]}, energyImpact"
+            }
+        }
+    }
+}

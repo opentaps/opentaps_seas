@@ -1,0 +1,73 @@
+geo_code_id,geo_code_type_id,geo_code_name,parent_geo_code_id,geo_name
+USA,COUNTRY,US,,United States
+USA-AA,STATE,AA,USA,Armed Forces Americas
+USA-AE,STATE,AE,USA,Armed Forces Europe
+USA-AK,STATE,AK,USA,Alaska
+USA-AL,STATE,AL,USA,Alabama
+USA-AP,STATE,AP,USA,Armed Forces Pacific
+USA-AR,STATE,AR,USA,Arkansas
+USA-AZ,STATE,AZ,USA,Arizona
+USA-CA,STATE,CA,USA,California
+USA-CO,STATE,CO,USA,Colorado
+USA-CT,STATE,CT,USA,Connecticut
+USA-DC,STATE,DC,USA,District of Columbia
+USA-DE,STATE,DE,USA,Delaware
+USA-FL,STATE,FL,USA,Florida
+USA-GA,STATE,GA,USA,Georgia
+USA-GU,STATE,GU,USA,Guam
+USA-HI,STATE,HI,USA,Hawaii
+USA-IA,STATE,IA,USA,Iowa
+USA-ID,STATE,ID,USA,Idaho
+USA-IL,STATE,IL,USA,Illinois
+USA-IN,STATE,IN,USA,Indiana
+USA-KS,STATE,KS,USA,Kansas
+USA-KY,STATE,KY,USA,Kentucky
+USA-LA,STATE,LA,USA,Louisiana
+USA-MA,STATE,MA,USA,Massachusetts
+USA-MD,STATE,MD,USA,Maryland
+USA-ME,STATE,ME,USA,Maine
+USA-MI,STATE,MI,USA,Michigan
+USA-MN,STATE,MN,USA,Minnesota
+USA-MO,STATE,MO,USA,Missouri
+USA-MS,STATE,MS,USA,Mississippi
+USA-MT,STATE,MT,USA,Montana
+USA-NC,STATE,NC,USA,North Carolina
+USA-ND,STATE,ND,USA,North Dakota
+USA-NE,STATE,NE,USA,Nebraska
+USA-NH,STATE,NH,USA,New Hampshire
+USA-NJ,STATE,NJ,USA,New Jersey
+USA-NM,STATE,NM,USA,New Mexico
+USA-NV,STATE,NV,USA,Nevada
+USA-NY,STATE,NY,USA,New York
+USA-OH,STATE,OH,USA,Ohio
+USA-OK,STATE,OK,USA,Oklahoma
+USA-OR,STATE,OR,USA,Oregon
+USA-PA,STATE,PA,USA,Pennsylvania
+USA-PR,STATE,PR,USA,Puerto Rico
+USA-RI,STATE,RI,USA,Rhode Island
+USA-SC,STATE,SC,USA,South Carolina
+USA-SD,STATE,SD,USA,South Dakota
+USA-TN,STATE,TN,USA,Tennessee
+USA-TX,STATE,TX,USA,Texas
+USA-UT,STATE,UT,USA,Utah
+USA-VA,STATE,VA,USA,Virginia
+USA-VI,STATE,VI,USA,Virgin Islands
+USA-VT,STATE,VT,USA,Vermont
+USA-WA,STATE,WA,USA,Washington
+USA-WI,STATE,WI,USA,Wisconsin
+USA-WV,STATE,WV,USA,West Virginia
+USA-WY,STATE,WY,USA,Wyoming
+CAN,COUNTRY,CA,,Canada
+CAN-AB,STATE,AB,CAN,Alberta
+CAN-BC,STATE,BC,CAN,British Columbia
+CAN-MB,STATE,MB,CAN,Manitoba
+CAN-NB,STATE,NB,CAN,New Brunswick
+CAN-NL,STATE,NL,CAN,Newfoundland and Labrador
+CAN-NS,STATE,NS,CAN,Nova Scotia
+CAN-NT,STATE,NT,CAN,Northwest Territories
+CAN-NU,STATE,NU,CAN,Nunavut
+CAN-ON,STATE,ON,CAN,Ontario
+CAN-PE,STATE,PE,CAN,Prince Edward Island
+CAN-QC,STATE,QC,CAN,Quebec
+CAN-SK,STATE,SK,CAN,Saskatchewan
+CAN-YT,STATE,YT,CAN,Yukon

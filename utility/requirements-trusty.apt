@@ -1,0 +1,41 @@
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+
+
+##basic build dependencies of various Django apps for Ubuntu Trusty 14.04
+#build-essential metapackage install: make, gcc, g++,
+build-essential
+#required to translate
+gettext
+python3-dev
+
+##shared dependencies of:
+##Pillow, pylibmc
+zlib1g-dev
+
+##Postgresql and psycopg2 dependencies
+libpq-dev
+
+##Pillow dependencies
+libtiff4-dev
+libjpeg8-dev
+libfreetype6-dev
+liblcms1-dev
+libwebp-dev
+
+##django-extensions
+graphviz-dev

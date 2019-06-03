@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}Equipment: {{ object.entity_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  {% load render_table from django_tables2 %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      {% if tags_form %}
+        {% include "core/_tags.html" with form_title='Add Tag' nodecor=True section_tag='h2' section_title=object.description form=tags_form items=tags head_tags=head_tags %}
+        {% if head_tags %}
+          {% include "core/_head_tags.html" with form=tags_form items=head_tags %}
+        {% endif %}
+      {% else %}
+        <h2>Equipment {{ object.description }}</h2>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h3>Data Points</h3>
+      <hr class="mt-0"/>
+      <div id="datetimelist">
+        <h5 class="form-title position-relative" v-b-toggle.collapse_datapoints>
+          {{ data_points }} Data Points
+          <b-button variant="light" size="sm" class="a-rt when-opened">
+             <i class="fa fa-chevron-up"></i>
+          </b-button>
+          <b-button variant="light" size="sm" class="a-rt when-closed">
+             <i class="fa fa-chevron-down"></i>
+          </b-button>
+        </h5>
+
+        <b-collapse v-cloak id="collapse_datapoints" v-on:show="show_collapse('collapse_datapoints', '{{object.entity_id}}')">
+          <p>Loading ...</p>
+        </b-collapse>
+      </div>
+    </div>
+  </div>
+
+  {% if file_upload_form %}
+    {% include "core/_upload.html" with form_title='Upload File' link_form_title='Add Link' form=file_upload_form items=files %}
+  {% endif %}
+
+  {% if notes_form %}
+    {% include "core/_notes.html" with form_title='Add Note' form=notes_form items=notes %}
+  {% endif %}
+
+</div>
+<script>
+(function(){
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#datetimelist',
+    methods: {
+      show_collapse(container_id, equipment_id) {
+        container = document.getElementById(container_id)
+        container.innerHTML = '<p>Loading ...</p>'
+        url = dutils.urls.resolve('equipment_data_points_table', { id: equipment_id })
+        axios.get(url).then(response => {
+          container.innerHTML = response.data
+        });
+      }
+    }
+  });
+})();
+</script>
+{% endblock content %}

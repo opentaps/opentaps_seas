@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}Tag: {{ object.tag }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  {% block add_button %}
+  <div class="d-flex mb-2">
+    <a href="{% url 'core:tag_create' %}" class="btn btn-primary ml-auto" role="button"><i class="fa fa-plus"></i> Add Tag</a>
+  </div>
+  {% endblock add_button %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2>Tag {{ object.tag }}</h2>
+      <br/>
+      {% block inner_content %}
+      <p><b>Kind:</b> {{ object.kind }}</p>
+      <p><b>Description:</b> {{ object.description|default:'n/a' }}</p>
+      <p><b>Details:</b> {{ object.details|default:'n/a' }}</p>
+      {% if not object.can_delete %}
+      <p><i>This tag is being used and cannot be deleted.</i></p>
+      {% endif  %}
+
+      <div class="form-group d-flex justify-content-around mt-5">
+        <a href="{% url 'core:tag_delete' object.tag %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Delete</a>
+        <a href="{% url 'core:tag_edit' object.tag %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
+      </div>
+      {% endblock inner_content %}
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+

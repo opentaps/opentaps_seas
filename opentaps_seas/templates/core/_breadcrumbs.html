@@ -1,0 +1,36 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% if breadcrumbs %}
+  {% spaceless %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      {% for b in breadcrumbs %}
+      <li class="breadcrumb-item {% if forloop.last %} active{% endif %}" {% if forloop.last %} aria-current="page"{% endif %}>
+        {% if b.url %}
+          <a href="{{ b.url }}">{{ b.label }}</a>
+        {% else %}
+          <span>{{ b.label }}</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </nav>
+  {% endspaceless %}
+{% endif %}

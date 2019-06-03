@@ -1,0 +1,375 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<div id="file_uploader" class="card mb-3" v-cloak>
+  <div class="card-body">
+    <h3>Files</h3>
+    <div class="container files-table ftable">
+      <div scope="row" v-for="(item, idx) in items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }">
+        <div class="name col-9 col-md-5 col-lg-3 order-1 text-nowrap text-truncate">
+          <a :href="item.url" target="_blank"><img :src="item.thumbnail_url" /> ${item.name}</a>
+        </div>
+        <div class="owner-and-comments col-12 col-md-auto row order-lg-3 order-md-2 order-3 text-nowrap m-0">${item.owner} <span class="ml-2 text-muted">${fmtdate(item.created)}</span></div>
+        <div :class="['buttons', 'col-auto', 'row', 'order-lg-3', 'order-2', 'text-nowrap', {'invisible': item._protect}]">
+          <button :disabled="item._protect" v-on:click="edit_item(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
+          <button :disabled="item._protect" v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+        </div>
+        <div class="comments col-12 col-lg-4 order-4 order-lg-2">${item.comments}</div>
+        <div v-if="item.parent" class="col-12 order-5 text-muted text-small text-wrap">
+          from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+        </div>
+      </div>
+    </div>
+    <file-form-modal title="Edit File" :url="url" :csrfmiddlewaretoken="csrfmiddlewaretoken"></file-form-modal>
+    <link-form-modal title="Edit Link" :url="link_add_url" :csrfmiddlewaretoken="csrfmiddlewaretoken"></link-form-modal>
+
+      <div v-b-toggle.collapse_files_form style="float:right;margin-left: 4px;">
+        <div class="text-right when-opened">
+          <b-button variant="outline-secondary">Close {{ form_title|default:"Upload a file" }} <i class="fa fa-minus"></i></b-button>
+        </div>
+        <div class="text-right when-closed">
+          <b-button variant="primary">
+            <i class="fa fa-plus"></i> {{ form_title|default:"Upload a file" }}
+          </b-button>
+        </div>
+      </div>
+
+      <div v-b-toggle.collapse_link_form>
+        <div class="text-right when-opened ">
+          <b-button variant="outline-secondary">Close {{ link_form_title|default:"Add a link" }} <i class="fa fa-minus"></i></b-button>
+        </div>
+        <div class="text-right when-closed">
+          <b-button variant="primary">
+            <i class="fa fa-plus"></i> {{ link_form_title|default:"Add a link" }}
+          </b-button>
+        </div>
+      </div>
+
+
+    <!--UPLOAD-->
+    <b-collapse id="collapse_files_form">
+      <form enctype="multipart/form-data" novalidate v-if="isInitial || hasFile || isSaving" class="main-form">
+        <h4>{{ form_title|default:"Upload a file" }}</h4>
+        <div class="container p-0">
+          <div class="col">
+            <div class="form-group">
+              <div class="dropbox row align-items-center">
+                <input type="file" :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" class="input-file"/>
+                <p v-if="isInitial" class="col">
+                  Drag your file here to upload<br> or click to browse
+                </p>
+                <p v-if="hasFile" class="col">
+                  ${fileToUpload}
+                </p>
+                <p v-if="isSaving" class="col">
+                  Uploading file...
+                </p>
+              </div>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control" id="commentsInput" name="comments" rows="3" v-model="comments" placeholder="Additonal comments..."></textarea>
+            </div>
+            <div class="form-group d-flex justify-content-around">
+              <button class="btn btn-secondary col-5" v-on:click.stop.prevent="reset()"><i class="fa fa-times mr-2"></i> Cancel</button>
+              <button class="btn btn-primary col-5"  :disabled="!hasFile" v-on:click.stop.prevent="save()"><i class="fa fa-check mr-2"></i> Submit</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </b-collapse>
+    <!--SUCCESS-->
+    <div v-if="isSuccess">
+      <h3>Uploaded successfully.</h3>
+      <p>
+        <a href="javascript:void(0)" @click="reset()">Upload again</a>
+      </p>
+    </div>
+    <!--FAILED-->
+    <div v-if="isFailed">
+      <h3>Uploaded failed.</h3>
+      <p>
+        <a href="javascript:void(0)" @click="reset()">Try again</a>
+      </p>
+      <pre>${ uploadError.error }</pre>
+    </div>
+
+    <!-- Add Link -->
+    <form novalidate class="main-form">
+      <b-collapse id="collapse_link_form">
+        <h4>{{ link_form_title|default:"Add a link" }}</h4>
+        <div class="container p-0">
+          <div class="col">
+            <div class="alert alert-danger mt-3" role="alert" v-if="addLinkError.error">
+              ${ addLinkError.error }
+            </div>
+            <div class="form-group">
+              <label for="linkName"></label>
+              <input :class="{'form-control':1, 'is-invalid': addLinkError.link_name}" type="text" id="linkName" v-model="linkName" placeholder="Text to display">
+              <span v-for="err in addLinkError.link_name" class="text-danger">${ err }</span>
+            </div>
+            <div class="form-group">
+              <input :class="{'form-control':1, 'is-invalid': addLinkError.link}" type="text" id="link" v-model="link" placeholder="Full Link URL">
+              <span v-for="err in addLinkError.link" class="text-danger">${ err }</span>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control" id="linkCommentsInput" name="linkComments" rows="3" v-model="linkComments" placeholder="Comments"></textarea>
+            </div>
+            <div class="form-group d-flex justify-content-around">
+              <button class="btn btn-secondary col-5" v-on:click.stop.prevent="reset_link()"><i class="fa fa-times mr-2"></i> Cancel</button>
+              <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="save_link()"><i class="fa fa-check mr-2"></i> Submit</button>
+            </div>
+          </div>
+        </div>
+      </b-collapse>
+    </form>
+
+  </div>
+</div>
+
+
+<script>
+(function(){
+  const STATUS_HASFILE = 2, STATUS_SUCCESS = 3, STATUS_FAILED = 4;
+  const CSRF_TOKEN = (function csrftoken() {
+    c = "{% csrf_token %}";
+    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
+    return c;
+  })();
+  Vue.component('file-form-modal', {
+    delimiters: ['$[', ']'],
+    extends: Vue.component('form-modal'),
+    data() {
+      return {
+        fields: [ { key: 'comments', value: '', type: 'textarea', label: 'Comments', placeholder: 'Additional comments ...'}]
+      }
+    },
+    created: function () {
+      eventHub.$on('showModal_file', this.showModal)
+    },
+    methods:{
+      post_show: function(item){
+        this.title_name = item.name
+        this.fields[0].value = item.comments
+      },
+      pre_save: function(formData) {
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}');
+        {% endfor %}
+        formData.set('comments', this.fields[0].value)
+      },
+      post_save: function(response) {
+        this.item.comments = this.fields[0].value
+      }
+    }
+  });
+  Vue.component('link-form-modal', {
+    delimiters: ['$[', ']'],
+    extends: Vue.component('form-modal'),
+    data() {
+      return {
+        fields: [
+          { key: 'link_name', value: '', type: 'input', label: '', placeholder: 'Text to display'},
+          { key: 'link', value: '', type: 'input', label: '', placeholder: 'Full Link URL'},
+          { key: 'comments', value: '', type: 'textarea', label: '', placeholder: 'Comments'}
+        ]
+      }
+    },
+    created: function () {
+      eventHub.$on('showModal_link', this.showModal)
+    },
+    methods:{
+      post_show: function(item){
+        this.title_name = item.name
+        this.fields[1].value = item.url
+        this.fields[0].value = item.name
+        this.fields[2].value = item.comments
+      },
+      pre_save: function(formData) {
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}');
+        {% endfor %}
+        formData.set('link', this.fields[1].value)
+        formData.set('link_name', this.fields[0].value)
+        formData.set('comments', this.fields[2].value)
+      },
+      post_save: function(response) {
+        this.item.url = this.fields[1].value
+        this.item.name = this.fields[0].value
+        this.item.comments = this.fields[2].value
+      }
+    }
+  });
+  new Vue({
+    delimiters: ['${', '}'],
+    extends: Vue.component('base-list-form'),
+    el: '#file_uploader',
+    name: 'file_uploader',
+    data() {
+      return {
+        url: `{{ form.url }}`,
+        link_add_url: `{{ form.link_add_url }}`,
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        formData: null,
+        fileToUpload: null,
+        linkName: null,
+        link: null,
+        linkComments: null,
+        fileCount: 0,
+        uploadedFiles: [],
+        uploadError: {},
+        addLinkError: {},
+        uploadFieldName: 'uploaded_file',
+      }
+    },
+    created: function() {
+      this.reload()
+      eventHub.$on('tag_changed', x => {
+        if (x.item.tag == 'modelRef') wait().then(this.reload())
+      })
+    },
+    computed: {
+      hasFile() {
+        return this.currentStatus === STATUS_HASFILE;
+      },
+      isSuccess() {
+        return this.currentStatus === STATUS_SUCCESS;
+      },
+      isFailed() {
+        return this.currentStatus === STATUS_FAILED;
+      }
+    },
+    methods: {
+      reset() {
+        this._reset()
+        this.uploadedFiles = []
+        this.uploadError = {}
+        this.comments = ''
+        this.formData = null;
+        this.fileToUpload = null
+      },
+      reset_link() {
+        this._reset()
+        this.addLinkError = {}
+        this.linkComments = ''
+        this.link = ''
+        this.linkName = ''
+        this.formData = null
+      },
+      reload() {
+        this.reload_items()
+      },
+      model_link(item) {
+        return item ? dutils.urls.resolve('model_detail', { id: item.entity_id }) : null
+      },
+      model_link_text(item) {
+        if (!item || !item.parent) return ''
+        return item.parent.object_id || item.parent.entity_id
+      },
+      edit_item(idx) {
+        item = this.items[idx];
+        if (item.is_link) {
+          eventHub.$emit('showModal_link', item)
+        } else {
+          eventHub.$emit('showModal_file', item)
+        }
+      },
+      add_common_params(formData) {
+        {% for param in form.params %}
+          formData.set('{{ param.key }}', '{{ param.value }}')
+        {% endfor %}
+      },
+      pre_delete(formData, item, idx) {
+        formData.set('id', item.id)
+        this.add_common_params(formData)
+      },
+      upload(formData) {
+        this.add_common_params(formData)
+        formData.set('comments', this.comments)
+        return this.send(formData)
+      },
+      save() {
+        // upload data to the server
+        this.currentStatus = STATUS_SAVING;
+
+        formData = this.formData;
+
+        this.upload(formData)
+          .then(x => {
+            this.uploadedFiles = [].concat(x);
+            this.items = this.items.concat(x);
+            x.map(item => {
+              console.log('Uploaded file: ', item);
+            })
+            this.currentStatus = STATUS_SUCCESS;
+          })
+          .catch(err => {
+            this.uploadError = getResponseError(err);
+            console.error(this.uploadError, err)
+            this.currentStatus = STATUS_FAILED;
+          });
+      },
+      send_link(formData) {
+        this.add_common_params(formData)
+        formData.set('comments', this.linkComments)
+        formData.set('link', this.link)
+        formData.set('link_name', this.linkName)
+        return this.send(formData, this.link_add_url)
+      },
+      save_link() {
+        this.addLinkError = {};
+        this.currentStatus = STATUS_SAVING;
+
+        const formData = new FormData();
+
+        this.send_link(formData)
+          .then(x => {
+            x.map(item => item.is_link = 1)
+            this.items = this.items.concat(x);
+            x.map(item => {
+              console.log('Add link: ', item, this.items);
+            })
+            this.reset_link();
+          })
+          .catch(err => {
+            this.addLinkError = getResponseError(err);
+            console.error("error = ", this.addLinkError, err)
+            this.currentStatus = STATUS_INITIAL;
+          });
+      },
+      filesChange(fieldName, fileList) {
+        if (!fileList.length) return;
+        this.formData = new FormData();
+
+        // append the files to FormData
+        Array
+          .from(Array(fileList.length).keys())
+          .map(x => {
+            this.fileToUpload = fileList[x].name;
+            this.formData.append(fieldName, fileList[x], fileList[x].name);
+          });
+        this.currentStatus = STATUS_HASFILE;
+      }
+    },
+    mounted() {
+      this.reset()
+      this.reset_link()
+    },
+  });
+})();
+</script>

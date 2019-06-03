@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load crispy_forms_tags %}
+{% load static i18n %}
+{% block title %}Sites{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <form method="post" id="site_edit_form">
+        {% csrf_token %}
+
+        {{ form.entity_id|as_crispy_field }}
+        {{ form.description|as_crispy_field }}
+        {{ form.area|as_crispy_field }}
+        {{ form.address|as_crispy_field }}
+
+        <div id="div_id_country" class="form-group">
+            <label for="id_country" class="col-form-label requiredField">
+                Country<span class="asteriskField">*</span>
+            </label>
+            <div class="">
+                <select name="country" class="select form-control" id="id_country" v-model="selectedCountry" @change="changedCountry">
+                    {% for c in country_list %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div id="div_id_state" class="form-group">
+            <label for="id_state" class="col-form-label requiredField">
+                State<span class="asteriskField">*</span>
+            </label>
+            <div>
+                <select name="state" id="id_state" class="select form-control" v-if="states.length">
+                   <option v-for="item in states" v-bind:value="item.id">${ item.name }</option>
+                </select>
+            </div>
+        </div>
+
+        {{ form.city|as_crispy_field }}
+
+        <div id="div_id_timezone" class="form-group">
+            <label for="id_timezone" class="col-form-label requiredField">
+                Timezone<span class="asteriskField">*</span>
+            </label>
+            <div>
+                <select name="timezone" id="id_timezone" class="select form-control" v-if="timezones.length">
+                   <option v-for="item in timezones" v-bind:value="item.id">${ item.name }</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group d-flex justify-content-around mt-5">
+          <a href="{% if object %}{% url 'core:site_detail' object.entity_id %}{% else %}{% url 'core:site_list' %}{% endif %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+          <button class="btn btn-primary col-5" type="submit"><i class="fa fa-edit mr-2"></i> Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  new Vue({
+    el: '#site_edit_form',
+    delimiters: ['${', '}'],
+    data:{
+      selectedCountry:'US',
+      states: [],
+      timezones: [],
+    },
+    mounted() {
+      this.changedCountry()
+    },
+    methods:{
+      changedCountry:function() {
+        this.loadStates()
+        this.loadTimezones()
+      },
+      loadStates:function() {
+        url = dutils.urls.resolve('state_list_json', {country: this.selectedCountry})
+        console.log(url)
+        axios.get(url)
+          .then(
+            x => {
+              this.states = x.data.items
+            }
+          )
+          .catch(err => {
+            console.error('loading states error :', err);
+        });
+      },
+      loadTimezones:function() {
+        url = dutils.urls.resolve('timezone_list_json', {geo_id: this.selectedCountry})
+        console.log(url)
+        axios.get(url)
+          .then(
+            x => {
+              this.timezones = x.data.items
+            }
+          )
+          .catch(err => {
+            console.error('loading states error :', err);
+        });
+      }
+    }
+  });
+})();
+</script>
+{% endblock content %}

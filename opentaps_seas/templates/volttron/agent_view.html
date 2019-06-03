@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static i18n %}
+{% block title %}VOLTTRON{% endblock %}
+
+{% block content %}
+{% load bootstrap4 %}
+<div class="container">
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'volttron:status' %}">VOLTTRON</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ agent.name|default:agent_uuid }}</li>
+    </ol>
+  </nav>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      {% if volttron_vc_configuration_needed %}
+        <p>VOLTTRON has not been configured.</p>
+      {% endif %}
+      {% if volttron_vc_error %}
+        <div class="alert alert-danger" role="alert">
+          The following error occurred: {{ volttron_vc_error }}
+        </div>
+      {% endif %}
+
+      {% if agent %}
+        <h2>{{ agent.name }}</h2>
+        <hr/>
+        <p><b>Identity:</b> {{ agent.identity }}</p>
+        <p><b>UUID:</b> {{ agent.uuid }}</p>
+        <p><b>Tag:</b> {{ agent.tag }}</p>
+        <p><b>Running:</b> {{ agent.is_running }}</p>
+        <p><b>Process:</b> {{ agent.process_id }}</p>
+        <p><b>Priority:</b> {{ agent.priority }}</p>
+        <p><b>Health:</b> {{ agent.health.status }} last updated {{ agent.health.last_updated }}, context {{ agent.health.context }}</p>
+        <p><b>Error Code:</b> {{ agent.error_code }}</p>
+        <br/>
+
+        <h3>Configuration</h3>
+        {% for config in agent_configs %}
+          <p>
+            <hr/>
+            <div class="d-flex">
+              <b>{{ config.key }}</b>
+              <div class="ml-auto">
+                <form method="POST" action="{% url 'volttron:delete_agent_config' platform_uuid agent_uuid %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="config_name" value="{{config.key}}"/>
+                  {% bootstrap_button '<i class="fa fa-trash"></i> Delete' button_class='btn-danger' button_type='submit' %}
+                </form>
+              </div>
+            </div>
+            <div>{{ config.value|linebreaks }}</div>
+          </p>
+        {% endfor %}
+        <hr/>
+        <h3>Add a new Configuration</h3>
+        <form method="POST" action="{% url 'volttron:store_agent_config' platform_uuid agent_uuid %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="config_name">Config Key</label>
+            <input type="text" required="required" class="form-control" name="config_name" id="config_name" placeholder="Enter the configuration key">
+          </div>
+          <div class="form-group">
+            <label for="config_type">Config Content Type</label>
+            <select id="config_type" name="config_type" required="required" class="form-control">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="raw_contents">Config Content (optional)</label>
+            <textarea class="form-control" name="raw_contents" id="raw_contents" placeholder="Configuration content"></textarea>
+          </div>
+          {% bootstrap_button '<i class="fa fa-plus"></i> Add' button_class='btn-primary' button_type='submit' %}
+        </form>
+      {% else %}
+        <p>Agent not found.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

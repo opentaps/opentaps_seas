@@ -1,0 +1,64 @@
+#!/bin/bash
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+
+
+USER="$1"
+PASSWORD="$2"
+EMAIL="$3"
+ADMIN="$4"
+
+if [[ "$#" -lt 3 || "$#" -gt 4 ]]; then
+    echo "usage: $0 username password email [admin]"
+    exit 0
+fi
+
+if [ -z "${ADMIN}" ]; then
+    ADMIN="False"
+else
+    ADMIN="True"
+fi
+
+MANAGE="manage.py"
+
+if [ ! -f ${MANAGE} ]; then
+    MANAGE="../${MANAGE}"
+fi
+
+python "${MANAGE}" shell  <<EOF
+from opentaps_seas.users.models import User
+from allauth.account.models import EmailAddress
+
+if len(EmailAddress.objects.filter(email='${EMAIL}')) != 0:
+    print("That email address is already being used")
+    exit(1)
+
+if len(User.objects.filter(username='${USER}')) != 0:
+    print("That username is already being used")
+    exit(1)
+
+u = User.objects.create_user('${USER}', password='${PASSWORD}', is_superuser=${ADMIN}, is_staff=${ADMIN}, is_active=True, email='${EMAIL}')
+u.save()
+EmailAddress.objects.create(user_id=u.id, email=u.email, verified=True, primary=True)
+EOF
+
+if [ "$?" -eq 0 ]; then
+    echo "Created user: ${USER} email: ${EMAIL} admin: ${ADMIN}"
+else
+    echo "See the error above and try again"
+    exit 1
+fi

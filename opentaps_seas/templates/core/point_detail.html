@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}Data Point: {{ object.entity_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      {% if tags_form %}
+        {% include "core/_tags.html" with form_title='Add Tag' nodecor=True section_tag='h2' section_title=object.description form=tags_form items=tags head_tags=head_tags %}
+      {% else %}
+        <h2>{{ object.description }}</h2>
+      {% endif %}
+      <p>Topic: {{ object.topic }}</p>
+      {% if object.bacnet_fields %}
+        <b>BACNET Fields:</b>
+        <hr/>
+        {% for k,v in object.bacnet_fields.items %}
+          <p>{{ k|title }}: {{ v }}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  {% include "core/_charts.html" %}
+
+  {% if file_upload_form %}
+    {% include "core/_upload.html" with form_title='Upload File' link_form_title='Add Link' form=file_upload_form items=files %}
+  {% endif %}
+
+  {% if notes_form %}
+    {% include "core/_notes.html" with form_title='Add Note' form=notes_form items=notes %}
+  {% endif %}
+
+</div>
+{% endblock content %}
+

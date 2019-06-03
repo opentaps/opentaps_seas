@@ -1,0 +1,205 @@
+/*
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+*/
+/* These styles are generated from project.scss. */
+
+.alert-debug {
+  color: black;
+  background-color: white;
+  border-color: #d6e9c6;
+}
+
+.alert-error {
+  color: #b94a48;
+  background-color: #f2dede;
+  border-color: #eed3d7;
+}
+
+.container > .container {
+    padding: 0;
+}
+
+.text-small {
+  font-size: small;
+}
+
+
+.ftable-row {
+border-top: 1px solid #dee2e6;
+}
+.ftable-row:first-child {
+border-top: none;
+}
+.ftable-header {
+border-bottom: 1px solid #dee2e6;
+font-weight: bold;
+}
+.ftable {
+border-bottom: 1px solid #dee2e6;
+margin-bottom: 1em;
+}
+.ftable-row > * {
+padding: .75rem;
+}
+
+.ftable > .row {
+padding:0;
+}
+
+.header-top {
+  border-top: 1px solid #dee2e6;
+}
+
+.equip-row {
+  margin-bottom: 1em;
+}
+
+[v-cloak] {
+display: none;
+}
+
+.collapsed > .collapse-controls > .when-opened,
+:not(.collapsed) > .collapse-controls > .when-closed,
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+display: none;
+}
+.collapsed > .collapse-controls > .when-closed {
+display: initial;
+}
+
+.form-modal.modal-mask {
+position: fixed;
+z-index: 9998;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, .5);
+display: table;
+transition: opacity .3s ease;
+}
+
+.form-modal .modal-wrapper {
+display: table-cell;
+vertical-align: middle;
+}
+
+.form-modal .modal-container {
+max-width: 90%;
+width: 500px;
+margin: 0px auto;
+padding: 20px 30px;
+background-color: #fff;
+border-radius: 2px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+transition: all .3s ease;
+font-family: Helvetica, Arial, sans-serif;
+}
+@media (max-width: 575.98px) {
+    .form-modal .modal-container {
+        width: auto;
+        padding: 10px;
+    }
+}
+
+.form-modal .modal-header h3 {
+margin-top: 0;
+color: #42b983;
+}
+
+.form-modal .modal-body {
+margin: 20px 0;
+}
+
+.form-modal .modal-default-button {
+float: right;
+}
+
+h3.form_title {
+font-size: 1.5em;
+}
+
+
+#file_uploader .dropbox {
+border: 3px dashed #BBB;
+background: #f2f4f4;
+color: dimgray;
+margin: 0;
+min-height: 80px;
+position: relative;
+cursor: pointer;
+height: 100%;
+border-radius: 10px;
+}
+
+#file_uploader .input-file {
+opacity: 0;
+width: 100%;
+height: 100%;
+position: absolute;
+cursor: pointer;
+}
+
+#file_uploader .dropbox:hover {
+border-color: #7bf;
+background: #c0fbff;
+}
+
+#file_uploader .dropbox p {
+font-size: 1.2em;
+text-align: center;
+padding: 15px 0;
+margin:0;
+position: static;
+}
+
+.main-form .btn {
+max-width: 200px;
+}
+
+.tags-list {
+font-size: small;
+}
+.tags-list .tag {
+border: 1px solid rgba(0, 0, 0, 0.125);
+border-radius:4px;
+padding:0.5em;
+margin-bottom:0.5em;
+margin-right:0.5em;
+}
+.tags-list .tag:hover {
+background: #eee;
+}
+.tags-list .tag .tag-content {
+}
+.tags-list .tag .buttons{
+margin-left:0.5em;
+}
+
+.pr {
+position: relative;
+}
+.a-rt {
+position:absolute;
+right:0;
+top:0
+}
+.chev-btn .a-rt {
+  top:-6px;
+}

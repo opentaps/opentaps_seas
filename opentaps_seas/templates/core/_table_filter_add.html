@@ -1,0 +1,45 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load bootstrap4 %}
+{% if filter %}
+  <form action="" method="get" class="form">
+    <div class="row m-0">
+      <div class="mb-2 mr-2 p-0 col-4">
+        {% bootstrap_field filter.form.query form_group_class="form-group m-0" show_label=False placeholder='Search...' %}
+      </div>
+      <div class="mb-2 mr-2 p-0 col-auto">
+      {% bootstrap_button '<i class="fa fa-filter"></i>' button_class='btn-outline-secondary' %}
+      </div>
+      {% if add_url %}
+        <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1">
+        {% bootstrap_button '<i class="fa fa-plus"></i> '|add:add_label button_class='btn-primary' href=add_url %}
+        </div>
+      {% endif %}
+    </div>
+  </form>
+ {% else %}
+  {% if add_url %}
+    <div class="row m-0">
+      <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1">
+      {% bootstrap_button '<i class="fa fa-plus"></i> '|add:add_label button_class='btn-primary' href=add_url %}
+      </div>
+    </div>
+  {% endif %}
+{% endif %}

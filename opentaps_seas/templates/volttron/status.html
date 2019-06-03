@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static i18n %}
+{% block title %}VOLTTRON{% endblock %}
+
+{% block content %}
+{% load bootstrap4 %}
+<div class="container">
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">VOLTTRON</li>
+    </ol>
+  </nav>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      {% if volttron_vc_configuration_needed %}
+        <p>No VOLTTRON configuration found.  Please configure IP address, username, and password for accessing VOLTTRON Central.</p>
+      {% endif %}
+      {% if volttron_vc_error %}
+        <div class="alert alert-danger" role="alert">
+          The following error occurred: {{ volttron_vc_error }}
+        </div>
+      {% endif %}
+      {% if platforms %}
+        {% for platform in platforms %}
+          <h3 class="d-flex">{{ platform.name }}
+          {% if platform.health %}
+           <div class="ml-auto">Status: {{ platform.health.status }}</div>
+          {% endif %}
+          </h3>
+          <div class="text-muted mb-4">{{ platform.uuid }}</div>
+          <table class="table">
+            <tr>
+              <th>Name</th>
+              <th>Identity</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+            {% for agent in platform.agents %}
+              <tr>
+                <td>{{ agent.name }} <div class="text-muted">{{ agent.uuid }}</div></td>
+                <td>{{ agent.identity }}</td>
+                <td>
+                  {% if agent.health %}
+                    <div>{{ agent.health.status }}</div>
+                  {% else %}
+                    <div>N/A</div>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="d-flex">
+                    {% if agent.permissions.can_start and not agent.is_running %}
+                      <form method="POST" action="{% url 'volttron:start_agent' platform.uuid agent.uuid %}">
+                        {% csrf_token %}
+                        {% bootstrap_button '<i class="fa fa-play"></i> Start' button_class='btn-primary' button_type='submit' %}
+                      </form>
+                    {% endif %}
+                    {% if agent.permissions.can_stop and agent.is_running %}
+                      <form method="POST" action="{% url 'volttron:stop_agent' platform.uuid agent.uuid %}">
+                        {% csrf_token %}
+                        {% bootstrap_button '<i class="fa fa-stop"></i> Stop' button_class='btn-danger' button_type='submit' %}
+                      </form>
+                    {% endif %}
+
+                    {% if agent.permissions.can_start and agent.permissions.can_stop %}
+                      {% url 'volttron:agent_view' platform.uuid agent.uuid as agent_view_url %}
+                      {% bootstrap_button '<i class="fa fa-cog"></i> Configure' button_class='btn-secondary ml-2' href=agent_view_url %}
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+        {% endfor %}
+      {% else %}
+        <p>No running VOLTTRON platforms found.  Please make sure that VOLTTRON is running at the configured IP address and port, and both the volttron central and volttron central platform agents are running.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

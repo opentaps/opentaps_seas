@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static i18n %}
+{% block title %}Topics{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3" id="topicsetup" v-cloak>
+    <div class="card-body">
+
+      {% if object.get_related_point %}
+      <p>
+      This topic is already associated to a Data Point.</p>
+      <p class="mb-5">
+        {% if site %}<a href="{% url 'core:site_detail' site.entity_id %}">Site {{ object.site_id }}</a> /{% endif %}
+        {% if equipment %}<a href="{% url 'core:equipment_detail' equipment.entity_id %}">Equipment {{ equipment.object_id }}</a> /{% endif %}
+        <a href="{% url 'core:point_detail' object.entity_id %}">Data Point {{ object.get_related_point.object_id }}</a>
+      </p>
+      <div class="form-group d-flex justify-content-around">
+        <a href="{% url 'core:topic_list' %}" class="btn btn-secondary" class="col-5"><i class="fa fa-chevron-left mr-2"></i> Back to Topics</a>
+        <a href="{% url 'core:point_detail' object.entity_id %}l" class="btn btn-primary" class="col-5"><i class="fa fa-chevron-right mr-2"></i> View Data Point</a>
+      </div>
+      {% else %}
+
+      <div class="alert alert-danger" role="alert" v-if="errors.error">
+        ${ errors.error }
+      </div>
+
+      <b-form @submit="onSubmit" @reset="onReset" v-if="!isSuccess">
+        <b-dropdown id="dropdown-site" :text="dropdown_site_opt" class="mb-2">
+          <b-dropdown-item v-on:click="dropdown_site_opt = 'Existing Site'" :active="dropdown_site_opt == 'Existing Site'">Existing Site</b-dropdown-item>
+          <b-dropdown-item v-on:click="dropdown_site_opt = 'New Site'" :active="dropdown_site_opt == 'New Site'">New Site</b-dropdown-item>
+        </b-dropdown>
+
+        <b-form-group id="site-choice-gr" v-if="dropdown_site_opt == 'Existing Site'">
+          <vue-bootstrap-typeahead
+            required
+            :input-class="'form-control' + (errors['site_id'] ? ' is-invalid' : '')"
+            :serializer="s => s.object_id || s.entity_id"
+            id="site-choice"
+            ref="site-choice"
+            :min-matching-chars="0"
+            name="selected_site"
+            @hit="selected_site = $event"
+            v-model="site_name"
+            :data="valid_sites"
+            placeholder="Choose a site">
+            <template slot="suggestion" slot-scope="{ data, htmlText }">
+              <span v-html="htmlText"></span>&nbsp;<small>${ display_site_suggestion(data) }</small>
+            </template>
+          </vue-bootstrap-typeahead>
+        </b-form-group>
+        <b-form-group id="site-name-gr" v-if="dropdown_site_opt == 'New Site'">
+          <b-input
+            required
+            :class="{'form-control':1, 'is-invalid': errors['site_id']}"
+            id="site-name"
+            placeholder="Enter a site name"
+            v-model="site_name"
+          ></b-input>
+        </b-form-group>
+        <span v-for="err in errors['site_id']" class="text-danger">${ err }</span>
+
+        <hr/>
+
+        <b-dropdown id="dropdown-equip" :text="dropdown_equip_opt" class="mb-2">
+          <b-dropdown-item v-on:click="dropdown_equip_opt = 'Existing Equipment'" :active="dropdown_equip_opt == 'Existing Equipment'">Existing Equipment</b-dropdown-item>
+          <b-dropdown-item v-on:click="dropdown_equip_opt = 'New Equipment'" :active="dropdown_equip_opt == 'New Equipment'">New Equipment</b-dropdown-item>
+        </b-dropdown>
+
+        <b-form-group id="equip-choice-gr" v-if="dropdown_equip_opt == 'Existing Equipment'">
+          <vue-bootstrap-typeahead
+            required
+            :input-class="'form-control' + (errors['equipment_id'] ? ' is-invalid' : '')"
+            :serializer="s => s.object_id || s.entity_id"
+            id="equip-choice"
+            ref="equip-choice"
+            :min-matching-chars="0"
+            name="selected_equip"
+            @hit="selected_equip = $event"
+            v-model="equip_name"
+            :data="valid_equipments"
+            placeholder="Choose an equipment">
+            <template slot="suggestion" slot-scope="{ data, htmlText }">
+              <span v-html="htmlText"></span>&nbsp;<small>${ display_equipment_suggestion(data) }</small>
+            </template>
+          </vue-bootstrap-typeahead>
+        </b-form-group>
+        <b-form-group id="equip-name-gr" v-if="dropdown_equip_opt == 'New Equipment'">
+          <b-input
+            required
+            :class="{'form-control':1, 'is-invalid': errors['equipment_id']}"
+            id="equip-name"
+            v-model="equip_name"
+            placeholder="Enter an equipment name"
+          ></b-input>
+        </b-form-group>
+        <span v-for="err in errors['equipment_id']" class="text-danger">${ err }</span>
+
+        <hr/>
+
+        <b-form-group id="point-name-gr" label="Data Point Name:" label-for="point-name">
+          <b-input
+            id="point-name"
+            placeholder="Enter a data point name"
+            v-model="data_point_name"
+            required
+          ></b-input>
+        </b-form-group>
+        <span v-for="err in errors['data_point_name']" class="text-danger">${ err }</span>
+
+        <hr/>
+
+        <div class="form-group d-flex justify-content-around">
+          <b-button type="reset" variant="secondary" class="col-5"><i class="fa fa-times mr-2"></i> Reset</b-button>
+          <b-button type="submit" variant="primary" class="col-5" :disabled="isSaving"><i class="fa fa-check mr-2"></i> Save</b-button>
+        </div>
+      </b-form>
+
+      <div v-if="isSuccess">
+        <div class="alert alert-primary" role="alert">
+          Data Point created successfully.
+          <br/>
+          <a :href="results.siteUrl">Site ${ results.site.id }</a> /
+          <a :href="results.equipmentUrl">Equipment ${ results.equipment.id }</a> /
+          <a :href="results.pointUrl">Data Point ${ results.point.id }</a>
+        </div>
+        <div class="form-group d-flex justify-content-around">
+          <a :href="results.topicsUrl" class="btn btn-secondary" class="col-5"><i class="fa fa-chevron-left mr-2"></i> Back to Topics</a>
+          <a :href="results.pointUrl" class="btn btn-primary" class="col-5"><i class="fa fa-chevron-right mr-2"></i> View Data Point</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const STATUS_SUCCESS = 2
+  const CSRF_TOKEN = (function csrftoken() {
+    c = "{% csrf_token %}";
+    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
+    return c;
+  })();
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#topicsetup',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        topic: '{{ object.topic }}',
+        dropdown_site_opt: 'Existing Site',
+        dropdown_equip_opt: 'Existing Equipment',
+        selected_site: {},
+        selected_equip: {},
+        site_name: '',
+        equip_name: '',
+        data_point_name: '',
+        valid_sites: [],
+        valid_equipments: [],
+        currentStatus: STATUS_INITIAL,
+        errors: {},
+        results: {},
+      }
+    },
+    mounted() {
+      this.get_valid_sites()
+    },
+    watch: {
+      dropdown_site_opt: function (val) {
+        if (val == 'New Site') {
+          // cannot select existing equipments then
+          this.dropdown_equip_opt = 'New Equipment'
+        }
+      },
+      selected_site: function (val) {
+        if (this.errors && this.errors['site_id']) delete this.errors['site_id']
+        if (val && val.entity_id) this.get_valid_equipments(val.entity_id)
+      },
+      selected_equip: function (val) {
+        if (this.errors && this.errors['equipment_id']) delete this.errors['equipment_id']
+      },
+    },
+    computed: {
+      isInitial() {
+        return this.currentStatus === STATUS_INITIAL
+      },
+      isSaving() {
+        return this.currentStatus === STATUS_SAVING
+      },
+      isSuccess() {
+        return this.currentStatus === STATUS_SUCCESS;
+      },
+    },
+    methods: {
+      onSubmit(evt) {
+        this.isSaving = true
+        evt.preventDefault()
+        url = dutils.urls.resolve('topic_assoc', { id: this.topic })
+        const formData = new FormData()
+        formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
+        formData.set('topic', this.topic)
+        formData.set('data_point_name', this.data_point_name)
+        formData.set('site_id', this.site_name)
+        formData.set('equipment_id', this.equip_name)
+        if (this.dropdown_site_opt == 'New Site') {
+          formData.set('_new_site', '1')
+        }
+        if (this.dropdown_equip_opt == 'New Equipment') {
+          formData.set('_new_equipment', '1')
+        }
+        console.log('onSubmit ...', url)
+        return axios.post(url, formData)
+            .then(x => x.data)
+            .then(x => {
+              console.log('topic_assoc Done', x)
+              if (x.success) {
+                this.errors = {}
+                this.currentStatus = STATUS_SUCCESS
+                if (x.site) x.siteUrl = dutils.urls.resolve('site_detail', { id: x.site.slug })
+                if (x.equipment) x.equipmentUrl = dutils.urls.resolve('equipment_detail', { id: x.equipment.slug })
+                if (x.point) x.pointUrl = dutils.urls.resolve('point_detail', { id: x.point.slug })
+                x.topicsUrl = dutils.urls.resolve('topic_list')
+                this.results = x
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              this.errors = getResponseError(err)
+              console.info('topic_assoc error :', this.errors)
+              console.error('topic_assoc error :', err, this.errors)
+              this.currentStatus = STATUS_INITIAL
+            });
+      },
+      onReset() {
+        this.dropdown_site_opt = 'Existing Site'
+        this.dropdown_equip_opt = 'Existing Equipment'
+        this.selected_site = {}
+        this.selected_equip = {}
+        this.data_point_name = ''
+        this.site_name = ''
+        this.equip_name = ''
+        this.errors = {}
+        this.results = {}
+      },
+      get_valid_sites() {
+        url = dutils.urls.resolve('site_list_json')
+        axios.get(url)
+          .then(x => this.valid_sites = x.data.items)
+          .catch(err => {
+            console.error('loading valid_sites error :', err);
+          });
+      },
+      get_valid_equipments(site) {
+        url = dutils.urls.resolve('equipment_list_json')
+        if (site) {
+          console.log('get_valid_equipments for site', site)
+          url += '?site=' + site
+        }
+        axios.get(url)
+          .then(x => this.valid_equipments = x.data.items)
+          .catch(err => {
+            console.error('loading valid_equipments error :', err);
+          });
+      },
+      display_site_suggestion(item) {
+        t = []
+        if (item.description) t.push(item.description);
+        if (item.state) t.push(item.state);
+        if (item.city) t.push(item.city);
+        if (t.length) return t.join(' ')
+        return null
+      },
+      display_equipment_suggestion(item) {
+        if (item.description) return item.description
+        return null
+      },
+    }
+  });
+})();
+</script>
+{% endblock content %}

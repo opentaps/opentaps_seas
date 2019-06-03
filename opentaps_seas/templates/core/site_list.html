@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load django_tables2 %}
+{% load static i18n %}
+{% block title %}Sites{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      {% load render_table from django_tables2 %}
+      {% url 'core:site_create' as site_create_url %}
+      {% if addr_locs %}
+        <div id="map" style="height: 400px;width: 100%;margin-bottom: 20px;"></div>
+      {% endif %}
+      {% include "core/_table_filter_add.html" with add_label='Add Site' add_url=site_create_url %}
+      {% render_table table %}
+    </div>
+  </div>
+</div>
+{% if addr_locs %}
+<script type="text/javascript">
+  function initMaps() {
+    var addr_locs = {{ addr_locs|safe }};
+
+    var loc = {};
+    if (addr_locs.length > 0) {
+        map_div = document.getElementById("map")
+        if (map_div != null) {
+            for (var i=0; i<addr_locs.length; i++) {
+                loc = {lat: addr_locs[i].latitude, lng: addr_locs[i].longitude}
+                if (i == 0) {
+                    var map = new google.maps.Map(map_div, {zoom: 4, center: loc});
+                }
+                var marker_params = {position: loc, map: map}
+                if (addr_locs[i].description != 0) {
+                    marker_params.title = addr_locs[i].description
+                }
+
+                var marker = new google.maps.Marker(marker_params);
+            }
+        }
+    }
+
+}
+</script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMaps">
+</script>
+{% endif %}
+{% endblock content %}

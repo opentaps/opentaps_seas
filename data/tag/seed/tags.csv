@@ -1,0 +1,238 @@
+tag,kind,description,details
+absorption,Marker,Hot water absorption chiller
+ac,Marker,AC
+active,Marker,Active power
+ahu,Marker,Air handler unit
+ahuRef,Ref,AHU ref
+air,Marker,Air measurement
+airCooled,Marker,Air cooled chiller
+angle,Marker,Angle measurement
+apparent,Marker,Apparent power
+appName,Str,Application Name
+area,Number,Floor area
+avg,Marker,Average
+barometric,Marker,Barometric pressure
+blowdown,Marker,Blowdown water expelled
+boiler,Marker,Boiler
+bypass,Marker,By-pass valve
+centrifugal,Marker,Centrifugal continuous flow
+chilled,Marker,Chilled water system
+chilledBeamZone,Marker,Chilled beam terminal units
+chilledWaterCool,Marker,Chilled water cooler
+chilledWaterPlant,Marker,Chilled water plant
+chilledWaterPlantRef,Ref,Reference to Chilled Water Plant
+chiller,Marker,Chiller
+circ,Marker,Circulating pump
+circuit,Marker,Electric cuit
+closedLoop,Marker,Closed loop cooling tower
+cloudage,Marker,Fraction of sky obscured by clouds
+cmd,Marker,"Output, AO/BO, command, or actuator"
+co,Marker,"Carbon monoxide in ""ppm"""
+co2,Marker,"Carbon dioxide in ""ppm"""
+coldDeck,Marker,Cold air ductwork in AHU
+condensate,Marker,Condensate water
+condenser,Marker,Condenser
+connection,Marker,Network connection
+constantVolume,Marker,Constant volume AHU
+cool,Marker,Cooling coil
+cooling,Marker,HVAC cooling mode
+coolingCapacity,Number,Chiller heat removal capacity
+coolingTower,Marker,Cooling tower
+coolOnly,Marker,Cooling only VAV without a fan
+cur,Marker,"Real-time value available"
+curErr,Str,Current status error message
+current,Marker,Electrical current
+curStatus,Str,Current status
+curVal,Obj,Current value
+damper,Marker,Damper
+dc,Marker,DC
+delta,Marker,Differential between entering and leaving sensors,"Differential of air, water, or steam between the entering and leaving sensors"
+device,Marker,Device
+device1Ref,Ref,Device 1 ID
+device2Ref,Ref,Device 2 ID
+dew,Marker,Dew point
+diagnosticMessage,Marker,Diagnostic Message
+direction,Marker,Compass direction
+directZone,Marker,Direct zone AHU
+dis,Str,Display name
+discharge,Marker,Air discharge
+diverting,Marker,Three way diverting valve
+domestic,Marker,Domestic tap water
+dualDuct,Marker,Dual duct AHU
+ductArea,Marker,Duct area
+dxCool,Marker,Direct expansion mechanical cooling
+effective,Marker,Effective setpoint
+efficiency,Marker,"Efficiency point ""COP"" or ""kW/ton"""
+elec,Marker,Electric
+elecHeat,Marker,Electric heat
+elecMeterLoad,Ref,Electric load equipment
+elecMeterRef,Ref,Electric meter ID
+elecPanel,Marker,Electrical panel
+elecPanelOf,Ref,Electric panel ID
+elecReheat,Marker,Electric reheat
+enable,Marker,Enable on/off
+energy,Marker,Energy consumption
+energyImpact,Marker,Energy Impact Message
+entering,Marker,Water or steam entering boiler or chiller
+enum,Str,Enumerated names
+equip,Marker,Equipment asset
+equipRef,Ref,Equipment asset ID
+evaporator,Marker,Evaporator
+exhaust,Marker,Exhaust air
+export,Marker,Energy exported to grid
+faceBypass,Marker,Bypassing air flow
+fan,Marker,Fan
+fanPowered,Marker,Fan powered
+fcu,Marker,Fan coil units
+filter,Marker,Filter of an AHU
+flow,Marker,Flow volume
+flue,Marker,Flue point
+freezeStat,Marker,Freezing condition
+freq,Marker,Electrical frequency
+gas,Marker,Natural gas
+gasHeat,Marker,Natural gas heating
+gasMeterLoad,Ref,Natural gas load
+geoAddr,Str,Street address
+geoCity,Str,City
+geoCoord,Coord,"Coordinate ""C(latitude,longitude)"""
+geoCountry,Str,Country
+geoCounty,Str,County
+geoPostalCode,Str,Postal/ZIP code
+geoState,Str,State/Province
+geoStreet,Str,Street number and name
+header,Marker,Header pipe,Header pipe used as central connection or manifold for other piping runs
+heat,Marker,Heating coil,Heating coil as bool or float point on an ahu or vav
+heatExchanger,Marker,Heat exchanger,Heat exchangers are used to transfer heat from one medium to another
+heating,Marker,HVAC heating mode,Associated with the heating mode of an HVAC system
+heatPump,Marker,Heat pumps,Heat pumps are unitary assets which use a refrigeration cycle for both heating and cooling
+heatWheel,Marker,AHU heat wheel on off,Bool point which models the on or off state of an ahu heat wheel
+his,Marker,Historical data point,Indicates that a point is historized with a history log of timestamp/value pairs
+hisErr,Str,History sync error message,Error message associated when hisStatus indicates an error condition
+hisInterpolate,Str,Interpolation methodology,Indicates how interpolation of a historized point should be handled
+hisStatus,Str,Point history sync status,Current status of a point history sync as one of the predefined strings
+hisTotalized,Marker,Continuous stream of totalization,Indicates values which are a continuous stream of totalization and should be read by computing the delta
+hot,Marker,Hot water,Paired with water to indicate control or measurement of hot water
+hotDeck,Marker,Hot air ductwork,Associated with the hot air ductwork in a dualDuct or tripleDuct AHU
+hotWaterHeat,Marker,Hot water heated,Indicates that a unit has heating capability using hot water
+hotWaterPlant,Marker,Hot water plant,Plant level tag for system which outputs hot water
+hotWaterPlantRef,Ref,Hot water plant ID,Associate an entity such as an ahu with its hotWaterPlant
+hotWaterReheat,Marker,VAV with hot water reheat,Indicates a VAV with hot water reheat
+humidifier,Marker,Humidifier on off,Boolean or numeric point of an ahu used to indicate if if the humidifier is on or off
+humidity,Marker,Humidity in %RH,Humidity measured in %RH (percent relative humidity)
+hvac,Marker,HVAC,"Associated with HVAC (Heating, Ventilating, Air Conditioning)"
+id,Ref,ID,Unique identifier for an entity
+imbalance,Marker,AC or current phase imbalance in %,"In electrical power systems, models an ac volt or current phase imbalance measured in ""%"""
+import,Marker,Energy imported from electric grid,Models the power or energy imported from the electric grid
+irradiance,Marker,Solar irradiance W/m**2,Combined with solar to measure the amount of energy arriving at the earth's surface measured in W/m**2
+isolation,Marker,Isolation valve or damper,Indicates a valve or damper used to isolate a piece of equipment from a piping system or ductwork respectively
+kind,Str,Kind,Defines a tag value type using a predefined string constant
+leaving,Marker,Water or steam exiting,Indicates water or steam exiting a piece of equipment like a boiler or chiller
+level,Marker,Fill level,Indicates the fill level of a tank as a percentage where 0% is empty and 100% is filled
+lighting,Marker,Lighting system,Indicates association with the lighting system
+lightLevel,Marker,"Light level in ""lux"" or ""lumen""","Light level sensor point under lightsGroup measured in ""lux"" or ""lumen"""
+lights,Marker,Lighting on/off or if dimmable a numeric between 0% and 100%,Lighting on/off status as a boolean or if dimmable a numeric between 0% and 100%
+lightsGroup,Marker,Lighting system group,Equip level of the lighting system which is a group of one or more lights points
+load,Marker,"Chiller load from ""0%"" to ""100%""","Models a point on a chiller used to command or measure the chiller's load as a percentage from ""0%"" to ""100%"""
+model,Marker,Model,A Model or piece of equipment
+modelRef,Ref,Model ID,Association with a Model or piece of equipment
+mag,Marker,Volt or current magnitude,Models the magnitude of a volt or current point
+makeup,Marker,Makeup water in cooling tower boiler,"Paired with water to indicate control or measurement of the makeup water in a coolingToweror boiler used to replace water lost through leaks, evaporation, or blowdown"
+manufacturer,Str,Manufacturer,The manufacturer of a machine or piece of equipment
+mau,Marker,Makeup air handling unit,"Used with ahu to mark an AHU as a makeup air handling unit which conditions 100% outside air, and no recirculated air"
+max,Marker,Maximum value,Associated with a maximum value
+maxVal,Number,Maximum read/write value,Applied to point to define the maximum value to read from a sensor or to write from a command/setpoint
+meter,Marker,Meter,"Equip which meters usage of elec energy, thermal energy, gas, water or steam"
+min,Marker,Minumum value,Associated with a minumum value
+minVal,Number,Minimum read/write value,Applied to point to define the minumum value to read from a sensor or to write from a command/setpoint
+mixed,Marker,AHU mixed air,Associated with the mixed air of an ahu
+mixing,Marker,Three way mixing valve,Indicates a three way valve which inputs two pipes and outputs a mixture between the two to a single output pipe
+modelName,Str,Model Name,The model of a machine or piece of equipment
+multiZone,Marker,Multi zone AHU,Marker for an ahu which delivers air to its zones via a ductwork manifold which splits the air into a duct per zone
+net,Marker,Net energy exchange with electrical grid: import minus export,Models the net power or energy exchange with the electric grid following the load convention: import minus export
+network,Marker,Communication network,Network models a communication network between multiple devices
+networkRef,Ref,Network ID,Models the network of a connection
+neutralDeck,Marker,Neutral air ductwork,Associated with the neutral air ductwork in a dualDuct or tripleDuct AHU
+occ,Marker,Occupied mode set point,Marker tag used to indicate a setpoint is associated with occupied mode
+occupancyIndicator,Marker,Occupancy sensor,Occupancy sensor under lightsGroup
+occupied,Marker,Occupied true or false,Marker tag used with a boolean point to indicate whether a site or zone is occupied (true) or unoccupied (false)
+oil,Marker,Fuel oil,Used on point or equip entities relating to fuel oil
+openLoop,Marker,Cooling tower using working fluid for evaporation,Indicates coolingTower which uses the working fluid itself for evaporation into the atmosphere
+outside,Marker,Outside air,"Associated with outside air, often used to model ahu points"
+parallel,Marker,VAV fan pulling air from outside primary airflow,Indicates the VAV fan pulls air from outside the primary airflow
+perimeterHeat,Marker,VAV auxiliary heating points,Auxiliary heating points associated with a vav
+pf,Marker,Power factor of active to apparent power between 0.0 and 1.0,Power factor of an elec meter as a unitless number between 0.0 and 1.0 which represents the ratio of active power to apparent power
+phase,Str,Phase in three-phase electrical system,Association of one or more phases in a three-phase electrical system
+point,Marker,Data point,Data point such as a sensor or actuator
+power,Marker,Measures energy consumption,Applied to point entities which measure energy consumed per unit time
+precipitation,Marker,Precipitation,"Amount of atmospheric water vapor fallen which includes rain, drizzle, sleet, snow, and hail measured in mm or inches"
+pressure,Marker,Fluid static pressure,"Static pressure associated with the measurement or control of fluids such as air, oxygen, water, steam, gas, oil, etc"
+pressureDependent,Marker,VAV damper,VAV damper modulates to control space temp
+pressureIndependent,Marker,Pressure indepent VAV damper or a control valve,"VAV damper or a control valve that modulates to maintain desired flow setpoint, independent of the duct or piping pressure"
+primaryFunction,Str,Building primary function,Enumerated string applied to a site record to indicate the building's primary function
+primaryLoop,Marker,Part of primary loop,Indicates equipment and points which are associated with a chiller or boiler plant's primary loop - the pipework within the central plant
+protocol,Str,Communication protocol,String enumeration for a connection communication protocol
+pump,Marker,Pump,Marker tag for an equip or point which models a pump
+reactive,Marker,"Reactive power in ""kVAR""","Applied to an electrical power point to indicate reactive power or imaginary power, typically measured in ""kVAR"""
+reciprocal,Marker,Crankshaft driven chiller compressor,Indicates chiller compressor which uses pistons driven by a crankshaft
+refrig,Marker,Refrigerant measurement or control,Indicates points associated with the measurment or control of the refrigerant substance in a cooling system like a chiller
+reheat,Marker,VAV reheat,Reheat point of a vav
+reheating,Marker,VAV reheating mode,Associated with the reheating mode of a VAV
+return,Marker,AHU return air,Associated with the return air an ahu
+rooftop,Marker,Part of RTU,Used with ahu to mark an AHU as a packaged rooftop unit (RTU)
+run,Marker,Equipment on/off point,Primary on/off point of an equip especially used with a vfd
+screw,Marker,Rotary chiller compressor,Indicates chiller compressor which uses a rotary mechanism
+secondaryLoop,Marker,Secondary loop equipment or point,Indicates equipment and points which are associated with a chiller or boiler plant's secondary loop - the pipework from the central plant to the building
+sensor,Marker,"Input, AI/BI, or sensor","Classifies a point as an input, AI/BI, or sensor"
+series,Marker,VAV pulls air from the primary airflow,Indicates the VAV pulls air from the primary airflow
+singleDuct,Marker,Single duct AHU,Indicates an ahu which uses a single duct for all air flow
+site,Marker,Building site,Building or other type of facility with unique street address
+siteMeter,Marker,Single site meter,Applied to a meter which exclusively meters a single site identified by siteRef
+sitePanel,Marker,Main site panel,Marker tag for a elecPanel to indicate its the main site-level panel
+siteRef,Ref,Site ID,Association with a site entity
+solar,Marker,Sunlight measurement,Point associated with the measurement of the sunlight
+sp,Marker,Setpoint,"Classifies a point as a setpoint, soft point, or process control variable"
+speed,Marker,Speed in percentage,"When used as a vfd point it is speed measured in ""%"" where 0% is off and 100% is the fastest speed"
+stage,Number,Stage,Indicates the stage of an AHU cooling or heating element
+standby,Marker,Standby mode,Marker tag used to indicate a setpoint is associated with standby mode
+steam,Marker,Steam,Point associated with the measurement or control of steam
+steamHeat,Marker,Steam heated,Indicates that a unit has heating capability using steam
+steamMeterLoad,Ref,Steam consuming,Equip or point which consumes steam as load
+steamPlant,Marker,Steam plant,Plant level tag for system which outputs steam
+steamPlantRef,Ref,Steam plant ID,Associate an entity such as an ahu with its steamPlant
+submeterOf,Ref,Parent meter ID,This tag is applied to submeters and references the parent meter
+subPanelOf,Ref,Parent panel ID,Ref tag to indicate that an elecPanel is positioned underneath another panel in the electric distribution system
+sunrise,Marker,Sunrise/sunset weather station,Boolean point associated with a weather station for historizing sunrise and sunset times
+tank,Marker,Equipment with storage tank
+temp,Marker,Temperature in C or F
+thd,Marker,Total harmonic distortion
+total,Marker,Total quantity
+tripleDuct,Marker,Triple duct AHU
+tz,Str,Timezone
+unit,Str,Unit of measurement
+unocc,Marker,Unoccupied mode
+uv,Marker,Unit ventilators
+valve,Marker,Fluid valve
+variableVolume,Marker,AHU with variable air flow volume
+vav,Marker,Variable Volume Volume supply duct equip
+vavMode,Marker,VAV operating mode
+vavZone,Marker,AHU with vav terminal units
+vfd,Marker,Variable frequency drive
+visibility,Marker,Visibility
+volt,Marker,Voltage data point
+volume,Marker,Volume data piont
+water,Marker,Water data point
+waterCooled,Marker,Water cooled chiller
+waterMeterLoad,Ref,Water meter load
+weather,Marker,Weather station
+weatherCond,Marker,Weather condition
+weatherPoint,Marker,Weather station sensor
+weatherRef,Ref,Weather station ID
+wetBulb,Marker,Has wet-bulb temperature
+wind,Marker,Wind
+writable,Marker,Writable output
+writeErr,Str,Write error message
+writeLevel,Number,Write priority level
+writeStatus,Str,Write status
+writeVal,Obj,Write value
+yearBuilt,Number,Year built
+zone,Marker,Zone
