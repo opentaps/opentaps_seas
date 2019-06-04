@@ -1,6 +1,12 @@
 User Documentation
 ==================
 
+Signing In
+^^^^^^^^^^
+
+Open your browser and put ``http://your.ip.address.here:8000`` or the URL opentaps SEAS has been set up on.  You should see the initial login screen here,
+or the Sites page if you're already logged in.
+
 
 Sites
 ^^^^^

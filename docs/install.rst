@@ -205,8 +205,8 @@ Edit config/settings/local.py and set::
     "my.ip.address.here",
  ]
 
-Then,::
+Then::
 
  $ python manage.py runserver my.ip.address.here:8000
 
-
+If this runs, then go to ``http://my.ip.address.here:8000``.  You should see the splash screen.
