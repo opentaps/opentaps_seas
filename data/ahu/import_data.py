@@ -16,6 +16,7 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import json
 import csv
 from datetime import datetime
 from datetime import timedelta
@@ -26,6 +27,7 @@ from crate.client.exceptions import ProgrammingError
 from psycopg2 import connect as pgconnect
 from psycopg2 import IntegrityError
 from psycopg2.extras import register_hstore
+from django.template.defaultfilters import slugify
 
 CRATE_HOST = 'localhost:4200'
 
@@ -54,9 +56,8 @@ def clean():
 
     pgconnection = get_pgconnection()
     pgcursor = pgconnection.cursor()
-    pgcursor.execute("DELETE FROM core_entity where entity_id = '_demo_site';")
-    pgcursor.execute("DELETE FROM core_entity where entity_id like '_demo_equip%';")
-    pgcursor.execute("DELETE FROM core_entity where entity_id like 'demo_%';")
+    pgcursor.execute("DELETE FROM core_entity where entity_id like 'demo-site%';")
+    pgcursor.execute("DELETE FROM core_entity where topic like 'demo_%';")
     pgconnection.commit()
     pgcursor.close()
     pgconnection.close()
@@ -70,6 +71,44 @@ def seed():
     import_files('seed')
 
 
+def import_json(source_file_name):
+    reader = None
+    with open(source_file_name) as f:
+        reader = json.loads(f.read())
+
+    conn = get_pgconnection()
+    cursor = conn.cursor()
+
+    counter_insert = 0
+    counter_update = 0
+    for row in reader['entities']:
+        entity_id = slugify(row['entity_id'])
+        topic = row.get('topic')
+        kv_tags = row.get('kv_tags', {})
+        m_tags = row.get('m_tags', [])
+
+        try:
+            cursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
+                VALUES (%s, %s, %s, %s, %s)""", [entity_id, topic, kv_tags, m_tags, ''])
+            counter_insert += 1
+            print('-- INSERT entity: ', entity_id)
+            conn.commit()
+        except IntegrityError:
+            conn.rollback()
+            cursor.execute("""UPDATE core_entity SET topic = %s, kv_tags = %s, m_tags = %s
+                WHERE entity_id = %s""", [topic, kv_tags, m_tags, entity_id])
+            counter_update += 1
+            print('-- UPDATE entity: ', entity_id)
+            conn.commit()
+
+    print('{0} rows have been successfully processed {1} '
+          'inserted {2} updated.'.format(counter_insert+counter_update, counter_insert, counter_update))
+
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+
 def import_files(which):
     print('Importing {} data...'.format(which))
     mypath = os.path.join(os.path.dirname(os.path.realpath(__file__)), which)
@@ -78,7 +117,16 @@ def import_files(which):
             filename = os.path.join(mypath, f)
             if os.path.isfile(filename):
                 print('Importing {} data [{}]'.format(which, filename))
-                import_entities(filename)
+                if '.json' in filename:
+                    import_json(filename)
+                elif '.csv' in filename:
+                    import_csv(filename)
+        for f in os.listdir(mypath):
+            filename = os.path.join(mypath, f)
+            if os.path.isfile(filename):
+                if '.sql' in filename:
+                    print('Running SQL {} [{}]'.format(which, filename))
+                    import_sql(filename)
     else:
         print('No {} data to import.'.format(which))
 
@@ -92,7 +140,21 @@ def ensure_topic(cursor, topic):
         pass
 
 
-def import_entities(source_file_name):
+def import_sql(source_file_name):
+    with open(source_file_name) as f:
+        sqlCommands = filter(None, f.read().split(';'))
+
+        conn = get_pgconnection()
+        cursor = conn.cursor()
+
+        for sql in sqlCommands:
+            if sql and sql.strip():
+                cursor.execute(sql)
+                print('-- SQL: ', sql)
+                conn.commit()
+
+
+def import_csv(source_file_name):
     name = os.path.splitext(os.path.basename(source_file_name))[0]
     f = open(source_file_name, 'r')
     reader = csv.reader(f)
@@ -163,34 +225,7 @@ def import_entities(source_file_name):
     pgconnection = get_pgconnection()
     pgcursor = pgconnection.cursor()
 
-    try:
-        tags = {
-            'id': '_demo_site',
-            'dis': 'Demo Site',
-            'geoAddr': 'Richland, WA',
-            'geoCity': 'Richland',
-            'geoState': 'WA'
-        }
-        mtags = ['site']
-        pgcursor.execute("""INSERT INTO core_entity (entity_id, kv_tags, m_tags)
-            VALUES (%s, %s, %s)""", [tags['id'], tags, mtags])
-        pgconnection.commit()
-    except IntegrityError:
-        pgconnection.rollback()
-
-    try:
-        tags = {
-            'id': '_demo_equip' + name,
-            'dis': 'Demo Equipment ' + name,
-            'siteRef': '_demo_site',
-        }
-        mtags = ['equip']
-        pgcursor.execute("""INSERT INTO core_entity (entity_id, kv_tags, m_tags)
-            VALUES (%s, %s, %s)""", [tags['id'], tags, mtags])
-        pgconnection.commit()
-    except IntegrityError:
-        pgconnection.rollback()
-
+    # note: for Site we use data/entities/demo_site.json
     for item, csv_writer in csv_writers.items():
         if csv_writer['started']:
             print('-- INSERT CSV data {} file: {}'.format(name, csv_writer['filename']))
@@ -213,14 +248,15 @@ def import_entities(source_file_name):
                     'id': csv_writer['topic'],
                     'dis': 'Demo point for ' + csv_writer['topic'],
                     'kind': 'Number',
-                    'siteRef': '_demo_site',
-                    'equipRef': '_demo_equip' + name,
+                    'siteRef': '@Demo-Site-1',
+                    'equipRef': '@Demo-' + name.upper(),
                 }
-                mtags = ['point', 'his']
-                pgcursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags)
-                    VALUES (%s, %s, %s, %s)""", [csv_writer['topic'], csv_writer['topic'], tags, mtags])
+                mtags = ['point', 'his', 'sensor']
+                pgcursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
+                    VALUES (%s, %s, %s, %s, %s)""", [csv_writer['topic'], csv_writer['topic'], tags, mtags, ''])
                 pgconnection.commit()
-            except IntegrityError:
+            except IntegrityError as e:
+                print('?? Error: ', e)
                 pgconnection.rollback()
 
     print('{0} timeseries have been successfully processed'.format(counter_insert))

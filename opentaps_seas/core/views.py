@@ -837,7 +837,7 @@ topic_setup_view = TopicSetupView.as_view()
 def equipment_data_points_table(request, equip):
     logger.info('equipment_data_points_table: equip = %s', equip)
     equipment = get_object_or_404(EquipmentView, entity_id=equip)
-    data = PointView.objects.filter(equipment_id=equipment.object_id)
+    data = PointView.objects.filter(equipment_id=equipment.object_id).order_by('description')
     d2 = utils.add_current_values(data)
     table = PointTable(d2, orderable=False)
     return HttpResponse(table.as_html(request))

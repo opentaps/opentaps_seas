@@ -1,0 +1,230 @@
+{
+    "entities": [
+    {
+        "entity_id": "econ-demo-site-a",
+        "kv_tags": {
+            "id": "@Econ-Demo-Site-A",
+            "dis": "Econ-Demo-Site-A",
+            "tz": "New_York",
+            "area": "1500ft²",
+            "geoState": "VA",
+            "geoCity": "Richmond",
+            "geoAddr": "Richmond,VA"
+        },
+        "m_tags": ["site"]
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1",
+            "dis": "Econ-Demo-A-RTU1",
+            "siteRef": "@Econ-Demo-Site-A",
+            "tz": "New_York"
+        },
+        "m_tags": ["equip", "rooftop"]
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1-coolingvalveposition",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1-CoolingValvePosition",
+            "dis": "Econ-Demo-A-RTU1-CoolingValvePosition",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU1",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "cool"],
+        "topic": "econ_demo/building_a/rtu1/CoolingValvePosition"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1-mixedairtemperature",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1-MixedAirTemperature",
+            "dis": "Econ-Demo-A-RTU1-MixedAirTemperature",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU1",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "temp", "mixed"],
+        "topic": "econ_demo/building_a/rtu1/MixedAirTemperature"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1-outdoorairtemperature",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1-OutdoorAirTemperature",
+            "dis": "Econ-Demo-A-RTU1-OutdoorAirTemperature",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU1",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "temp", "outside"],
+        "topic": "econ_demo/building_a/rtu1/OutdoorAirTemperature"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1-outdoordampersignal",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1-OutdoorDamperSignal",
+            "dis": "Econ-Demo-A-RTU1-OutdoorDamperSignal",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU1",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "%"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "damper", "outside"],
+        "topic": "econ_demo/building_a/rtu1/OutdoorDamperSignal"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1-returnairtemperature",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1-ReturnAirTemperature",
+            "dis": "Econ-Demo-A-RTU1-ReturnAirTemperature",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU1",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "temp", "return"],
+        "topic": "econ_demo/building_a/rtu1/ReturnAirTemperature"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1-supplyfanspeed",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1-SupplyFanSpeed",
+            "dis": "Econ-Demo-A-RTU1-SupplyFanSpeed",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU1",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "%"
+        },
+        "m_tags": ["point", "his", "sensor", "fan", "speed"],
+        "topic": "econ_demo/building_a/rtu1/SupplyFanSpeed"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu1-supplyfanstatus",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU1-SupplyFanStatus",
+            "dis": "Econ-Demo-A-RTU1-SupplyFanStatus",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU1",
+            "tz": "New_York",
+            "kind": "Number"
+        },
+        "m_tags": ["point", "his", "sensor", "fan", "run"],
+        "topic": "econ_demo/building_a/rtu1/SupplyFanStatus"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2",
+            "dis": "Econ-Demo-A-RTU2",
+            "siteRef": "@Econ-Demo-Site-A",
+            "tz": "New_York"
+        },
+        "m_tags": ["equip", "rooftop"]
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2-coolingvalveposition",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2-CoolingValvePosition",
+            "dis": "Econ-Demo-A-RTU2-CoolingValvePosition",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU2",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "cool"],
+        "topic": "econ_demo/building_a/test_1/rtu2/CoolingValvePosition"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2-mixedairtemperature",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2-MixedAirTemperature",
+            "dis": "Econ-Demo-A-RTU2-MixedAirTemperature",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU2",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "temp", "mixed"],
+        "topic": "econ_demo/building_a/test_1/rtu2/MixedAirTemperature"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2-outdoorairtemperature",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2-OutdoorAirTemperature",
+            "dis": "Econ-Demo-A-RTU2-OutdoorAirTemperature",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU2",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "temp", "outside"],
+        "topic": "econ_demo/building_a/test_2/rtu2/OutdoorAirTemperature"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2-outdoordampersignal",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2-OutdoorDamperSignal",
+            "dis": "Econ-Demo-A-RTU2-OutdoorDamperSignal",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU2",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "%"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "damper", "outside"],
+        "topic": "econ_demo/building_a/test_2/rtu2/OutdoorDamperSignal"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2-returnairtemperature",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2-ReturnAirTemperature",
+            "dis": "Econ-Demo-A-RTU2-ReturnAirTemperature",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU2",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "°F"
+        },
+        "m_tags": ["point", "his", "sensor", "air", "temp", "return"],
+        "topic": "econ_demo/building_a/test_1/rtu2/ReturnAirTemperature"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2-supplyfanspeed",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2-SupplyFanSpeed",
+            "dis": "Econ-Demo-A-RTU2-SupplyFanSpeed",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU2",
+            "tz": "New_York",
+            "kind": "Number",
+            "unit": "%"
+        },
+        "m_tags": ["point", "his", "sensor", "fan", "speed"],
+        "topic": "econ_demo/building_a/test_3/rtu2/SupplyFanSpeed"
+    },
+    {
+        "entity_id": "econ-demo-a-rtu2-supplyfanstatus",
+        "kv_tags": {
+            "id": "@Econ-Demo-A-RTU2-SupplyFanStatus",
+            "dis": "Econ-Demo-A-RTU2-SupplyFanStatus",
+            "siteRef": "@Econ-Demo-Site-A",
+            "equipRef": "@Econ-Demo-A-RTU2",
+            "tz": "New_York",
+            "kind": "Number"
+        },
+        "m_tags": ["point", "his", "sensor", "fan", "run"],
+        "topic": "econ_demo/building_a/test_3/rtu2/SupplyFanStatus"
+    }
+]}

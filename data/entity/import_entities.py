@@ -16,7 +16,7 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-import csv
+import json
 import os
 import sys
 from psycopg2 import connect
@@ -65,59 +65,34 @@ def import_files(which):
 
 
 def import_entities(source_file_name):
-    f = open(source_file_name, 'r')
-    reader = csv.reader(f)
+    reader = None
+    with open(source_file_name) as f:
+        reader = json.loads(f.read())
 
     conn = get_connection()
     cursor = conn.cursor()
 
-    first_row = True
-    header = None
-    id_index = 0
-    topic_index = 0
     counter_insert = 0
     counter_update = 0
-    for row in reader:
-        if first_row:
-            header = row
-            index = 0
-            first_row = False
-            for item in row:
-                if item == "id":
-                    id_index = index
-                if item == "topicRef":
-                    topic_index = index
-                index = index + 1
-        else:
-            entity_id = slugify(row[id_index])
-            topic = row[topic_index]
-            kv_tags = {}
-            m_tags = []
-            index = 0
-            for item in row:
-                # for no do not store topic as a tag as this goes directly in the topic field
-                if index == topic_index:
-                    index = index + 1
-                    continue
-                if item == "M":
-                    m_tags.append(header[index])
-                elif item is not None and item != "":
-                    kv_tags[header[index]] = item
-                index = index + 1
+    for row in reader['entities']:
+        entity_id = slugify(row['entity_id'])
+        topic = row.get('topic')
+        kv_tags = row.get('kv_tags', {})
+        m_tags = row.get('m_tags', [])
 
-            try:
-                cursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
-                    VALUES (%s, %s, %s, %s, %s)""", [entity_id, topic, kv_tags, m_tags, ''])
-                counter_insert += 1
-                print('-- INSERT entity: ', entity_id)
-                conn.commit()
-            except IntegrityError:
-                conn.rollback()
-                cursor.execute("""UPDATE core_entity SET topic = %s, kv_tags = %s, m_tags = %s
-                    WHERE entity_id = %s""", [topic, kv_tags, m_tags, entity_id])
-                counter_update += 1
-                print('-- UPDATE entity: ', entity_id)
-                conn.commit()
+        try:
+            cursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
+                VALUES (%s, %s, %s, %s, %s)""", [entity_id, topic, kv_tags, m_tags, ''])
+            counter_insert += 1
+            print('-- INSERT entity: ', entity_id)
+            conn.commit()
+        except IntegrityError:
+            conn.rollback()
+            cursor.execute("""UPDATE core_entity SET topic = %s, kv_tags = %s, m_tags = %s
+                WHERE entity_id = %s""", [topic, kv_tags, m_tags, entity_id])
+            counter_update += 1
+            print('-- UPDATE entity: ', entity_id)
+            conn.commit()
 
     print('{0} rows have been successfully processed {1} '
           'inserted {2} updated.'.format(counter_insert+counter_update, counter_insert, counter_update))
