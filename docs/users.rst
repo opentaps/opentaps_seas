@@ -59,10 +59,12 @@ This page shows a list of the topics that are in the time series database.  If t
 Otherwise, click on Add to add this topic as a new data point.
 
 You can also use the Import Topics button import a CSV file of new topics.  This CSV file should be in the format of the BACNET.csv file that VOLTTRON's BACNet scan
-generates (see /examples/configurations/drivers/bacnet.csv for an example.)  When importing, you can add a prefix all the BACNET points, for example campus_A/building_2/, 
-and they will be added to your topics.  The import will add them as topics and data points, and the additional BACNET data will be stored with the data point.  After
+generates (see ``/examples/configurations/drivers/bacnet.csv`` for an example.)  When importing, you can add a prefix all the BACNET points, for example ``campus_A/building_2/``, 
+and they will be added to your topics.  The import will add them as topics and data points, and the additional BACNET data will be stored with the data point.  
+
+After
 importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
-and siteRef tags.  Or this could be done by using SQL in PostgreSQL to update these tags in bulk based on their naming patterns. 
+and siteRef tags.  Or this could be done by using SQL in PostgreSQL to update these tags in bulk based on their naming patterns.  See the file ``data/ahu/demo/tag_entities.sql`` for an example of how to do this. 
 
 Models
 ^^^^^^

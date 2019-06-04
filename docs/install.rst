@@ -91,6 +91,9 @@ Then run the migrations::
 Load seed data
 ^^^^^^^^^^^^^^
 
+opentaps SEAS comes with two sets of data: seed and demo.  Seed data is needed to run the application.  Demo data can be used to show how the application
+works.  The demo data is based on "Long-term data on 3 office Air Handling Units" from https://openei.org/datasets/dataset/long-term-data-on-3-office-air-handling-units 
+
 To init the Django related seed data::
 
  $ python manage.py migrate
