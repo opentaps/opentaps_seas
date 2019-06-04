@@ -7,12 +7,13 @@
             "dis": "Demo-Site-1",
             "tz": "Los_Angeles",
             "area": "5500ft²",
+            "geoCountry" : "USA",
             "geoState": "CA",
             "geoCity": "Los Angeles",
             "geoStreet": "1000 Wilshire Blvd",
             "geoAddr": "1000 Wilshire Blvd Los Angeles,CA"
         },
-        "m_tags": ["site"]
+        "m_tags": ["site", "his"]
     },
     {
         "entity_id": "demo-site-1-ahu1",
@@ -22,7 +23,7 @@
             "siteRef": "@Demo-Site-1",
             "tz": "Los_Angeles"
         },
-        "m_tags": ["equip", "ahu"]
+        "m_tags": ["equip", "ahu", "directZone", "his", "dxCool", "hvac"]
     },
     {
         "entity_id": "demo-site-1-ahu2",
@@ -32,7 +33,7 @@
             "siteRef": "@Demo-Site-1",
             "tz": "Los_Angeles"
         },
-        "m_tags": ["equip", "ahu"]
+        "m_tags": ["equip", "ahu", "directZone", "his", "dxCool", "hvac"]
     },
     {
         "entity_id": "demo-site-1-ahu3",
@@ -42,6 +43,6 @@
             "siteRef": "@Demo-Site-1",
             "tz": "Los_Angeles"
         },
-        "m_tags": ["equip", "ahu"]
+        "m_tags": ["equip", "ahu", "directZone", "his", "dxCool", "hvac"]
     }
 ]}
