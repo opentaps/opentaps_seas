@@ -34,6 +34,7 @@ def clean():
 
     print('Deleting data ...')
     cursor.execute('DELETE FROM core_tag;')
+    conn.commit()
 
     cursor.close()
     conn.close()
