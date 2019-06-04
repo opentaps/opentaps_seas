@@ -1,5 +1,5 @@
-Install
-=========
+Installation Instructions
+=========================
 
 You will need the following::
  * python3
