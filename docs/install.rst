@@ -1,7 +1,7 @@
 Installation Instructions
 =========================
 
-You will need the following::
+You will need the following:
  * python3
  * pip
  * virtualenv
