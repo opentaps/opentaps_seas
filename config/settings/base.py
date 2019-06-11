@@ -34,7 +34,7 @@ if READ_DOT_ENV_FILE:
     env.read_env(str(ROOT_DIR.path('.env')))
 
 # JSON-based secrets module
-with open('secrets.json') as f:
+with open(str(ROOT_DIR.path('secrets.json'))) as f:
     secrets = json.loads(f.read())
 
 
