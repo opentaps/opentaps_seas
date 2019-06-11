@@ -38,8 +38,6 @@ Take a Look
 
 See the videos at https://www.youtube.com/playlist?list=PLBIkzPeksXEUIrxCfjc28QniJuKzklUGX
 
-Check out the demo at https://demoseas.opentaps.org/
-
 License
 -------
 
