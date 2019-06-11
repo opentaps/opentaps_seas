@@ -21,7 +21,7 @@ opentaps SEAS includes out-of-the-box applications developed by the Department o
 building energy, including automated retrocommissioning, demand response, and intelligent load control.
 
 Features
-^^^^^^^^
+--------
 
  * Create catalog of assets including sites, buildings, and equipment
  * Integrate with IoT time series data collected by VOLTTRON
@@ -32,6 +32,13 @@ Features
  * Run VOLTTRON applications include economizer, automated retrocommissioning, intelligent load control, and more through a Service Oriented Architecture (SOA) using Haystack
  * Pull in data from other sources with built-in Haystack client
  * Make data available to external programs with Haystack server
+
+Take a Look
+-----------
+
+See the videos at https://www.youtube.com/playlist?list=PLBIkzPeksXEUIrxCfjc28QniJuKzklUGX
+
+Check out the demo at https://demoseas.opentaps.org/
 
 License
 -------
