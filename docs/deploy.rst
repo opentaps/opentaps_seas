@@ -120,3 +120,13 @@ In opentaps_seas/config/settings/production.py do the following changes:
 Note: make sure the logging file path exists and is writable by the wsgi process user from the apache configuration.
 
 
+Disabling the Application
+-------------------------
+
+A quick way to disable and re-enable the application without changing the Apache configuration or restarting it is to
+switch off the wsgi.py, for example::
+    mv /path/to/opentaps_seas/config/wsgi.py /path/to/opentaps_seas/config/wsgi.py.old
+
+
+
+
