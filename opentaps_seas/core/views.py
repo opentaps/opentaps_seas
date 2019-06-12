@@ -1376,7 +1376,7 @@ def entity_tag(request, entity_id):
         if model_id:
             model = ModelView.objects.filter(object_id=model_id).values()[0]
             # note: those should be read only
-            _read_tags(utils.get_tags_list_for_topic(model_id), items, protect=True, parent=model)
+            _read_tags(utils.get_tags_list_for_topic(model['entity_id']), items, protect=True, parent=model)
 
         _read_tags(utils.get_tags_list_for_topic(entity_id), items)
         return JsonResponse({'items': items})
