@@ -23,7 +23,7 @@
             "siteRef": "@Demo-Site-1",
             "tz": "Los_Angeles"
         },
-        "m_tags": ["equip", "ahu", "directZone", "his", "dxCool", "hvac"]
+        "m_tags": ["equip", "ahu", "his", "hvac"]
     },
     {
         "entity_id": "demo-site-1-ahu2",
@@ -33,7 +33,7 @@
             "siteRef": "@Demo-Site-1",
             "tz": "Los_Angeles"
         },
-        "m_tags": ["equip", "ahu", "directZone", "his", "dxCool", "hvac"]
+        "m_tags": ["equip", "ahu", "his", "hvac"]
     },
     {
         "entity_id": "demo-site-1-ahu3",
@@ -43,6 +43,6 @@
             "siteRef": "@Demo-Site-1",
             "tz": "Los_Angeles"
         },
-        "m_tags": ["equip", "ahu", "directZone", "his", "dxCool", "hvac"]
+        "m_tags": ["equip", "ahu", "his", "hvac"]
     }
 ]}
