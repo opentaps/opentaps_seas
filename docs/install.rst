@@ -195,11 +195,13 @@ To create dashboards for all existing data points, run the script::
 
  $ python manage.py runscript create_dashboards
 
+The dashboards are based on the template JSON file in ``data/dashboard/point-dashboard.json``. 
+
 Testing It
 ^^^^^^^^^^
 
 By default the webapp is only available at localhost:8000.  To make it available at an IP address,
-Edit config/settings/local.py and set::
+Edit ``config/settings/local.py`` and set::
 
  ALLOWED_HOSTS = [
     "localhost",
