@@ -14,6 +14,7 @@ Production PIP requirements
 ---------------------------
 
 Install the production requirements in your opentaps_seas virtualenv::
+
     pip install -r requirements/production.txt
 
 
@@ -24,20 +25,24 @@ The version of mod_wsgi must match your python version and be >=3.7
 So if your server distribution does not provide them they can be both built from source.
 
 Get Python from https://www.python.org/downloads/ and install it with::
+
     tar xzf Python-3.7.x.tgz
     cd /opt/Python-3.7.x/
     ./configure --prefix=/usr/local --enable-shared --with-threads --enable-optimizations
     make altinstall
 
 Make sure python is working by calling::
+
     /usr/locan/bin/python3.7 -v
 
 If you have an issue with libraries not found make sure to add this to cat /etc/ld.so.conf ::
+
     /usr/local/lib
     /usr/local/lib64
     ldconfig
 
 Get mod_wsgi from https://pypi.org/project/mod-wsgi/#files ::
+
     tar xzf mod_wsgi-4.6.x.tar.gz
     cd mod_wsgi-4.6.4.tar.gz
     ./configure --with-python=/usr/local/bin/python3.7
@@ -49,6 +54,7 @@ Redis Server
 ------------
 
 Get the latest Redis from your disctribution or straight from their website https://redis.io/ to build it manually ::
+
     wget http://download.redis.io/releases/redis-5.0.5.tar.gz
     tar xzf redis-5.0.5.tar.gz
     cd redis-5.0.5
@@ -63,7 +69,7 @@ Example of Apache configuration
 
 Note, this is a basic template, change to match your server IP and server name and use the SSL configuration
 and paths to match your particular setup; and check the unix user running the wsgi process to match your
-server config from 'user=opentaps_seas group=opentaps_seas' ::
+server config from ``user=opentaps_seas group=opentaps_seas`` ::
 
     <VirtualHost 1.2.3.4:443>
         ServerName opentaps_seas.example.com
@@ -107,15 +113,17 @@ Secrets.json and Configuration
 Additonal settings needed in the 'secrets.json' file:
 
 DJANGO_SECRET_KEY you can generate a random value from opentasp_seas virtualenv with::
+
     python manage.py shell -c 'from django.core.management import utils; print(utils.get_random_secret_key())'
 
 REDIS_URL this should match your REDIS server so for example the default should be::
+
     redis://127.0.0.1:6379/
 
 In opentaps_seas/config/settings/production.py do the following changes:
  * change ALLOWED_HOSTS from 'demoseas.opentaps.org' to match your server name
  * change DEFAULT_FROM_EMAIL and EMAIL_SUBJECT_PREFIX to match your preferences
- * change the logging file if needed from /var/log/opentaps_seas/info.log
+ * change the logging file if needed from ``/var/log/opentaps_seas/info.log``
 
 Note: make sure the logging file path exists and is writable by the wsgi process user from the apache configuration.
 
@@ -125,6 +133,7 @@ Disabling the Application
 
 A quick way to disable and re-enable the application without changing the Apache configuration or restarting it is to
 switch off the wsgi.py, for example::
+
     mv /path/to/opentaps_seas/config/wsgi.py /path/to/opentaps_seas/config/wsgi.py.old
 
 
