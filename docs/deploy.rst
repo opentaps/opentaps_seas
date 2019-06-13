@@ -53,7 +53,7 @@ Get mod_wsgi from https://pypi.org/project/mod-wsgi/#files ::
 Redis Server
 ------------
 
-Get the latest Redis from your disctribution or straight from their website https://redis.io/ to build it manually ::
+Get the latest Redis from your distribution or straight from their website https://redis.io/ to build it manually ::
 
     wget http://download.redis.io/releases/redis-5.0.5.tar.gz
     tar xzf redis-5.0.5.tar.gz
@@ -110,7 +110,7 @@ server config from ``user=opentaps_seas group=opentaps_seas`` ::
 Secrets.json and Configuration
 ------------------------------
 
-Additonal settings needed in the 'secrets.json' file:
+Additional settings needed in the 'secrets.json' file:
 
 DJANGO_SECRET_KEY you can generate a random value from opentasp_seas virtualenv with::
 
@@ -121,6 +121,7 @@ REDIS_URL this should match your REDIS server so for example the default should 
     redis://127.0.0.1:6379/
 
 In opentaps_seas/config/settings/production.py do the following changes:
+
  * change ALLOWED_HOSTS from 'demoseas.opentaps.org' to match your server name
  * change DEFAULT_FROM_EMAIL and EMAIL_SUBJECT_PREFIX to match your preferences
  * change the logging file if needed from ``/var/log/opentaps_seas/info.log``
