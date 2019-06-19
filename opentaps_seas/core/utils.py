@@ -388,10 +388,12 @@ def create_grafana_dashboard(topic):
     f = open(template_file, 'r')
     datastore = json.load(f)
     title = datastore["dashboard"]["title"]
+    panel_title = datastore["dashboard"]["panels"][0]["title"]
     raw_sql = datastore["dashboard"]["panels"][0]["targets"][0]["rawSql"]
 
-    datastore["dashboard"]["title"] = title + " " + topic
-    datastore["dashboard"]["panels"][0]["targets"][0]["rawSql"] = raw_sql.replace("demo_ahu1/DAT", topic)
+    datastore["dashboard"]["title"] = title.replace("${pointName}", topic)
+    datastore["dashboard"]["panels"][0]["title"] = panel_title.replace("${pointName}", topic)
+    datastore["dashboard"]["panels"][0]["targets"][0]["rawSql"] = raw_sql.replace("${pointName}", topic)
 
     try:
         r = requests.post(url, verify=False, json=datastore, auth=auth)

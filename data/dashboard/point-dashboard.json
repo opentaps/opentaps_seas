@@ -67,7 +67,7 @@
                   ],
                   "metricColumn":"none",
                   "rawQuery":true,
-                  "rawSql":"SELECT\n  $__timeGroup(\"ts\",'5m'),\n  avg(\"double_value\"),\n  'value' as metric\nFROM volttron.data\nWHERE $__timeFilter(\"ts\") and \"topic\" = 'demo_ahu1/DAT'\nGROUP BY time\nORDER BY time\n",
+                  "rawSql":"SELECT\n  $__timeGroup(\"ts\",'5m'),\n  avg(\"double_value\"),\n  'value' as metric\nFROM volttron.data\nWHERE $__timeFilter(\"ts\") and \"topic\" = '${pointName}'\nGROUP BY time\nORDER BY time\n",
                   "refId":"A",
                   "select":[
                      [
@@ -99,7 +99,7 @@
 
             ],
             "timeShift":null,
-            "title":"Panel Title",
+            "title":"Point ${pointName}",
             "tooltip":{
                "shared":true,
                "sort":0,
@@ -178,7 +178,7 @@
          ]
       },
       "timezone":"",
-      "title":"Point Dashboard",
+      "title":"Point ${pointName}",
       "version":6
    }
 }
