@@ -403,6 +403,25 @@ def create_grafana_dashboard(topic):
     return r
 
 
+def delete_grafana_dashboard(dashboard_uid):
+    logger.info('delete_grafana_dashboard, dashboard_uid : %s', dashboard_uid)
+    if dashboard_uid:
+        auth = (settings.GRAFANA_USER_NAME, settings.GRAFANA_USER_PASSWORD)
+        url = settings.GRAFANA_BASE_URL + "/api/dashboards/uid/" + dashboard_uid
+
+        try:
+            r = requests.delete(url, verify=False, auth=auth)
+        except requests.exceptions.ConnectionError:
+            logger.exception('Could not delete the grafan dashboard')
+            return None
+
+        logger.info('delete_grafana_dashboard result : %s', r)
+        return r
+    else:
+        logger.error("dashboard_uid should not be empty")
+        return None
+
+
 def cleanup_id(id):
     if id:
         id = id.replace('/', '-')
