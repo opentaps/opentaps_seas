@@ -197,6 +197,12 @@ To create dashboards for all existing data points, run the script::
 
 The dashboards are based on the template JSON file in ``data/dashboard/point-dashboard.json``. 
 
+To delete the dashboards, use the script ``scripts/remove_dashboards.py``::
+
+ $ python manage.py runscript remove_dashboards
+
+This will delete all the dashboards we have created for you, based on the dashboard_uid of your data points stored in PostgreSQL.
+
 Testing It
 ^^^^^^^^^^
 
