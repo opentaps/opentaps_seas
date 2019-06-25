@@ -76,7 +76,9 @@ from django.views.generic.edit import FormView
 from django_filters import CharFilter
 from django_filters import FilterSet
 from django_filters.views import FilterView
+from django_tables2.config import RequestConfig
 from django_tables2 import Column
+from django_tables2 import CheckBoxColumn
 from django_tables2 import LinkColumn
 from django_tables2 import Table
 from django_tables2.utils import A  # alias for Accessor
@@ -84,6 +86,7 @@ from django_tables2.views import SingleTableMixin
 from easy_thumbnails.files import get_thumbnailer
 from filer.models import Image as FilerFile
 from opentaps_seas.core.utils import create_grafana_dashboard
+from rest_framework.decorators import api_view
 
 logger = logging.getLogger(__name__)
 
@@ -276,6 +279,7 @@ class SiteFilter(FilterSet):
 
 
 class TopicTable(Table):
+    cb = CheckBoxColumn(accessor='topic')
     topic = Column()
     point_description = LinkColumn('core:point_detail',
                                    args=[A('entity_id')],
@@ -737,15 +741,127 @@ class EquipmentCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
 equipment_create_view = EquipmentCreateView.as_view()
 
 
-class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):
     model = Topic
     table_class = TopicTable
-    filterset_class = TopicFilter
     table_pagination = {'per_page': 15}
     template_name = 'core/topic_list.html'
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+
+        self.used_filters = []
+
+        n = 0
+        filters_count = self.request.GET.get('filters_count')
+        if filters_count:
+            n = int(filters_count)
+
+        for i in range(n):
+            filter_type = self.request.GET.get('t' + str(i))
+            if filter_type:
+                filter_value = self.request.GET.get('f' + str(i))
+                if filter_value:
+                    self.used_filters.append({'type': filter_type, 'value': filter_value})
+                    logging.info('TopicListView get_queryset got filter [%s : %s]', filter_type, filter_value)
+                    if filter_type == 'c':
+                        qs = qs.filter(Q(topic__icontains=filter_value))
+                    elif filter_type == 'nc':
+                        qs = qs.exclude(Q(topic__icontains=filter_value))
+
+        # add empty filter at the end
+        self.used_filters.append({'type': '', 'value': ''})
+        logging.info('TopicListView get_queryset filtered %s', qs)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['used_filters'] = self.used_filters
+        return context
+
 
 topic_list_view = TopicListView.as_view()
+
+
+@login_required()
+@require_POST
+def topic_list_table(request):
+    qs = Topic.objects.all()
+
+    n = 0
+    filters_count = request.POST.get('filters_count')
+    if filters_count:
+        n = int(filters_count)
+
+    for i in range(n):
+        filter_type = request.POST.get('t' + str(i))
+        if filter_type:
+            filter_value = request.POST.get('f' + str(i))
+            if filter_value:
+                if filter_type == 'c':
+                    qs = qs.filter(Q(topic__icontains=filter_value))
+                elif filter_type == 'nc':
+                    qs = qs.exclude(Q(topic__icontains=filter_value))
+
+    rc = RequestConfig(request, paginate={'per_page': 15})
+    table = TopicTable(qs, orderable=True, order_by='topic')
+    table = rc.configure(table)
+    return HttpResponse(table.as_html(request))
+
+
+@login_required()
+@api_view(['GET', 'POST'])
+def tag_topics(request):
+    data = request.data
+    logger.info('tag_topics: with %s', data)
+
+    tags = data.get('tags')
+    topics = data.get('topics')
+    select_all = data.get('select_all')
+    filters = data.get('filters')
+
+    if not tags:
+        return JsonResponse({'errors': 'No Tags given'})
+    if not topics and not select_all:
+        return JsonResponse({'errors': 'No Topics selected'})
+
+    qs = Topic.objects.all()
+    if filters:
+        for qfilter in filters:
+            filter_type = qfilter.get('t')
+            if filter_type:
+                filter_value = qfilter.get('f')
+                if filter_value:
+                    if filter_type == 'c':
+                        qs = qs.filter(Q(topic__icontains=filter_value))
+                    elif filter_type == 'nc':
+                        qs = qs.exclude(Q(topic__icontains=filter_value))
+
+    # store a dict of topic -> data_point.entity_id
+    updated = []
+    for etopic in qs:
+        topic = etopic.topic
+        if select_all or topic in topics:
+            logging.info('tag_topics: apply to topic %s', topic)
+            # make sure Topic exists
+            Topic.ensure_topic_exists(topic)
+            # update or create the Data Point
+            try:
+                e = Entity.objects.get(topic=topic)
+            except Entity.DoesNotExist:
+                entity_id = utils.make_random_id(topic)
+                e = Entity(entity_id=entity_id, topic=topic)
+            e.add_tag('point', commit=False)
+            e.add_tag('his', commit=False)
+            if not e.kv_tags.get('dis'):
+                e.add_tag('dis', topic, commit=False)
+            for tag in tags:
+                logging.info('*** add tag %s', tag)
+                e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
+            e.save()
+            updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
+
+    return JsonResponse({'success': 1, 'updated': updated, 'tags': tags})
 
 
 class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):

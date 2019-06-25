@@ -57,6 +57,8 @@
       'equipment_data_points_table': '{% url "core:equipment_data_points_table" '999' %}'.replace('999', '<id>'),
       'point_detail': '{% url "core:point_detail" '999' %}'.replace('999', '<id>'),
       'topic_list': '{% url "core:topic_list" %}',
+      'topic_list_table': '{% url "core:topic_table" %}',
+      'tag_topics': '{% url "core:tag_topics" %}',
       'topic_assoc': '{% url "core:topic_assoc" '999' %}'.replace('999', '<id>'),
       'state_list_json': '{% url "core:state_list_json" '999' %}'.replace('999', '<country>'),
       'timezone_list_json': '{% url "core:timezone_list_json" '999' %}'.replace('999', '<geo_id>'),
@@ -140,7 +142,7 @@
 
     </div>
 
-    <div class="container">
+    <div class="{{container_css|default:'container'}}">
 
       {% if messages %}
           {% for message in messages %}

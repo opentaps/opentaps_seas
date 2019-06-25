@@ -55,14 +55,18 @@ from .views import (
     entity_note,
     entity_link,
     topic_list_view,
+    topic_list_table,
     topic_setup_view,
     topic_assoc,
     topic_import_view,
+    tag_topics
 )
 
 app_name = "core"
 urlpatterns = [
     path("topic/", view=topic_list_view, name="topic_list"),
+    path("tag_topics/", view=tag_topics, name="tag_topics"),
+    path("topic_table/", view=topic_list_table, name="topic_table"),
     path("topic/import", view=topic_import_view, name="topic_import"),
     path("topic/setup/<path:topic>", view=topic_setup_view, name="topic_setup"),
     path("topic/assoc/<path:topic>", view=topic_assoc, name="topic_assoc"),

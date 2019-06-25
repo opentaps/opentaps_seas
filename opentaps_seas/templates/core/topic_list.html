@@ -19,20 +19,567 @@
 {% endcomment %}
 
 {% load static i18n %}
+{% load bootstrap4 %}
 {% block title %}Topics{% endblock %}
 
 {% block content %}
-<div class="container">
 
   {% include "core/_breadcrumbs.html" %}
+  {% load render_table from django_tables2 %}
+  {% url 'core:topic_import' as topic_import_url %}
 
   <div class="card mb-3">
-    <div class="card-body">
-      {% load render_table from django_tables2 %}
-      {% url 'core:topic_import' as topic_import_url %}
-      {% include "core/_table_filter_add.html" with add_label='Import Topics' add_url=topic_import_url %}
-      {% render_table table %}
+    <div class="card-body" id="topics-list">
+        <form action="" method="get" class="form" ref="topics_filter_form" v-on:submit.prevent="noop">
+            <div class="filters">
+                <div class="row m-0" v-for="(filter, index) in filters">
+                  <div class="mb-2 mr-2 p-0 col-auto">
+                    <select class="form-control" v-model="filter.type" v-on:change="changed_filter_type(filter, index)">
+                      <option value="c">Contains</option>
+                      <option value="nc">Not Contains</option>
+                    </select>
+                  </div>
+                  <div class="mb-2 mr-2 p-0 col-4">
+                    <input type="text" class="form-control" placeholder="Filter Topics..." v-model="filter.value" v-on:keyup="filter_on_enter">
+                  </div>
+                  <div class="mb-2 mr-2 p-0 col-auto">
+                    <div v-if="index == filters.length - 1">
+                      <a href="#" class="btn btn-outline-secondary" v-on:click="add_filter(filter)"><i class="fa fa-filter"></i></a>
+                    </div>
+                    <div v-else>
+                      <a href="#" class="btn btn-outline-danger" v-on:click="delete_filter(filter, index)"><i class="fa fa-minus"></i></a>
+                    </div>
+                  </div>
+                  <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
+                    {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary' href=topic_import_url %}
+                  </div>
+                </div>
+                <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
+            </div>
+            <div id="table_container" ref="table_container">
+                {% render_table table %}
+            </div>
+            <input id="select_all_matching" type="checkbox" name="_ALL_" class="mr-2" v-model="select_all_matching" /> <label for="select_all_matching">Select all topics matching the filters on all pages.</label>
+        </form>
+
     </div>
   </div>
-</div>
+
+  <div class="card mb-3">
+    <div class="card-body" id="topic-tag-form">
+      <h4>Tag Selected Topics</h4>
+      <!--List Tags-->
+      <div class="container tags-table ftable">
+        <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
+          <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
+            <span v-if="!get_link(item)">${display_tag(item)}</span>
+            <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
+            <div v-if="item.parent" class="text-muted text-small text-wrap">
+              from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+            </div>
+          </div>
+          <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
+            <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
+            <button v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+      <!--Add Tag-->
+      <form novalidate v-if="isInitial || isSaving" class="main-form">
+        <h5 class="form-title">{{ form_title|default:"Add a tag" }}</h5>
+
+        <div class="container p-0">
+          <div class="col">
+            <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+              ${ errors.error }
+            </div>
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="tag_topics_success">
+              <div style="max-height:15em;overflow:auto">
+                Added the tags:
+                <ul>
+                  <li v-for="tag in tag_topics_success.tags">
+                    ${ display_tag(tag) }
+                  </li>
+                </ul>
+
+                To the following topics / data points:
+                <ul>
+                  <li v-for="updated in tag_topics_success.updated">
+                    ${ updated.topic } : <a :href="get_point_link(updated)">${ display_point(updated) }</a>
+                  </li>
+                </ul>
+              </div>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="form-group">
+              <label for="tagInput">Tag</label>
+              <vue-bootstrap-typeahead
+                input-class="form-control"
+                :serializer="s => s.tag + ': ' + s.description"
+                id="tagInput"
+                ref="tagInput"
+                name="tag" v-model="tag"
+                @hit="selectedTag = $event"
+                :data="valid_tags" placeholder="Tag...">
+                <template slot="suggestion" slot-scope="{ data, htmlText }">
+                  <span v-html="htmlText"></span>&nbsp;<small>${ data.kind }</small>
+                </template>
+              </vue-bootstrap-typeahead>
+              <span v-for="err in errors.tag" class="text-danger">${ err }</span>
+            </div>
+
+            <tag-value-input
+              :csrfmiddlewaretoken="csrfmiddlewaretoken"
+              :selected-tag="selectedTag"
+              v-model="value"
+              :errors="errors.value"></tag-value-input>
+
+            <div class="form-group d-flex justify-content-around">
+              <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-check mr-2"></i> Add Tag</button>
+              <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!--modal-->
+      <tag-form-modal
+        title="Edit Tag"
+        url=""
+        :csrfmiddlewaretoken="csrfmiddlewaretoken"></tag-form-modal>
+    </div>
+  </div>
+
+<script>
+(function() {
+  const CSRF_TOKEN = (function csrftoken() {
+    c = "{% csrf_token %}";
+    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
+    return c;
+  })();
+  Vue.component('tag-form-modal', {
+    delimiters: ['$[', ']'],
+    extends: Vue.component('form-modal'),
+    data() {
+      return {
+        fields: [
+          { key: 'value', value: '', type: 'tag', selectedTag: null },
+        ]
+      }
+    },
+    created: function () {
+      eventHub.$on('showModal_tag', this.showModal)
+    },
+    methods:{
+      post_show: function(item){
+        console.log('post_show', item)
+        this.fields[0].selectedTag = item
+        this.fields[0].value = item.value ? item.value : ''
+      },
+      save: function() {
+        item.value = this.fields[0].value
+        this.closeModal()
+      }
+    }
+  });
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#topic-tag-form',
+    name: 'topic-tag-form',
+    extends: Vue.component('base-list-form'),
+    data() {
+      return {
+        selectedTag: {},
+        valid_tags: [],
+        tag: '',
+        value: '',
+        tag_topics_success: false,
+      }
+    },
+    created: function () {
+      axios.get('{% url 'core:tag_list_json' %}')
+        .then(x => this.valid_tags = x.data.items)
+        .catch(err => {
+          console.error('loading tags error :', err);
+        });
+      eventHub.$on('tag_topics_success', this.show_tag_topics_success)
+      eventHub.$on('applying_tags', this.set_status)
+      eventHub.$on('applying_tags_error', this.set_error)
+      eventHub.$on('tag_changed', x => {
+        if (x.item.tag == 'modelRef') wait().then(this.reloadTags())
+      })
+    },
+    computed: {
+      sorted_items() {
+        return this.items.sort((a,b) => {
+          if (a.value && !b.value) return -1
+          if (!a.value && b.value) return 1
+          return a.tag.localeCompare(b.tag)
+        })
+      },
+    },
+    watch: {
+      selectedTag: function (val) {
+        if (val.kind == 'Marker') {
+          this.save()
+        }
+      },
+    },
+    methods:{
+      reset() {
+        // call base reset
+        this._reset()
+        this.selectedTag = {}
+        this.tag_topics_success = false
+        this.tag = ''
+        this.value = ''
+        if (this.$refs.tagInput) this.$refs.tagInput.inputValue = ''
+      },
+      set_status(saving) {
+        this.currentStatus = saving ? STATUS_SAVING : STATUS_INITIAL
+      },
+      set_error(e) {
+        this.errors = e
+      },
+      get_point_link(item) {
+        return dutils.urls.resolve('point_detail', { id: item.point })
+      },
+      display_point(item) {
+        return item.name || item.point
+      },
+      show_tag_topics_success(res) {
+        this.tag_topics_success = res
+      },
+      should_display_tag(tag) {
+        // do not display a tag that was inherited if another same tag overrides it
+        if (!tag._protect) return true;
+        var i = this.items.find(x => !x._protect && x.tag == tag.tag);
+        return (!i);
+      },
+      model_link(item) {
+        return dutils.urls.model_link(item)
+      },
+      model_link_text(item) {
+        if (!item || !item.parent) return ''
+        return item.parent.object_id || item.parent.entity_id
+      },
+      get_link(tag) {
+        return dutils.urls.resolve_tag_linked_value(tag)
+      },
+      edit_tag(idx) {
+        item = this.items[idx]
+        eventHub.$emit('showModal_tag', item)
+      },
+      tag_needs_value(item) {
+        return (item && item.kind && item.kind != 'Marker')
+      },
+      display_tag(item) {
+        if (item.value) {
+          return (item.description || item.tag) + ': ' + item.value
+        } else {
+          return '✓ ' + (item.description || item.tag)
+        }
+      },
+      display_tag_short(item) {
+        if (item.value) {
+          return (item.tag) + ': ' + item.value
+        } else {
+          return '✓ ' + (item.tag)
+        }
+      },
+      delete_item(item, idx) {
+        console.log('delete_item', item, idx)
+        this.$delete(this.items, idx)
+        return Promise.resolve()
+      },
+      save() {
+        var i = this.items.find(x => !x._protect && x.tag == (this.selectedTag ? this.selectedTag.tag : this.tag));
+        if (i) {
+          this.errors = getResponseError('This Tag is already set ' + (i.description || i.tag) + (i.value ? ': ' + i.value : ''))
+          return
+        }
+
+        t = this.selectedTag ? this.selectedTag.tag : this.tag
+        v = null
+        var need_val = this.tag_needs_value(this.selectedTag)
+        var has_val = this.value && this.value.length
+        if (need_val) {
+          if (has_val) {
+            v = this.value
+          } else {
+            this.errors = getResponseError({error: 'This Tag requires a value', value: ['A value is required']})
+            return
+          }
+        }
+        _tag = {tag: t, value: v}
+        if (this.selectedTag) {
+          _tag.kind = this.selectedTag.kind
+          _tag.description = this.selectedTag.description
+        }
+        if (_tag.tag) {
+          console.log('*** add tag', _tag, this.selectedTag)
+          this.items.push(_tag)
+          this.reset()
+        }
+      },
+      apply_tags() {
+        console.log('*** apply tags', this.items)
+        this.errors = {}
+        eventHub.$emit('apply_tags', this.items)
+      }
+    }
+  });
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#topics-list',
+    name: 'topics-list',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        page: 1,
+        filters: [
+          {% for f in used_filters %}
+            { type: '{{f.type|default:"c"}}', value: '{{f.value}}'},
+          {% endfor %}
+        ],
+        selected_topics: {},
+        select_all_matching: false
+      }
+    },
+    mounted: function () {
+        this.setup_table()
+        this.read_page_number(window.location.href)
+    },
+    created: function () {
+      eventHub.$on('apply_tags', this.apply_tags)
+    },
+    watch: {
+      select_all_matching: function (val) {
+        if (val) {
+          this.select_all(true, true)
+        } else {
+          this.sync_select()
+        }
+        this.disable_checkboxes(val)
+      },
+    },
+    methods: {
+      noop() {
+        console.log('noop __')
+      },
+      setup_table() {
+        this.setup_pager()
+        this.setup_checkboxes()
+      },
+      disable_checkboxes(val) {
+        cbs = el.querySelectorAll('input[type="checkbox"]')
+        for (var i=0; i<cbs.length; i++) {
+          cb = cbs[i]
+          if (!cb.id) {
+            cbs[i].disabled = val
+          }
+        }
+      },
+      setup_checkboxes() {
+        el = this.$refs['table_container']
+        select_all = el.querySelector('thead input[type="checkbox"]')
+        console.log('add select_all handler for', select_all)
+        _this = this
+        cbs = el.querySelectorAll('input[type="checkbox"]')
+        all_checked = cbs.length > 1
+        console.log('initial select_all checked', all_checked, cbs.length)
+        for (var i=0; i<cbs.length; i++) {
+            cb = cbs[i]
+            if (cb.value && cb.name && cb.name.length) {
+                if (_this.select_all_matching || _this.selected_topics[cb.value]) {
+                    cb.checked = true
+                } else {
+                    all_checked = false
+                }
+                cb.addEventListener('change', function(event) {
+                    _this.selected_topics[this.value] = this.checked
+                });
+            } else {
+                cb.checked = false
+            }
+        }
+        console.log('set select_all checked', all_checked)
+        select_all.checked = all_checked
+        select_all.addEventListener('change', function(event) {
+            console.log('* change select_all', this.checked)
+            _this.select_all(this.checked)
+        });
+        this.disable_checkboxes(this.select_all_matching)
+      },
+      setup_pager() {
+        el = this.$refs['table_container']
+        console.log('table = ', el)
+        pagers = el.querySelectorAll('nav li.page-item')
+        _this = this
+        for (var i=0; i<pagers.length; i++) {
+            el = pagers[i]
+            console.log('add pager handler for', el)
+            el.addEventListener('click', function(event) {
+              console.log('click', this)
+              _this.load_page(this.querySelector('a').href)
+              event.preventDefault()
+              return false
+            });
+        }
+      },
+      sync_select() {
+        el = this.$refs['table_container']
+        cbs = el.querySelectorAll('input[type="checkbox"]')
+        all_checked = cbs.length > 1
+        _this = this
+        for (var i=0; i<cbs.length; i++) {
+            cb = cbs[i]
+            if (cb.value && cb.name && cb.name.length) {
+              cb.checked = _this.selected_topics[cb.value]
+              if (!_this.selected_topics[cb.value]) {
+                all_checked = false
+              }
+            }
+        }
+        select_all = el.querySelector('thead input[type="checkbox"]')
+        select_all.checked = all_checked
+      },
+      select_all(checked, skipSave) {
+        el = this.$refs['table_container']
+        cbs = el.querySelectorAll('input[type="checkbox"]')
+        _this = this
+        for (var i=0; i<cbs.length; i++) {
+            cb = cbs[i]
+            cb.checked = checked
+            console.log('*** set checkbox', cb)
+            if (!skipSave && cb.value && cb.name && cb.name.length) {
+              _this.selected_topics[cb.value] = checked
+            }
+        }
+      },
+      filter_on_enter(e) {
+        if (e.keyCode === 13) {
+            this.submit_filters()
+        }
+      },
+      changed_filter_type(filter, index) {
+        console.log('changed_filter_type', filter)
+        if (filter.value && index < this.filters.length-1) {
+            this.load_page()
+        }
+      },
+      delete_filter(filter, index) {
+        console.log('delete_filter', filter)
+        this.filters.splice(index, 1)
+        this.submit_filters()
+      },
+      check_add_blank_filter() {
+        f = this.filters[this.filters.length-1]
+        console.log('check_add_blank_filter last filter', f, this.filters)
+        if (f.value && f.value.trim().length) this.filters.push({type: 'c', value: ''})
+      },
+      add_filter(filter) {
+        console.log('add_filter', filter)
+        if (filter.value) {
+            this.filters.push({type: 'c', value: ''})
+            this.submit_filters()
+        }
+      },
+      build_filter_data(formData) {
+        n = 0
+        for (i=0; i<this.filters.length; i++) {
+            f = this.filters[i]
+            if (f.value) {
+                formData.set('t'+n, f.type)
+                formData.set('f'+n, f.value)
+                n++
+            }
+        }
+        formData.set('filters_count', n)
+      },
+      submit_filters(event) {
+        console.log('submit_filters...', event)
+        this.check_add_blank_filter()
+        this.load_page()
+        if (event) {
+            event.preventDefault()
+            return false
+        }
+      },
+      read_page_number(href) {
+        if (href) {
+            g = href.match('\\?.+$')
+            params = g[0]
+            g = params.match('page=(\\d+)')
+            this.page = g ? g[1] : 1
+            console.log('read_page_number [' + this.page + '] from params', params)
+        }
+      },
+      load_page(href) {
+        this.read_page_number(href)
+        url = dutils.urls.resolve('topic_list_table')
+        container = this.$refs['table_container']
+        const formData = new FormData()
+        this.build_filter_data(formData)
+        formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
+        axios.post(url + '?page=' + this.page, formData).then(response => {
+            container.innerHTML = response.data
+            this.setup_table()
+        });
+      },
+      apply_tags(items) {
+        console.log('apply_tags tag = ', items)
+        console.log('apply_tags to topics = ', this.selected_topics)
+        // post as JSON
+        tags = []
+        for (var i=0; i<items.length; i++) {
+          tags.push({tag: items[i].tag, value: items[i].value})
+        }
+        topics = []
+        for (x in this.selected_topics) {
+          if (x && this.selected_topics.hasOwnProperty(x)) {
+            topics.push(x)
+          }
+        }
+        filters = []
+        for (i=0; i<this.filters.length; i++) {
+          if (this.filters[i].value && this.filters[i].value.length) {
+            filters.push({t: this.filters[i].type, f: this.filters[i].value})
+          }
+        }
+        data = {tags: tags, topics: topics, filters: filters, select_all: this.select_all_matching}
+        console.log('apply_tags JSON = ', data)
+        if (tags.length) {
+          eventHub.$emit('applying_tags', true)
+          url = dutils.urls.resolve('tag_topics')
+          axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            // get data
+            .then(x => x.data)
+            .then(x => {
+              if (x.success) {
+                this.post_save(x)
+                eventHub.$emit('applying_tags', false)
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              eventHub.$emit('applying_tags', false)
+              e = getResponseError(err)
+              console.error(e, err)
+              eventHub.$emit('applying_tags_error', e)
+            });
+        }
+      },
+      post_save(x) {
+        console.log('updated topics tags', x.updated)
+        eventHub.$emit('tag_topics_success', x)
+      }
+    }
+  });
+})();
+</script>
 {% endblock content %}
