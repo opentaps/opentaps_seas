@@ -49,6 +49,7 @@ from .models import SiteView
 from .models import Tag
 from .models import TimeZone
 from .models import Topic
+from .models import TopicTagRule
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -843,8 +844,6 @@ def tag_topics(request):
         topic = etopic.topic
         if select_all or topic in topics:
             logging.info('tag_topics: apply to topic %s', topic)
-            # make sure Topic exists
-            Topic.ensure_topic_exists(topic)
             # update or create the Data Point
             try:
                 e = Entity.objects.get(topic=topic)
@@ -862,6 +861,31 @@ def tag_topics(request):
             updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
 
     return JsonResponse({'success': 1, 'updated': updated, 'tags': tags})
+
+
+@login_required()
+@api_view(['GET', 'POST'])
+def topic_rules(request):
+    if request.method == 'POST':
+        # save the given rule
+        data = request.data
+        name = data.get('name')
+        filters = data.get('filters')
+        tags = data.get('tags')
+        logging.info('topic_rule save filters: %s', filters)
+        logging.info('topic_rule save tags: %s', tags)
+        # check if the rule exists already
+        try:
+            rule = TopicTagRule.objects.get(rule_name=name)
+            if rule:
+                return JsonResponse({'errors': 'Rule "{}" already exists, please choose a different name.'
+                                    .format(name)})
+        except TopicTagRule.DoesNotExist:
+            rule = TopicTagRule(rule_name=name, filters=filters, tags=tags)
+            rule.save()
+    # return list of saved rules
+    rules = list(TopicTagRule.objects.all().values('rule_name', 'filters', 'tags'))
+    return JsonResponse({'success': 1, 'rules': rules})
 
 
 class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):

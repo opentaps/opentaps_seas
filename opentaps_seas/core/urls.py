@@ -59,6 +59,7 @@ from .views import (
     topic_setup_view,
     topic_assoc,
     topic_import_view,
+    topic_rules,
     tag_topics
 )
 
@@ -67,6 +68,7 @@ urlpatterns = [
     path("topic/", view=topic_list_view, name="topic_list"),
     path("tag_topics/", view=tag_topics, name="tag_topics"),
     path("topic_table/", view=topic_list_table, name="topic_table"),
+    path("topic_rules/", view=topic_rules, name="topic_rules"),
     path("topic/import", view=topic_import_view, name="topic_import"),
     path("topic/setup/<path:topic>", view=topic_setup_view, name="topic_setup"),
     path("topic/assoc/<path:topic>", view=topic_assoc, name="topic_assoc"),

@@ -491,3 +491,9 @@ class Geo(models.Model):
                          for c in Geo.objects.filter(geo_code_type_id='STATE')]
 
         return state_choices
+
+
+class TopicTagRule(models.Model):
+    rule_name = CharField(_("Rule Name"), max_length=255, primary_key=True)
+    filters = ArrayField(HStoreField(blank=True, null=True))
+    tags = ArrayField(HStoreField(blank=True, null=True))
