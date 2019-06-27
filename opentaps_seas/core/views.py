@@ -852,7 +852,7 @@ def tag_topics(request):
                 e = Entity(entity_id=entity_id, topic=topic)
             e.add_tag('point', commit=False)
             e.add_tag('his', commit=False)
-            if not e.kv_tags.get('dis'):
+            if not e.kv_tags or not e.kv_tags.get('dis'):
                 e.add_tag('dis', topic, commit=False)
             for tag in tags:
                 logging.info('*** add tag %s', tag)
