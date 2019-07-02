@@ -266,7 +266,7 @@
         ruleset_name: '',
         ruleset_id: {%if rule %}'{{ rule.rule_set.id|safe}}'{%else%}''{%endif%},
         rulename: {%if rule %}'{{ rule.name|safe}}'{%else%}''{%endif%},
-        {% if rule %}items: RULE_TAGS{% endif %},
+        {% if rule %}items: RULE_TAGS,{% endif %}
       }
     },
     created: function () {
