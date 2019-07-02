@@ -23,11 +23,13 @@ import requests
 from .models import Entity
 from .models import PointView
 from .models import Tag
+from .models import Topic
 from crate.client import connect
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from dateutil.parser import parse as parse_datetime
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
@@ -474,3 +476,42 @@ def get_site_addr_loc(tags, site_id, session):
                     session[hash_key] = addr_loc
 
     return addr_loc
+
+
+def tag_topics(filters, tags, select_all=False, topics=[]):
+    qs = Topic.objects.all()
+    logging.info('tag_topics: using filters %s', filters)
+    if filters:
+        for qfilter in filters:
+            filter_type = qfilter.get('t') or qfilter.get('type')
+            if filter_type:
+                filter_value = qfilter.get('f') or qfilter.get('value')
+                if filter_value:
+                    if filter_type == 'c':
+                        qs = qs.filter(Q(topic__icontains=filter_value))
+                    elif filter_type == 'nc':
+                        qs = qs.exclude(Q(topic__icontains=filter_value))
+
+    # store a dict of topic -> data_point.entity_id
+    updated = []
+    for etopic in qs:
+        topic = etopic.topic
+        if select_all or topic in topics:
+            logging.info('tag_topics: apply to topic %s', topic)
+            # update or create the Data Point
+            try:
+                e = Entity.objects.get(topic=topic)
+            except Entity.DoesNotExist:
+                entity_id = make_random_id(topic)
+                e = Entity(entity_id=entity_id, topic=topic)
+            e.add_tag('point', commit=False)
+            e.add_tag('his', commit=False)
+            if not e.kv_tags or not e.kv_tags.get('dis'):
+                e.add_tag('dis', topic, commit=False)
+            for tag in tags:
+                logging.info('*** add tag %s', tag)
+                e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
+            e.save()
+            updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
+
+    return updated

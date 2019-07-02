@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load django_tables2 %}
+{% load static i18n %}
+{% block title %}Topic Tag Rule Set: {{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3">
+    <div class="card-body" id="rule-list">
+      {% load render_table from django_tables2 %}
+      {% include "core/_table_filter_add.html" %}
+      {% render_table table %}
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#rule-list',
+    name: 'rule-list',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+      }
+    },
+    methods: {
+      delete_tag_rule(id) {
+        return {
+          okText: 'Delete',
+          ok: dialog => this.delete_tag_rule_cb(dialog, id),
+          message: 'Are you sure?'
+        }
+      },
+      delete_tag_rule_cb(dialog, id) {
+        console.log('DELETE?', id)
+        url = dutils.urls.resolve('topic_rules')
+        return axios.delete(url, {data: {rule_id: id}, headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              console.log('delete_tag_rule Done', x)
+              if (x.success) {
+                dialog.close()
+                document.getElementById('topicrule_'+id).remove()
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => { console.error('delete error :', err) });
+      },
+    }
+  })
+})();
+</script>
+{% endblock content %}

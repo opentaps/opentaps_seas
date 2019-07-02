@@ -29,40 +29,32 @@
   {% url 'core:topic_import' as topic_import_url %}
 
   <div class="card mb-3">
-    <div class="card-body" id="topics-list">
+    <div class="card-body" id="topics-list" v-cloak>
         <form action="" method="get" class="form" ref="topics_filter_form" v-on:submit.prevent="noop">
             <div class="filters">
-                <div class="row m-0" v-for="(filter, index) in filters">
-                  <div class="mb-2 mr-2 p-0 col-auto">
-                    <select class="form-control" v-model="filter.type" v-on:change="changed_filter_type(filter, index)">
-                      <option value="c">Contains</option>
-                      <option value="nc">Not Contains</option>
-                    </select>
+              <div class="row m-0" v-for="(filter, index) in filters">
+                <div class="mb-2 mr-2 p-0 col-auto">
+                  <select class="form-control" v-model="filter.type" v-on:change="changed_filter_type(filter, index)">
+                    <option value="c">Contains</option>
+                    <option value="nc">Not Contains</option>
+                  </select>
+                </div>
+                <div class="mb-2 mr-2 p-0 col-4">
+                  <input type="text" class="form-control" placeholder="Filter Topics..." v-model="filter.value" v-on:keyup="filter_on_enter">
+                </div>
+                <div class="mb-2 mr-2 p-0 col-auto">
+                  <div v-if="index == filters.length - 1">
+                    <a href="#" class="btn btn-outline-secondary" v-on:click="add_filter(filter)"><i class="fa fa-filter"></i></a>
                   </div>
-                  <div class="mb-2 mr-2 p-0 col-4">
-                    <input type="text" class="form-control" placeholder="Filter Topics..." v-model="filter.value" v-on:keyup="filter_on_enter">
-                  </div>
-                  <div class="mb-2 mr-2 p-0 col-auto">
-                    <div v-if="index == filters.length - 1">
-                      <a href="#" class="btn btn-outline-secondary" v-on:click="add_filter(filter)"><i class="fa fa-filter"></i></a>
-                    </div>
-                    <div v-else>
-                      <a href="#" class="btn btn-outline-danger" v-on:click="delete_filter(filter, index)"><i class="fa fa-minus"></i></a>
-                    </div>
-                  </div>
-                  <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
-                    {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary' href=topic_import_url %}
+                  <div v-else>
+                    <a href="#" class="btn btn-outline-danger" v-on:click="delete_filter(filter, index)"><i class="fa fa-minus"></i></a>
                   </div>
                 </div>
-                <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
-            </div>
-            <div v-if="rules.length" class="btn-group mb-2" role="group">
-              <button id="btnRuleGrp" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fa fa-cog mr-2"></i> Run Rule
-              </button>
-              <div class="dropdown-menu" aria-labelledby="btnRuleGrp">
-                <a v-for="rule in rules" class="dropdown-item" href="#" v-on:click="apply_rule(rule)">${ rule.rule_name }</a>
+                <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
+                  {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary' href=topic_import_url %}
+                </div>
               </div>
+              <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
             </div>
             <div id="table_container" ref="table_container">
                 {% render_table table %}
@@ -73,101 +65,162 @@
     </div>
   </div>
 
-  <div class="card mb-3">
-    <div class="card-body" id="topic-tag-form">
-      <h4>Tag Selected Topics</h4>
-      <!--List Tags-->
-      <div class="container tags-table ftable">
-        <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
-          <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
-            <span v-if="!get_link(item)">${display_tag(item)}</span>
-            <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
-            <div v-if="item.parent" class="text-muted text-small text-wrap">
-              from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+  <div id="topic-tag-form" v-cloak>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <h4>Tag Selected Topics</h4>
+        <!--List Tags-->
+        <div class="container tags-table ftable">
+          <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
+            <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
+              <span v-if="!get_link(item)">${display_tag(item)}</span>
+              <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
+              <div v-if="item.parent" class="text-muted text-small text-wrap">
+                from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+              </div>
             </div>
-          </div>
-          <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
-            <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
-            <button v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+            <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
+              <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
+              <button v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+            </div>
           </div>
         </div>
-      </div>
-      <!--Add Tag-->
-      <form novalidate v-if="isInitial || isSaving" class="main-form">
-        <h5 class="form-title">{{ form_title|default:"Add a tag" }}</h5>
+        <!--Add Tag-->
+        <form novalidate v-if="isInitial || isSaving" class="main-form">
+          <h5 class="form-title">{{ form_title|default:"Add a tag" }}</h5>
 
-        <div class="container p-0">
-          <div class="col">
-            <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
-              ${ errors.error }
-            </div>
-            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="tag_topics_success">
-              <div style="max-height:15em;overflow:auto">
-                Added the tags:
-                <ul>
-                  <li v-for="tag in tag_topics_success.tags">
-                    ${ display_tag(tag) }
-                  </li>
-                </ul>
-
-                To the following topics / data points:
-                <ul>
-                  <li v-for="updated in tag_topics_success.updated">
-                    ${ updated.topic } : <a :href="get_point_link(updated)">${ display_point(updated) }</a>
-                  </li>
-                </ul>
+          <div class="container p-0">
+            <div class="col">
+              <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+                ${ errors.error }
               </div>
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+              <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="tag_topics_success">
+                <div style="max-height:15em;overflow:auto">
+                  Added the tags:
+                  <ul>
+                    <li v-for="tag in tag_topics_success.tags">
+                      ${ display_tag(tag) }
+                    </li>
+                  </ul>
+
+                  To the following topics / data points:
+                  <ul>
+                    <li v-for="updated in tag_topics_success.updated">
+                      ${ updated.topic } : <a :href="get_point_link(updated)">${ display_point(updated) }</a>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" class="close" aria-label="Close">
+                  <span aria-hidden="true" v-on:click="tag_topics_success = false">&times;</span>
+                </button>
+              </div>
+              <div class="form-group">
+                <label for="tagInput">Tag</label>
+                <vue-bootstrap-typeahead
+                  input-class="form-control"
+                  :serializer="s => s.tag + ': ' + s.description"
+                  id="tagInput"
+                  ref="tagInput"
+                  name="tag" v-model="tag"
+                  @hit="selectedTag = $event"
+                  :data="valid_tags" placeholder="Tag...">
+                  <template slot="suggestion" slot-scope="{ data, htmlText }">
+                    <span v-html="htmlText"></span>&nbsp;<small>${ data.kind }</small>
+                  </template>
+                </vue-bootstrap-typeahead>
+                <span v-for="err in errors.tag" class="text-danger">${ err }</span>
+              </div>
+
+              <tag-value-input
+                :csrfmiddlewaretoken="csrfmiddlewaretoken"
+                :selected-tag="selectedTag"
+                v-model="value"
+                :errors="errors.value"></tag-value-input>
+
+              <div class="form-group d-flex justify-content-around">
+                <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
+                <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="tagInput">Tag</label>
+          </div>
+        </form>
+
+        <!--modal-->
+        <tag-form-modal
+          title="Edit Tag"
+          url=""
+          :csrfmiddlewaretoken="csrfmiddlewaretoken"></tag-form-modal>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <h4>Save as a Rule</h4>
+        <div class="alert alert-danger mt-3" role="alert" v-if="rule_errors.error">
+          ${ rule_errors.error }
+        </div>
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="create_rule_success">
+          <div>Successfully ${ create_rule_success.action } Rule "${ create_rule_success.rule.name }" in Rule Set "${ create_rule_success.rule_set.name }" ${ create_rule_success.details }.</div>
+          <button type="button" class="close" aria-label="Close" v-on:click="create_rule_success = false">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="" method="get" class="form" ref="save_as_rule_form" v-on:submit.prevent="set_save_rule">
+          <div class="form-group">
+            <label for="ruleSet">Rule Set</label>
+            <div class="row">
+              <div class="col col-auto">
+                <select class="form-control" v-model="ruleset_type">
+                  {%if rule %}<option value="current">Current: {{ rule.rule_set.name|safe }}</option>{%endif%}
+                  <option value="new">Create New</option>
+                  <option value="existing">Select Existing</option>
+                </select>
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" id="ruleSet" placeholder="Rule Set" v-model="ruleset_name" v-if="ruleset_type == 'new'" required />
+
               <vue-bootstrap-typeahead
-                input-class="form-control"
-                :serializer="s => s.tag + ': ' + s.description"
-                id="tagInput"
-                ref="tagInput"
-                name="tag" v-model="tag"
-                @hit="selectedTag = $event"
-                :data="valid_tags" placeholder="Tag...">
+                required
+                v-if="ruleset_type == 'existing'"
+                :input-class="'form-control' + (rule_errors['rule_set_id'] ? ' is-invalid' : '')"
+                :serializer="s => s.name"
+                :min-matching-chars="0"
+                name="selected_ruleset"
+                @hit="selected_ruleset = $event"
+                v-model="ruleset_id"
+                :data="valid_rulesets"
+                placeholder="Choose a rule set">
                 <template slot="suggestion" slot-scope="{ data, htmlText }">
-                  <span v-html="htmlText"></span>&nbsp;<small>${ data.kind }</small>
+                  <span v-html="htmlText"></span>&nbsp;<small>${ data.name || data.id }</small>
                 </template>
               </vue-bootstrap-typeahead>
-              <span v-for="err in errors.tag" class="text-danger">${ err }</span>
-            </div>
-
-            <tag-value-input
-              :csrfmiddlewaretoken="csrfmiddlewaretoken"
-              :selected-tag="selectedTag"
-              v-model="value"
-              :errors="errors.value"></tag-value-input>
-
-            <div class="form-group d-flex justify-content-around">
-              <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-check mr-2"></i> Add Tag</button>
-              <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="set_save_rule()"><i class="fa fa-save mr-2"></i> Save as a Rule</button>
-              <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-
-      <!--modal-->
-      <tag-form-modal
-        title="Edit Tag"
-        url=""
-        :csrfmiddlewaretoken="csrfmiddlewaretoken"></tag-form-modal>
+          <div class="form-group">
+            <label for="ruleName">Rule Name</label>
+            <input type="text" class="form-control" id="ruleName" placeholder="Rule Name" v-model="rulename" required />
+          </div>
+          <div class="form-group d-flex justify-content-around">
+            {% if rule %}
+              <button type="button" class="btn btn-primary" v-on:click.stop.prevent="update_rule()"><i class="fa fa-check mr-2"></i> Update Rule</button>
+            {% endif %}
+            <button type="submit" class="btn btn-primary"><i class="fa fa-check mr-2"></i> Save as a {% if rule %}New {% endif %}Rule</button>
+          </div>
+        </form>
+      </div>
     </div>
+
   </div>
 
+{{ rule.tags|json_script:'rule_tags' }}
 <script>
 (function() {
-  const CSRF_TOKEN = (function csrftoken() {
-    c = "{% csrf_token %}";
-    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
-    return c;
-  })();
+  {% if rule %}const RULE_TAGS = JSON.parse(document.getElementById('rule_tags').textContent);{% endif %}
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
   Vue.component('tag-form-modal', {
     delimiters: ['$[', ']'],
     extends: Vue.component('form-modal'),
@@ -203,9 +256,17 @@
         csrfmiddlewaretoken: CSRF_TOKEN,
         selectedTag: {},
         valid_tags: [],
+        rule_errors: {},
         tag: '',
         value: '',
         tag_topics_success: false,
+        create_rule_success: false,
+        valid_rulesets: [],
+        ruleset_type: {%if rule %}'current'{%else%}'new'{%endif%},
+        ruleset_name: '',
+        ruleset_id: {%if rule %}'{{ rule.rule_set.id|safe}}'{%else%}''{%endif%},
+        rulename: {%if rule %}'{{ rule.name|safe}}'{%else%}''{%endif%},
+        {% if rule %}items: RULE_TAGS{% endif %},
       }
     },
     created: function () {
@@ -221,6 +282,9 @@
       eventHub.$on('tag_changed', x => {
         if (x.item.tag == 'modelRef') wait().then(this.reloadTags())
       })
+    },
+    mounted() {
+      this.get_valid_rulesets()
     },
     computed: {
       sorted_items() {
@@ -244,6 +308,8 @@
         this._reset()
         this.selectedTag = {}
         this.tag_topics_success = false
+        this.create_rule_success = false
+        this.rule_errors = {}
         this.tag = ''
         this.value = ''
         if (this.$refs.tagInput) this.$refs.tagInput.inputValue = ''
@@ -343,11 +409,35 @@
         this.errors = {}
         eventHub.$emit('apply_tags', this.items)
       },
-      set_save_rule() {
+      get_valid_rulesets(site) {
+        url = dutils.urls.resolve('topic_rules')
+        axios.get(url)
+          .then(x => {
+            console.log('get_valid_rulesets', x.data.rules)
+            this.valid_rulesets = x.data.rules
+          })
+          .catch(err => {
+            console.error('loading valid_rulesets error :', err);
+          });
+      },
+      update_rule() {
+        console.log('Update rule !')
+      {% if rule %}
+        this.set_save_rule({
+          rule_id: '{{ rule.id }}',
+          rule_set_id: '{{ rule.rule_set.id }}'
+        })
+      {% endif %}
+      },
+      set_save_rule(update_data) {
         // check there are filters or tags to save
         filters = eventHub.get_filters()
         valid_filters = []
         tags = this.items
+        this.create_rule_success = false
+        console.log('*** ruleset_type =', this.ruleset_type)
+        console.log('*** ruleset_name =', this.ruleset_name)
+        console.log('*** rulename =', this.rulename)
         console.log('*** tags =', tags)
         console.log('*** filters =', filters)
         // build text of selected filters and tags:
@@ -366,9 +456,9 @@
           }
         }
         if (valid_filters.length) {
-          details = 'For topics that ' + details
+          details = 'for topics that ' + details
         } else {
-          details = 'For *ALL* topics ' + details
+          details = 'for *ALL* topics ' + details
         }
         console.log('*** valid_filters =', valid_filters)
         if (tags.length) {
@@ -381,46 +471,58 @@
           }
         }
         if (!valid_filters.length || !tags.length) {
-          return this.$dialog.alert('No filters or tags to save. ', {okText: 'OK', loader: false})
+          return this.rule_errors = {error: 'No filters or tags to save.'}
         }
 
-        this.$dialog
-          .prompt({
-            title: "Save as a Rule",
-            body: "Save the selected Filters and Tags to be able to recall them later.\n" + details
-            }, {
-              promptHelp: "Rule Name",
-              okText: "Save Rule"
-            })
-          .then(dialog => {
-            ruleName = dialog.data
-            if (!ruleName || !ruleName.trim().length) {
-              console.log('rule name missing!', dialog);
-              this.$dialog.alert('Rule Name is required', {okText: 'OK', loader: false})
-              return dialog.close()
+        // Save it:
+        this.rule_errors = {}
+        url = dutils.urls.resolve('topic_rules')
+        data = {name: this.rulename, tags: tags, filters: valid_filters}
+        if (update_data) {
+          if (update_data.rule_id) {
+            data.rule_id = update_data.rule_id
+          }
+          if (update_data.rule_set_id) {
+            data.rule_set_id = update_data.rule_set_id
+          }
+        }
+        if ('new' == this.ruleset_type) {
+          data.rule_set_id = 'new'
+          data.rule_set_name = this.ruleset_name
+        } else if ('existing' == this.ruleset_type) {
+          if (this.selected_ruleset) {
+            if (this.selected_ruleset.rule_set_id) {
+              data.rule_set_id = this.selected_ruleset.rule_set_id
+            } else {
+              data.rule_set_name = this.selected_ruleset.name
             }
-            // Save it:
-            url = dutils.urls.resolve('topic_rules')
-            data = {name: ruleName, tags: tags, filters: valid_filters}
-            console.log('saving rule', data);
-            axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
-              .then(x => x.data)
-              .then(x => {
-                if (x.success) {
-                  console.log('saved rule, rules = ', x.rules)
-                  eventHub.$emit('loaded_rules', x.rules)
-                  return dialog.close()
-                } else {
-                  return Promise.reject(x.errors)
-                }
-              })
-              .catch(err => {
-                e = getResponseError(err)
-                console.error(e, err)
-                this.errors = e
-                return dialog.close()
-              });
+          } else {
+            data.rule_set_name = this.ruleset_name
+          }
+        } else if ('current' == this.ruleset_type) {
+              data.rule_set_id = this.ruleset_id
+        }
+        console.log('saving rule', data);
+        axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+          .then(x => x.data)
+          .then(x => {
+            if (x.success) {
+              console.log('saved rule, rules = ', x)
+              this.create_rule_success = {
+                action: (x.success == 'updated') ? 'updated' : 'created',
+                details: details,
+                rule: x.rule,
+                rule_set: x.rule_set
+              }
+            } else {
+              return Promise.reject(x.errors)
+            }
           })
+          .catch(err => {
+            e = getResponseError(err)
+            console.error(e, err)
+            this.rule_errors = e
+          });
       }
     }
   });
@@ -438,8 +540,7 @@
           {% endfor %}
         ],
         selected_topics: {},
-        select_all_matching: false,
-        rules: []
+        select_all_matching: false
       }
     },
     mounted: function () {
@@ -448,24 +549,9 @@
     },
     created: function () {
       eventHub.$on('apply_tags', this.apply_tags)
-      eventHub.$on('loaded_rules', this.load_rules)
       eventHub.get_filters = () => {
         return this.filters
       }
-      url = dutils.urls.resolve('topic_rules')
-      axios.get(url, {}, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
-        .then(x => x.data)
-        .then(x => {
-          if (x.success) {
-            this.load_rules(x.rules)
-          } else {
-            return Promise.reject(x.errors)
-          }
-        })
-        .catch(err => {
-          e = getResponseError(err)
-          console.error(e, err)
-        });
     },
     watch: {
       select_all_matching: function (val) {
@@ -480,9 +566,6 @@
     methods: {
       noop() {
         console.log('noop __')
-      },
-      load_rules(rules) {
-        this.rules = rules
       },
       apply_rule(rule) {
         console.log('** apply rule', rule)
@@ -634,6 +717,10 @@
       read_page_number(href) {
         if (href) {
             g = href.match('\\?.+$')
+            if (!g) {
+              this.page = 1
+              return
+            }
             params = g[0]
             g = params.match('page=(\\d+)')
             this.page = g ? g[1] : 1

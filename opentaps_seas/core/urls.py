@@ -60,12 +60,19 @@ from .views import (
     topic_assoc,
     topic_import_view,
     topic_rules,
+    topictagruleset_list_view,
+    topictagruleset_detail_view,
+    topictagruleset_run,
     tag_topics
 )
 
 app_name = "core"
 urlpatterns = [
     path("topic/", view=topic_list_view, name="topic_list"),
+    path("topic_tag_rulesets/", view=topictagruleset_list_view, name="topictagruleset_list"),
+    path("topic_tag_rulesets/<str:id>", view=topictagruleset_detail_view, name="topictagruleset_detail"),
+    path("topic_tag_rulesets/run/<str:id>", view=topictagruleset_run, name="topictagruleset_run"),
+    path("topic_tag_rule/<str:id>", view=topic_list_view, name="topictagrule_detail"),
     path("tag_topics/", view=tag_topics, name="tag_topics"),
     path("topic_table/", view=topic_list_table, name="topic_table"),
     path("topic_rules/", view=topic_rules, name="topic_rules"),

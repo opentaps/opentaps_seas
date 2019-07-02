@@ -50,6 +50,7 @@ from .models import Tag
 from .models import TimeZone
 from .models import Topic
 from .models import TopicTagRule
+from .models import TopicTagRuleSet
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -313,6 +314,63 @@ class TopicFilter(FilterSet):
     def filter_by_all_fields(self, queryset, name, value):
         return queryset.filter(
             Q(topic__icontains=value)
+        )
+
+
+class TopicTagRuleSetTable(Table):
+    name = LinkColumn('core:topictagruleset_detail',
+                      args=[A('id')],
+                      text=lambda record: record.name)
+    rules = Column(accessor='topictagrule_set.count', orderable=False)
+    buttons = Column(accessor='id', verbose_name='', default='', orderable=False)
+
+    def render_buttons(self, record):
+        return format_html('''
+            <a class="btn btn-secondary btn-sm" href="#" v-confirm="run_tag_ruleset({})">
+            <i class="fa fa-cog"></i> Run
+            </a>
+            <a class="btn btn-danger btn-sm" href="#" v-confirm="delete_tag_ruleset({})">
+            <i class="fa fa-trash"></i> Delete
+            </a>'''.format(record.id, record.id),)
+
+    class Meta:
+        order_by = 'name'
+        row_attrs = {
+            'id': lambda record: 'topicruleset_' + str(record.id)
+        }
+
+
+class TopicTagRuleTable(Table):
+    name = LinkColumn('core:topictagrule_detail',
+                      args=[A('id')],
+                      text=lambda record: record.name)
+    filters = Column(accessor='filters.__len__', orderable=False)
+    tags = Column(accessor='tags.__len__', orderable=False)
+    buttons = Column(accessor='id', verbose_name='', default='', orderable=False)
+
+    def render_buttons(self, record):
+        return format_html('''
+            <a class="btn btn-danger btn-sm" href="#" v-confirm="delete_tag_rule({})">
+            <i class="fa fa-trash"></i> Delete
+            </a>'''.format(record.id, record.id),)
+
+    class Meta:
+        order_by = 'name'
+        row_attrs = {
+            'id': lambda record: 'topicrule_' + str(record.id)
+        }
+
+
+class TopicTagRuleSetFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = TopicTagRuleSet
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value)
         )
 
 
@@ -752,23 +810,37 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         qs = super().get_queryset(**kwargs)
 
         self.used_filters = []
+        self.rule = None
 
-        n = 0
-        filters_count = self.request.GET.get('filters_count')
-        if filters_count:
-            n = int(filters_count)
+        if self.kwargs.get('id'):
+            rule_id = self.kwargs['id']
+            logging.info('got a rule ID given: %s', rule_id)
+            self.rule = get_object_or_404(TopicTagRule, id=rule_id)
+            for f in self.rule.filters:
+                self.used_filters.append({'type': f['type'], 'value': f['value']})
+                if f['type'] == 'c':
+                    qs = qs.filter(Q(topic__icontains=f['value']))
+                elif f['type'] == 'nc':
+                    qs = qs.exclude(Q(topic__icontains=f['value']))
 
-        for i in range(n):
-            filter_type = self.request.GET.get('t' + str(i))
-            if filter_type:
-                filter_value = self.request.GET.get('f' + str(i))
-                if filter_value:
-                    self.used_filters.append({'type': filter_type, 'value': filter_value})
-                    logging.info('TopicListView get_queryset got filter [%s : %s]', filter_type, filter_value)
-                    if filter_type == 'c':
-                        qs = qs.filter(Q(topic__icontains=filter_value))
-                    elif filter_type == 'nc':
-                        qs = qs.exclude(Q(topic__icontains=filter_value))
+        else:
+
+            n = 0
+            filters_count = self.request.GET.get('filters_count')
+            if filters_count:
+                n = int(filters_count)
+
+            for i in range(n):
+                filter_type = self.request.GET.get('t' + str(i))
+                if filter_type:
+                    filter_value = self.request.GET.get('f' + str(i))
+                    if filter_value:
+                        self.used_filters.append({'type': filter_type, 'value': filter_value})
+                        logging.info('TopicListView get_queryset got filter [%s : %s]', filter_type, filter_value)
+                        if filter_type == 'c':
+                            qs = qs.filter(Q(topic__icontains=filter_value))
+                        elif filter_type == 'nc':
+                            qs = qs.exclude(Q(topic__icontains=filter_value))
 
         # add empty filter at the end
         self.used_filters.append({'type': '', 'value': ''})
@@ -778,7 +850,18 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['used_filters'] = self.used_filters
+        if self.rule:
+            context['rule'] = self.rule
         return context
+
+    def get_breadcrumbs(self, context):
+        if self.rule:
+            b = []
+            b.append({'url': reverse('core:topictagruleset_list'), 'label': 'Topic Tag Rule Sets'})
+            b.append({'url': reverse('core:topictagruleset_detail', kwargs={'id': self.rule.rule_set.id}), 'label': 'Rule Set {}'.format(self.rule.rule_set.name or self.rule.rule_set.id)})
+            b.append({'label': 'Rule {}'.format(self.rule.name or self.rule.id)})
+            return b
+        return super().get_breadcrumbs(context)
 
 
 topic_list_view = TopicListView.as_view()
@@ -826,66 +909,170 @@ def tag_topics(request):
     if not topics and not select_all:
         return JsonResponse({'errors': 'No Topics selected'})
 
-    qs = Topic.objects.all()
-    if filters:
-        for qfilter in filters:
-            filter_type = qfilter.get('t')
-            if filter_type:
-                filter_value = qfilter.get('f')
-                if filter_value:
-                    if filter_type == 'c':
-                        qs = qs.filter(Q(topic__icontains=filter_value))
-                    elif filter_type == 'nc':
-                        qs = qs.exclude(Q(topic__icontains=filter_value))
-
     # store a dict of topic -> data_point.entity_id
-    updated = []
-    for etopic in qs:
-        topic = etopic.topic
-        if select_all or topic in topics:
-            logging.info('tag_topics: apply to topic %s', topic)
-            # update or create the Data Point
-            try:
-                e = Entity.objects.get(topic=topic)
-            except Entity.DoesNotExist:
-                entity_id = utils.make_random_id(topic)
-                e = Entity(entity_id=entity_id, topic=topic)
-            e.add_tag('point', commit=False)
-            e.add_tag('his', commit=False)
-            if not e.kv_tags or not e.kv_tags.get('dis'):
-                e.add_tag('dis', topic, commit=False)
-            for tag in tags:
-                logging.info('*** add tag %s', tag)
-                e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
-            e.save()
-            updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
-
+    updated = utils.tag_topics(filters, tags, select_all=select_all, topics=topics)
     return JsonResponse({'success': 1, 'updated': updated, 'tags': tags})
 
 
 @login_required()
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def topic_rules(request):
-    if request.method == 'POST':
+    data = request.data
+    rule_set_id = data.get('rule_set_id')
+    success = 1
+    if request.method == 'DELETE':
+        rule_id = data.get('rule_id')
+        if rule_id:
+            try:
+                rule = TopicTagRule.objects.get(id=rule_id)
+                rule.delete()
+                return JsonResponse({'success': 1})
+            except TopicTagRule.DoesNotExist:
+                return JsonResponse({'error': 'Rule not found: {}'.format(rule_id)}, status=404)
+        elif rule_set_id:
+            try:
+                rule = TopicTagRuleSet.objects.get(id=rule_set_id)
+                rule.delete()
+                return JsonResponse({'success': 1})
+            except TopicTagRuleSet.DoesNotExist:
+                return JsonResponse({'error': 'Rule Set not found: {}'.format(rule_set_id)}, status=404)
+
+        else:
+            return JsonResponse({'error': 'Rule or Rule Set ID required'})
+
+    elif request.method == 'POST':
         # save the given rule
-        data = request.data
+        rule_id = data.get('rule_id')
+        rule = None
+        if rule_id:
+            # update the given rule
+            try:
+                rule = TopicTagRule.objects.get(id=rule_id)
+            except TopicTagRule.DoesNotExist:
+                return JsonResponse({'error': 'Rule not found: {}'.format(rule_id)}, status=404)
+        rule_set_name = data.get('rule_set_name')
         name = data.get('name')
-        filters = data.get('filters')
-        tags = data.get('tags')
+        if not name:
+            return JsonResponse({'errors': 'Rule Name is required.'})
+        filters = data.get('filters') or []
+        tags = data.get('tags') or []
         logging.info('topic_rule save filters: %s', filters)
         logging.info('topic_rule save tags: %s', tags)
-        # check if the rule exists already
-        try:
-            rule = TopicTagRule.objects.get(rule_name=name)
-            if rule:
-                return JsonResponse({'errors': 'Rule "{}" already exists, please choose a different name.'
-                                    .format(name)})
-        except TopicTagRule.DoesNotExist:
-            rule = TopicTagRule(rule_name=name, filters=filters, tags=tags)
-            rule.save()
+        # check if the rule set exists, dont allow multiple rulesets with same name
+        if 'new' == rule_set_id:
+            if not rule_set_name:
+                return JsonResponse({'errors': 'RuleSet Name is required.'})
+
+            try:
+                rule_set = TopicTagRuleSet.objects.get(name=rule_set_name)
+                if rule_set:
+                    return JsonResponse({'errors': 'RuleSet "{}" already exists.'.format(rule_set_name)})
+            except TopicTagRuleSet.DoesNotExist:
+                rule_set = TopicTagRuleSet(name=rule_set_name)
+                rule_set.save()
+
+        else:
+            if not rule_set_id and not rule_set_name:
+                return JsonResponse({'errors': 'Please select a RuleSet.'})
+            try:
+                if rule_set_id:
+                    rule_set = TopicTagRuleSet.objects.get(id=rule_set_id)
+                elif rule_set_name:
+                    rule_set = TopicTagRuleSet.objects.get(name=rule_set_name)
+            except TopicTagRuleSet.DoesNotExist:
+                return JsonResponse({'errors': 'RuleSet "{}" not found.'.format(rule_set_id)})
+
+        # we have a valid rule_set
+        rule_set_id = rule_set.id
+        # check if the rule set already include a rule with the given name
+        # dont allow multiple rules with same name in a set
+        success = 'created'
+        if not rule:
+            try:
+                rule = TopicTagRule.objects.get(name=name, rule_set=rule_set)
+                if rule:
+                    err = 'Rule "{}" already exists in that rule set, please choose a different name.'.format(name)
+                    return JsonResponse({'errors': err})
+            except TopicTagRule.DoesNotExist:
+                rule = TopicTagRule()
+        else:
+            success = 'updated'
+        rule.name = name
+        rule.filters = filters
+        rule.tags = tags
+        rule.rule_set = rule_set
+        rule.save()
+        # return success
+        return JsonResponse({'success': success,
+                             'rule': {
+                                'name': rule.name,
+                                'id': rule.id,
+                                'filters': rule.filters,
+                                'tags': rule.tags},
+                             'rule_set': {
+                                'id': rule.rule_set.id,
+                                'name': rule.rule_set.name
+                             }})
+
     # return list of saved rules
-    rules = list(TopicTagRule.objects.all().values('rule_name', 'filters', 'tags'))
+    if rule_set_id:
+        qs = TopicTagRule.objects.filter(rule_set=rule_set_id)
+    else:
+        qs = TopicTagRuleSet.objects.all()
+
+    rules = list(qs.values())
     return JsonResponse({'success': 1, 'rules': rules})
+
+
+class TopicTagRuleSetBCMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:topictagruleset_list'), 'label': 'Topic Tag Rule Sets'})
+        if context.get('object'):
+            b.append({'label': 'Rule Set {}'.format(context['object'].name or context['object'].id)})
+        return b
+
+
+class TopicTagRuleSetListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = TopicTagRuleSet
+    table_class = TopicTagRuleSetTable
+    filterset_class = TopicTagRuleSetFilter
+    table_pagination = {'per_page': 15}
+    template_name = 'core/topictagruleset_list.html'
+
+
+topictagruleset_list_view = TopicTagRuleSetListView.as_view()
+
+
+class TopicTagRuleSetDetailView(LoginRequiredMixin, SingleTableMixin, TopicTagRuleSetBCMixin, DetailView):
+    model = TopicTagRuleSet
+    slug_field = "id"
+    slug_url_kwarg = "id"
+    template_name = 'core/topictagruleset_detail.html'
+    table_class = TopicTagRuleTable
+    entity_id_field = 'id'
+
+    def get_table_data(self, **kwargs):
+        super().get_table_data(**kwargs)
+        rule_set = get_object_or_404(TopicTagRuleSet, id=self.kwargs['id'])
+        return TopicTagRule.objects.filter(rule_set=rule_set)
+
+
+topictagruleset_detail_view = TopicTagRuleSetDetailView.as_view()
+
+
+@require_POST
+@login_required()
+def topictagruleset_run(request, id):
+    rule_set = get_object_or_404(TopicTagRuleSet, id=id)
+    # collect count of topics we ran for
+    updated_set = set()
+    for rule in rule_set.topictagrule_set.all():
+        updated = utils.tag_topics(rule.filters, rule.tags, select_all=True)
+        for x in updated:
+            updated_set.add(x.get('topic'))
+    return JsonResponse({'success': 1, 'updated': len(updated_set)})
 
 
 class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):

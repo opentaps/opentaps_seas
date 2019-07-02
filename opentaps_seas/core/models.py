@@ -493,7 +493,12 @@ class Geo(models.Model):
         return state_choices
 
 
+class TopicTagRuleSet(models.Model):
+    name = CharField(_("Name"), max_length=255)
+
+
 class TopicTagRule(models.Model):
-    rule_name = CharField(_("Rule Name"), max_length=255, primary_key=True)
+    name = CharField(_("Name"), max_length=255)
+    rule_set = models.ForeignKey(TopicTagRuleSet, on_delete=models.CASCADE)
     filters = ArrayField(HStoreField(blank=True, null=True))
     tags = ArrayField(HStoreField(blank=True, null=True))

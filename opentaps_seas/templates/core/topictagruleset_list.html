@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load django_tables2 %}
+{% load static i18n %}
+{% block title %}Topic Tag Rule Sets{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3">
+    <div class="card-body" id="ruleset-list">
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+        ${ errors.error }
+      </div>
+      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="run_success">
+        <div>Successfully ran on ${ run_success.updated } Topics.</div>
+        <button type="button" class="close" aria-label="Close" v-on:click="run_success = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% load render_table from django_tables2 %}
+      {% include "core/_table_filter_add.html" %}
+      {% render_table table %}
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#ruleset-list',
+    name: 'ruleset-list',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        run_success: false,
+        errors: false
+      }
+    },
+    methods: {
+      run_tag_ruleset(id) {
+        return {
+          okText: 'Proceed',
+          ok: dialog => this.run_tag_ruleset_cb(dialog, id),
+          message: 'This will run all the Rules in this Rule Set, this may take a while to complete.'
+        }
+      },
+      run_tag_ruleset_cb(dialog, id) {
+        console.log('run set', id)
+        url = dutils.urls.resolve('topictagruleset_run', {id: id})
+        this.run_success = false
+        this.errors = false
+        return axios.post(url, {}, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              console.log('run_tag_ruleset Done', x)
+              if (x.success) {
+                this.run_success = x
+                dialog.close()
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              e = getResponseError(err)
+              console.error(e, err)
+              this.errors = e
+              dialog.close()
+            });
+      },
+      delete_tag_ruleset(id) {
+        return {
+          okText: 'Delete',
+          ok: dialog => this.delete_tag_ruleset_cb(dialog, id),
+          message: 'Are you sure? This will delete the Rule Set and ALL its rules.'
+        }
+      },
+      delete_tag_ruleset_cb(dialog, id) {
+        console.log('DELETE?', id)
+        url = dutils.urls.resolve('topic_rules')
+        return axios.delete(url, {data: {rule_set_id: id}, headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              console.log('delete_tag_ruleset Done', x)
+              if (x.success) {
+                dialog.close()
+                document.getElementById('topicruleset_'+id).remove()
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              e = getResponseError(err)
+              console.error(e, err)
+              this.errors = e
+              dialog.close()
+            });
+      },
+    }
+  })
+})();
+</script>
+{% endblock content %}
