@@ -146,11 +146,8 @@
 <script>
 (function(){
   const STATUS_HASFILE = 2, STATUS_SUCCESS = 3, STATUS_FAILED = 4;
-  const CSRF_TOKEN = (function csrftoken() {
-    c = "{% csrf_token %}";
-    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
-    return c;
-  })();
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
   Vue.component('file-form-modal', {
     delimiters: ['$[', ']'],
     extends: Vue.component('form-modal'),

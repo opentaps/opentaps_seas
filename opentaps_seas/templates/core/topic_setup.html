@@ -158,11 +158,8 @@
 <script>
 (function(){
   const STATUS_SUCCESS = 2
-  const CSRF_TOKEN = (function csrftoken() {
-    c = "{% csrf_token %}";
-    c = c.substring(c.indexOf("value='")+"value='".length, c.lastIndexOf("'"));
-    return c;
-  })();
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
   new Vue({
     delimiters: ['${', '}'],
     el: '#topicsetup',
