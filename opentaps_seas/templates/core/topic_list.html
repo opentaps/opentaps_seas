@@ -65,7 +65,6 @@
             <div id="table_container" ref="table_container">
                 {% render_table table %}
             </div>
-            <input id="select_all_matching" type="checkbox" name="_ALL_" class="mr-2" v-model="select_all_matching" /> <label for="select_all_matching">Select all topics matching the filters on all pages.</label>
         </form>
 
     </div>
@@ -546,6 +545,7 @@
           {% endfor %}
         ],
         selected_topics: {},
+        all_checked: false,
         select_all_matching: false
       }
     },
@@ -619,6 +619,7 @@
         }
         console.log('set select_all checked', all_checked)
         select_all.checked = all_checked
+        this.all_checked = all_checked
         select_all.addEventListener('change', function(event) {
             console.log('* change select_all', this.checked)
             _this.select_all(this.checked)
@@ -648,7 +649,7 @@
         _this = this
         for (var i=0; i<cbs.length; i++) {
             cb = cbs[i]
-            if (cb.value && cb.name && cb.name.length) {
+            if (cb.value && cb.name && cb.name.length && cb.name != '_ALL_') {
               cb.checked = _this.selected_topics[cb.value]
               if (!_this.selected_topics[cb.value]) {
                 all_checked = false
@@ -657,6 +658,7 @@
         }
         select_all = el.querySelector('thead input[type="checkbox"]')
         select_all.checked = all_checked
+        this.all_checked = all_checked
       },
       select_all(checked, skipSave) {
         el = this.$refs['table_container']
@@ -670,6 +672,7 @@
               _this.selected_topics[cb.value] = checked
             }
         }
+        this.all_checked = checked
       },
       filter_on_enter(e) {
         if (e.keyCode === 13) {
