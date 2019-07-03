@@ -147,7 +147,9 @@
 
               <div class="form-group d-flex justify-content-around">
                 <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
+                {% if not rule %}
                 <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="toggle_show_save_rule()">Save as a Rule <i class="fa fa-chevron-right ml-2"></i></button>
+                {%endif%}
               </div>
             </div>
           </div>
@@ -268,7 +270,7 @@
         value: '',
         tag_topics_success: false,
         create_rule_success: false,
-        show_save_rule: false,
+        show_save_rule: {% if rule %}true{%else%}false{%endif%},
         valid_rulesets: [],
         ruleset_type: {%if rule %}'current'{%else%}'new'{%endif%},
         ruleset_name: '',
