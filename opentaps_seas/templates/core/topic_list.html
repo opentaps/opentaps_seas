@@ -28,6 +28,7 @@
   {% load render_table from django_tables2 %}
   {% url 'core:topic_import' as topic_import_url %}
   {% url 'core:topic_report_tags_csv' as topic_report_tags_url %}
+  {% url 'core:topictagruleset_list' as topictagruleset_list %}
 
   <div class="card mb-3">
     <div class="card-body" id="topics-list" v-cloak>
@@ -54,7 +55,8 @@
 
                 <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
                   {% bootstrap_button '<i class="fa fa-download"></i> Topics Report' button_class='btn-primary mr-2' href=topic_report_tags_url %}
-                  {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary' href=topic_import_url %}
+                  {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary mr-2' href=topic_import_url %}
+                  {% bootstrap_button 'Tagging Rules <i class="fa fa-chevron-right"></i>' button_class='btn-primary' href=topictagruleset_list %}
                 </div>
 
               </div>
