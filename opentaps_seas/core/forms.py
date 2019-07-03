@@ -22,6 +22,8 @@ from .models import EntityNote
 from .models import Entity
 from .models import ModelView
 from .models import Tag
+from .models import TopicTagRule
+from .models import TopicTagRuleSet
 from .models import TimeZone
 from django import forms
 from django.template.defaultfilters import slugify
@@ -91,6 +93,51 @@ class ModelUpdateForm(ModelCreateForm):
     def __init__(self, *args, **kwargs):
         super(ModelUpdateForm, self).__init__(*args, **kwargs)
         self.fields['entity_id'].widget = forms.HiddenInput()
+
+
+class TopicTagRuleSetCreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        name = self.cleaned_data['name']
+        if TopicTagRuleSet.objects.filter(name=name).exists():
+            logger.error('TopicTagRuleSetCreateForm: got rule set with name = %s', name)
+            self.add_error('name', 'Rule Set with this name already exists.')
+            return False
+        return True
+
+    class Meta:
+        model = TopicTagRuleSet
+        fields = ["name"]
+
+
+class TopicTagRuleCreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        rule_set = self.cleaned_data['rule_set']
+        name = self.cleaned_data['name']
+        if not type(rule_set) == TopicTagRuleSet and not TopicTagRuleSet.objects.filter(id=rule_set).exists():
+            logger.error('TopicTagRuleCreateForm: rule set not found = %s', rule_set)
+            self.add_error('rule_set', 'Rule Set [{}] does not exist.'.format(rule_set))
+            return False
+        if TopicTagRule.objects.filter(rule_set=rule_set, name=name).exists():
+            logger.error('TopicTagRuleCreateForm: got rule with name = %s', name)
+            self.add_error('name', 'Rule with this name already exists in this rule set.')
+            return False
+        return True
+
+    class Meta:
+        model = TopicTagRule
+        fields = ["rule_set", "name"]
 
 
 class SiteCreateForm(forms.ModelForm):

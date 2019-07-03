@@ -39,7 +39,8 @@
         </button>
       </div>
       {% load render_table from django_tables2 %}
-      {% include "core/_table_filter_add.html" %}
+      {% url 'core:topictagruleset_create' as ruleset_create_url %}
+      {% include "core/_table_filter_add.html" with add_label='Add Rule Set' add_url=ruleset_create_url %}
       {% render_table table %}
     </div>
   </div>

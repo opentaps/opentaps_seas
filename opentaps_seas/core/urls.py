@@ -64,6 +64,8 @@ from .views import (
     topictagruleset_list_view,
     topictagruleset_detail_view,
     topictagruleset_run,
+    topictagruleset_create_view,
+    topictagrule_create_view,
     tag_topics
 )
 
@@ -73,7 +75,10 @@ urlpatterns = [
     path("topic_tag_rulesets/", view=topictagruleset_list_view, name="topictagruleset_list"),
     path("topic_tag_rulesets/<str:id>", view=topictagruleset_detail_view, name="topictagruleset_detail"),
     path("topic_tag_rulesets/run/<str:id>", view=topictagruleset_run, name="topictagruleset_run"),
+    path("newtopic_tag_ruleset/", view=topictagruleset_create_view, name="topictagruleset_create"),
     path("topic_tag_rule/<str:id>", view=topic_list_view, name="topictagrule_detail"),
+    path("newtopic_tag_rule/<str:id>", view=topictagrule_create_view, name="topictagrule_forset_create"),
+    path("newtopic_tag_rule/", view=topictagrule_create_view, name="topictagrule_create"),
     path("tag_topics/", view=tag_topics, name="tag_topics"),
     path("topic_table/", view=topic_list_table, name="topic_table"),
     path("topic_rules/", view=topic_rules, name="topic_rules"),

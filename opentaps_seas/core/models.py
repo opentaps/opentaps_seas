@@ -496,9 +496,21 @@ class Geo(models.Model):
 class TopicTagRuleSet(models.Model):
     name = CharField(_("Name"), max_length=255)
 
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("core:topictagruleset_detail", kwargs={"id": self.id})
+
 
 class TopicTagRule(models.Model):
     name = CharField(_("Name"), max_length=255)
     rule_set = models.ForeignKey(TopicTagRuleSet, on_delete=models.CASCADE)
-    filters = ArrayField(HStoreField(blank=True, null=True))
-    tags = ArrayField(HStoreField(blank=True, null=True))
+    filters = ArrayField(HStoreField(blank=True, null=True), default=list)
+    tags = ArrayField(HStoreField(blank=True, null=True), default=list)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("core:topictagrule_detail", kwargs={"id": self.id})

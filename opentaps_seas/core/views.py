@@ -36,6 +36,8 @@ from .forms import TagChangeForm
 from .forms import TagUpdateForm
 from .forms import TopicAssocForm
 from .forms import TopicImportForm
+from .forms import TopicTagRuleCreateForm
+from .forms import TopicTagRuleSetCreateForm
 from .forms import EquipmentCreateForm
 from .models import Entity
 from .models import EntityFile
@@ -366,6 +368,19 @@ class TopicTagRuleSetFilter(FilterSet):
 
     class Meta:
         model = TopicTagRuleSet
+        fields = []
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value)
+        )
+
+
+class TopicTagRuleFilter(FilterSet):
+    query = CharFilter(method='filter_by_all_fields')
+
+    class Meta:
+        model = TopicTagRule
         fields = []
 
     def filter_by_all_fields(self, queryset, name, value):
@@ -1045,21 +1060,49 @@ class TopicTagRuleSetListView(LoginRequiredMixin, SingleTableMixin, WithBreadcru
 topictagruleset_list_view = TopicTagRuleSetListView.as_view()
 
 
-class TopicTagRuleSetDetailView(LoginRequiredMixin, SingleTableMixin, TopicTagRuleSetBCMixin, DetailView):
+class TopicTagRuleSetCreateView(LoginRequiredMixin, TopicTagRuleSetBCMixin, CreateView):
     model = TopicTagRuleSet
     slug_field = "id"
     slug_url_kwarg = "id"
+    template_name = 'core/topictagruleset_edit.html'
+    form_class = TopicTagRuleSetCreateForm
+
+
+topictagruleset_create_view = TopicTagRuleSetCreateView.as_view()
+
+
+class TopicTagRuleSetDetailView(LoginRequiredMixin, SingleTableMixin, TopicTagRuleSetBCMixin, FilterView):
+    model = TopicTagRule
     template_name = 'core/topictagruleset_detail.html'
     table_class = TopicTagRuleTable
-    entity_id_field = 'id'
+    filterset_class = TopicTagRuleFilter
 
-    def get_table_data(self, **kwargs):
-        super().get_table_data(**kwargs)
+    def get_queryset(self):
+        qs = super().get_queryset()
         rule_set = get_object_or_404(TopicTagRuleSet, id=self.kwargs['id'])
-        return TopicTagRule.objects.filter(rule_set=rule_set)
+        return qs.filter(rule_set=rule_set)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'] = get_object_or_404(TopicTagRuleSet, id=self.kwargs['id'])
+        return context
 
 
 topictagruleset_detail_view = TopicTagRuleSetDetailView.as_view()
+
+
+class TopicTagRuleCreateView(LoginRequiredMixin, TopicTagRuleSetBCMixin, CreateView):
+    model = TopicTagRule
+    slug_field = "id"
+    slug_url_kwarg = "id"
+    template_name = 'core/topictagrule_edit.html'
+    form_class = TopicTagRuleCreateForm
+
+    def get_initial(self):
+        return {'rule_set': self.kwargs.get('id')}
+
+
+topictagrule_create_view = TopicTagRuleCreateView.as_view()
 
 
 @require_POST

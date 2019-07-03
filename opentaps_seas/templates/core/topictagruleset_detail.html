@@ -30,7 +30,8 @@
   <div class="card mb-3">
     <div class="card-body" id="rule-list">
       {% load render_table from django_tables2 %}
-      {% include "core/_table_filter_add.html" %}
+      {% url 'core:topictagrule_forset_create' id=object.id as rule_create_url %}
+      {% include "core/_table_filter_add.html" with add_label='Add Rule' add_url=rule_create_url %}
       {% render_table table %}
     </div>
   </div>
