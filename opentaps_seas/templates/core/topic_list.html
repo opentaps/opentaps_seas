@@ -75,26 +75,8 @@
     <div class="card mb-3">
       <div class="card-body">
         <h4 class="position-relative">Tag Selected Topics <button class="btn btn-secondary a-rt" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button></h4>
-        <!--List Tags-->
-        <div class="container tags-table ftable">
-          <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
-            <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
-              <span v-if="!get_link(item)">${display_tag(item)}</span>
-              <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
-              <div v-if="item.parent" class="text-muted text-small text-wrap">
-                from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
-              </div>
-            </div>
-            <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
-              <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
-              <button v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
-            </div>
-          </div>
-        </div>
         <!--Add Tag-->
         <form novalidate v-if="isInitial || isSaving" class="main-form">
-          <h5 class="form-title">{{ form_title|default:"Add a tag" }}</h5>
-
           <div class="container p-0">
             <div class="col">
               <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
@@ -144,22 +126,38 @@
                 :errors="errors.value"></tag-value-input>
 
               <button class="invisible a-rt" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
-
-              <div class="form-group d-flex justify-content-around">
-                <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
-                {% if not rule %}
-                <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="toggle_show_save_rule()">Save as a Rule <i class="fa fa-chevron-right ml-2"></i></button>
-                {%endif%}
-              </div>
             </div>
           </div>
         </form>
+        <!--List Tags-->
+        <div class="container tags-table ftable">
+          <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
+            <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
+              <span v-if="!get_link(item)">${display_tag(item)}</span>
+              <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
+              <div v-if="item.parent" class="text-muted text-small text-wrap">
+                from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+              </div>
+            </div>
+            <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
+              <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
+              <button v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
 
         <!--modal-->
         <tag-form-modal
           title="Edit Tag"
           url=""
           :csrfmiddlewaretoken="csrfmiddlewaretoken"></tag-form-modal>
+
+        <div class="form-group d-flex justify-content-around">
+          <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
+          {% if not rule %}
+          <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="toggle_show_save_rule()">Save as a Rule <i class="fa fa-chevron-right ml-2"></i></button>
+          {%endif%}
+        </div>
       </div>
     </div>
 
