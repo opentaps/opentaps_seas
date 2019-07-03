@@ -1491,6 +1491,25 @@ def point_data_csv(request, point, site=None, equip=None):
     return response
 
 
+@login_required()
+def topic_report_tags_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="TopicsTagsReport.csv"'
+
+    report_rows, report_header = utils.get_topics_tags_report()
+
+    writer = csv.writer(response)
+    if report_header:
+        writer.writerow(report_header)
+        if report_rows:
+            for row in report_rows:
+                writer.writerow(row)
+    else:
+        writer.writerow([''])
+
+    return response
+
+
 def _read_files(files, items, protect=False, parent=None):
     for file in files:
         d = {

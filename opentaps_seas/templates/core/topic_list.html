@@ -27,6 +27,7 @@
   {% include "core/_breadcrumbs.html" %}
   {% load render_table from django_tables2 %}
   {% url 'core:topic_import' as topic_import_url %}
+  {% url 'core:topic_report_tags_csv' as topic_report_tags_url %}
 
   <div class="card mb-3">
     <div class="card-body" id="topics-list" v-cloak>
@@ -50,9 +51,14 @@
                     <a href="#" class="btn btn-outline-danger" v-on:click="delete_filter(filter, index)"><i class="fa fa-minus"></i></a>
                   </div>
                 </div>
+
+                <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
+                  {% bootstrap_button 'Topics Report' button_class='btn-primary' href=topic_report_tags_url %}
+                </div>
                 <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
                   {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary' href=topic_import_url %}
                 </div>
+
               </div>
               <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
             </div>

@@ -247,6 +247,62 @@ def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT
     return list(reversed(data))
 
 
+def get_topics_tags_report():
+    topics = Topic.objects.all().order_by('topic')
+    report_rows = []
+    report_header = []
+    topics_tags = {}
+
+    for topic in topics:
+        point = topic.get_related_point()
+        if point:
+            tags_exists = False
+            topic_tags = {}
+            if point.kv_tags:
+                topic_tags["kv_tags"] = point.kv_tags
+                tags_exists = True
+                for key in point.kv_tags.keys():
+                    if key not in report_header:
+                        report_header.append(key)
+
+            if point.m_tags:
+                topic_tags["m_tags"] = point.m_tags
+                tags_exists = True
+                for tag in point.m_tags:
+                    if tag not in report_header:
+                        report_header.append(tag)
+
+            if tags_exists:
+                topics_tags[topic.topic] = topic_tags
+    report_header = sorted(report_header)
+
+    # prepare report rows
+    for topic in topics:
+        topic_tags = topics_tags.get(topic.topic)
+        row = [topic.topic]
+        if not topic_tags:
+            row.extend([''] * len(report_header))
+        else:
+            kv_tags = topic_tags.get("kv_tags", {})
+            m_tags = topic_tags.get("m_tags", [])
+            if kv_tags or m_tags:
+                for tag in report_header:
+                    if kv_tags and tag in kv_tags.keys():
+                        value = kv_tags[tag]
+                        row.append(value)
+                    elif m_tags and tag in m_tags:
+                        row.append("X")
+                    else:
+                        row.append("")
+            else:
+                row.append("")
+
+        report_rows.append(row)
+
+    report_header.insert(0, "topic")
+    return report_rows, report_header
+
+
 def charts_for_points(points):
     charts = []
     i = 0
