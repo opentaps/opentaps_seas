@@ -74,7 +74,7 @@
 
     <div class="card mb-3">
       <div class="card-body">
-        <h4>Tag Selected Topics</h4>
+        <h4 class="position-relative">Tag Selected Topics <button class="btn btn-secondary a-rt" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button></h4>
         <!--List Tags-->
         <div class="container tags-table ftable">
           <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
@@ -143,9 +143,11 @@
                 v-model="value"
                 :errors="errors.value"></tag-value-input>
 
+              <button class="invisible a-rt" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
+
               <div class="form-group d-flex justify-content-around">
-                <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
                 <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
+                <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="toggle_show_save_rule()">Save as a Rule <i class="fa fa-chevron-right ml-2"></i></button>
               </div>
             </div>
           </div>
@@ -159,9 +161,9 @@
       </div>
     </div>
 
-    <div class="card mb-3">
+    <div class="card mb-3" v-if="show_save_rule">
       <div class="card-body">
-        <h4>Save as a Rule</h4>
+        <h4 ref="save_rule_title">Save as a Rule</h4>
         <div class="alert alert-danger mt-3" role="alert" v-if="rule_errors.error">
           ${ rule_errors.error }
         </div>
@@ -266,6 +268,7 @@
         value: '',
         tag_topics_success: false,
         create_rule_success: false,
+        show_save_rule: false,
         valid_rulesets: [],
         ruleset_type: {%if rule %}'current'{%else%}'new'{%endif%},
         ruleset_name: '',
@@ -318,6 +321,12 @@
         this.tag = ''
         this.value = ''
         if (this.$refs.tagInput) this.$refs.tagInput.inputValue = ''
+      },
+      toggle_show_save_rule() {
+        this.show_save_rule = !this.show_save_rule
+        if (this.show_save_rule) {
+          this.$nextTick(() => this.$refs.save_rule_title.scrollIntoView())
+        }
       },
       set_status(saving) {
         this.currentStatus = saving ? STATUS_SAVING : STATUS_INITIAL
