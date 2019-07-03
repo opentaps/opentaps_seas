@@ -53,9 +53,7 @@
                 </div>
 
                 <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
-                  {% bootstrap_button 'Topics Report' button_class='btn-primary' href=topic_report_tags_url %}
-                </div>
-                <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
+                  {% bootstrap_button '<i class="fa fa-download"></i> Topics Report' button_class='btn-primary mr-2' href=topic_report_tags_url %}
                   {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary' href=topic_import_url %}
                 </div>
 
