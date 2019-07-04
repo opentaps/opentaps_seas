@@ -1765,11 +1765,6 @@ def _read_tags(tags, items, protect=False, parent=None):
 def entity_tag(request, entity_id):
     if request.method == 'GET':
         items = []
-        model_id = utils.get_related_model_id(entity_id)
-        if model_id:
-            model = ModelView.objects.filter(object_id=model_id).values()[0]
-            # note: those should be read only
-            _read_tags(utils.get_tags_list_for_topic(model['entity_id']), items, protect=True, parent=model)
 
         _read_tags(utils.get_tags_list_for_topic(entity_id), items)
         return JsonResponse({'items': items})
@@ -1807,6 +1802,10 @@ def entity_tag(request, entity_id):
                     if ref:
                         result['ref'] = ref.as_dict()
                         result['slug'] = ref.entity_id
+                        if tag == 'modelRef':
+                            model_obj = ModelView.objects.filter(entity_id=ref.entity_id).values().first()
+                            entity.add_tags_from_model(model_obj)
+
                     return JsonResponse({'success': 1, 'results': [result]})
                 else:
                     return JsonResponse({'errors': 'Tag not found : {}'.format(tag)}, status=404)

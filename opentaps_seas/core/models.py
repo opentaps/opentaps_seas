@@ -176,6 +176,19 @@ class Entity(models.Model):
         if commit:
             self.save()
 
+    def add_tags_from_model(self, model, commit=True):
+        exclude_tags = ['id', 'dis', 'model']
+        if model:
+            if model['kv_tags']:
+                for tag in model['kv_tags'].keys():
+                    if model['kv_tags'][tag]:
+                        if tag not in exclude_tags:
+                            self.add_tag(tag, model['kv_tags'][tag], commit=commit)
+            if model['m_tags']:
+                for tag in model['m_tags']:
+                    if tag not in exclude_tags:
+                        self.add_tag(tag, commit=commit)
+
     def remove_tag(self, tag, commit=True):
         # handle both kv_tags and m_tags
         self.kv_tags.pop(tag, None)

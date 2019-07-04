@@ -226,6 +226,9 @@ class EquipmentCreateForm(forms.ModelForm):
         model = self.cleaned_data['model']
         if model:
             equipment.add_tag('modelRef', model, commit=False)
+            # add tags from model
+            model_obj = ModelView.objects.filter(object_id=model).values().first()
+            equipment.add_tags_from_model(model_obj, commit=False)
 
         equipment.save()
         self.instance = Entity.objects.get(entity_id=entity_id)
