@@ -930,6 +930,8 @@ def tag_topics(request):
 
     # store a dict of topic -> data_point.entity_id
     updated = utils.tag_topics(filters, tags, select_all=select_all, topics=topics)
+    if not updated:
+        return JsonResponse({'errors': 'No Topic matched the given filters.'})
     return JsonResponse({'success': 1, 'updated': updated, 'tags': tags})
 
 
