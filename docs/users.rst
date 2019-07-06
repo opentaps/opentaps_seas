@@ -68,6 +68,12 @@ After
 importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
 and siteRef tags.  Or this could be done by using SQL in PostgreSQL to update these tags in bulk based on their naming patterns.  See the file ``data/ahu/demo/tag_entities.sql`` for an example of how to do this. 
 
+Topics Report
+#############
+
+This provides you with a report in CSV format of all the topics and their current tags.  The topics are in rows and the tags are in columns, and the value will be in the
+cells.  If the tags is a marker tag, there will be an X.
+
 Models
 ^^^^^^
 
