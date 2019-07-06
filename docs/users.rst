@@ -64,15 +64,43 @@ You can also use the Import Topics button import a CSV file of new topics.  This
 generates (see ``/examples/configurations/drivers/bacnet.csv`` for an example.)  When importing, you can add a prefix all the BACNET points, for example ``campus_A/building_2/``, 
 and they will be added to your topics.  The import will add them as topics and data points, and the additional BACNET data will be stored with the data point.  
 
-After
-importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
-and siteRef tags.  Or this could be done by using SQL in PostgreSQL to update these tags in bulk based on their naming patterns.  See the file ``data/ahu/demo/tag_entities.sql`` for an example of how to do this. 
+After importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
+and siteRef tags.  
+
+To tag your topics, please see "Tagging Rules" section below.
 
 Topics Report
 #############
 
 This provides you with a report in CSV format of all the topics and their current tags.  The topics are in rows and the tags are in columns, and the value will be in the
 cells.  If the tags is a marker tag, there will be an X.
+
+Tagging Rules
+#############
+
+Tagging data points is ultimately very helpful in understanding your data, and tags are required for running services on your data.  However, tagging has always been a very manual and time
+consuming process.  We've tried to help streamline this process by introducing "Tagging Rules", which allow you to create sets of rules that could be used to tag all your topics.  This works
+like this:
+
+ * Topics could be filtered by several conditions.  For example, we can filter our topics to those that contain "SP" and "ZoneTemp".
+ * We can then apply tags to our filtered list of topics.  For example, for all topics which contain "ZoneTemp" and "SP", we can apply the tags sp, temp, zone.  This is called a **rule**.
+ * We can then group many rules together in to a **rule set**.  Rule sets could be used to organize rules by equipment manufacturer or building owner, so they can be used to tag topics with similar syntax. 
+
+There are a couple of ways to do this in the user interface.  First, from the Topics page, you can start filtering the topics by selecting Contains or Not Contains and putting text 
+into the "Filter Topics" input box.  This will show you a list of filtered topics.  Then you can choose the topics you want to add tags, and go below to the "Tag Selected Topics" section to add
+tags for these topics.  Note in the list of topics there is one that says "Select all topics matching the filters on all pages."  If you choose this, it will check all the topics that match your
+filters on all the pages of results, not just what you see on the current page.  Then just click "Apply Tags" to apply these tags to the topics.   
+
+From here you can also click on "Save as a Rule", and it will open a dialog box below.  Here you can choose to save to a new rule set or an existing one, then put a name for your rule, and save
+the filter/tags as a rule.  
+
+The second way is to click on the "Tagging Rules" button.  Then you will see all the tagging rules created so far.  Click on one to see the rules inside.  Click on the rule, and you will be taken
+to the filter page, where you can change the tags and update it.  You can also create new rule sets and rules in these screens.
+
+Using SQL Scripts
+#################
+
+Another way to tag your topics is to use a SQL script to update these tags in bulk based on their naming patterns.  See the file ``data/ahu/demo/tag_entities.sql`` for an example of how to do this. 
 
 Models
 ^^^^^^
