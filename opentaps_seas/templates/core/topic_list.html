@@ -371,9 +371,9 @@
       },
       display_tag(item) {
         if (item.value) {
-          return (item.description || item.tag) + ': ' + item.value
+          return (item.tag) + ': ' + item.value
         } else {
-          return '✓ ' + (item.description || item.tag)
+          return '✓ ' + (item.tag)
         }
       },
       display_tag_short(item) {
