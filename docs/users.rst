@@ -69,12 +69,6 @@ and siteRef tags.
 
 To tag your topics, please see "Tagging Rules" section below.
 
-Topics Report
-#############
-
-This provides you with a report in CSV format of all the topics and their current tags.  The topics are in rows and the tags are in columns, and the value will be in the
-cells.  If the tags is a marker tag, there will be an X.
-
 Tagging Rules
 #############
 
@@ -101,6 +95,13 @@ Using SQL Scripts
 #################
 
 Another way to tag your topics is to use a SQL script to update these tags in bulk based on their naming patterns.  See the file ``data/ahu/demo/tag_entities.sql`` for an example of how to do this. 
+
+Topics Report
+#############
+
+To see how you're doing with the tagging, use this report.  It provides you a CSV file of all the topics and their current tags.  
+The topics are in rows and the tags are in columns, and the value will be in the
+cells.  If the tags is a marker tag, there will be an X.
 
 Models
 ^^^^^^
