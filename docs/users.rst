@@ -77,10 +77,10 @@ cells.  If the tags is a marker tag, there will be an X.
 Models
 ^^^^^^
 
-Models are standard templates of tags, content, and notes.  If you put tags, files or links, and notes on a Model, and then tag the Equipment of a Site as that Model, the Equipment inherits all the tags, files, links, and notes of your Model.  The inherited information is not changeable for the Equipment.  They can only be changed at the Model level.
+Models are standard templates of tags, content, and notes.  If you put tags, files or links, and notes on a Model, and then tag the Equipment of a Site as that Model, the Equipment gets all the tags, files, links, and notes of your Model.  This is a one time inheritance: If you change them on the Model again, they will not automatically be changed on the Equipment that already has been linked to the Model. 
 
 This feature is to help you standardize tags, content, and notes for your commonly used equipment.  For example, you can create a Model called "Siemens Standard RTU" and then put all
-the information common to that model.  Then for all the machines like your "Siemens Standard RTU", you can just set their Model, and they will 
+the information common to that model.  Then for all the machines like your "Siemens Standard RTU", you can just set their Model, and they can all get the same tags and data from the model. 
 
 
 Tags
