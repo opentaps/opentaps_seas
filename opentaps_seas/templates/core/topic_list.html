@@ -77,7 +77,7 @@
         <h4 class="position-relative">Tag Selected Topics <button class="btn btn-secondary a-rt" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button></h4>
         <!--Add Tag-->
         <form novalidate v-if="isInitial || isSaving" class="main-form">
-          <div class="container p-0">
+          <div class="container p-0" v-if="isAddingTag">
             <div class="col">
               <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
                 ${ errors.error }
@@ -152,7 +152,7 @@
           url=""
           :csrfmiddlewaretoken="csrfmiddlewaretoken"></tag-form-modal>
 
-        <div class="form-group d-flex justify-content-around">
+        <div class="form-group d-flex justify-content-around" v-if="sorted_items.length">
           <button class="btn btn-primary col-5" :disabled="isSaving" v-on:click.stop.prevent="apply_tags()"><i v-if="isSaving" class="fas fa-spinner fa-spin"></i><i v-else class="fa fa-check mr-2"></i> Apply Tags</button>
           {% if not rule %}
           <button class="btn btn-secondary col-5" :disabled="isSaving" v-on:click.stop.prevent="toggle_show_save_rule()">Save as a Rule <i class="fa fa-chevron-right ml-2"></i></button>
@@ -266,6 +266,7 @@
         rule_errors: {},
         tag: '',
         value: '',
+        isAddingTag: false,
         tag_topics_success: false,
         create_rule_success: false,
         show_save_rule: {% if rule %}true{%else%}false{%endif%},
@@ -389,6 +390,10 @@
         return Promise.resolve()
       },
       save() {
+        if (!this.isAddingTag) {
+          this.isAddingTag = true
+          return
+        }
         var i = this.items.find(x => !x._protect && x.tag == (this.selectedTag ? this.selectedTag.tag : this.tag));
         if (i) {
           this.errors = getResponseError('This Tag is already set ' + (i.description || i.tag) + (i.value ? ': ' + i.value : ''))
