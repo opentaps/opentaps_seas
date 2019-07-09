@@ -31,31 +31,33 @@
   {% url 'core:topictagruleset_list' as topictagruleset_list %}
 
   <div class="card mb-3">
-    <div class="card-body" id="topics-list" v-cloak>
+    <div class="card-body p-2 p-md-3" id="topics-list" v-cloak>
         <form action="" method="get" class="form" ref="topics_filter_form" v-on:submit.prevent="noop">
             <div class="filters">
               <div class="row m-0" v-for="(filter, index) in filters">
-                <div class="mb-2 mr-2 p-0 col-auto">
-                  <select class="form-control" v-model="filter.type" v-on:change="changed_filter_type(filter, index)">
-                    <option value="c">Contains</option>
-                    <option value="nc">Not Contains</option>
-                  </select>
-                </div>
-                <div class="mb-2 mr-2 p-0 col-4">
-                  <input type="text" class="form-control" placeholder="Filter Topics..." v-model="filter.value" v-on:keyup="filter_on_enter">
-                </div>
-                <div class="mb-2 mr-2 p-0 col-auto">
-                  <div v-if="index == filters.length - 1">
-                    <a href="#" class="btn btn-outline-secondary" v-on:click="add_filter(filter)"><i class="fa fa-filter"></i></a>
+                <div class="row p-0 m-0 mb-2 mr-xl-2 col-12 col-xl-6 order-1 order-xl-0">
+                  <div class="mr-2 p-0 col-auto">
+                    <select class="form-control" v-model="filter.type" v-on:change="changed_filter_type(filter, index)">
+                      <option value="c">Contains</option>
+                      <option value="nc">Not Contains</option>
+                    </select>
                   </div>
-                  <div v-else>
-                    <a href="#" class="btn btn-outline-danger" v-on:click="delete_filter(filter, index)"><i class="fa fa-minus"></i></a>
+                  <div class="mr-2 p-0 col flex-grow">
+                    <input type="text" class="form-control" placeholder="Filter Topics..." v-model="filter.value" v-on:keyup="filter_on_enter">
+                  </div>
+                  <div class="mr-2 p-0 col-auto">
+                    <div v-if="index == filters.length - 1">
+                      <a href="#" class="btn btn-outline-secondary" v-on:click="add_filter(filter)"><i class="fa fa-filter"></i></a>
+                    </div>
+                    <div v-else>
+                      <a href="#" class="btn btn-outline-danger" v-on:click="delete_filter(filter, index)"><i class="fa fa-minus"></i></a>
+                    </div>
                   </div>
                 </div>
 
-                <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1" v-if="index == 0">
-                  {% bootstrap_button '<i class="fa fa-download"></i> Topics Report' button_class='btn-primary mr-2' href=topic_report_tags_url %}
-                  {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary mr-2' href=topic_import_url %}
+                <div class="m-0 mb-2 mr-2 mr-xl-0 p-0 col-auto text-right flex-grow-1 order-0 order-xl-1 d-flex flex-column flex-sm-row justify-content-end" v-if="index == 0">
+                  {% bootstrap_button '<i class="fa fa-download"></i> Topics Report' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_report_tags_url %}
+                  {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_import_url %}
                   {% bootstrap_button 'Tagging Rules <i class="fa fa-chevron-right"></i>' button_class='btn-primary' href=topictagruleset_list %}
                 </div>
 
