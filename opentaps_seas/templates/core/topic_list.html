@@ -56,16 +56,16 @@
                 </div>
 
                 <div class="m-0 mb-2 mr-2 mr-xl-0 p-0 col-auto text-right flex-grow-1 order-0 order-xl-1 d-flex flex-column flex-sm-row justify-content-end" v-if="index == 0">
-                  {% bootstrap_button '<i class="fa fa-download"></i> Topics Report' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_report_tags_url %}
                   {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_import_url %}
                   {% bootstrap_button 'Tagging Rules <i class="fa fa-chevron-right"></i>' button_class='btn-primary' href=topictagruleset_list %}
+                  {% bootstrap_button '<i class="fa fa-download"></i> Topics Report' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_report_tags_url %}
                 </div>
 
               </div>
               {# filter to show only non mapped topics #}
               <div class="ml-1">
                 <input id="select_not_mapped_topics" type="checkbox" class="mr-2 ml-2" v-model="select_not_mapped_topics" v-on:change="submit_filters"/>
-                <label for="select_not_mapped_topics">Show not mapped topics only.</label>
+                <label for="select_not_mapped_topics">Show unmapped topics only.</label>
               </div>
               <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
             </div>
