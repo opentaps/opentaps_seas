@@ -1139,9 +1139,11 @@ def topictagruleset_run(request, id):
     # collect count of topics we ran for
     updated_set = set()
     for rule in rule_set.topictagrule_set.all():
-        updated = utils.tag_topics(rule.filters, rule.tags, select_all=True)
-        for x in updated:
-            updated_set.add(x.get('topic'))
+
+        if rule.tags:
+            updated = utils.tag_topics(rule.filters, rule.tags, select_all=True)
+            for x in updated:
+                updated_set.add(x.get('topic'))
     return JsonResponse({'success': 1, 'updated': len(updated_set)})
 
 
