@@ -303,7 +303,8 @@ class TopicAssocForm(forms.Form):
 
 class TopicImportForm(forms.Form):
     device_prefix = forms.CharField(max_length=255)
-    csv_file = forms.FileField()
+    csv_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))
+    config_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.config'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
