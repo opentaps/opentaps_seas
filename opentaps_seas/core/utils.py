@@ -534,8 +534,17 @@ def get_site_addr_loc(tags, site_id, session):
     return addr_loc
 
 
-def tag_topics(filters, tags, select_all=False, topics=[]):
+def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_topics=None):
     qs = Topic.objects.all()
+
+    if select_not_mapped_topics:
+        # only list topics where there is no related data point
+        # because those are 2 different DB need to get all the data points
+        # where topic is non null and remove those topics
+        # note: cast topic into entity_id as raw query must have the model PK
+        r = PointView.objects.raw("SELECT DISTINCT(topic) as entity_id FROM {}".format(PointView._meta.db_table))
+        qs = qs.exclude(topic__in=[p.entity_id for p in r])
+
     logging.info('tag_topics: using filters %s', filters)
     if filters:
         for qfilter in filters:

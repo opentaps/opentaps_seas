@@ -886,7 +886,9 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         if self.rule:
             b = []
             b.append({'url': reverse('core:topictagruleset_list'), 'label': 'Topic Tag Rule Sets'})
-            b.append({'url': reverse('core:topictagruleset_detail', kwargs={'id': self.rule.rule_set.id}), 'label': 'Rule Set {}'.format(self.rule.rule_set.name or self.rule.rule_set.id)})
+            b.append({'url': reverse('core:topictagruleset_detail',
+                     kwargs={'id': self.rule.rule_set.id}),
+                             'label': 'Rule Set {}'.format(self.rule.rule_set.name or self.rule.rule_set.id)})
             b.append({'label': 'Rule {}'.format(self.rule.name or self.rule.id)})
             return b
         return super().get_breadcrumbs(context)
@@ -940,6 +942,7 @@ def tag_topics(request):
     topics = data.get('topics')
     select_all = data.get('select_all')
     filters = data.get('filters')
+    snmt = data.get('select_not_mapped_topics')
 
     if not tags:
         return JsonResponse({'errors': 'No Tags given'})
@@ -947,7 +950,7 @@ def tag_topics(request):
         return JsonResponse({'errors': 'No Topics selected'})
 
     # store a dict of topic -> data_point.entity_id
-    updated = utils.tag_topics(filters, tags, select_all=select_all, topics=topics)
+    updated = utils.tag_topics(filters, tags, select_all=select_all, topics=topics, select_not_mapped_topics=snmt)
     if not updated:
         return JsonResponse({'errors': 'No Topic matched the given filters.'})
     return JsonResponse({'success': 1, 'updated': updated, 'tags': tags})

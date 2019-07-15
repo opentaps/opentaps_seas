@@ -458,6 +458,7 @@
       set_save_rule(update_data) {
         // check there are filters or tags to save
         filters = eventHub.get_filters()
+        select_not_mapped_topics = eventHub.get_select_not_mapped_topics()
         valid_filters = []
         tags = this.items
         this.create_rule_success = false
@@ -466,6 +467,7 @@
         console.log('*** rulename =', this.rulename)
         console.log('*** tags =', tags)
         console.log('*** filters =', filters)
+        console.log('*** select_not_mapped_topics =', select_not_mapped_topics)
         // build text of selected filters and tags:
         details = ''
         for (var i=0; i<filters.length; i++) {
@@ -579,6 +581,9 @@
       eventHub.$on('apply_tags', this.apply_tags)
       eventHub.get_filters = () => {
         return this.filters
+      }
+      eventHub.get_select_not_mapped_topics = () => {
+        return this.select_not_mapped_topics
       }
     },
     watch: {
@@ -795,6 +800,9 @@
           }
         }
         data = {tags: tags, topics: topics, filters: filters, select_all: this.select_all_matching}
+        if (this.select_not_mapped_topics) {
+          data.select_not_mapped_topics = 1
+        }
         console.log('apply_tags JSON = ', data)
         if (tags.length) {
           eventHub.$emit('applying_tags', true)
