@@ -43,15 +43,15 @@ def clean():
     conn.close()
 
 
-def demo():
-    import_files('demo')
+def demo(filters):
+    import_files('demo', filters)
 
 
 def seed():
     import_files('seed')
 
 
-def import_files(which):
+def import_files(which, filters=[]):
     print('Importing {} data...'.format(which))
     mypath = os.path.join(os.path.dirname(os.path.realpath(__file__)), which)
     if os.path.isdir(mypath):
@@ -59,12 +59,12 @@ def import_files(which):
             filename = os.path.join(mypath, f)
             if os.path.isfile(filename):
                 print('Importing {} data [{}]'.format(which, filename))
-                import_entities(filename)
+                import_entities(filename, filters)
     else:
         print('No {} data to import.'.format(which))
 
 
-def import_entities(source_file_name):
+def import_entities(source_file_name, filters):
     reader = None
     with open(source_file_name) as f:
         reader = json.loads(f.read())
@@ -79,6 +79,22 @@ def import_entities(source_file_name):
         topic = row.get('topic')
         kv_tags = row.get('kv_tags', {})
         m_tags = row.get('m_tags', [])
+
+        if filters:
+            skip = True
+            # check the entity matches all the filters
+            for f in filters:
+                if f.startswith('~'):
+                    f = f[1:]
+                    if f not in m_tags:
+                        skip = False
+                        break
+                elif f in m_tags:
+                    skip = False
+                    break
+            if skip:
+                print('-- SKIP entity: {}, tags {} not matching any filter {}'.format(entity_id, m_tags, filters))
+                continue
 
         try:
             cursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
@@ -107,14 +123,22 @@ def print_help():
     print("  note: table managed by DJANGO, make sure the migrations are run so the table exists")
     print("  all|seed|demo: which data to import")
     print("  clean: optional, delete data first")
+    print("  entity_mtag=[m_tag]: optional, only import demo entities matching any of the given m_tag, eg: site")
+    print("    can provide multiple filters, eg: site,equip")
+    print("    can prefix a tag with ~ to negate eg: ~point matches all those that are not point")
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print_help()
+    filters = []
+    for a in sys.argv:
+        if a.startswith('entity_mtag='):
+            filters = a[len('entity_mtag='):].split(',')
+            print("Filtering entities matching m_tag = {}".format(filters))
     if 'clean' in sys.argv:
         clean()
     if 'all' in sys.argv or 'clean' in sys.argv or 'seed' in sys.argv:
         seed()
     if 'all' in sys.argv or 'demo' in sys.argv:
-        demo()
+        demo(filters)

@@ -31,6 +31,10 @@ from django.template.defaultfilters import slugify
 
 CRATE_HOST = 'localhost:4200'
 
+GLB_OPTIONS = {
+    'ahu_no_point': False
+}
+
 
 def get_connection():
     connection = connect(CRATE_HOST, error_trace=True)
@@ -241,23 +245,24 @@ def import_csv(source_file_name):
                 print('-- ERROR loading data: {}'.format(csv_writer['filename']))
                 raise
 
-            print('-- Create Demo Point with topic {}'.format(csv_writer['topic']))
+            if not GLB_OPTIONS['ahu_no_point']:
+                print('-- Create Demo Point with topic {}'.format(csv_writer['topic']))
 
-            try:
-                tags = {
-                    'id': csv_writer['topic'],
-                    'dis': 'Demo point for ' + csv_writer['topic'],
-                    'kind': 'Number',
-                    'siteRef': '@Demo-Site-1',
-                    'equipRef': '@Demo-' + name.upper(),
-                }
-                mtags = ['point', 'his', 'sensor']
-                pgcursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
-                    VALUES (%s, %s, %s, %s, %s)""", [csv_writer['topic'], csv_writer['topic'], tags, mtags, ''])
-                pgconnection.commit()
-            except IntegrityError as e:
-                print('?? Error: ', e)
-                pgconnection.rollback()
+                try:
+                    tags = {
+                        'id': csv_writer['topic'],
+                        'dis': 'Demo point for ' + csv_writer['topic'],
+                        'kind': 'Number',
+                        'siteRef': '@Demo-Site-1',
+                        'equipRef': '@Demo-' + name.upper(),
+                    }
+                    mtags = ['point', 'his', 'sensor']
+                    pgcursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
+                        VALUES (%s, %s, %s, %s, %s)""", [csv_writer['topic'], csv_writer['topic'], tags, mtags, ''])
+                    pgconnection.commit()
+                except IntegrityError as e:
+                    print('?? Error: ', e)
+                    pgconnection.rollback()
 
     print('{0} timeseries have been successfully processed'.format(counter_insert))
 
@@ -271,11 +276,13 @@ def print_help():
     print("Usage: python import_entities.py [all|seed|demo] [clean]")
     print("  all|seed|demo: which data to import")
     print("  clean: optional, delete data first")
+    print("  ahu_no_point: optional, do not create the data point")
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print_help()
+    GLB_OPTIONS['ahu_no_point'] = 'ahu_no_point' in sys.argv
     if 'clean' in sys.argv:
         clean()
     if 'all' in sys.argv or 'clean' in sys.argv or 'seed' in sys.argv:
