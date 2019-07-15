@@ -53,6 +53,7 @@ from .models import TimeZone
 from .models import Topic
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
+from .models import BacnetPrefix
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -1158,14 +1159,28 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     def form_valid(self, form):
         prefix = form.cleaned_data['device_prefix']
         file = form.cleaned_data['csv_file']
+        config = form.cleaned_data['config_file']
         import_count = 0
         error_count = 0
         logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
                     prefix, file.name, file.content_type, file.size)
         f = TextIOWrapper(file.file, encoding=file.charset if file.charset else 'utf-8')
         records = csv.DictReader(f)
+        logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
+                    prefix, config.name, config.content_type, config.size)
+        fc = TextIOWrapper(config.file, encoding=config.charset if config.charset else 'utf-8')
+        config_data = fc.read()
+
         for row in records:
             if 'Volttron Point Name' in row:
+                # store/update config file first
+                try:
+                    bacnet_prefix = BacnetPrefix.objects.get(prefix=prefix)
+                except BacnetPrefix.DoesNotExist:
+                    bacnet_prefix = BacnetPrefix(prefix=prefix)
+                bacnet_prefix.config_file_name = config.name
+                bacnet_prefix.config_file = config_data
+                bacnet_prefix.save()
                 topic = '/'.join([prefix, row['Volttron Point Name']])
                 entity_id = utils.make_random_id(topic)
                 name = row['Volttron Point Name']

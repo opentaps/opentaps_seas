@@ -527,3 +527,12 @@ class TopicTagRule(models.Model):
 
     def get_absolute_url(self):
         return reverse("core:topictagrule_detail", kwargs={"id": self.id})
+
+
+class BacnetPrefix(models.Model):
+    prefix = CharField(max_length=255, primary_key=True)
+    config_file_name = CharField(max_length=255, blank=False, null=False)
+    config_file = TextField(blank=False, null=False)
+
+    def __str__(self):
+        return self.prefix
