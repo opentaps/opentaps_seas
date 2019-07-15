@@ -62,6 +62,11 @@
                 </div>
 
               </div>
+              {# filter to show only non mapped topics #}
+              <div>
+                <input id="select_not_mapped_topics" type="checkbox" class="mr-2 ml-1" v-model="select_not_mapped_topics" v-on:change="submit_filters"/>
+                <label for="select_not_mapped_topics">Show not mapped topics only.</label>
+              </div>
               <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
             </div>
             <div id="table_container" ref="table_container">
@@ -561,6 +566,7 @@
           {% endfor %}
         ],
         selected_topics: {},
+        select_not_mapped_topics: false,
         all_checked: false,
         select_all_matching: false
       }
@@ -729,6 +735,10 @@
             }
         }
         formData.set('filters_count', n)
+        console.log('build_filter_data select_not_mapped_topics = ', this.select_not_mapped_topics)
+        if (this.select_not_mapped_topics) {
+          formData.set('select_not_mapped_topics', 1)
+        }
       },
       submit_filters(event) {
         console.log('submit_filters...', event)

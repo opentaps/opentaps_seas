@@ -831,6 +831,15 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         self.used_filters = []
         self.rule = None
 
+        self.select_not_mapped_topics = self.request.GET.get('select_not_mapped_topics')
+        if self.select_not_mapped_topics:
+            # only list topics where there is no related data point
+            # because those are 2 different DB need to get all the data points
+            # where topic is non null and remove those topics
+            # note: cast topic into entity_id as raw query must have the model PK
+            r = PointView.objects.raw("SELECT DISTINCT(topic) as entity_id FROM {}".format(PointView._meta.db_table))
+            qs = qs.filter(topic__in=[p.entity_id for p in r])
+
         if self.kwargs.get('id'):
             rule_id = self.kwargs['id']
             logging.info('got a rule ID given: %s', rule_id)
@@ -890,6 +899,15 @@ topic_list_view = TopicListView.as_view()
 @require_POST
 def topic_list_table(request):
     qs = Topic.objects.all()
+
+    select_not_mapped_topics = request.POST.get('select_not_mapped_topics')
+    if select_not_mapped_topics:
+        # only list topics where there is no related data point
+        # because those are 2 different DB need to get all the data points
+        # where topic is non null and remove those topics
+        # note: cast topic into entity_id as raw query must have the model PK
+        r = PointView.objects.raw("SELECT DISTINCT(topic) as entity_id FROM {}".format(PointView._meta.db_table))
+        qs = qs.exclude(topic__in=[p.entity_id for p in r])
 
     n = 0
     filters_count = request.POST.get('filters_count')
