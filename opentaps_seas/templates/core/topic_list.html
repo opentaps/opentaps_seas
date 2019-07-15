@@ -63,8 +63,8 @@
 
               </div>
               {# filter to show only non mapped topics #}
-              <div>
-                <input id="select_not_mapped_topics" type="checkbox" class="mr-2 ml-1" v-model="select_not_mapped_topics" v-on:change="submit_filters"/>
+              <div class="ml-1">
+                <input id="select_not_mapped_topics" type="checkbox" class="mr-2 ml-2" v-model="select_not_mapped_topics" v-on:change="submit_filters"/>
                 <label for="select_not_mapped_topics">Show not mapped topics only.</label>
               </div>
               <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
