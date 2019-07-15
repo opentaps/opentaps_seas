@@ -30,8 +30,13 @@
       {% if add_url %}
         <div class="mb-2 mr-2 p-0 col-auto text-right flex-grow-1">
         {% bootstrap_button '<i class="fa fa-plus"></i> '|add:add_label button_class='btn-primary' href=add_url %}
+          {% if extra_buttons %}
+            <!-- {{ extra_buttons }} -->
+            {{ extra_buttons|safe }}
+          {% endif %}
         </div>
       {% endif %}
+
     </div>
   </form>
  {% else %}
