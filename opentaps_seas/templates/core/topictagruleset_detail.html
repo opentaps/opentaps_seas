@@ -33,7 +33,7 @@
       {% url 'core:topictagrule_forset_create' id=object.id as rule_create_url %}
       {# ugly concatenation in django .. #}
       {% with id=object.id|safe %}
-        {% with e1='<a class="btn btn-secondary" href="#" v-confirm="run_tag_ruleset('|add:id %}
+        {% with e1='<a class="btn btn-secondary ml-sm-1 mt-sm-0 mt-1" href="#" v-confirm="run_tag_ruleset('|add:id %}
           {% with e2=e1|add:')"><i class="fa fa-cog"></i> Run</a>' %}
             {% include "core/_table_filter_add.html" with add_label='Add Rule' add_url=rule_create_url extra_buttons=e2 %}
           {% endwith %}
