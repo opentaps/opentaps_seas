@@ -81,8 +81,14 @@ like this:
  * We can then group many rules together in to a **rule set**.  Rule sets could be used to organize rules by equipment manufacturer or building owner, so they can be used to tag topics with similar syntax. 
 
 There are a couple of ways to do this in the user interface.  First, from the Topics page, you can start filtering the topics by selecting Contains or Not Contains and putting text 
-into the "Filter Topics" input box.  You can use wildcards and regex here.  This will show you a list of filtered topics.  
-Then you can choose the topics you want to add tags, and go below to the "Tag Selected Topics" section to add
+into the "Filter Topics" input box.  You can use wildcards and regex here.  This will show you a list of filtered topics.
+
+Click on "Show unmapped topics only." to see only the topics which have not been mapped to data points.  Then you can click on "Show all topics." to see all the topics again.    
+
+Then you can choose the topics you want to add tags.  Once you've selected some topics, you can click on "Select all that match the filters on all pages" to select
+all the topics on all the pages that match your filter conditions.  You can later click "Clear selection" to uncheck this option.
+
+Next, go below to the "Tag Selected Topics" section to add
 tags for these topics.  Note in the list of topics there is one that says "Select all topics matching the filters on all pages."  If you choose this, it will check all the topics that match your
 filters on all the pages of results, not just what you see on the current page.  Then just click "Apply Tags" to apply these tags to the topics.   
 
