@@ -554,8 +554,17 @@ class ModelBCMixin(WithBreadcrumbsMixin):
     def get_breadcrumbs(self, context):
         b = []
         b.append({'url': reverse('core:model_list'), 'label': 'Models'})
-        if context.get('object'):
-            b.append({'label': 'Model {}'.format(context['object'].entity_id)})
+        m = context.get('object')
+        if m:
+            b.append({'label': 'Model {}'.format(m.entity_id)})
+            while m:
+                m = m.get_parent_model()
+                if not m:
+                    break
+                b.insert(1, {
+                    'url': reverse('core:model_detail', kwargs={'entity_id': m.entity_id}),
+                    'label': 'Model {}'.format(m.entity_id)})
+
         return b
 
 
@@ -599,6 +608,15 @@ class ModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
     slug_url_kwarg = "entity_id"
     template_name = 'core/model_edit.html'
     form_class = ModelCreateForm
+
+    def get_initial(self):
+        if 'entity_id' in self.kwargs:
+            try:
+                pm = Entity.objects.get(entity_id=self.kwargs['entity_id'], m_tags__contains=['model'])
+                return {'parent_id': pm.kv_tags['id']}
+            except Entity.DoesNotExist:
+                pass
+        return {}
 
 
 model_create_view = ModelCreateView.as_view()

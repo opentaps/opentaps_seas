@@ -103,6 +103,7 @@ urlpatterns = [
     path("model/", view=model_list_view, name="model_list"),
     path("model.json", view=model_list_json_view, name="model_list_json"),
     path("newmodel/", view=model_create_view, name="model_create"),
+    path("newmodel/<path:entity_id>", view=model_create_view, name="model_create_for"),
     path("newsite/", view=site_create_view, name="site_create"),
     path("model/edit/<path:entity_id>", view=model_edit_view, name="model_edit"),
     path("model/delete/<path:entity_id>", view=model_delete_view, name="model_delete"),

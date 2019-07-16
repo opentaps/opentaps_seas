@@ -219,6 +219,9 @@ class ModelView(models.Model):
     kv_tags = HStoreField(blank=True, null=True)
     m_tags = ArrayField(CharField(max_length=255, blank=True, null=True))
 
+    tried_parent_model = False
+    parent_model = None
+
     def __str__(self):
         return self.entity_id
 
@@ -226,6 +229,15 @@ class ModelView(models.Model):
         return dict(
             entity_id=self.entity_id,
             description=self.description)
+
+    def get_parent_model(self):
+        if not self.parent_model and not self.tried_parent_model and 'modelRef' in self.kv_tags:
+            try:
+                self.parent_model = ModelView.objects.filter(object_id=self.kv_tags['modelRef'])[0]
+            except IndexError:
+                self.tried_parent_model = True
+
+        return self.parent_model
 
     def get_absolute_url(self):
         return reverse("core:model_detail", kwargs={"entity_id": self.entity_id})

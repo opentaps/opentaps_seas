@@ -34,7 +34,7 @@
         {% block add_button %}
         <div class="ml-auto">
           <a href="{% url 'core:model_delete' object.entity_id %}" {% if not object.can_delete %} class="btn btn-secondary" {% else %} class="btn btn-danger" {% endif %} role="button" ><i class="fa fa-trash mr-2"></i> Delete</a>
-          <a href="{% url 'core:model_create' %}" class="btn btn-primary" role="button"><i class="fa fa-plus"></i> Add Model</a>
+          <a href="{% url 'core:model_create_for' object.entity_id %}" class="btn btn-primary" role="button"><i class="fa fa-plus"></i> Add Model</a>
         </div>
         {% endblock add_button %}
       </h2>

@@ -49,6 +49,7 @@ class TagUpdateForm(TagChangeForm):
 
 
 class ModelCreateForm(forms.ModelForm):
+    parent_id = forms.CharField(label='Parent Model ID', max_length=255, required=False)
 
     def __init__(self, *args, **kwargs):
         super(ModelCreateForm, self).__init__(*args, **kwargs)
@@ -62,10 +63,19 @@ class ModelCreateForm(forms.ModelForm):
             logger.error('ModelCreateForm: got model with id = %s', obj_id)
             self.add_error('entity_id', 'Model with this Model ID already exists.')
             return False
+        parent_id = self.cleaned_data['parent_id']
+        if parent_id:
+            # check parent model exists
+            try:
+                Entity.objects.get(kv_tags__id=parent_id, m_tags__contains=['model'])
+            except Entity.DoesNotExist:
+                self.add_error('parent_id', 'Model {} does not exist.'.format(parent_id))
+                return False
         return True
 
     def save(self, commit=True):
         obj_id = self.cleaned_data['entity_id']
+        parent_id = self.cleaned_data['parent_id']
         entity_id = slugify(obj_id)
         logger.info('ModelCreateForm: for model %s', obj_id)
         try:
@@ -76,6 +86,8 @@ class ModelCreateForm(forms.ModelForm):
             m = Entity(entity_id=entity_id)
             m.add_tag('id', obj_id, commit=False)
             m.add_tag('model', commit=False)
+        if parent_id:
+            m.add_tag('modelRef', parent_id, commit=False)
         if self.instance.description:
             m.add_tag('dis', self.instance.description, commit=False)
         if commit:
