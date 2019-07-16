@@ -207,6 +207,7 @@ temp,Marker,Temperature in C or F
 thd,Marker,Total harmonic distortion
 total,Marker,Total quantity
 tripleDuct,Marker,Triple duct AHU
+trending,Number,Trending Interval in minutes
 tz,Str,Timezone
 unit,Str,Unit of measurement
 unocc,Marker,Unoccupied mode

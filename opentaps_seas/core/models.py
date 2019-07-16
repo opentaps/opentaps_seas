@@ -24,6 +24,7 @@ from django.contrib.postgres.fields import HStoreField
 from django.core.exceptions import ValidationError
 from django.db import connections
 from django.db import models
+from django.db.models import AutoField
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
@@ -529,10 +530,17 @@ class TopicTagRule(models.Model):
         return reverse("core:topictagrule_detail", kwargs={"id": self.id})
 
 
-class BacnetPrefix(models.Model):
-    prefix = CharField(max_length=255, primary_key=True)
+class BacnetConfig(models.Model):
+    id = AutoField(primary_key=True)
+    prefix = CharField(max_length=255, blank=False, null=False, unique=True)
     config_file_name = CharField(max_length=255, blank=False, null=False)
     config_file = TextField(blank=False, null=False)
 
     def __str__(self):
         return self.prefix
+
+    def get_choices():
+        model_choices = [(c.prefix, '{}'.format(c.prefix)) for c in BacnetConfig.objects.all().order_by('prefix')]
+        model_choices.insert(0, ('', ''))
+
+        return model_choices

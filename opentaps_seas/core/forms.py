@@ -17,6 +17,7 @@
 
 import logging
 from . import utils
+from .models import BacnetConfig
 from .models import EntityFile
 from .models import EntityNote
 from .models import Entity
@@ -309,3 +310,12 @@ class TopicImportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['device_prefix'].widget.attrs.update({'placeholder': 'eg: campus/building/equipment'})
+
+
+class TopicExportForm(forms.Form):
+    device_prefix = forms.ChoiceField(required=True)
+    only_with_trending = forms.BooleanField(label="Only export topics with Trending set", required=False, initial=True)
+
+    def __init__(self, *args, **kwargs):
+        super(TopicExportForm, self).__init__(*args, **kwargs)
+        self.fields['device_prefix'] = forms.ChoiceField(choices=BacnetConfig.get_choices())
