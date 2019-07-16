@@ -57,26 +57,29 @@
 
                 <div class="m-0 mb-2 mr-2 mr-xl-0 p-0 col-auto text-right flex-grow-1 order-0 order-xl-1 d-flex flex-column flex-sm-row justify-content-end" v-if="index == 0">
                   {% bootstrap_button '<i class="fa fa-plus"></i> Import Topics' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_import_url %}
-                  {% bootstrap_button 'Tagging Rules <i class="fa fa-chevron-right"></i>' button_class='btn-primary' href=topictagruleset_list %}
+                  {% bootstrap_button 'Tagging Rules <i class="fa fa-chevron-right"></i>' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topictagruleset_list %}
                   {% bootstrap_button '<i class="fa fa-download"></i> Topics Report' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_report_tags_url %}
                 </div>
 
               </div>
-              {# filter to show only non mapped topics #}
-              <div class="ml-1">
-                <input id="select_not_mapped_topics" type="checkbox" class="mr-2 ml-2" v-model="select_not_mapped_topics" v-on:change="submit_filters"/>
-                <label for="select_not_mapped_topics">Show unmapped topics only.</label>
-              </div>
               <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
             </div>
-            <div v-if="all_checked" class="rounded-lg bg-light mb-2">
-              <input id="select_all_matching" type="checkbox" name="_ALL_" class="invisible position-absolute" v-model="select_all_matching" />
-              <label class="m-0 w-100 mx-auto text-center pt-2 pb-2" for="select_all_matching">
-                <span v-if="!select_all_matching">All topics on this page are selected.</span>
-                <span v-if="!select_all_matching" class="h-u text-primary">Select all that match the filters on all pages.</span>
-                <span v-if="select_all_matching">All topics on all pages selected.</span>
-                <span v-if="select_all_matching" class="h-u text-primary">Clear selection.</span>
-              </label>
+            <div class="rounded-lg bg-light mb-2 row">
+              <div class="col-xl-6 col-lg-4">
+                <input id="select_not_mapped_topics" type="checkbox" v-model="select_not_mapped_topics" v-on:change="submit_filters" class="invisible position-absolute"/>
+                <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 h-u text-primary" for="select_not_mapped_topics">
+                  <span v-if="!select_not_mapped_topics">Show unmapped topics only.</span>
+                  <span v-if="select_not_mapped_topics">Show all topics.</span>
+                </label>
+              </div>
+              <div class="col-xl-6 col-lg-8" v-if="all_checked">
+                <input id="select_all_matching" type="checkbox" name="_ALL_" class="invisible position-absolute" v-model="select_all_matching" />
+                <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 h-u" for="select_all_matching">
+                  <span v-if="!select_all_matching" class="text-primary">Select all that match the filters on all pages.</span>
+                  <span v-if="select_all_matching" class="text-secondary">All topics on all pages selected.</span>
+                  <span v-if="select_all_matching" class="text-primary">Clear selection.</span>
+                </label>
+              </div>
             </div>
             <div id="table_container" ref="table_container">
                 {% render_table table %}
