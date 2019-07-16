@@ -221,6 +221,7 @@ class ModelView(models.Model):
 
     tried_parent_model = False
     parent_model = None
+    child_models = None
 
     def __str__(self):
         return self.entity_id
@@ -238,6 +239,11 @@ class ModelView(models.Model):
                 self.tried_parent_model = True
 
         return self.parent_model
+
+    def get_child_models(self):
+        if not self.child_models:
+            self.child_models = ModelView.objects.filter(kv_tags__contains={'modelRef': self.object_id})
+        return self.child_models
 
     def get_absolute_url(self):
         return reverse("core:model_detail", kwargs={"entity_id": self.entity_id})
