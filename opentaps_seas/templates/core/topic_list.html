@@ -69,6 +69,15 @@
               </div>
               <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
             </div>
+            <div v-if="all_checked" class="rounded-lg bg-light mb-2">
+              <input id="select_all_matching" type="checkbox" name="_ALL_" class="invisible position-absolute" v-model="select_all_matching" />
+              <label class="m-0 w-100 mx-auto text-center pt-2 pb-2" for="select_all_matching">
+                <span v-if="!select_all_matching">All topics on this page are selected.</span>
+                <span v-if="!select_all_matching" class="h-u text-primary">Select all that match the filters on all pages.</span>
+                <span v-if="select_all_matching">All topics on all pages selected.</span>
+                <span v-if="select_all_matching" class="h-u text-primary">Clear selection.</span>
+              </label>
+            </div>
             <div id="table_container" ref="table_container">
                 {% render_table table %}
             </div>
@@ -628,10 +637,12 @@
         _this = this
         cbs = el.querySelectorAll('input[type="checkbox"]')
         all_checked = cbs.length > 1
+        has_checkboxes = false
         console.log('initial select_all checked', all_checked, cbs.length)
         for (var i=0; i<cbs.length; i++) {
             cb = cbs[i]
             if (cb.value && cb.name && cb.name.length) {
+                if (cb.name != '_ALL_') has_checkboxes = true
                 if (_this.select_all_matching || _this.selected_topics[cb.value]) {
                     cb.checked = true
                 } else {
@@ -644,6 +655,7 @@
                 cb.checked = false
             }
         }
+        if (!has_checkboxes) all_checked = false
         console.log('set select_all checked', all_checked)
         select_all.checked = all_checked
         this.all_checked = all_checked
@@ -686,6 +698,7 @@
         select_all = el.querySelector('thead input[type="checkbox"]')
         select_all.checked = all_checked
         this.all_checked = all_checked
+        console.log('sync_select set select_all checked', all_checked)
       },
       select_all(checked, skipSave) {
         el = this.$refs['table_container']
@@ -700,6 +713,7 @@
             }
         }
         this.all_checked = checked
+        console.log('select_all set select_all checked', checked)
       },
       filter_on_enter(e) {
         if (e.keyCode === 13) {

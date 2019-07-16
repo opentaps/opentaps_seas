@@ -38,6 +38,11 @@
   font-size: small;
 }
 
+.h-u:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 
 .ftable-row {
 border-top: 1px solid #dee2e6;

@@ -284,12 +284,8 @@ class SiteFilter(FilterSet):
 
 
 class TopicTable(Table):
-    cb = CheckBoxColumn(accessor='topic', footer=format_html('''
-       <input v-if="all_checked" id="select_all_matching" type="checkbox" name="_ALL_" class="mr-2" v-model="select_all_matching" />
-       '''))
-    topic = Column(footer=format_html('''
-       <label v-if="all_checked" for="select_all_matching">Select all topics matching the filters on all pages.</label>
-       '''))
+    cb = CheckBoxColumn(accessor='topic')
+    topic = Column()
     point_description = LinkColumn('core:point_detail',
                                    args=[A('entity_id')],
                                    verbose_name='Data Point', orderable=False)
