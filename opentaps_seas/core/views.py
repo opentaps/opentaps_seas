@@ -36,6 +36,7 @@ from .forms import TagChangeForm
 from .forms import TagUpdateForm
 from .forms import TopicAssocForm
 from .forms import TopicImportForm
+from .forms import TopicExportForm
 from .forms import TopicTagRuleCreateForm
 from .forms import TopicTagRuleSetCreateForm
 from .forms import EquipmentCreateForm
@@ -53,7 +54,7 @@ from .models import TimeZone
 from .models import Topic
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
-from .models import BacnetPrefix
+from .models import BacnetConfig
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -1171,12 +1172,13 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
             if 'Volttron Point Name' in row:
                 # store/update config file first
                 try:
-                    bacnet_prefix = BacnetPrefix.objects.get(prefix=prefix)
-                except BacnetPrefix.DoesNotExist:
-                    bacnet_prefix = BacnetPrefix(prefix=prefix)
-                bacnet_prefix.config_file_name = config.name
-                bacnet_prefix.config_file = config_data
-                bacnet_prefix.save()
+                    bacnet_config = BacnetConfig.objects.get(prefix=prefix)
+                except BacnetConfig.DoesNotExist:
+                    bacnet_config = BacnetConfig(prefix=prefix)
+                bacnet_config.config_file_name = config.name
+                bacnet_config.config_file = config_data
+                bacnet_config.save()
+
                 topic = '/'.join([prefix, row['Volttron Point Name']])
                 entity_id = utils.make_random_id(topic)
                 name = row['Volttron Point Name']
@@ -1190,6 +1192,7 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                 e.add_tag('point', commit=False)
                 e.add_tag('his', commit=False)
                 e.add_tag('dis', name, commit=False)
+                e.add_tag('bacnetConfigId', bacnet_config.id, commit=False)
                 if row.get('Units'):
                     e.add_tag('unit', row['Units'], commit=False)
                 # add all bacnet_fields
@@ -1211,6 +1214,31 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
 
 topic_import_view = TopicImportView.as_view()
+
+
+class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
+    model = Topic
+    template_name = 'core/topic_export.html'
+    form_class = TopicExportForm
+
+    def get_success_url(self):
+        return reverse("core:topic_list")
+
+    def form_valid(self, form):
+        return self.get_config_zip(self.get_context_data(form=form))
+
+    def get_config_zip(self, context, **response_kwargs):
+        print("get_config_zip", context)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="Test.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([''])
+
+        return response
+
+
+topic_export_view = TopicExportView.as_view()
 
 
 class TopicSetupView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
