@@ -74,7 +74,7 @@
                   <span v-if="select_not_mapped_topics">Show all topics.</span>
                 </label>
               </div>
-              <div class="col-xl-6 col-lg-8" v-if="all_checked">
+              <div class="col-xl-6 col-lg-8" v-if="all_checked || select_all_matching">
                 <input id="select_all_matching" type="checkbox" name="_ALL_" class="invisible position-absolute" v-model="select_all_matching" />
                 <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 h-u" for="select_all_matching">
                   <span v-if="!select_all_matching" class="text-primary">Select all that match the filters on all pages.</span>
@@ -627,6 +627,7 @@
         this.setup_checkboxes()
       },
       disable_checkboxes(val) {
+        console.log('disable_checkboxes', val)
         cbs = el.querySelectorAll('input[type="checkbox"]')
         for (var i=0; i<cbs.length; i++) {
           cb = cbs[i]
@@ -660,7 +661,9 @@
                 cb.checked = false
             }
         }
-        if (!has_checkboxes) all_checked = false
+        if (!has_checkboxes) {
+          all_checked = false
+        }
         console.log('set select_all checked', all_checked)
         select_all.checked = all_checked
         this.all_checked = all_checked
