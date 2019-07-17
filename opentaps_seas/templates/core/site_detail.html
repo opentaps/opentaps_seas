@@ -100,6 +100,37 @@
     {% include "core/_notes.html" with form_title='Add Note' form=notes_form items=notes %}
   {% endif %}
 
+  {% if bacnet_configs %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h3>
+        <div class="row m-0">
+          <div class="">
+            BACNet Configs
+          </div>
+          <div class="text-right flex-grow-1">
+            <a class="btn btn-primary" href="{% url 'core:topic_export' object.entity_id %}">Export</a>
+          </div>
+        </div>
+      </h3>
+      <div class="container header-top">
+          {% for bc in bacnet_configs %}
+            <h5 class="card-title"></h5>
+            <h6 class="equip-row position-relative" >
+              <b-container>
+                <b-row class="text-left">
+                  <b-col cols="9">
+                    <div>{{ bc.prefix }}</div>
+                  </b-col>
+                </b-row>
+              </b-container>
+            </h6>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
 <script>
 (function(){

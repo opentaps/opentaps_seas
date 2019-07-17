@@ -29,6 +29,9 @@
   {% load crispy_forms_tags %}
   <div class="card mb-3">
     <div class="card-body">
+      {% if no_sites %}
+      <div>Please <a href="{% url 'core:site_create' %}">set up</a> at least one Site before uploading topics.</div>
+      {% else %}
       <form enctype="multipart/form-data" method="POST">
         {% csrf_token %}
         {{ form|crispy }}
@@ -37,6 +40,7 @@
           <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Import</button>
         </div>
       </form>
+      {% endif %}
     </div>
   </div>
 </div>

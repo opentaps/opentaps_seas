@@ -758,6 +758,11 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
         context['equipments'] = results
         context['link_add_url'] = reverse("core:equipment_create", kwargs={"site": self.kwargs['site']})
 
+        bacnet_configs = BacnetConfig.objects.filter(site=site.entity_id)
+
+        if bacnet_configs:
+            context['bacnet_configs'] = bacnet_configs
+
         return context
 
 
@@ -1171,10 +1176,18 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     def get_success_url(self):
         return reverse("core:topic_list")
 
+    def get_context_data(self, **kwargs):
+        context = super(TopicImportView, self).get_context_data(**kwargs)
+        sites_number = SiteView.count()
+        if not sites_number:
+            context["no_sites"] = True
+        return context
+
     def form_valid(self, form):
         prefix = form.cleaned_data['device_prefix']
         file = form.cleaned_data['csv_file']
         config = form.cleaned_data['config_file']
+        site_id = form.cleaned_data['site']
         import_count = 0
         error_count = 0
         logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
@@ -1186,48 +1199,59 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         fc = TextIOWrapper(config.file, encoding=config.charset if config.charset else 'utf-8')
         config_data = fc.read()
 
-        for row in records:
-            if 'Volttron Point Name' in row:
-                # store/update config file first
-                try:
-                    bacnet_config = BacnetConfig.objects.get(prefix=prefix)
-                except BacnetConfig.DoesNotExist:
-                    bacnet_config = BacnetConfig(prefix=prefix)
-                bacnet_config.config_file_name = config.name
-                bacnet_config.config_file = config_data
-                bacnet_config.save()
+        site = None
+        if site_id:
+            try:
+                site = Entity.objects.get(entity_id=site_id)
+            except TopicTagRuleSet.DoesNotExist:
+                messages.warning(self.request, 'Could not get site {}'.format(site_id))
 
-                topic = '/'.join([prefix, row['Volttron Point Name']])
-                entity_id = utils.make_random_id(topic)
-                name = row['Volttron Point Name']
-                # create the topic if it does not exist in the Crate Database
-                Topic.ensure_topic_exists(topic)
-                # update or create the Data Point
-                try:
-                    e = Entity.objects.get(topic=topic)
-                except Entity.DoesNotExist:
-                    e = Entity(entity_id=entity_id, topic=topic)
-                e.add_tag('point', commit=False)
-                e.add_tag('his', commit=False)
-                e.add_tag('dis', name, commit=False)
-                e.add_tag('bacnetConfigId', bacnet_config.id, commit=False)
-                if row.get('Units'):
-                    e.add_tag('unit', row['Units'], commit=False)
-                # add all bacnet_fields
-                for k, v in row.items():
-                    field = k.lower()
-                    if 'point name' not in field:
-                        e.add_bacnet_field(field, v, commit=False)
-                logger.info('TopicImportForm: imported Data Point %s as %s with topic %s', entity_id, name, topic)
-                e.save()
-                import_count += 1
-            else:
-                error_count += 1
-                logger.error('TopicImportView cannot import row, no point name found, %s', row)
+        if site:
+            for row in records:
+                if 'Volttron Point Name' in row:
+                    # store/update config file first
+                    try:
+                        bacnet_config = BacnetConfig.objects.get(prefix=prefix)
+                    except BacnetConfig.DoesNotExist:
+                        bacnet_config = BacnetConfig(prefix=prefix)
+                    bacnet_config.config_file_name = config.name
+                    bacnet_config.config_file = config_data
+                    bacnet_config.site = site
+                    bacnet_config.save()
 
-        messages.success(self.request, 'Imported {} topics and Data Points with prefix {}'.format(import_count, prefix))
-        if error_count:
-            messages.warning(self.request, 'Could not Import {} records.'.format(error_count))
+                    topic = '/'.join([prefix, row['Volttron Point Name']])
+                    entity_id = utils.make_random_id(topic)
+                    name = row['Volttron Point Name']
+                    # create the topic if it does not exist in the Crate Database
+                    Topic.ensure_topic_exists(topic)
+                    # update or create the Data Point
+                    try:
+                        e = Entity.objects.get(topic=topic)
+                    except Entity.DoesNotExist:
+                        e = Entity(entity_id=entity_id, topic=topic)
+                    e.add_tag('point', commit=False)
+                    e.add_tag('his', commit=False)
+                    e.add_tag('dis', name, commit=False)
+                    e.add_tag('bacnetConfigId', bacnet_config.id, commit=False)
+                    if row.get('Units'):
+                        e.add_tag('unit', row['Units'], commit=False)
+                    # add all bacnet_fields
+                    for k, v in row.items():
+                        field = k.lower()
+                        if 'point name' not in field:
+                            e.add_bacnet_field(field, v, commit=False)
+                    logger.info('TopicImportForm: imported Data Point %s as %s with topic %s', entity_id, name, topic)
+                    e.save()
+                    import_count += 1
+                else:
+                    error_count += 1
+                    logger.error('TopicImportView cannot import row, no point name found, %s', row)
+
+            messages.success(self.request,
+                             'Imported {} topics and Data Points with prefix {}'.format(import_count, prefix))
+            if error_count:
+                messages.warning(self.request, 'Could not Import {} records.'.format(error_count))
+
         return super(TopicImportView, self).form_valid(form)
 
 
@@ -1242,11 +1266,20 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     def get_success_url(self):
         return reverse("core:topic_list")
 
+    def get_context_data(self, **kwargs):
+        context = super(TopicExportView, self).get_context_data(**kwargs)
+
+        context['site_id'] = self.kwargs['site']
+        return context
+
     def form_valid(self, form):
         return self.get_config_zip(self.get_context_data(form=form))
 
     def get_config_zip(self, context, **response_kwargs):
         print("get_config_zip", context)
+        bacnet_config_id = context["form"].cleaned_data['device_prefix']
+        only_with_trending = context["form"].cleaned_data['only_with_trending']
+
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="Test.csv"'
 
@@ -1254,6 +1287,12 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         writer.writerow([''])
 
         return response
+
+    def get_form_kwargs(self):
+        kwargs = super(TopicExportView, self).get_form_kwargs()
+        site_id = self.kwargs['site']
+        kwargs.update({'site_id': site_id})
+        return kwargs
 
 
 topic_export_view = TopicExportView.as_view()

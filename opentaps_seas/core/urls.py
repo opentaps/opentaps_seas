@@ -84,7 +84,7 @@ urlpatterns = [
     path("topic_table/", view=topic_list_table, name="topic_table"),
     path("topic_rules/", view=topic_rules, name="topic_rules"),
     path("topic/import", view=topic_import_view, name="topic_import"),
-    path("topic/export", view=topic_export_view, name="topic_export"),
+    path("topic/export/<str:site>", view=topic_export_view, name="topic_export"),
     path("topic/setup/<path:topic>", view=topic_setup_view, name="topic_setup"),
     path("topic/assoc/<path:topic>", view=topic_assoc, name="topic_assoc"),
     path("topic/csv/report_tags", view=topic_report_tags_csv, name="topic_report_tags_csv"),
