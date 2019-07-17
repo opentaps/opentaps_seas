@@ -110,6 +110,7 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
     # 'django.contrib.humanize', # Handy template tags
     'django.contrib.admin',
+    'django.forms',
     'django_nose',
 ]
 THIRD_PARTY_APPS = [
@@ -357,3 +358,6 @@ LOGGING = {
         },
     },
 }
+
+# For forms templates
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'

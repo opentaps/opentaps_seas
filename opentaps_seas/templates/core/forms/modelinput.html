@@ -1,0 +1,68 @@
+{# <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}> #}
+
+<div id="{{ widget.name }}_container">
+    <input ref="hiddenInput" type="hidden" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %} v-model="internal_value"/>
+    <vue-bootstrap-typeahead
+      :input-class="'form-control' + (errors ? ' is-invalid' : '')"
+      :serializer="s => s.object_id || s.entity_id"
+      id="{{ widget.name }}"
+      ref="valueInput"
+      :min-matching-chars="0"
+      name="{{ widget.name }}"
+      v-model="internal_value"
+      v-on:input="$emit('input', $event)"
+      :data="valid_models"
+      @hit="selected_model = $event"
+      placeholder="Model...">
+      <template slot="suggestion" slot-scope="{ data, htmlText }">
+        <span v-html="htmlText"></span>&nbsp;<small>$[ display_suggestion(data) ]</small>
+      </template>
+    </vue-bootstrap-typeahead>
+    <span v-for="err in errors" class="text-danger">$[ err ]</span>
+</div>
+
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+  new Vue({
+    delimiters: ['$[', ']'],
+    el: '#{{ widget.name }}_container',
+    data() {
+      return {
+        selected_model: {},
+        errors: null,
+        valid_models: [],
+        internal_value: '{% if widget.value != None %}{{ widget.value|stringformat:'s' }}{% endif %}'
+      }
+    },
+    created: function() {
+      axios.get('{% url 'core:model_list_json' %}')
+        .then(x => this.valid_models = x.data.items)
+        .then(x => {
+            if (!this.internal_value || !this.internal_value.length) return;
+            if (this.$refs.valueInput) {
+              this.$refs.valueInput.inputValue = this.internal_value
+            }
+            for (var i=0; i<x.length; i++) {
+                var m = x[i]
+                console.log('try model', this.internal_value, m)
+                if (this.internal_value == m.object_id) {
+                    this.selected_model = m
+                    return
+                }
+            }
+        })
+        .catch(err => {
+          console.error('loading models error :', err)
+        })
+    },
+    methods:{
+        display_suggestion(item) {
+            if (item) return item.description
+            return null
+        }
+    }
+  })
+}())
+</script>

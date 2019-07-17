@@ -48,8 +48,16 @@ class TagUpdateForm(TagChangeForm):
         self.fields['tag'].widget = forms.HiddenInput()
 
 
+class ModelInput(forms.TextInput):
+    template_name = 'core/forms/modelinput.html'
+
+
+class ModelField(forms.CharField):
+    widget = ModelInput
+
+
 class ModelCreateForm(forms.ModelForm):
-    parent_id = forms.CharField(label='Parent Model ID', max_length=255, required=False)
+    parent_id = ModelField(label='Parent Model ID', max_length=255, required=False)
 
     def __init__(self, *args, **kwargs):
         super(ModelCreateForm, self).__init__(*args, **kwargs)
