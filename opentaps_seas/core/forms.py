@@ -22,6 +22,7 @@ from .models import EntityFile
 from .models import EntityNote
 from .models import Entity
 from .models import ModelView
+from .models import SiteView
 from .models import Tag
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
@@ -315,12 +316,14 @@ class TopicAssocForm(forms.Form):
 
 
 class TopicImportForm(forms.Form):
+    site = forms.ChoiceField(required=True)
     device_prefix = forms.CharField(max_length=255)
     csv_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))
     config_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.config'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['site'] = forms.ChoiceField(choices=SiteView.get_choices())
         self.fields['device_prefix'].widget.attrs.update({'placeholder': 'eg: campus/building/equipment'})
 
 

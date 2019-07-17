@@ -296,6 +296,15 @@ class SiteView(models.Model):
     def get_absolute_url(self):
         return reverse("core:site_detail", kwargs={"site": self.entity_id})
 
+    def get_choices():
+        site_choices = [(c.entity_id, '{}'.format(c.description))
+                        for c in SiteView.objects.all().order_by('description')]
+
+        return site_choices
+
+    def count():
+        return SiteView.objects.all().count()
+
     class Meta:
         verbose_name = 'site'
         managed = False
@@ -553,12 +562,13 @@ class BacnetConfig(models.Model):
     prefix = CharField(max_length=255, blank=False, null=False, unique=True)
     config_file_name = CharField(max_length=255, blank=False, null=False)
     config_file = TextField(blank=False, null=False)
+    site = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.prefix
 
     def get_choices():
-        model_choices = [(c.prefix, '{}'.format(c.prefix)) for c in BacnetConfig.objects.all().order_by('prefix')]
-        model_choices.insert(0, ('', ''))
+        bacnet_choices = [(c.id, '{}'.format(c.prefix)) for c in BacnetConfig.objects.all().order_by('prefix')]
+        bacnet_choices.insert(0, ('', ''))
 
-        return model_choices
+        return bacnet_choices
