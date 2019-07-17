@@ -567,8 +567,8 @@ class BacnetConfig(models.Model):
     def __str__(self):
         return self.prefix
 
-    def get_choices():
-        bacnet_choices = [(c.id, '{}'.format(c.prefix)) for c in BacnetConfig.objects.all().order_by('prefix')]
-        bacnet_choices.insert(0, ('', ''))
+    def get_choices(site_id):
+        bacnet_choices = [(c.id, '{}'.format(c.prefix))
+                          for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
 
         return bacnet_choices

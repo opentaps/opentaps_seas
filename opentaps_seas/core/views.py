@@ -758,6 +758,11 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
         context['equipments'] = results
         context['link_add_url'] = reverse("core:equipment_create", kwargs={"site": self.kwargs['site']})
 
+        bacnet_configs = BacnetConfig.objects.filter(site=site.entity_id)
+
+        if bacnet_configs:
+            context['bacnet_configs'] = bacnet_configs
+
         return context
 
 
@@ -1261,6 +1266,12 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     def get_success_url(self):
         return reverse("core:topic_list")
 
+    def get_context_data(self, **kwargs):
+        context = super(TopicExportView, self).get_context_data(**kwargs)
+
+        context['site_id'] = self.kwargs['site']
+        return context
+
     def form_valid(self, form):
         return self.get_config_zip(self.get_context_data(form=form))
 
@@ -1276,6 +1287,12 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         writer.writerow([''])
 
         return response
+
+    def get_form_kwargs(self):
+        kwargs = super(TopicExportView, self).get_form_kwargs()
+        site_id = self.kwargs['site']
+        kwargs.update({'site_id': site_id})
+        return kwargs
 
 
 topic_export_view = TopicExportView.as_view()
