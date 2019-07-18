@@ -589,8 +589,23 @@ model_list_view = ModelListView.as_view()
 class ModelListJsonView(LoginRequiredMixin, ListView):
     model = ModelView
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        # allow a direct search of the child models
+        if 'parent' not in self.request.GET:
+            return qs
+        self.parent_given = True
+        p = self.request.GET.get('parent')
+        if p and p != '_':
+            return qs.filter(kv_tags__modelRef=p)
+        else:
+            return qs.exclude(kv_tags__has_key='modelRef')
+
     def render_to_response(self, context, **response_kwargs):
-        data = list(context['object_list'].values('entity_id', 'object_id', 'description'))
+        if self.parent_given:
+            data = list(context['object_list'].values('entity_id', 'object_id', 'description', 'm_tags', 'kv_tags'))
+        else:
+            data = list(context['object_list'].values('entity_id', 'object_id', 'description'))
         return JsonResponse({'items': data})
 
 

@@ -95,9 +95,29 @@
 
     <div class="card mb-3">
       <div class="card-body">
-        <h4 class="position-relative">Tag Selected Topics <button class="btn btn-secondary a-rt" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button></h4>
+        <h4 class="position-relative">Tag Selected Topics <div class="a-rt">
+          <button class="btn btn-secondary mr-2" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save_tags_from_model()"><i class="fa fa-plus mr-2"></i> Add From Model</button>
+          <button class="btn btn-secondary" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
+        </div></h4>
         <!--Add Tag-->
         <form novalidate v-if="isInitial || isSaving" class="main-form">
+          <div class="container p-0" v-if="isAddingModel">
+            <div class="form-group">
+              <h5>Select Model</h5>
+              <div v-for="item in model_selects" v-bind:key="item.level">
+                <v-select v-if="item.models" label="description" :options="item.models" v-model="item.model" @input="item.select_model" class="mb-2" placeholder="Select a Model ..."></v-select>
+              </div>
+            </div>
+            <div v-if="last_model_selected">
+              <ul>
+                <li v-for="tag in get_model_kvtags(last_model_selected)">${ tag.tag }: ${ tag.value }</li>
+                <li v-for="tag in get_model_mtags(last_model_selected)">${ tag.tag }</li>
+              </ul>
+            </div>
+            <div ref="add_tags_from_model_btn">
+              <button v-if="last_model_selected" class="btn btn-outline-secondary" :disabled="isSaving" v-on:click.stop.prevent="save_tags_from_model()"><i class="fa fa-plus mr-2"></i> Add these Tags</button>
+            </div>
+          </div>
           <div class="container p-0" v-if="isAddingTag">
             <div class="col">
               <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
@@ -151,13 +171,13 @@
           </div>
         </form>
         <!--List Tags-->
-        <div class="container tags-table ftable">
+        <div class="container tags-table ftable" ref="tag_list">
           <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
             <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
               <span v-if="!get_link(item)">${display_tag(item)}</span>
               <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
               <div v-if="item.parent" class="text-muted text-small text-wrap">
-                from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
+                from <a :href="model_link(item.parent)" target="_blank">${model_link_text(item)}</a>
               </div>
             </div>
             <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
@@ -284,10 +304,13 @@
         csrfmiddlewaretoken: CSRF_TOKEN,
         selectedTag: {},
         valid_tags: [],
+        model_selects: [],
+        last_model_selected: false,
         rule_errors: {},
         tag: '',
         value: '',
         isAddingTag: false,
+        isAddingModel: false,
         tag_topics_success: false,
         create_rule_success: false,
         show_save_rule: {% if rule %}true{%else%}false{%endif%},
@@ -343,6 +366,14 @@
         this.tag = ''
         this.value = ''
         if (this.$refs.tagInput) this.$refs.tagInput.inputValue = ''
+        this.last_model_selected = false
+        this.model_selects = [{
+          level: 0,
+          select_model: this.select_model_cb(0),
+          models: [],
+          model: ''
+        }]
+        this.load_models(this.model_selects[0])
       },
       toggle_show_save_rule() {
         this.show_save_rule = !this.show_save_rule
@@ -410,9 +441,62 @@
         this.$delete(this.items, idx)
         return Promise.resolve()
       },
+      scroll_add_from_model(i) {
+        if (i && this.$refs.add_tags_from_model_btn) {
+          this.$refs.add_tags_from_model_btn.scrollIntoView()
+        } else {
+          setTimeout(()=>{
+            this.$nextTick(() => this.scroll_add_from_model(1))
+          },100)
+        }
+      },
+      add_tag_if_not_in_items(tag, model) {
+        if (!this.items) this.items = []
+        var found = false
+        for (var i=0; i<this.items.length; i++) {
+          var t = this.items[i]
+          if (t.tag == tag.tag) {
+            found = t
+            break
+          }
+        }
+        if (found) {
+          found.value = tag.value
+          if (model) found.parent = model
+        } else {
+          if (model) tag.parent = model
+          this.items.push(tag)
+        }
+      },
+      save_tags_from_model() {
+        this.scroll_add_from_model()
+        if (!this.isAddingModel) {
+          this.isAddingTag = false
+          this.isAddingModel = true
+          return
+        }
+        if (!this.last_model_selected) return
+        tags = this.get_model_kvtags(this.last_model_selected).concat(this.get_model_mtags(this.last_model_selected))
+        console.log('** save_tags_from_model', tags)
+        for (var i=0; i<tags.length; i++) {
+          console.log('** save_tags_from_model add tag', tags[i])
+          this.add_tag_if_not_in_items(tags[i], this.last_model_selected)
+        }
+      },
+      scroll_add_tag(i) {
+        if (i && this.$refs.tag_list) {
+          this.$refs.tag_list.scrollIntoView()
+        } else {
+          setTimeout(()=>{
+            this.$nextTick(() => this.scroll_add_tag(1))
+          },100)
+        }
+      },
       save() {
+        this.scroll_add_tag()
         if (!this.isAddingTag) {
           this.isAddingTag = true
+          this.isAddingModel = false
           return
         }
         var i = this.items.find(x => !x._protect && x.tag == (this.selectedTag ? this.selectedTag.tag : this.tag));
@@ -448,6 +532,75 @@
         console.log('*** apply tags', this.items)
         this.errors = {}
         eventHub.$emit('apply_tags', this.items)
+      },
+      get_model_mtags(model) {
+        if (!model || !model.m_tags) return []
+        var tags = []
+        for (var i=0; i<model.m_tags.length; i++) {
+          var key = model.m_tags[i]
+          if (key == 'model') continue
+          tags.push({tag: key})
+        }
+        return tags
+      },
+      get_model_kvtags(model) {
+        if (!model || !model.kv_tags) return []
+        var tags = []
+        for (var key in model.kv_tags) {
+          // remove tags we do not want to list
+          if (key == 'id') continue
+          if (key == 'dis') continue
+          if (key == 'modelRef') continue
+          if (model.kv_tags.hasOwnProperty(key)) {
+            tags.push({tag: key, value: model.kv_tags[key]})
+          }
+        }
+        return tags
+      },
+      select_model_cb(idx) {
+        return x => {
+          console.log('*** selected_model for', idx, x)
+          // incase of deselect x will be null
+          if (x) {
+            this.last_model_selected = x
+            level = idx+1
+          } else {
+            if (idx>0) {
+              this.last_model_selected = this.model_selects[idx-1].model
+            } else {
+              this.last_model_selected = false
+            }
+            level = idx
+          }
+          if (this.model_selects.length > level) {
+            this.model_selects.splice(level)
+          }
+          this.model_selects.push({
+            level: level,
+            select_model: this.select_model_cb(level),
+            models: null,
+            parent: x,
+            model: ''
+            })
+          this.load_models(this.model_selects[this.model_selects.length-1], true)
+        }
+      },
+      load_models(model_select, scroll) {
+        console.log('** load_models for =', model_select)
+        parent = '_'
+        if (model_select.parent && model_select.parent.object_id) {
+          parent = model_select.parent.object_id
+        }
+        url = dutils.urls.resolve('model_list_json') + '?parent=' + parent
+        axios.get(url)
+          .then(x => {
+            console.log('load_models', x.data.items)
+            if (x.data.items && x.data.items.length) model_select.models = x.data.items
+              if (scroll) this.scroll_add_from_model()
+          })
+          .catch(err => {
+            console.error('loading models error :', err);
+          });
       },
       get_valid_rulesets(site) {
         url = dutils.urls.resolve('topic_rules')

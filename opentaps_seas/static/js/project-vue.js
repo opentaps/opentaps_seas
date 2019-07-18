@@ -58,6 +58,7 @@ Vue.use(VuejsDialog.main.default, {
 });
 
 Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead)
+Vue.component('v-select', VueSelect.VueSelect)
 
 Vue.component('tag-value-input', {
   delimiters: ['$[', ']'],
