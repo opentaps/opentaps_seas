@@ -34,7 +34,26 @@
       {% else %}
       <form enctype="multipart/form-data" method="POST">
         {% csrf_token %}
-        {{ form|crispy }}
+
+        {{ form.site|as_crispy_field }}
+        {{ form.device_prefix|as_crispy_field }}
+        <div id="div_id_csv_file" class="form-group">
+          <label for="id_csv_file" class="col-form-label  requiredField">
+            Csv file<span class="asteriskField">*</span>
+          </label>
+          <span>
+            <input type="file" name="csv_file" accept=".csv" class="fileinput fileUpload" required="" id="id_csv_file">
+          </span>
+        </div>
+        <div id="div_id_config_file" class="form-group">
+          <label for="id_config_file" class="col-form-label  requiredField">
+            Config file<span class="asteriskField">*</span>
+          </label>
+          <span>
+            <input type="file" name="config_file" accept=".config" class="fileinput fileUpload" required="" id="id_config_file">
+          </span>
+        </div>
+
         <div class="form-group d-flex justify-content-around mt-5">
           <a href="{% url 'core:topic_list' %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
           <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Import</button>
