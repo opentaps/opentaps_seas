@@ -1269,7 +1269,17 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super(TopicExportView, self).get_context_data(**kwargs)
 
-        context['site_id'] = self.kwargs['site']
+        context['site_id'] = None
+        if 'site' in self.kwargs:
+            context['site_id'] = self.kwargs['site']
+            context['back_url'] = reverse('core:site_detail', kwargs={'site': self.kwargs['site']})
+            try:
+                context['current_site'] = SiteView.objects.get(entity_id=self.kwargs['site'])
+            except SiteView.DoesNotExist:
+                pass
+        else:
+            context['back_url'] = reverse('core:topic_list')
+
         return context
 
     def form_valid(self, form):
@@ -1290,7 +1300,9 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super(TopicExportView, self).get_form_kwargs()
-        site_id = self.kwargs['site']
+        site_id = None
+        if 'site' in self.kwargs:
+            site_id = self.kwargs['site']
         kwargs.update({'site_id': site_id})
         return kwargs
 
@@ -2046,3 +2058,18 @@ def topic_assoc(request, topic):
         })
     else:
         return JsonResponse({'errors': form.errors})
+
+
+class BacnetPrefixJsonView(LoginRequiredMixin, ListView):
+    model = BacnetConfig
+
+    def render_to_response(self, context, **response_kwargs):
+        site = self.kwargs['site']
+        data = []
+        if site:
+            data = BacnetConfig.get_choices_list(site)
+
+        return JsonResponse({'items': data})
+
+
+bacnet_prefix_list_json_view = BacnetPrefixJsonView.as_view()

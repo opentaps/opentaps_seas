@@ -30,10 +30,18 @@
   <div class="card mb-3">
     <div class="card-body">
       <form enctype="multipart/form-data" method="POST">
+        {% if current_site %}
+            <h4>Site {{ current_site.description }}</h4>
+        {% else %}
+            {{ form.site|as_crispy_field }}
+        {% endif %}
         {% csrf_token %}
-        {{ form|crispy }}
+
+        {{ form.device_prefix|as_crispy_field }}
+        {{ form.only_with_trending|as_crispy_field }}
+
         <div class="form-group d-flex justify-content-around mt-5">
-          <a href="{% url 'core:site_detail' site_id %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
+          <a href="{{ back_url }}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
           <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Export Config Files</button>
         </div>
       </form>

@@ -67,7 +67,8 @@ from .views import (
     topictagruleset_run,
     topictagruleset_create_view,
     topictagrule_create_view,
-    tag_topics
+    tag_topics,
+    bacnet_prefix_list_json_view,
 )
 
 app_name = "core"
@@ -84,6 +85,7 @@ urlpatterns = [
     path("topic_table/", view=topic_list_table, name="topic_table"),
     path("topic_rules/", view=topic_rules, name="topic_rules"),
     path("topic/import", view=topic_import_view, name="topic_import"),
+    path("topic/export", view=topic_export_view, name="topic_export0"),
     path("topic/export/<str:site>", view=topic_export_view, name="topic_export"),
     path("topic/setup/<path:topic>", view=topic_setup_view, name="topic_setup"),
     path("topic/assoc/<path:topic>", view=topic_assoc, name="topic_assoc"),
@@ -131,4 +133,5 @@ urlpatterns = [
     path("point/<path:entity_id>", view=point_detail_view, name="point_detail"),
     path("state.json/<str:country>", view=state_list_json_view, name="state_list_json"),
     path("timezone.json/<str:geo_id>", view=timezone_list_json_view, name="timezone_list_json"),
+    path("bacnet_prefix.json/<str:site>", view=bacnet_prefix_list_json_view, name="bacnet_prefix_list_json"),
 ]

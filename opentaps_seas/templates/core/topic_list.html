@@ -27,6 +27,7 @@
   {% include "core/_breadcrumbs.html" %}
   {% load render_table from django_tables2 %}
   {% url 'core:topic_import' as topic_import_url %}
+  {% url 'core:topic_export0' as topic_export_url %}
   {% url 'core:topic_report_tags_csv' as topic_report_tags_url %}
   {% url 'core:topictagruleset_list' as topictagruleset_list %}
 
@@ -58,7 +59,8 @@
                 <div class="m-0 mb-2 mr-2 mr-xl-0 p-0 col-auto text-right flex-grow-1 order-0 order-xl-1 d-flex flex-column flex-sm-row justify-content-end" v-if="index == 0">
                   {% bootstrap_button '<i class="fa fa-plus"></i> Import ' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_import_url %}
                   {% bootstrap_button ' Rules <i class="fa fa-chevron-right"></i>' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topictagruleset_list %}
-                  {% bootstrap_button '<i class="fa fa-download"></i> Report' button_class='btn-primary' href=topic_report_tags_url %}
+                  {% bootstrap_button '<i class="fa fa-download"></i> Report' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_report_tags_url %}
+                  {% bootstrap_button 'Export' button_class='btn-primary' href=topic_export_url %}
                 </div>
 
               </div>

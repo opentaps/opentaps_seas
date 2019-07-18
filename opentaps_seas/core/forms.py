@@ -336,6 +336,7 @@ class TopicImportForm(forms.Form):
 
 
 class TopicExportForm(forms.Form):
+    site = forms.ChoiceField(required=True)
     device_prefix = forms.ChoiceField(required=True)
     only_with_trending = forms.BooleanField(label="Only export topics with Trending set", required=False, initial=True)
 
@@ -343,3 +344,5 @@ class TopicExportForm(forms.Form):
         site_id = kwargs.pop('site_id')
         super(TopicExportForm, self).__init__(*args, **kwargs)
         self.fields['device_prefix'] = forms.ChoiceField(choices=BacnetConfig.get_choices(site_id))
+        if not site_id:
+            self.fields['site'] = forms.ChoiceField(choices=SiteView.get_choices())

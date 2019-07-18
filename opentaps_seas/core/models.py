@@ -568,7 +568,29 @@ class BacnetConfig(models.Model):
         return self.prefix
 
     def get_choices(site_id):
-        bacnet_choices = [(c.id, '{}'.format(c.prefix))
-                          for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
+        if not site_id:
+            sites = SiteView.objects.all().order_by('description')
+            if sites:
+                site_id = sites[0].entity_id
+        if site_id:
+            bacnet_choices = [(c.id, '{}'.format(c.prefix))
+                              for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
+        else:
+            bacnet_choices = [(c.id, '{}'.format(c.prefix)) for c in BacnetConfig.objects.all().order_by('prefix')]
+
+        return bacnet_choices
+
+    def get_choices_list(site_id):
+        bacnet_choices = []
+        if site_id:
+            site = None
+            try:
+                site = SiteView.objects.get(entity_id=site_id)
+            except SiteView.DoesNotExist:
+                pass
+
+            if site:
+                bacnet_choices = [(c.id, '{}'.format(c.prefix))
+                                  for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
 
         return bacnet_choices
