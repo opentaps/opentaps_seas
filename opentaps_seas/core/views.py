@@ -575,6 +575,13 @@ class ModelListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
     table_pagination = {'per_page': 15}
     template_name = 'core/model_list.html'
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        # allow a direct search of the child models
+        if self.request.GET.get('query'):
+            return qs
+        return qs.exclude(kv_tags__has_key='modelRef')
+
 
 model_list_view = ModelListView.as_view()
 
