@@ -1270,9 +1270,6 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     template_name = 'core/topic_export.html'
     form_class = TopicExportForm
 
-    def get_success_url(self):
-        return reverse("core:topic_list")
-
     def get_context_data(self, **kwargs):
         context = super(TopicExportView, self).get_context_data(**kwargs)
 
@@ -1286,6 +1283,11 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                 pass
         else:
             context['back_url'] = reverse('core:topic_list')
+            context['sites_list'] = SiteView.get_site_choices()
+            if context['sites_list']:
+                site_id = context['sites_list'][0]['id']
+                if site_id:
+                    context['site_id'] = site_id
 
         return context
 
@@ -1293,9 +1295,9 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         return self.get_config_zip(self.get_context_data(form=form))
 
     def get_config_zip(self, context, **response_kwargs):
-        print("get_config_zip", context)
         bacnet_config_id = context["form"].cleaned_data['device_prefix']
         only_with_trending = context["form"].cleaned_data['only_with_trending']
+        print("get_config_zip, bacnet_config_id/only_with_trending : ", bacnet_config_id, only_with_trending)
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="Test.csv"'
