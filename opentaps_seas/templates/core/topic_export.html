@@ -29,23 +29,80 @@
   {% load crispy_forms_tags %}
   <div class="card mb-3">
     <div class="card-body">
-      <form enctype="multipart/form-data" method="POST">
-        {% if current_site %}
-            <h4>Site {{ current_site.description }}</h4>
-        {% else %}
-            {{ form.site|as_crispy_field }}
-        {% endif %}
+      <form method="POST" id="export_form">
         {% csrf_token %}
 
-        {{ form.device_prefix|as_crispy_field }}
+        {% if current_site %}
+            <h4>Site {{ current_site.description }}</h4>
+
+        {% else %}
+        <div id="div_id_site" class="form-group">
+            <label for="id_site" class="col-form-label requiredField">
+                Site<span class="asteriskField">*</span>
+            </label>
+            <div class="">
+                <select name="site" class="select form-control" id="id_site" v-model="selectedSite" @change="changedSite">
+                    {% for c in sites_list %}
+                        <option value="{{ c.id }}">{{ c.description }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endif %}
+
+        <div id="div_id_device_prefix" class="form-group" v-if="bacnetPrefixes.length">
+            <label for="id_device_prefix" class="col-form-label  requiredField">
+                Device prefix<span class="asteriskField">*</span>
+            </label>
+            <div>
+                <select name="device_prefix" id="id_device_prefix" class="select form-control"  >
+                    <option v-for="item in bacnetPrefixes" v-bind:value="item.id">${ item.prefix }</option>
+                </select>
+            </div>
+        </div>
+
         {{ form.only_with_trending|as_crispy_field }}
 
         <div class="form-group d-flex justify-content-around mt-5">
-          <a href="{{ back_url }}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
-          <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Export Config Files</button>
+            <a href="{{ back_url }}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
+            <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Export Config Files</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+<script>
+(function(){
+  new Vue({
+    el: '#export_form',
+    delimiters: ['${', '}'],
+    data:{
+      selectedSite: '{{ site_id|safe }}',
+      bacnetPrefixes: [],
+    },
+    mounted() {
+      this.changedSite()
+    },
+    methods:{
+      changedSite:function() {
+        if (this.selectedSite && this.selectedSite != '') {
+            this.loadPrefixes()
+        }
+      },
+      loadPrefixes:function() {
+        url = dutils.urls.resolve('bacnet_prefix_list_json', {site: this.selectedSite})
+        axios.get(url)
+          .then(
+            x => {
+              this.bacnetPrefixes = x.data.items
+            }
+          )
+          .catch(err => {
+            console.error('loading bacnet prefix error :', err);
+        });
+      }
+    }
+  });
+})();
+</script>
 {% endblock content %}

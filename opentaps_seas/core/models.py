@@ -302,6 +302,12 @@ class SiteView(models.Model):
 
         return site_choices
 
+    def get_site_choices():
+        site_choices = [{'id': c.entity_id, 'description': c.description}
+                        for c in SiteView.objects.all().order_by('description')]
+
+        return site_choices
+
     def count():
         return SiteView.objects.all().count()
 
@@ -590,7 +596,7 @@ class BacnetConfig(models.Model):
                 pass
 
             if site:
-                bacnet_choices = [(c.id, '{}'.format(c.prefix))
+                bacnet_choices = [{'id': c.id, 'prefix': c.prefix}
                                   for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
 
         return bacnet_choices
