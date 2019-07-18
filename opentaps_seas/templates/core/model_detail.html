@@ -48,7 +48,7 @@
         <h5>Child Models</h5>
         <ul>
         {% for cm in object.get_child_models %}
-          <li><a href="{{ cm.get_absolute_url }}">{{ cm.kv_tags.id }}: {{ cm.description|default:cm }}</a></li>
+          <li><a href="{{ cm.get_absolute_url }}">{{ cm.description|default:cm }}</a></li>
         {% endfor %}
         </ul>
       {% endif %}

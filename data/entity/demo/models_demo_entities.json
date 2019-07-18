@@ -1,0 +1,652 @@
+{
+    "entities": [
+    {
+        "entity_id": "modelahu",
+        "kv_tags": {
+            "id": "model-AHU",
+            "dis": "AHU"
+        },
+        "m_tags": ["model", "equip", "ahu", "hvac"]
+    },
+
+    {
+        "entity_id": "modelahudischarge",
+        "kv_tags": {
+            "id": "model-AHU-discharge",
+            "dis": "Discharge",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model", "discharge"]
+    },
+    {
+        "entity_id": "modelahudischargesat",
+        "kv_tags": {
+            "id": "model-AHU-discharge-sat",
+            "dis": "Supply Air Temperature",
+            "modelRef": "model-AHU-discharge"
+        },
+        "m_tags": ["model", "discharge", "air", "temp", "sensor"]
+    },
+    {
+        "entity_id": "modelahudischargesah",
+        "kv_tags": {
+            "id": "model-AHU-discharge-sah",
+            "dis": "Supply Air Humidity",
+            "modelRef": "model-AHU-discharge"
+        },
+        "m_tags": ["model", "discharge", "air", "humidity", "sensor"]
+    },
+    {
+        "entity_id": "modelahudischargessp",
+        "kv_tags": {
+            "id": "model-AHU-discharge-ssp",
+            "dis": "Supply Static Pressure",
+            "modelRef": "model-AHU-discharge"
+        },
+        "m_tags": ["model", "discharge", "air", "pressure", "sensor"]
+    },
+    {
+        "entity_id": "modelahudischargesaf",
+        "kv_tags": {
+            "id": "model-AHU-discharge-saf",
+            "dis": "Supply Airflow",
+            "modelRef": "model-AHU-discharge"
+        },
+        "m_tags": ["model", "discharge", "air", "flow", "sensor"]
+    },
+    {
+        "entity_id": "modelahudischargesfc",
+        "kv_tags": {
+            "id": "model-AHU-discharge-sfc",
+            "dis": "Supply Fan Command",
+            "modelRef": "model-AHU-discharge"
+        },
+        "m_tags": ["model", "discharge", "air", "fan", "cmd"]
+    },
+    {
+        "entity_id": "modelahudischargesfs",
+        "kv_tags": {
+            "id": "model-AHU-discharge-sfs",
+            "dis": "Supply Fan Status",
+            "modelRef": "model-AHU-discharge"
+        },
+        "m_tags": ["model", "discharge", "air", "fan", "sensor"]
+    },
+
+    {
+        "entity_id": "modelahureturn",
+        "kv_tags": {
+            "id": "model-AHU-return",
+            "dis": "Return",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model", "return"]
+    },
+    {
+        "entity_id": "modelahureturnrat",
+        "kv_tags": {
+            "id": "model-AHU-return-rat",
+            "dis": "Return Air Temperature",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "temp", "sensor"]
+    },
+    {
+        "entity_id": "modelahureturnrah",
+        "kv_tags": {
+            "id": "model-AHU-return-rah",
+            "dis": "Return Air Humidity",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "humidity", "sensor"]
+    },
+    {
+        "entity_id": "modelahureturnrsp",
+        "kv_tags": {
+            "id": "model-AHU-return-rsp",
+            "dis": "Return Static Pressure",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "pressure", "sensor"]
+    },
+    {
+        "entity_id": "modelahureturnraf",
+        "kv_tags": {
+            "id": "model-AHU-return-raf",
+            "dis": "Return Airflow",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "flow", "sensor"]
+    },
+    {
+        "entity_id": "modelahureturnrfc",
+        "kv_tags": {
+            "id": "model-AHU-return-rfc",
+            "dis": "Return Fan Command",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "fan", "cmd"]
+    },
+    {
+        "entity_id": "modelahureturnrfs",
+        "kv_tags": {
+            "id": "model-AHU-return-rfs",
+            "dis": "Return Fan Status",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "fan", "sensor"]
+    },
+    {
+        "entity_id": "modelahureturnco2",
+        "kv_tags": {
+            "id": "model-AHU-return-co2",
+            "dis": "Return CO2",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "co2", "sensor"]
+    },
+    {
+        "entity_id": "modelahureturnradc",
+        "kv_tags": {
+            "id": "model-AHU-return-radc",
+            "dis": "Return Air Damper Command",
+            "modelRef": "model-AHU-return"
+        },
+        "m_tags": ["model", "return", "air", "damper", "cmd"]
+    },
+
+    {
+        "entity_id": "modelahumixed",
+        "kv_tags": {
+            "id": "model-AHU-mixed",
+            "dis": "Mixed",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model", "mixed"]
+    },
+    {
+        "entity_id": "modelahumixedmat",
+        "kv_tags": {
+            "id": "model-AHU-mixed-mat",
+            "dis": "Mixed Air Temperature",
+            "modelRef": "model-AHU-mixed"
+        },
+        "m_tags": ["model", "mixed", "air", "temp", "sensor"]
+    },
+
+    {
+        "entity_id": "modelahuoutside",
+        "kv_tags": {
+            "id": "model-AHU-outside",
+            "dis": "Outside",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model", "outside"]
+    },
+    {
+        "entity_id": "modelahuoutsideoat",
+        "kv_tags": {
+            "id": "model-AHU-outside-oat",
+            "dis": "Outside Air Temperature",
+            "modelRef": "model-AHU-outside"
+        },
+        "m_tags": ["model", "outside", "air", "temp", "sensor"]
+    },
+    {
+        "entity_id": "modelahuoutsideoah",
+        "kv_tags": {
+            "id": "model-AHU-outside-oah",
+            "dis": "Outside Air Humidity",
+            "modelRef": "model-AHU-outside"
+        },
+        "m_tags": ["model", "outside", "air", "humidity", "sensor"]
+    },
+    {
+        "entity_id": "modelahuoutsideoap",
+        "kv_tags": {
+            "id": "model-AHU-outside-oap",
+            "dis": "Outside Air Pressure",
+            "modelRef": "model-AHU-outside"
+        },
+        "m_tags": ["model", "outside", "air", "pressure", "sensor"]
+    },
+    {
+        "entity_id": "modelahuoutsideoaf",
+        "kv_tags": {
+            "id": "model-AHU-outside-oaf",
+            "dis": "Outside Airflow",
+            "modelRef": "model-AHU-outside"
+        },
+        "m_tags": ["model", "outside", "air", "flow", "sensor"]
+    },
+    {
+        "entity_id": "modelahuoutsideoafsp",
+        "kv_tags": {
+            "id": "model-AHU-outside-oafsp",
+            "dis": "Outside Airflow Setpoint",
+            "modelRef": "model-AHU-outside"
+        },
+        "m_tags": ["model", "outside", "air", "flow", "sp"]
+    },
+    {
+        "entity_id": "modelahuoutsideoadc",
+        "kv_tags": {
+            "id": "model-AHU-outside-oadc",
+            "dis": "Outside Air Damper Command",
+            "modelRef": "model-AHU-outside"
+        },
+        "m_tags": ["model", "outside", "air", "damper", "cmd"]
+    },
+
+    {
+        "entity_id": "modelahuexhaust",
+        "kv_tags": {
+            "id": "model-AHU-exhaust",
+            "dis": "Exhaust",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model", "exhaust"]
+    },
+    {
+        "entity_id": "modelahuexhaustefc",
+        "kv_tags": {
+            "id": "model-AHU-exhaust-efc",
+            "dis": "Exhaust Fan Command",
+            "modelRef": "model-AHU-exhaust"
+        },
+        "m_tags": ["model", "exhaust", "air", "fan", "cmd"]
+    },
+    {
+        "entity_id": "modelahuexhausteadc",
+        "kv_tags": {
+            "id": "model-AHU-exhaust-eadc",
+            "dis": "Exhaust Damper Command",
+            "modelRef": "model-AHU-exhaust"
+        },
+        "m_tags": ["model", "exhaust", "air", "damper", "cmd"]
+    },
+
+    {
+        "entity_id": "modelahuconditioning",
+        "kv_tags": {
+            "id": "model-AHU-conditioning",
+            "dis": "Conditioning",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model"]
+    },
+    {
+        "entity_id": "modelahuconditioningcsc",
+        "kv_tags": {
+            "id": "model-AHU-conditioning-csc",
+            "dis": "Cool Stage Command",
+            "modelRef": "model-AHU-conditioning"
+        },
+        "m_tags": ["model", "cool", "stage", "cmd"]
+    },
+    {
+        "entity_id": "modelahuconditioninghsc",
+        "kv_tags": {
+            "id": "model-AHU-conditioning-hsc",
+            "dis": "Heat Stage Command",
+            "modelRef": "model-AHU-conditioning"
+        },
+        "m_tags": ["model", "heat", "stage", "cmd"]
+    },
+    {
+        "entity_id": "modelahuconditioninghc",
+        "kv_tags": {
+            "id": "model-AHU-conditioning-hc",
+            "dis": "Humidifier Command",
+            "modelRef": "model-AHU-conditioning"
+        },
+        "m_tags": ["model", "humidity", "cmd"]
+    },
+    {
+        "entity_id": "modelahuconditioningfs",
+        "kv_tags": {
+            "id": "model-AHU-conditioning-fs",
+            "dis": "Filter Sensor",
+            "modelRef": "model-AHU-conditioning"
+        },
+        "m_tags": ["model", "filter", "sensor"]
+    },
+
+    {
+        "entity_id": "modelahumisc",
+        "kv_tags": {
+            "id": "model-AHU-misc",
+            "dis": "Misc",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model"]
+    },
+    {
+        "entity_id": "modelahumiscfreezestat",
+        "kv_tags": {
+            "id": "model-AHU-misc-freezestat",
+            "dis": "FreezeStat",
+            "modelRef": "model-AHU-misc"
+        },
+        "m_tags": ["model", "sensor", "freezeStat"]
+    },
+    {
+        "entity_id": "modelahumischwc",
+        "kv_tags": {
+            "id": "model-AHU-misc-hwc",
+            "dis": "Heat Wheel Command",
+            "modelRef": "model-AHU-misc"
+        },
+        "m_tags": ["model", "heatWheel", "cmd"]
+    },
+    {
+        "entity_id": "modelahumiscfbpdcmd",
+        "kv_tags": {
+            "id": "model-AHU-misc-fbpdcmd",
+            "dis": "Face/Bypass Damper Command",
+            "modelRef": "model-AHU-misc"
+        },
+        "m_tags": ["model", "faceBypass", "cmd"]
+    },
+    {
+        "entity_id": "modelahumiscbdc",
+        "kv_tags": {
+            "id": "model-AHU-misc-bdc",
+            "dis": "Bypass Damper Command",
+            "modelRef": "model-AHU-misc"
+        },
+        "m_tags": ["model", "damper", "cmd"]
+    },
+
+    {
+        "entity_id": "modelahuzone",
+        "kv_tags": {
+            "id": "model-AHU-zone",
+            "dis": "Zone",
+            "modelRef": "model-AHU"
+        },
+        "m_tags": ["model", "zone"]
+    },
+    {
+        "entity_id": "modelahuzonetemp",
+        "kv_tags": {
+            "id": "model-AHU-zone-temp",
+            "dis": "Zone Temperature",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "sensor"]
+    },
+    {
+        "entity_id": "modelahuzoneetempsp",
+        "kv_tags": {
+            "id": "model-AHU-zone-etempsp",
+            "dis": "Effective Zone Temperature Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "effective", "sp"]
+    },
+    {
+        "entity_id": "modelahuzoneocoolsp",
+        "kv_tags": {
+            "id": "model-AHU-zone-ocoolsp",
+            "dis": "Zone Occupied Cooling Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "occ", "cooling", "sp"]
+    },
+    {
+        "entity_id": "modelahuzoneoheatsp",
+        "kv_tags": {
+            "id": "model-AHU-zone-oheatsp",
+            "dis": "Zone Occupied Heating Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "occ", "heating", "sp"]
+    },
+    {
+        "entity_id": "modelahuzoneunocoolsp",
+        "kv_tags": {
+            "id": "model-AHU-zone-unocoolsp",
+            "dis": "Zone Unoccupied Cooling Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "unocc", "cooling", "sp"]
+    },
+    {
+        "entity_id": "modelahuzoneunoheatsp",
+        "kv_tags": {
+            "id": "model-AHU-zone-unoheatsp",
+            "dis": "Zone Unoccupied Heating Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "unocc", "heating", "sp"]
+    },
+    {
+        "entity_id": "modelahuzonestbcoolsp",
+        "kv_tags": {
+            "id": "model-AHU-zone-stbcoolsp",
+            "dis": "Zone Standby Cooling Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "standby", "cooling", "sp"]
+    },
+    {
+        "entity_id": "modelahuzonestbheatsp",
+        "kv_tags": {
+            "id": "model-AHU-zone-stbheatsp",
+            "dis": "Zone Standby Heating Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "temp", "standby", "heating", "sp"]
+    },
+    {
+        "entity_id": "modelahuzonehumidity",
+        "kv_tags": {
+            "id": "model-AHU-zone-humidity",
+            "dis": "Zone Humidity",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "humidity", "sensor"]
+    },
+    {
+        "entity_id": "modelahuzoneco2",
+        "kv_tags": {
+            "id": "model-AHU-zone-co2",
+            "dis": "Zone CO2",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "co2", "sensor"]
+    },
+    {
+        "entity_id": "modelahuzoneco2s",
+        "kv_tags": {
+            "id": "model-AHU-zone-co2sp",
+            "dis": "Zone CO2 Setpoint",
+            "modelRef": "model-AHU-zone"
+        },
+        "m_tags": ["model", "zone", "air", "co2", "sp"]
+    },
+
+
+    {
+        "entity_id": "modelboiler",
+        "kv_tags": {
+            "id": "model-boiler",
+            "dis": "Boiler"
+        },
+        "m_tags": ["model", "equip", "boiler", "hvac"]
+    },
+    {
+        "entity_id": "modelboilerrun",
+        "kv_tags": {
+            "id": "model-boiler-run",
+            "dis": "Run",
+            "modelRef": "model-boiler"
+        },
+        "m_tags": ["model", "run", "cmd"]
+    },
+    {
+        "entity_id": "modelboilerstatus",
+        "kv_tags": {
+            "id": "model-boiler-status",
+            "dis": "Status",
+            "modelRef": "model-boiler"
+        },
+        "m_tags": ["model", "run", "sensor"]
+    },
+    {
+        "entity_id": "modelboilerenable",
+        "kv_tags": {
+            "id": "model-boiler-enable",
+            "dis": "Enable",
+            "modelRef": "model-boiler"
+        },
+        "m_tags": ["model", "enable", "cmd"]
+    },
+    {
+        "entity_id": "modelboilercircpc",
+        "kv_tags": {
+            "id": "model-boiler-circpc",
+            "dis": "Circulation Pump Command",
+            "modelRef": "model-boiler"
+        },
+        "m_tags": ["model", "circ", "pump", "cmd"]
+    },
+    {
+        "entity_id": "modelboilercircps",
+        "kv_tags": {
+            "id": "model-boiler-circps",
+            "dis": "Circulation Pump Sensor",
+            "modelRef": "model-boiler"
+        },
+        "m_tags": ["model", "circ", "pump", "sensor"]
+    },
+    {
+        "entity_id": "modelboilercondpc",
+        "kv_tags": {
+            "id": "model-boiler-condpc",
+            "dis": "Condensate Pump Command",
+            "modelRef": "model-boiler"
+        },
+        "m_tags": ["model", "condensate", "pump", "cmd"]
+    },
+    {
+        "entity_id": "modelboilercondps",
+        "kv_tags": {
+            "id": "model-boiler-condps",
+            "dis": "Condensate Pump Sensor",
+            "modelRef": "model-boiler"
+        },
+        "m_tags": ["model", "condensate", "pump", "sensor"]
+    },
+
+
+    {
+        "entity_id": "modelchilledwaterplant",
+        "kv_tags": {
+            "id": "model-chilledwaterplant",
+            "dis": "Chilled Water Plant"
+        },
+        "m_tags": ["model", "equip", "chilledWaterPlant", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelchiller",
+        "kv_tags": {
+            "id": "model-chiller",
+            "dis": "Chiller"
+        },
+        "m_tags": ["model", "equip", "chiller", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelcoolingtower",
+        "kv_tags": {
+            "id": "model-coolingtower",
+            "dis": "Cooling Tower"
+        },
+        "m_tags": ["model", "equip", "coolingTower", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelfcu",
+        "kv_tags": {
+            "id": "model-fcu",
+            "dis": "FCU"
+        },
+        "m_tags": ["model", "equip", "fcu", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelheatexch",
+        "kv_tags": {
+            "id": "model-heatexch",
+            "dis": "Heat Exchanger"
+        },
+        "m_tags": ["model", "equip", "heatExchanger", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelheatpump",
+        "kv_tags": {
+            "id": "model-heatpump",
+            "dis": "Heat Pump"
+        },
+        "m_tags": ["model", "equip", "heatPump", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelhotwaterplant",
+        "kv_tags": {
+            "id": "model-hotwaterplant",
+            "dis": "Hot Water Plant"
+        },
+        "m_tags": ["model", "equip", "hotWaterPlant", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelsteamplant",
+        "kv_tags": {
+            "id": "model-steamplant",
+            "dis": "Steam Plant"
+        },
+        "m_tags": ["model", "equip", "steamPlant", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modeltank",
+        "kv_tags": {
+            "id": "model-tank",
+            "dis": "Tank"
+        },
+        "m_tags": ["model", "equip", "tank", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modeluv",
+        "kv_tags": {
+            "id": "model-uv",
+            "dis": "UV"
+        },
+        "m_tags": ["model", "equip", "uv", "hvac"]
+    },
+
+
+    {
+        "entity_id": "modelvav",
+        "kv_tags": {
+            "id": "model-vav",
+            "dis": "VAV"
+        },
+        "m_tags": ["model", "equip", "vav", "hvac"]
+    }
+]}
