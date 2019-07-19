@@ -593,6 +593,7 @@ model_list_view = ModelListView.as_view()
 
 class ModelListJsonView(LoginRequiredMixin, ListView):
     model = ModelView
+    parent_given = False
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
