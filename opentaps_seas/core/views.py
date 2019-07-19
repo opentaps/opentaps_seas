@@ -1341,32 +1341,41 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
         if trendings:
             for tr in trendings:
+                trending_interval = None
+                csv_file_name = "_Trending_Not_Set.csv"
+                config_file_name = "_Trending_Not_Set.config"
                 if tr['kv_tags__trending']:
                     trending_interval = tr['kv_tags__trending']
                     csv_file_name = '_Trending_' + trending_interval + ".csv"
                     config_file_name = '_Trending_' + trending_interval + ".config"
-                    file_item = {'csv_file_name': csv_file_name, 'config_file_name': config_file_name}
 
-                    rows = Entity.objects.filter(
-                           kv_tags__bacnetConfigId=bacnet_config_id, kv_tags__trending=trending_interval)
-                    if rows:
-                        header, bacnet_data = utils.get_bacnet_trending_data(rows)
+                if trending_interval is None and only_with_trending:
+                    continue
 
-                    config_file_json["registry_config"] = "config://" + csv_file_name
+                file_item = {'csv_file_name': csv_file_name, 'config_file_name': config_file_name}
+
+                rows = Entity.objects.filter(
+                       kv_tags__bacnetConfigId=bacnet_config_id, kv_tags__trending=trending_interval)
+                if rows:
+                    header, bacnet_data = utils.get_bacnet_trending_data(rows)
+
+                config_file_json["registry_config"] = "config://" + csv_file_name
+                if trending_interval:
                     config_file_json["interval"] = trending_interval
-                    file_item["config_file"] = json.dumps(config_file_json)
 
-                    output = StringIO()
-                    writer = csv.writer(output)
-                    writer.writerow(header)
-                    for row in bacnet_data:
-                        writer.writerow(row)
+                file_item["config_file"] = json.dumps(config_file_json)
 
-                    file_item['csv_file'] = output.getvalue()
+                output = StringIO()
+                writer = csv.writer(output)
+                writer.writerow(header)
+                for row in bacnet_data:
+                    writer.writerow(row)
 
-                    output.close()
+                file_item['csv_file'] = output.getvalue()
 
-                    files_list.append(file_item)
+                output.close()
+
+                files_list.append(file_item)
 
         if files_list:
             in_memory = BytesIO()
