@@ -29,6 +29,9 @@
   {% load crispy_forms_tags %}
   <div class="card mb-3">
     <div class="card-body">
+      {% if no_sites %}
+        <div>Please <a href="{% url 'core:site_create' %}">set up</a> at least one Site before export configs.</div>
+      {% else %}
       <form method="POST" id="export_form">
         {% csrf_token %}
 
@@ -50,14 +53,17 @@
         </div>
         {% endif %}
 
-        <div id="div_id_device_prefix" class="form-group" v-if="bacnetPrefixes.length">
+        <div id="div_id_device_prefix" class="form-group">
             <label for="id_device_prefix" class="col-form-label  requiredField">
                 Device prefix<span class="asteriskField">*</span>
             </label>
             <div>
-                <select name="device_prefix" id="id_device_prefix" class="select form-control"  >
+                <select name="device_prefix" id="id_device_prefix" class="select form-control"  v-if="bacnetPrefixes.length">
                     <option v-for="item in bacnetPrefixes" v-bind:value="item.id">${ item.prefix }</option>
                 </select>
+            </div>
+            <div class="alert alert-danger" role="alert"  v-if="!bacnetPrefixes.length">
+                There are no any Device prefixes found for this site
             </div>
         </div>
 
@@ -65,9 +71,10 @@
 
         <div class="form-group d-flex justify-content-around mt-5">
             <a href="{{ back_url }}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
-            <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Export Config Files</button>
+            <button class="btn btn-primary col-5" type="submit"  v-if="bacnetPrefixes.length"><i class="fa fa-upload mr-2"></i> Export Config Files</button>
         </div>
       </form>
+      {% endif %}
     </div>
   </div>
 </div>

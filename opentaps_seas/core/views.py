@@ -1292,6 +1292,9 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(TopicExportView, self).get_context_data(**kwargs)
+        sites_number = SiteView.count()
+        if not sites_number:
+            context["no_sites"] = True
 
         context['site_id'] = None
         if 'site' in self.kwargs:
