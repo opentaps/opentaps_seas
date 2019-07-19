@@ -16,6 +16,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import csv
+import json
 from io import TextIOWrapper
 from io import BytesIO
 from io import StringIO
@@ -1316,52 +1317,71 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     def get_config_zip(self, context, **response_kwargs):
         bacnet_config_id = context["form"].cleaned_data['device_prefix']
         only_with_trending = context["form"].cleaned_data['only_with_trending']
-        print("get_config_zip, bacnet_config_id/only_with_trending : ", bacnet_config_id, only_with_trending)
         response = HttpResponse(content_type="application/zip")
-        response["Content-Disposition"] = "attachment; filename=two_files.zip"
+        response["Content-Disposition"] = "attachment; filename=bacnet_config.zip"
 
         trendings = Entity.objects.filter(kv_tags__bacnetConfigId=bacnet_config_id).values(
                     'kv_tags__trending').annotate(dcount=Count('kv_tags__trending'))
 
-        config_file = ''
+        config_file_json = {}
+        bacnet_config = None
         try:
-            bacnet_bonfig = BacnetConfig.objects.get(id=bacnet_config_id)
-            config_file = bacnet_bonfig.config_file
+            bacnet_config = BacnetConfig.objects.get(id=bacnet_config_id)
         except BacnetConfig.DoesNotExist:
             pass
+        else:
+            config_file = bacnet_config.config_file
+            if config_file:
+                try:
+                    config_file_json = json.loads(config_file)
+                except Exception:
+                    pass
+
+        files_list = []
 
         if trendings:
             for tr in trendings:
                 if tr['kv_tags__trending']:
                     trending_interval = tr['kv_tags__trending']
-                    print(trending_interval, tr['dcount'])
                     csv_file_name = '_Trending_' + trending_interval + ".csv"
                     config_file_name = '_Trending_' + trending_interval + ".config"
+                    file_item = {'csv_file_name': csv_file_name, 'config_file_name': config_file_name}
+
                     rows = Entity.objects.filter(
                            kv_tags__bacnetConfigId=bacnet_config_id, kv_tags__trending=trending_interval)
                     if rows:
                         header, bacnet_data = utils.get_bacnet_trending_data(rows)
 
-                    in_memory = BytesIO()
-                    zip = ZipFile(in_memory, "a")
-
-                    zip.writestr(config_file_name, config_file)
+                    config_file_json["registry_config"] = "config://" + csv_file_name
+                    config_file_json["interval"] = trending_interval
+                    file_item["config_file"] = json.dumps(config_file_json)
 
                     output = StringIO()
                     writer = csv.writer(output)
                     writer.writerow(header)
                     for row in bacnet_data:
                         writer.writerow(row)
-                    zip.writestr(csv_file_name, output.getvalue())
+
+                    file_item['csv_file'] = output.getvalue()
+
                     output.close()
 
-                    # fix for Linux zip files read in Windows
-                    for file in zip.filelist:
-                        file.create_system = 0
+                    files_list.append(file_item)
 
-                    zip.close()
-                    in_memory.seek(0)
-                    response.write(in_memory.read())
+        if files_list:
+            in_memory = BytesIO()
+            zip = ZipFile(in_memory, "a")
+            for file_item in files_list:
+                zip.writestr(file_item['config_file_name'], file_item['config_file'])
+                zip.writestr(file_item['csv_file_name'], file_item['csv_file'])
+
+            # fix for Linux zip files read in Windows
+            for file in zip.filelist:
+                file.create_system = 0
+
+            zip.close()
+            in_memory.seek(0)
+            response.write(in_memory.read())
 
         return response
 
