@@ -657,6 +657,14 @@ class ModelEditView(LoginRequiredMixin, ModelBCMixin, UpdateView):
     template_name = 'core/model_edit.html'
     form_class = ModelUpdateForm
 
+    def get_initial(self):
+        initial = super().get_initial()
+        logging.info('ModelEditView::initial = %s', initial)
+        obj = self.get_object()
+        if obj and 'modelRef' in obj.kv_tags:
+            initial['parent_id'] = obj.kv_tags['modelRef']
+        return initial
+
 
 model_edit_view = ModelEditView.as_view()
 
