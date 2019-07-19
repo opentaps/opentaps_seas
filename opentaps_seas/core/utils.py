@@ -580,3 +580,39 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
             updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
 
     return updated
+
+
+def get_bacnet_trending_data(rows):
+    header = ['Point Name', 'Volttron Point Name']
+    bacnet_data = []
+
+    # make header
+    for row in rows:
+        bacnet_fields = row.bacnet_fields
+        if bacnet_fields:
+            for key in bacnet_fields.keys():
+                if key not in header:
+                    header.append(key)
+
+    # make data
+    for row in rows:
+        data_row = [row.topic]
+        kv_tags = row.kv_tags
+        if kv_tags and kv_tags.get('dis'):
+            data_row.append(kv_tags.get('dis'))
+        else:
+            data_row.append('')
+
+        bacnet_fields = row.bacnet_fields
+        if bacnet_fields:
+            for i in range(2, len(header)):
+                key = header[i]
+                bacnet_field_data = bacnet_fields.get(key)
+                if bacnet_field_data:
+                    data_row.append(bacnet_field_data)
+                else:
+                    data_row.append('')
+
+        bacnet_data.append(data_row)
+
+    return header, bacnet_data

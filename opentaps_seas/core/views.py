@@ -17,6 +17,9 @@
 
 import csv
 from io import TextIOWrapper
+from io import BytesIO
+from io import StringIO
+from zipfile import ZipFile
 import logging
 
 from datetime import datetime
@@ -63,6 +66,7 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db.models import ProtectedError
 from django.db.models import Q
+from django.db.models import Count
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
@@ -1313,12 +1317,51 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         bacnet_config_id = context["form"].cleaned_data['device_prefix']
         only_with_trending = context["form"].cleaned_data['only_with_trending']
         print("get_config_zip, bacnet_config_id/only_with_trending : ", bacnet_config_id, only_with_trending)
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = "attachment; filename=two_files.zip"
 
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="Test.csv"'
+        trendings = Entity.objects.filter(kv_tags__bacnetConfigId=bacnet_config_id).values(
+                    'kv_tags__trending').annotate(dcount=Count('kv_tags__trending'))
 
-        writer = csv.writer(response)
-        writer.writerow([''])
+        config_file = ''
+        try:
+            bacnet_bonfig = BacnetConfig.objects.get(id=bacnet_config_id)
+            config_file = bacnet_bonfig.config_file
+        except BacnetConfig.DoesNotExist:
+            pass
+
+        if trendings:
+            for tr in trendings:
+                if tr['kv_tags__trending']:
+                    trending_interval = tr['kv_tags__trending']
+                    print(trending_interval, tr['dcount'])
+                    csv_file_name = '_Trending_' + trending_interval + ".csv"
+                    config_file_name = '_Trending_' + trending_interval + ".config"
+                    rows = Entity.objects.filter(
+                           kv_tags__bacnetConfigId=bacnet_config_id, kv_tags__trending=trending_interval)
+                    if rows:
+                        header, bacnet_data = utils.get_bacnet_trending_data(rows)
+
+                    in_memory = BytesIO()
+                    zip = ZipFile(in_memory, "a")
+
+                    zip.writestr(config_file_name, config_file)
+
+                    output = StringIO()
+                    writer = csv.writer(output)
+                    writer.writerow(header)
+                    for row in bacnet_data:
+                        writer.writerow(row)
+                    zip.writestr(csv_file_name, output.getvalue())
+                    output.close()
+
+                    # fix for Linux zip files read in Windows
+                    for file in zip.filelist:
+                        file.create_system = 0
+
+                    zip.close()
+                    in_memory.seek(0)
+                    response.write(in_memory.read())
 
         return response
 
