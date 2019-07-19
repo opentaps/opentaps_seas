@@ -1,9 +1,9 @@
 {# <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}> #}
 
-<div id="{{ widget.name }}_container">
+<div id="{{ widget.name }}_container" class="{{widget.attrs.class}}" style="border:none;background-image:none;padding:0">
     <input ref="hiddenInput" type="hidden" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %} v-model="internal_value"/>
     <vue-bootstrap-typeahead
-      :input-class="'form-control' + (errors ? ' is-invalid' : '')"
+      :input-class="'form-control {{widget.attrs.class}} ' + (errors ? ' is-invalid' : '')"
       :serializer="s => s.object_id || s.entity_id"
       id="{{ widget.name }}"
       ref="valueInput"

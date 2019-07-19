@@ -665,6 +665,11 @@ class ModelEditView(LoginRequiredMixin, ModelBCMixin, UpdateView):
             initial['parent_id'] = obj.kv_tags['modelRef']
         return initial
 
+    def get_success_url(self):
+        obj = self.get_object()
+        logging.info('ModelEditView::get_success_url = %s', obj.get_absolute_url())
+        return obj.get_absolute_url()
+
 
 model_edit_view = ModelEditView.as_view()
 

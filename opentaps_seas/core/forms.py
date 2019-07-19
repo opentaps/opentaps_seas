@@ -60,15 +60,18 @@ class ModelField(forms.CharField):
 class ModelCreateForm(forms.ModelForm):
     parent_id = ModelField(label='Parent Model ID', max_length=255, required=False)
 
+    check_unique_entity_id = True
+
     def __init__(self, *args, **kwargs):
         super(ModelCreateForm, self).__init__(*args, **kwargs)
 
     def is_valid(self):
         if not super().is_valid():
+            logger.error('ModelCreateForm: super not valid')
             return False
         logger.info('ModelCreateForm: check is_valid')
         obj_id = self.cleaned_data['entity_id']
-        if Entity.objects.filter(kv_tags__id=obj_id).exists():
+        if self.check_unique_entity_id and Entity.objects.filter(kv_tags__id=obj_id).exists():
             logger.error('ModelCreateForm: got model with id = %s', obj_id)
             self.add_error('entity_id', 'Model with this Model ID already exists.')
             return False
@@ -78,6 +81,7 @@ class ModelCreateForm(forms.ModelForm):
             try:
                 Entity.objects.get(kv_tags__id=parent_id, m_tags__contains=['model'])
             except Entity.DoesNotExist:
+                logger.error('ModelCreateForm: model not found with id = %s', parent_id)
                 self.add_error('parent_id', 'Model {} does not exist.'.format(parent_id))
                 return False
         return True
@@ -112,6 +116,8 @@ class ModelCreateForm(forms.ModelForm):
 
 
 class ModelUpdateForm(ModelCreateForm):
+    check_unique_entity_id = False
+
     def __init__(self, *args, **kwargs):
         super(ModelUpdateForm, self).__init__(*args, **kwargs)
         self.fields['entity_id'].widget = forms.HiddenInput()
