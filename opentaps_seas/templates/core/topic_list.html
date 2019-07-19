@@ -176,8 +176,8 @@
             <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
               <span v-if="!get_link(item)">${display_tag(item)}</span>
               <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
-              <div v-if="item.parent" class="text-muted text-small text-wrap">
-                from <a :href="model_link(item.parent)" target="_blank">${model_link_text(item)}</a>
+              <div v-if="item.parent_id" class="text-muted text-small text-wrap">
+                from <a :href="model_link(item)" target="_blank">${model_link_text(item)}</a>
               </div>
             </div>
             <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
@@ -406,11 +406,11 @@
         return (!i);
       },
       model_link(item) {
-        return dutils.urls.model_link(item)
+        return dutils.urls.resolve('model_detail', { id: item.parent_id })
       },
       model_link_text(item) {
-        if (!item || !item.parent) return ''
-        return item.parent.object_id || item.parent.entity_id
+        if (!item || !item.parent_description) return ''
+        return item.parent_description
       },
       get_link(tag) {
         return dutils.urls.resolve_tag_linked_value(tag)
@@ -462,9 +462,15 @@
         }
         if (found) {
           found.value = tag.value
-          if (model) found.parent = model
+          if (model) {
+            found.parent_id = model.entity_id
+            found.parent_description = model.description
+          }
         } else {
-          if (model) tag.parent = model
+          if (model) {
+            tag.parent_id = model.entity_id
+            tag.parent_description = model.description
+          }
           this.items.push(tag)
         }
       },
