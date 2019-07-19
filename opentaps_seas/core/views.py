@@ -561,14 +561,14 @@ class ModelBCMixin(WithBreadcrumbsMixin):
         b.append({'url': reverse('core:model_list'), 'label': 'Models'})
         m = context.get('object')
         if m:
-            b.append({'label': 'Model {}'.format(m.entity_id)})
+            b.append({'label': 'Model {}'.format(m.description or m.object_id)})
             while m:
                 m = m.get_parent_model()
                 if not m:
                     break
                 b.insert(1, {
                     'url': reverse('core:model_detail', kwargs={'entity_id': m.entity_id}),
-                    'label': 'Model {}'.format(m.entity_id)})
+                    'label': 'Model {}'.format(m.description or m.object_id)})
 
         return b
 
