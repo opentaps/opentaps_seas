@@ -36,7 +36,7 @@ The Site page shows
  * all the equipment of a single site and the number of data points for each equipment.  If you click on the down arrow next to the count of data points, it will display the most recent readings for that equipment.
  * files associated with the site.  Here you can either upload a file, such as a photo or PDF document, or add a link to an external document or even video.  
  * notes associated with the site.  Here you can enter notes about the site.
-
+ * BACNet configs imported from VOLTTRON (see Topics below.) 
 
 Equipment
 ^^^^^^^^^
@@ -60,8 +60,9 @@ Topics
 This page shows a list of the topics that are in the time series database.  If the topic has been mapped to a data point, the data point will be shown next to it.
 Otherwise, click on Add to add this topic as a new data point.
 
-You can also use the Import Topics button import a CSV file of new topics.  This CSV file should be in the format of the BACNET.csv file that VOLTTRON's BACNet scan
-generates (see ``/examples/configurations/drivers/bacnet.csv`` for an example.)  When importing, you can add a prefix all the BACNET points, for example ``campus_A/building_2/``, 
+You can also use the Import Topics button import the BACNet scans from VOLTTRON.  This imports a combination of CSV and JSON files as new topics.  The CSV and JSON files should be 
+in the format of .csv and .config files in the 
+``/examples/configurations/drivers/`` directory of the VOLTTRON repository.  When importing, you must associate it with a Site and add a prefix all the BACNET points, for example ``campus_A/building_2/``, 
 and they will be added to your topics.  The import will add them as topics and data points, and the additional BACNET data will be stored with the data point.  
 
 After importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
