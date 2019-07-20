@@ -133,8 +133,6 @@ lightLevel,Marker,"Light level in ""lux"" or ""lumen""","Light level sensor poin
 lights,Marker,Lighting on/off or if dimmable a numeric between 0% and 100%,Lighting on/off status as a boolean or if dimmable a numeric between 0% and 100%
 lightsGroup,Marker,Lighting system group,Equip level of the lighting system which is a group of one or more lights points
 load,Marker,"Chiller load from ""0%"" to ""100%""","Models a point on a chiller used to command or measure the chiller's load as a percentage from ""0%"" to ""100%"""
-model,Marker,Model,A Model or piece of equipment
-modelRef,Ref,Model ID,Association with a Model or piece of equipment
 mag,Marker,Volt or current magnitude,Models the magnitude of a volt or current point
 makeup,Marker,Makeup water in cooling tower boiler,"Paired with water to indicate control or measurement of the makeup water in a coolingToweror boiler used to replace water lost through leaks, evaporation, or blowdown"
 manufacturer,Str,Manufacturer,The manufacturer of a machine or piece of equipment

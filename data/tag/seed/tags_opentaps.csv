@@ -1,2 +1,4 @@
 tag,kind,description,details
+model,Marker,Model,A Model or piece of equipment
+modelRef,Ref,Model ID,Association with a Model or piece of equipment
 trending,Number,Trending Interval in minutes
