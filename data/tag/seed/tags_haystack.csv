@@ -135,7 +135,6 @@ lightsGroup,Marker,Lighting system group,Equip level of the lighting system whic
 load,Marker,"Chiller load from ""0%"" to ""100%""","Models a point on a chiller used to command or measure the chiller's load as a percentage from ""0%"" to ""100%"""
 mag,Marker,Volt or current magnitude,Models the magnitude of a volt or current point
 makeup,Marker,Makeup water in cooling tower boiler,"Paired with water to indicate control or measurement of the makeup water in a coolingToweror boiler used to replace water lost through leaks, evaporation, or blowdown"
-manufacturer,Str,Manufacturer,The manufacturer of a machine or piece of equipment
 mau,Marker,Makeup air handling unit,"Used with ahu to mark an AHU as a makeup air handling unit which conditions 100% outside air, and no recirculated air"
 max,Marker,Maximum value,Associated with a maximum value
 maxVal,Number,Maximum read/write value,Applied to point to define the maximum value to read from a sensor or to write from a command/setpoint
