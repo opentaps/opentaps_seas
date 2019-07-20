@@ -231,5 +231,4 @@ writeErr,Str,Write error message
 writeLevel,Number,Write priority level
 writeStatus,Str,Write status
 writeVal,Obj,Write value
-yearBuilt,Number,Year built
 zone,Marker,Zone

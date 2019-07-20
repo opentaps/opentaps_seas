@@ -3,3 +3,4 @@ manufacturer,Str,Manufacturer,The manufacturer of a machine or piece of equipmen
 model,Marker,Model,A Model or piece of equipment
 modelRef,Ref,Model ID,Association with a Model or piece of equipment
 trending,Number,Trending Interval in minutes
+yearBuilt,Number,Year built
