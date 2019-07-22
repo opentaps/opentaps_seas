@@ -942,18 +942,36 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         context['used_filters'] = self.used_filters
         if self.rule:
             context['rule'] = self.rule
+
+        topic_filter = self.request.session["topic_filter"]
+        if topic_filter:
+            self.request.session["topic_filter"] = None
+            if not context['used_filters']:
+                context['used_filters'] = []
+
+            filter_elem = {'type': 'c', 'value': topic_filter}
+            if len(context['used_filters']) == 1:
+                self.used_filters[0] = filter_elem
+            else:
+                self.used_filters.append(filter_elem)
+
         return context
 
     def get_breadcrumbs(self, context):
         if self.rule:
             b = []
             b.append({'url': reverse('core:topictagruleset_list'), 'label': 'Topic Tag Rule Sets'})
-            b.append({'url': reverse('core:topictagruleset_detail',
-                     kwargs={'id': self.rule.rule_set.id}),
-                             'label': 'Rule Set {}'.format(self.rule.rule_set.name or self.rule.rule_set.id)})
+            b.append({'url': reverse('core:topictagruleset_detail', kwargs={'id': self.rule.rule_set.id}),
+                      'label': 'Rule Set {}'.format(self.rule.rule_set.name or self.rule.rule_set.id)})
             b.append({'label': 'Rule {}'.format(self.rule.name or self.rule.id)})
             return b
         return super().get_breadcrumbs(context)
+
+    def post(self, request, *args, **kwargs):
+        bacnet_prefix = request.POST.get('bacnet_prefix')
+        if bacnet_prefix:
+            self.request.session["topic_filter"] = bacnet_prefix
+        return HttpResponseRedirect(reverse('core:topic_list'))
 
 
 topic_list_view = TopicListView.as_view()
