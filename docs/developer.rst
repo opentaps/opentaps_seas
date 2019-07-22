@@ -8,6 +8,8 @@ Haystack
 
 Note: Haystack id tag values are set by default to be the same as primary key values, but they do not have to be.
 
+Project Haystack 3.0 tags are defined in ``data/tag/seed/tags_haystack.csv``  Additional tags are defined separately in ``data/tag/seed/tags_opentaps.csv``
+
 Haystack Server
 ^^^^^^^^^^^^^^^
 
