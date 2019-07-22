@@ -37,35 +37,38 @@
 
         {% if current_site %}
             <h4>Site {{ current_site.description }}</h4>
-
         {% else %}
-        <div id="div_id_site" class="form-group">
-            <label for="id_site" class="col-form-label requiredField">
-                Site<span class="asteriskField">*</span>
-            </label>
-            <div class="">
-                <select name="site" class="select form-control" id="id_site" v-model="selectedSite" @change="changedSite">
-                    {% for c in sites_list %}
-                        <option value="{{ c.id }}">{{ c.description }}</option>
-                    {% endfor %}
-                </select>
+            <div id="div_id_site" class="form-group">
+                <label for="id_site" class="col-form-label requiredField">
+                    Site<span class="asteriskField">*</span>
+                </label>
+                <div class="">
+                    <select name="site" class="select form-control" id="id_site" v-model="selectedSite" @change="changedSite">
+                        {% for c in sites_list %}
+                            <option value="{{ c.id }}">{{ c.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-        </div>
         {% endif %}
-
-        <div id="div_id_device_prefix" class="form-group">
-            <label for="id_device_prefix" class="col-form-label  requiredField">
-                Device prefix<span class="asteriskField">*</span>
-            </label>
-            <div>
-                <select name="device_prefix" id="id_device_prefix" class="select form-control"  v-if="bacnetPrefixes.length">
-                    <option v-for="item in bacnetPrefixes" v-bind:value="item.id">${ item.prefix }</option>
-                </select>
+        {% if current_prefix %}
+            <h4>Device prefix {{ current_prefix.prefix }}</h4>
+            <input type="hidden" name="device_prefix" value="{{ current_prefix.id }}"/>
+        {% else %}
+            <div id="div_id_device_prefix" class="form-group">
+                <label for="id_device_prefix" class="col-form-label  requiredField">
+                    Device prefix<span class="asteriskField">*</span>
+                </label>
+                <div>
+                    <select name="device_prefix" id="id_device_prefix" class="select form-control"  v-if="bacnetPrefixes.length">
+                        <option v-for="item in bacnetPrefixes" v-bind:value="item.id">${ item.prefix }</option>
+                    </select>
+                </div>
+                <div :class="['alert', 'alert-danger']" role="alert"  v-if="error">
+                    ${ error }
+                </div>
             </div>
-            <div class="alert alert-danger" role="alert"  v-if="!bacnetPrefixes.length">
-                There are no any Device prefixes found for this site
-            </div>
-        </div>
+        {% endif %}
 
         {{ form.only_with_trending|as_crispy_field }}
 
@@ -86,6 +89,7 @@
     data:{
       selectedSite: '{{ site_id|safe }}',
       bacnetPrefixes: [],
+      error: null,
     },
     mounted() {
       this.changedSite()
@@ -97,15 +101,19 @@
         }
       },
       loadPrefixes:function() {
+        this.error = null
         url = dutils.urls.resolve('bacnet_prefix_list_json', {site: this.selectedSite})
         axios.get(url)
           .then(
             x => {
               this.bacnetPrefixes = x.data.items
+              if (!this.bacnetPrefixes.length) {
+                this.error = 'There are no any Device prefixes found for this site';
+              }
             }
           )
           .catch(err => {
-            console.error('loading bacnet prefix error :', err);
+            this.error = 'Error loading bacnet prefixes';
         });
       }
     }

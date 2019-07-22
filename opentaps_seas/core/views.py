@@ -1318,6 +1318,13 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                 context['current_site'] = SiteView.objects.get(entity_id=self.kwargs['site'])
             except SiteView.DoesNotExist:
                 pass
+
+            if 'id' in self.kwargs:
+                try:
+                    context['current_prefix'] = BacnetConfig.objects.get(id=self.kwargs['id'])
+                except BacnetConfig.DoesNotExist:
+                    pass
+
         else:
             context['back_url'] = reverse('core:topic_list')
             context['sites_list'] = SiteView.get_site_choices()
