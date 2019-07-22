@@ -1379,6 +1379,9 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                 config_file_json["registry_config"] = "config://" + csv_file_name
                 if trending_interval:
                     config_file_json["interval"] = trending_interval
+                else:
+                    if "interval" in config_file_json:
+                        del config_file_json["interval"]
 
                 file_item["config_file"] = json.dumps(config_file_json)
 
