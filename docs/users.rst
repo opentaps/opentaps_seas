@@ -36,7 +36,7 @@ The Site page shows
  * all the equipment of a single site and the number of data points for each equipment.  If you click on the down arrow next to the count of data points, it will display the most recent readings for that equipment.
  * files associated with the site.  Here you can either upload a file, such as a photo or PDF document, or add a link to an external document or even video.  
  * notes associated with the site.  Here you can enter notes about the site.
- * BACNet configs imported from VOLTTRON (see Topics below.) 
+ * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on View to view the topics (data points) of this prefix or Export to export them again. 
 
 Equipment
 ^^^^^^^^^
@@ -111,6 +111,21 @@ To see how you're doing with the tagging, use this report.  It provides you a CS
 The topics are in rows and the tags are in columns, and the value will be in the
 cells.  If the tags is a marker tag, there will be an X.
 
+Exporting Topics
+################
+
+This can be used to create VOLTTRON BACNet CSV and JSON configuration files, so you can choose which topics to trend or set different trending intervals for your topics.
+To use this feature, first set the ``trending`` tag to the trending interval in minutes for your topics, as
+part of your Tagging Rules or applying tags to your filtered topics.  Then, click on Export from the Topics page or from the BACNet Configs section of your Site.  If you come from
+the Topics page, you will have to choose the Site and the BACNet Config prefix.
+
+Then you can
+choose to only export the topics with Trending set, which means only the topics with ``trending`` set will be exported, or uncheck this to export all the topics with this prefix.  
+You will get a zip file with CSV and JSON for each distinct ``trending`` tag value for this BACNet Config prefix.  For example, if you set some topics to trend at 5 minutes, some at
+15 minutes, and some at 60 minutes, you will get CSV and JSON files for 5, 15, and 60 minutes with _5, _15, and _60 in their file names.  If you unchecked "Only export the topics with
+Trending set", then you will get a CSV and JSON file combination for all the other topics that do not have trending set as well.  These config files can then be loaded into your 
+on site VOLTTRON instance. 
+
 Models
 ^^^^^^
 
@@ -123,6 +138,7 @@ the information common to that model.  Then for all the machines like your "Siem
 Tags
 ^^^^
 
-Tags are for any metadata information.  They could be your custom tags or the tags from Project Haystack.  By default, the Project Haystack 3.0 tags are loaded as part of the seed data.
+Tags are for any metadata information.  They could be your custom tags or the tags from Project Haystack.  By default, the Project Haystack 3.0 tags are loaded as part of the seed data.  There are also
+some other tags which are not part of the Haystack standard, but which are useful to opentaps SEAS.  They are loaded from a separate tag seed data file.
 
 For boolean or marker tags, (the entity.kv_tags with type=Bool), a value of 0 in the time series database represents False and anything else represents True.
