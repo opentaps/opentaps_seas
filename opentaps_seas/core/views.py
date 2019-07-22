@@ -950,10 +950,10 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
                 context['used_filters'] = []
 
             filter_elem = {'type': 'c', 'value': topic_filter}
-            if len(context['used_filters']) == 1:
-                self.used_filters[0] = filter_elem
+            if len(context['used_filters']) == 0:
+                context['used_filters'].append(filter_elem)
             else:
-                self.used_filters.append(filter_elem)
+                context['used_filters'][-1] = filter_elem
 
         return context
 
