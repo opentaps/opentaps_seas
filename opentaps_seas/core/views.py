@@ -892,7 +892,10 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         self.used_filters = []
         self.rule = None
 
-        topic_filter = self.request.session["topic_filter"]
+        topic_filter = None
+        if "topic_filter" in self.request.session:
+            topic_filter = self.request.session["topic_filter"]
+
         if topic_filter:
             self.request.session["topic_filter"] = None
 
