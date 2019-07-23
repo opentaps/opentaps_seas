@@ -223,6 +223,10 @@ tag_list_view = TagListView.as_view()
 class TagListJsonView(LoginRequiredMixin, ListView):
     model = Tag
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.order_by(Lower('tag'), Lower('description'))
+
     def render_to_response(self, context, **response_kwargs):
         data = list(context['object_list'].values('tag', 'description', 'kind'))
         return JsonResponse({'items': data})
@@ -758,6 +762,10 @@ site_list_view = SiteListView.as_view()
 class SiteListJsonView(LoginRequiredMixin, ListView):
     model = SiteView
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.order_by(Lower('object_id'), Lower('description'))
+
     def render_to_response(self, context, **response_kwargs):
         data = list(context['object_list'].values('entity_id', 'object_id', 'description', 'city', 'state', 'area'))
         return JsonResponse({'items': data})
@@ -816,6 +824,10 @@ site_detail_view = SiteDetailView.as_view()
 class StateListJsonView(LoginRequiredMixin, ListView):
     model = Geo
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.order_by(Lower('geo_name'))
+
     def render_to_response(self, context, **response_kwargs):
         country = self.kwargs['country']
         data = []
@@ -830,6 +842,10 @@ state_list_json_view = StateListJsonView.as_view()
 
 class TimezoneListJsonView(LoginRequiredMixin, ListView):
     model = TimeZone
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.order_by('tzoffset', Lower('time_zone'))
 
     def render_to_response(self, context, **response_kwargs):
         # note this can pass the geo_code_name as well
@@ -1505,6 +1521,10 @@ equipment_list_view = EquipmentListView.as_view()
 
 class EquipmentListJsonView(LoginRequiredMixin, ListView):
     model = EquipmentView
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.order_by(Lower('object_id'), Lower('description'))
 
     def render_to_response(self, context, **response_kwargs):
         qs = context['object_list']
