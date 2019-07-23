@@ -68,6 +68,7 @@ from django.core.files import File
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.db.models import Count
+from django.db.models.functions import Lower
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
@@ -602,6 +603,7 @@ class ModelListJsonView(LoginRequiredMixin, ListView):
             return qs
         self.parent_given = True
         p = self.request.GET.get('parent')
+        qs = qs.order_by(Lower('description'), Lower('object_id'))
         if p and p != '_':
             return qs.filter(kv_tags__modelRef=p)
         else:
