@@ -600,10 +600,11 @@ class ModelListJsonView(LoginRequiredMixin, ListView):
         qs = super().get_queryset(**kwargs)
         # allow a direct search of the child models
         if 'parent' not in self.request.GET:
+            qs = qs.order_by(Lower('object_id'), Lower('description'))
             return qs
+        qs = qs.order_by(Lower('description'), Lower('object_id'))
         self.parent_given = True
         p = self.request.GET.get('parent')
-        qs = qs.order_by(Lower('description'), Lower('object_id'))
         if p and p != '_':
             return qs.filter(kv_tags__modelRef=p)
         else:
