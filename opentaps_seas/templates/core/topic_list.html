@@ -105,7 +105,7 @@
             <div class="form-group">
               <h5>Select Model</h5>
               <div v-for="item in model_selects" v-bind:key="item.level">
-                <v-select v-if="item.models" :get-option-label="get_model_label" :options="item.models" v-model="item.model" @input="item.select_model" class="mb-2" placeholder="Select a Model ...">
+                <v-select v-if="item.models" :get-option-label="get_model_label" select-on-tab :options="item.models" v-model="item.model" @input="item.select_model" class="mb-2" placeholder="Select a Model ...">
                   <template slot="option" slot-scope="option">
                     ${ option.object_id } <small>${ option.description }</small>
                   </template>
