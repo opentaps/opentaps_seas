@@ -889,9 +889,12 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
-
         self.used_filters = []
         self.rule = None
+
+        topic_filter = self.request.session["topic_filter"]
+        if topic_filter:
+            self.request.session["topic_filter"] = None
 
         self.select_not_mapped_topics = self.request.GET.get('select_not_mapped_topics')
         if self.select_not_mapped_topics:
@@ -913,6 +916,10 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
                 elif f['type'] == 'nc':
                     qs = qs.exclude(Q(topic__icontains=f['value']))
 
+        elif topic_filter:
+            filter_elem = {'type': 'c', 'value': topic_filter}
+            self.used_filters.append(filter_elem)
+            qs = qs.filter(Q(topic__icontains=topic_filter))
         else:
 
             n = 0
@@ -942,18 +949,6 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         context['used_filters'] = self.used_filters
         if self.rule:
             context['rule'] = self.rule
-
-        topic_filter = self.request.session["topic_filter"]
-        if topic_filter:
-            self.request.session["topic_filter"] = None
-            if not context['used_filters']:
-                context['used_filters'] = []
-
-            filter_elem = {'type': 'c', 'value': topic_filter}
-            if len(context['used_filters']) == 0:
-                context['used_filters'].append(filter_elem)
-            else:
-                context['used_filters'][-1] = filter_elem
 
         return context
 
