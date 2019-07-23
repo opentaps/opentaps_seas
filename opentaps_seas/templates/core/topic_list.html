@@ -105,7 +105,11 @@
             <div class="form-group">
               <h5>Select Model</h5>
               <div v-for="item in model_selects" v-bind:key="item.level">
-                <v-select v-if="item.models" label="description" :options="item.models" v-model="item.model" @input="item.select_model" class="mb-2" placeholder="Select a Model ..."></v-select>
+                <v-select v-if="item.models" :get-option-label="get_model_label" :options="item.models" v-model="item.model" @input="item.select_model" class="mb-2" placeholder="Select a Model ...">
+                  <template slot="option" slot-scope="option">
+                    ${ option.object_id } <small>${ option.description }</small>
+                  </template>
+                </v-select>
               </div>
             </div>
             <div v-if="last_model_selected">
@@ -590,6 +594,9 @@
             })
           this.load_models(this.model_selects[this.model_selects.length-1], true)
         }
+      },
+      get_model_label(model) {
+        return model.object_id + ' ' + model.description
       },
       load_models(model_select, scroll) {
         console.log('** load_models for =', model_select)
