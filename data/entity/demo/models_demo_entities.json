@@ -648,5 +648,33 @@
             "dis": "VAV"
         },
         "m_tags": ["model", "equip", "vav", "hvac"]
+    },
+    {
+        "entity_id": "modelvavairflow",
+        "kv_tags": {
+            "id": "model-VAV-airflow",
+            "dis": "Airflow",
+            "modelRef": "model-vav"
+        },
+        "m_tags": ["model", "air", "flow", "sensor"]
+    },
+    {
+        "entity_id": "modelvavfanstatus",
+        "kv_tags": {
+            "id": "model-VAV-fan-status",
+            "dis": "Fan Status",
+            "modelRef": "model-vav"
+        },
+        "m_tags": ["model", "air", "fan", "sensor"]
+    },
+    {
+        "entity_id": "modelvavfancommand",
+        "kv_tags": {
+            "id": "model-VAV-fan-command",
+            "dis": "Fan Command",
+            "modelRef": "model-vav"
+        },
+        "m_tags": ["model", "air", "fan", "cmd"]
     }
+ 
 ]}
