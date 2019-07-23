@@ -1305,6 +1305,7 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                         e = Entity.objects.get(topic=topic)
                     except Entity.DoesNotExist:
                         e = Entity(entity_id=entity_id, topic=topic)
+                        e.add_tag('id', entity_id, commit=False)
                     e.add_tag('point', commit=False)
                     e.add_tag('his', commit=False)
                     e.add_tag('dis', name, commit=False)
