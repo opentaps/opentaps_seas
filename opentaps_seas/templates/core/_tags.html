@@ -64,11 +64,17 @@
       <div class="container tags-table ftable">
         <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
           <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
-            <span v-if="!get_link(item)">${display_tag(item)}</span>
-            <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
+            <span v-if="!get_link(item)" v-bind:id="item.tag + idx + 'e'">${display_tag_short(item)}</span>
+            <a v-if="get_link(item)" :href="get_link(item)" v-bind:id="item.tag + idx + 'e'">${display_tag_short(item)}</a>
             <div v-if="item.parent" class="text-muted text-small text-wrap">
               from <a :href="model_link(item.parent)">${model_link_text(item)}</a>
             </div>
+            <b-popover :target="item.tag + idx + 'e'" triggers="hover focus" placement="right">
+              <template slot="title">${item.tag}</template>
+              ${item.description}</br>
+              ${item.details}
+              <div v-if="get_link(item)">Links to: <a :href="get_link(item)">${display_tag_short(item)}</a></div>
+            </b-popover>
           </div>
           <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
             <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
