@@ -85,13 +85,18 @@ There are a couple of ways to do this in the user interface.  First, from the To
 into the "Filter Topics" input box.  You can use wildcards and regex here.  This will show you a list of filtered topics.
 
 Click on "Show unmapped topics only." to see only the topics which have not been mapped to data points.  Then you can click on "Show all topics." to see all the topics again.    
+You can also click "Select all topics matching the filters on all pages."  If you choose this, it will check all the topics that match your filters on all the pages of results, 
+not just what you see on the current page.  
 
 Then you can choose the topics you want to add tags.  Once you've selected some topics, you can click on "Select all that match the filters on all pages" to select
 all the topics on all the pages that match your filter conditions.  You can later click "Clear selection" to uncheck this option.
 
-Next, go below to the "Tag Selected Topics" section to add
-tags for these topics.  Note in the list of topics there is one that says "Select all topics matching the filters on all pages."  If you choose this, it will check all the topics that match your
-filters on all the pages of results, not just what you see on the current page.  Then just click "Apply Tags" to apply these tags to the topics.   
+Next, go below to the "Tag Selected Topics" section to add tags for these topics.  You can choose either to add individual tags or add tags from a Model (see below.)  If you choose to add tags
+from a Model, it will ask you to choose from top level Models first.  Then, it will show you the tags from the top level Model, and then ask you to select from any child Models of your Model.
+You can choose to add either the current Model's tags or choose a child Model.  Click on "Add these Tags"
+to add the tags of the Model you've chosen.  This adds the tags of the currently selected model to the list of tags that could be applied.  
+At any one time, you can only choose to add tags from one Model, and not its parents at the same time.  
+Then click "Apply Tags" to apply these tags to the topics.   
 
 From here you can also click on "Save as a Rule", and it will open a dialog box below.  Here you can choose to save to a new rule set or an existing one, then put a name for your rule, and save
 the filter/tags as a rule.  
@@ -129,11 +134,19 @@ on site VOLTTRON instance.
 Models
 ^^^^^^
 
-Models are standard templates of tags, content, and notes.  If you put tags, files or links, and notes on a Model, and then tag the Equipment of a Site as that Model, the Equipment gets all the tags, files, links, and notes of your Model.  This is a one time inheritance: If you change them on the Model again, they will not automatically be changed on the Equipment that already has been linked to the Model. 
+Models are standard templates of tags, content, and notes.  They can be used to standardize tags, content, and notes for commoonly used equipment.  If you put tags, files or links, and notes 
+on a Model, and then tag the Equipment of a Site as that Model, the Equipment gets all the tags, files, links, and notes of your Model.  This is a one time inheritance: If you change them on 
+the Model again, they will not automatically be changed on the Equipment that already has been linked to the Model. 
 
-This feature is to help you standardize tags, content, and notes for your commonly used equipment.  For example, you can create a Model called "Siemens Standard RTU" and then put all
+For example, you can create a Model called "Siemens Standard RTU" and then put all
 the information common to that model.  Then for all the machines like your "Siemens Standard RTU", you can just set their Model, and they can all get the same tags and data from the model. 
 
+They can also be used to group tags together for tagging topics.  You can create a Model with several tags together, then apply them to topics which fit a filter or rule.  This is also one
+time: The tags are added to your topics when you apply them or add them to the rule.  If later you change the Model, your topics' or rule's tags will not automatically change.
+
+On the Models page, you will see the "top level" Models that do not have any child models.  Click on a top level Model, and you will see a list of its children.  Models can be nested as 
+deeply as you want.  When you create a new Model, you can choose any other Model to be its parent.
+  
 
 Tags
 ^^^^
