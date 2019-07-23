@@ -62,8 +62,12 @@ Otherwise, click on Add to add this topic as a new data point.
 
 You can also use the Import Topics button import the BACNet scans from VOLTTRON.  This imports a combination of CSV and JSON files as new topics.  The CSV and JSON files should be 
 in the format of .csv and .config files in the 
-``/examples/configurations/drivers/`` directory of the VOLTTRON repository.  When importing, you must associate it with a Site and add a prefix all the BACNET points, for example ``campus_A/building_2/``, 
-and they will be added to your topics.  The import will add them as topics and data points, and the additional BACNET data will be stored with the data point.  
+``/examples/configurations/drivers/`` directory of the VOLTTRON repository.  If coming from the VOLTTRON BACNet scans, the CSV file would be from the ``registry_configs`` directory,
+and the JSON file would be from the ``devices`` directory.  
+
+When importing, you must associate it with a Site and add a prefix all the BACNET points, for example ``campus_A/building_2``, 
+and they will be added to your topics with a ``/`` between your prefix and the topic name.  This means if you put ``campus 1/building 1/``, your topics will all be prefixed with ``campus 1/building 1//``.
+The import will add them as topics and data points, and the additional BACNET data will be stored with the data point.  
 
 After importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
 and siteRef tags.  
