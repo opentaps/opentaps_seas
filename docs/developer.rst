@@ -58,6 +58,13 @@ by running the script like this::
  $ python manage.py runscript get_haystack_data --script-args http://localhost:8080/haystack-java-3.0.2-SNAPSHOT none
  $ python manage.py runscript get_haystack_data --script-args http://localhost:8080/haystack-java-3.0.2-SNAPSHOT 2019-05-01
 
+Haystack Tag Templates and Models
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We have implemented some default Project Haystack tag templates as Models, so that you can attach standard combinations of tags to your data points with them.
+The Haystack tag templates are from the commonly used points, for example those listed under "Points" on https://project-haystack.org/tag/ahu
+They are in the file ``data/entity/demo/models_demo_entities.json``.  You can follow this format to add additional Models.
+
 Services
 --------
 
