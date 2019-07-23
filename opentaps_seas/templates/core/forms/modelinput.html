@@ -11,7 +11,7 @@
       name="{{ widget.name }}"
       v-model="internal_value"
       v-on:input="$emit('input', $event)"
-      max-matches="50"
+      :max-matches="50"
       :data="valid_models"
       @hit="selected_model = $event"
       placeholder="Model...">
