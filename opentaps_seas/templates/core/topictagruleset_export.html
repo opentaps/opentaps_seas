@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load django_tables2 %}
+{% load static i18n %}
+{% block title %}Topic Tag Rule Sets{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  {% load render_table from django_tables2 %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <form method="POST" id="export_form">
+        {% csrf_token %}
+        <h5>Select Topic Tag Rule Sets to export</h5>
+
+        <div id="table_container" ref="table_container">
+            {% render_table table %}
+        </div>
+
+        <div class="form-group d-flex justify-content-around mt-5">
+            <a href="{% url 'core:topictagruleset_list' %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
+            <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Export Rule Sets</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  new Vue({
+    el: '#export_form',
+    delimiters: ['${', '}'],
+    data:{
+    },
+    mounted() {
+        this.setup_checkboxes()
+    },
+    methods:{
+        setup_checkboxes() {
+            el = this.$refs['table_container']
+            select_all = el.querySelector('thead input[type="checkbox"]')
+            console.log('add select_all handler for', select_all)
+            _this = this
+            select_all.addEventListener('change', function(event) {
+                console.log('* change select_all', this.checked)
+                _this.select_all(this.checked)
+            });
+        },
+        select_all(checked, skipSave) {
+          el = this.$refs['table_container']
+          cbs = el.querySelectorAll('input[type="checkbox"]')
+          _this = this
+          for (var i=0; i<cbs.length; i++) {
+              cb = cbs[i]
+              cb.checked = checked
+              console.log('*** set checkbox', cb)
+          }
+          this.all_checked = checked
+          console.log('select_all set select_all checked', checked)
+        },
+    }
+  });
+})();
+</script>
+{% endblock content %}

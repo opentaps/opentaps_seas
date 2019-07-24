@@ -18,11 +18,14 @@
 # If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load bootstrap4 %}
 {% load django_tables2 %}
 {% load static i18n %}
 {% block title %}Topic Tag Rule Sets{% endblock %}
 
 {% block content %}
+{% url 'core:topictagruleset_export' as topictagruleset_export_url %}
+{% url 'core:topictagruleset_create' as ruleset_create_url %}
 <div class="container">
 
   {% include "core/_breadcrumbs.html" %}
@@ -39,8 +42,20 @@
         </button>
       </div>
       {% load render_table from django_tables2 %}
-      {% url 'core:topictagruleset_create' as ruleset_create_url %}
-      {% include "core/_table_filter_add.html" with add_label='Add Rule Set' add_url=ruleset_create_url %}
+
+      <form action="" method="get" class="form">
+        <div class="row m-0">
+          <div class="row p-0 m-0 mb-2 mr-sm-2 col-12 col-sm-auto order-1 order-sm-0">
+            {% bootstrap_field filter.form.query form_group_class="form-group m-0 flex-grow-1" show_label=False placeholder='Search...' %}
+            {% bootstrap_button '<i class="fa fa-filter"></i>' button_class='btn-outline-secondary ml-2' %}
+          </div>
+          <div class="m-0 mb-2 mr-0 p-0 col-auto text-right flex-grow-1 order-0 order-sm-1 d-flex flex-column flex-sm-row justify-content-end">
+            {% bootstrap_button '<i class="fa fa-plus"></i> Add Rule Set' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=ruleset_create_url %}
+            {% bootstrap_button 'Export' button_class='btn-primary' href=topictagruleset_export_url %}
+          </div>
+        </div>
+      </form>
+
       {% render_table table %}
     </div>
   </div>

@@ -354,6 +354,18 @@ class TopicTagRuleSetTable(Table):
         }
 
 
+class TopicTagRuleSetExportTable(Table):
+    cb = CheckBoxColumn(accessor='id')
+    name = Column()
+    rules = Column(accessor='topictagrule_set.count', orderable=False)
+
+    class Meta:
+        order_by = 'name'
+        row_attrs = {
+            'id': lambda record: 'topicruleset_' + str(record.id)
+        }
+
+
 class TopicTagRuleTable(Table):
     name = LinkColumn('core:topictagrule_detail',
                       args=[A('id')],
@@ -1182,6 +1194,45 @@ class TopicTagRuleSetListView(LoginRequiredMixin, SingleTableMixin, WithBreadcru
 
 
 topictagruleset_list_view = TopicTagRuleSetListView.as_view()
+
+
+class TopicTagRuleSetExportView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+    model = TopicTagRuleSet
+    table_class = TopicTagRuleSetExportTable
+    template_name = 'core/topictagruleset_export.html'
+
+    def post(self, request, *args, **kwargs):
+        cb = request.POST.getlist('cb')
+        response = HttpResponse(content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="TopicTagRuleSets.json"'
+
+        output = StringIO()
+        tag_rule_sets = {"tag_rule_sets": []}
+
+        if cb:
+            for rule_set_id in cb:
+                try:
+                    rule_set = TopicTagRuleSet.objects.get(id=rule_set_id)
+                except TopicTagRuleSet.DoesNotExist:
+                    pass
+                else:
+                    tag_rule_set = {"name": rule_set.name, "rules": []}
+                    rules = TopicTagRule.objects.filter(rule_set=rule_set_id)
+                    if rules:
+                        for rule in rules:
+                            rule_item = {"name": rule.name, "filters": rule.filters, "tags": rule.tags}
+                            tag_rule_set["rules"].append(rule_item)
+
+                    tag_rule_sets["tag_rule_sets"].append(tag_rule_set)
+
+        json_string = json.dumps(tag_rule_sets, indent=4, sort_keys=True)
+        output.write(json_string)
+        response.write(output.getvalue())
+
+        return response
+
+
+topictagruleset_export_view = TopicTagRuleSetExportView.as_view()
 
 
 class TopicTagRuleSetCreateView(LoginRequiredMixin, TopicTagRuleSetBCMixin, CreateView):
