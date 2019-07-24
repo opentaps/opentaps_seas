@@ -245,3 +245,20 @@ top:0
 .chev-btn .a-rt {
   top:-6px;
 }
+
+/*.vs__dropdown-option {
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+}*/
+.vs__dropdown-option {
+  color: #000;
+  padding: .75rem 1.25rem;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.125);
+}
+.vs__dropdown-option:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
