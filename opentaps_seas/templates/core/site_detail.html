@@ -126,7 +126,7 @@
                         <input type="hidden" name="bacnet_prefix" value="{{ bc.prefix }}"/>
                         <button class="btn btn-primary " type="submit">View</button>
                         <a class="btn btn-primary" href="{% url 'core:topic_export1' object.entity_id bc.id %}">Export</a>
-                        <a class="btn btn-primary" href="{% url 'core:topictagruleset_runform' %}?topic_filter={{ bc.prefix }}"><i class="fa fa-cog mr-2"></i>Run RuleSet</a>
+                        <a class="btn btn-primary" href="{% url 'core:topictagruleset_runform' %}?topic_filter={{ bc.prefix }}"><i class="fa fa-cog mr-2"></i>Run Rules</a>
                       </form>
                     </div>
                   </b-col>
