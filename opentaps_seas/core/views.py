@@ -1430,6 +1430,8 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                     e.add_tag('his', commit=False)
                     e.add_tag('dis', name, commit=False)
                     e.add_tag('bacnetConfigId', bacnet_config.id, commit=False)
+                    if site.kv_tags.get('id'):
+                        e.add_tag('siteRef', site.kv_tags.get('id'), commit=False)
                     if row.get('Units'):
                         e.add_tag('unit', row['Units'], commit=False)
                     # add all bacnet_fields
