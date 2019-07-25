@@ -33,6 +33,12 @@
 
   <div class="card mb-3">
     <div class="card-body p-2 p-md-3" id="topics-list" v-cloak>
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="create_rule_success">
+          <div>Successfully ${ create_rule_success.action } Rule "${ create_rule_success.rule.name }" in Rule Set "${ create_rule_success.rule_set.name }" ${ create_rule_success.details }.</div>
+          <button type="button" class="close" aria-label="Close" v-on:click="create_rule_success = false">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
         <form action="" method="get" class="form" ref="topics_filter_form" v-on:submit.prevent="noop">
             <div class="filters">
               <div class="row m-0" v-for="(filter, index) in filters">
@@ -310,6 +316,7 @@
       return {
         csrfmiddlewaretoken: CSRF_TOKEN,
         selectedTag: {},
+        selected_ruleset: {},
         valid_tags: [],
         model_selects: [],
         last_model_selected: false,
@@ -381,6 +388,14 @@
           model: ''
         }]
         this.load_models(this.model_selects[0])
+      },
+      reset_all() {
+        this.reset()
+        this.selected_ruleset = {}
+        this.isAddingTag = false
+        this.isAddingModel = false
+        this.show_save_rule = {% if rule %}true{%else%}false{%endif%}
+        this.items = []
       },
       toggle_show_save_rule() {
         this.show_save_rule = !this.show_save_rule
@@ -719,12 +734,20 @@
           .then(x => {
             if (x.success) {
               console.log('saved rule, rules = ', x)
-              this.create_rule_success = {
+              success_msg = {
                 action: (x.success == 'updated') ? 'updated' : 'created',
                 details: details,
                 rule: x.rule,
                 rule_set: x.rule_set
               }
+              {% if not rule %}
+              console.log('Rule saved. Reseting the form and sending success message:', success_msg)
+              eventHub.$emit('saved_rule', success_msg)
+              this.reset_all()
+              {% else %}
+              console.log('Rule saved, setting success message:', success_msg)
+              this.create_rule_success = success_msg
+              {% endif %}
             } else {
               return Promise.reject(x.errors)
             }
@@ -750,6 +773,7 @@
             { type: '{{f.type|default:"c"}}', value: '{{f.value}}'},
           {% endfor %}
         ],
+        create_rule_success: false,
         selected_topics: {},
         select_not_mapped_topics: false,
         all_checked: false,
@@ -762,6 +786,7 @@
     },
     created: function () {
       eventHub.$on('apply_tags', this.apply_tags)
+      eventHub.$on('saved_rule', this.saved_rule)
       eventHub.get_filters = () => {
         return this.filters
       }
@@ -782,6 +807,11 @@
     methods: {
       noop() {
         console.log('noop __')
+      },
+      saved_rule(msg) {
+        console.log('** saved rule', msg)
+        this.create_rule_success = msg
+        this.$el.scrollIntoView()
       },
       apply_rule(rule) {
         console.log('** apply rule', rule)
