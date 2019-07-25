@@ -65,9 +65,12 @@ in the format of .csv and .config files in the
 ``/examples/configurations/drivers/`` directory of the VOLTTRON repository.  If coming from the VOLTTRON BACNet scans, the CSV file would be from the ``registry_configs`` directory,
 and the JSON file would be from the ``devices`` directory.  
 
-When importing, you must associate it with a Site and add a prefix all the BACNET points, for example ``campus_A/building_2``, 
-and they will be added to your topics with a ``/`` between your prefix and the topic name.  This means if you put ``campus 1/building 1/``, your topics will all be prefixed with ``campus 1/building 1//``.
-The import will add them as topics and data points, and the additional BACNET data will be stored with the data point.  
+When importing, you must associate it with a Site and add a prefix to all the topics so that they match the data points from VOLTTRON.
+By default, the CSV files from VOLTTRON only have the file portion of the full data point name, so if a data point's full name is
+``campus_A/building_2/controller_3/equipment_4/status``, it will be ``equipment_4/status`` in the VOLTTRON CSV.  In that case, you will need to
+put ``campus_A/building_2/controller_3`` here.  
+They will be added to your topics with a ``/`` between your prefix and the topic name.  
+The import will add them as topics and data points, with a reference to the site ID, and the additional BACNET data will be stored with the data point.  
 
 After importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
 and siteRef tags.  

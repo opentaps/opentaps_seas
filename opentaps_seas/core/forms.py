@@ -376,7 +376,7 @@ class TopicImportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['site'] = forms.ChoiceField(choices=SiteView.get_choices())
-        self.fields['device_prefix'].widget.attrs.update({'placeholder': 'eg: campus/building/equipment'})
+        self.fields['device_prefix'].widget.attrs.update({'placeholder': 'eg: campus/building/device'})
 
 
 class TopicExportForm(forms.Form):
