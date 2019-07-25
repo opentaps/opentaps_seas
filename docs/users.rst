@@ -36,7 +36,7 @@ The Site page shows
  * all the equipment of a single site and the number of data points for each equipment.  If you click on the down arrow next to the count of data points, it will display the most recent readings for that equipment.
  * files associated with the site.  Here you can either upload a file, such as a photo or PDF document, or add a link to an external document or even video.  
  * notes associated with the site.  Here you can enter notes about the site.
- * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on View to view the topics (data points) of this prefix or Export to export them again. 
+ * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on View to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix. 
 
 Equipment
 ^^^^^^^^^
@@ -110,6 +110,9 @@ the filter/tags as a rule.
 
 The second way is to click on the "Tagging Rules" button.  Then you will see all the tagging rules created so far.  Click on one to see the rules inside.  Click on the rule, and you will be taken
 to the filter page, where you can change the tags and update it.  You can also create new rule sets and rules in these screens.
+
+From this page, you can also click on "Run" to run this rule set.  You can put in a prefix so that your rules are only run for topics of that prefix, so you can run different rule sets for different
+buildings and equipment.
 
 Using SQL Scripts
 #################
