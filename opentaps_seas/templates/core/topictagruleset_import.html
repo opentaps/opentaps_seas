@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static i18n %}
+{% block title %}Topic Tag Rule Sets{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+      {% for error in form.non_field_errors %}
+          {{error}}
+      {% endfor %}
+      </div>
+  {% endif %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <form enctype="multipart/form-data" method="POST" id="importt_form">
+        {% csrf_token %}
+
+        <div id="div_id_json_file" class="form-group">
+          <label for="id_json_file" class="col-form-label requiredField" style="width:150px;">
+            Rule sets JSON file<span class="asteriskField">*</span>
+          </label>
+          <span>
+            <input type="file" name="json_file" accept=".json" class="fileinput fileUpload" required="" id="id_json_file">
+          </span>
+        </div>
+
+        <div class="form-group d-flex justify-content-around mt-5">
+            <a href="{% url 'core:topictagruleset_list' %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+            <button class="btn btn-primary col-5" type="submit"><i class="fa fa-upload mr-2"></i> Import Rule Sets</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock content %}

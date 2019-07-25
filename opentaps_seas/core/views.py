@@ -43,6 +43,7 @@ from .forms import TopicImportForm
 from .forms import TopicExportForm
 from .forms import TopicTagRuleCreateForm
 from .forms import TopicTagRuleSetCreateForm
+from .forms import TopicTagRuleSetImportForm
 from .forms import EquipmentCreateForm
 from .models import Entity
 from .models import EntityFile
@@ -99,6 +100,7 @@ from easy_thumbnails.files import get_thumbnailer
 from filer.models import Image as FilerFile
 from opentaps_seas.core.utils import create_grafana_dashboard
 from rest_framework.decorators import api_view
+from django import forms
 
 logger = logging.getLogger(__name__)
 
@@ -1233,6 +1235,73 @@ class TopicTagRuleSetExportView(LoginRequiredMixin, SingleTableMixin, WithBreadc
 
 
 topictagruleset_export_view = TopicTagRuleSetExportView.as_view()
+
+
+class TopicTagRuleSetImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
+    model = TopicTagRuleSet
+    template_name = 'core/topictagruleset_import.html'
+    form_class = TopicTagRuleSetImportForm
+
+    def get_success_url(self):
+        return reverse("core:topictagruleset_list")
+
+    def form_valid(self, form):
+        json_file = form.cleaned_data['json_file']
+        fc = TextIOWrapper(json_file.file, encoding=json_file.charset if json_file.charset else 'utf-8')
+
+        import_errors = []
+        try:
+            rule_sets_data = json.loads(fc.read())
+        except json.decoder.JSONDecodeError:
+            import_errors.append("Cannot parse JSON file.")
+        else:
+            if rule_sets_data and rule_sets_data.get("tag_rule_sets"):
+                for tag_rule_set in rule_sets_data.get("tag_rule_sets"):
+                    name = tag_rule_set.get("name")
+                    if name:
+                        # check if rule sets with given name is already exists
+                        name = name.strip()
+                        topic_tag_rule_sets = TopicTagRuleSet.objects.filter(name=name)
+                        if topic_tag_rule_sets:
+                            for topic_tag_rule_set in topic_tag_rule_sets:
+                                TopicTagRule.objects.filter(rule_set=topic_tag_rule_set.id).delete()
+                                topic_tag_rule_set.delete()
+
+                        # import
+                        topic_tag_rule_set = TopicTagRuleSet(name=name)
+                        topic_tag_rule_set.save()
+
+                        rules = tag_rule_set.get("rules")
+                        if rules:
+                            for rule in rules:
+                                name = rule.get("name")
+                                if name:
+                                    topic_tag_rule = TopicTagRule(name=name, rule_set=topic_tag_rule_set)
+                                    filters = rule.get("filters")
+                                    if filters:
+                                        topic_tag_rule.filters = filters
+                                    else:
+                                        topic_tag_rule.filters = []
+
+                                    tags = rule.get("tags")
+                                    if tags:
+                                        topic_tag_rule.tags = tags
+                                    else:
+                                        topic_tag_rule.tags = []
+
+                                    topic_tag_rule.save()
+            else:
+                import_errors.append("JSON file rule sets is empty.")
+
+        if import_errors:
+            for error in import_errors:
+                form.add_error(forms.forms.NON_FIELD_ERRORS, error)
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+topictagruleset_import_view = TopicTagRuleSetImportView.as_view()
 
 
 class TopicTagRuleSetCreateView(LoginRequiredMixin, TopicTagRuleSetBCMixin, CreateView):

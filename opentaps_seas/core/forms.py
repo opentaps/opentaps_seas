@@ -354,3 +354,10 @@ class TopicExportForm(forms.Form):
 
     class Meta:
         fields = ["site_id", "device_prefix", "only_with_trending"]
+
+
+class TopicTagRuleSetImportForm(forms.Form):
+    json_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.json'}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
