@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load bootstrap4 %}
+{% load static i18n %}
+{% block title %}Topic Tag Rule Set: {{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+  {% load crispy_forms_tags %}
+
+  <div class="card mb-3">
+    <div class="card-body" id="rule-list">
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+        ${ errors.error }
+      </div>
+      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="run_success">
+        <div>Successfully ran on ${ run_success.updated } Topics.</div>
+        <button type="button" class="close" aria-label="Close" v-on:click="run_success = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form enctype="multipart/form-data" method="POST" v-on:submit.prevent="run_tag_ruleset">
+        {% csrf_token %}
+
+        <div id="div_ruleset_id" class="form-group">
+          <label for="ruleset_id" class="col-form-label requiredField" style="width:200px;">
+            Rule Set<span class="asteriskField">*</span>
+          </label>
+          <span>
+            <vue-bootstrap-typeahead
+              required
+              :input-class="'form-control' + (errors['ruleset_id'] ? ' is-invalid' : '')"
+              :serializer="s => s.name"
+              :min-matching-chars="0"
+              ref="ruleset_id"
+              id="ruleset_id"
+              name="ruleset_id"
+              v-model="ruleset_name"
+              @hit="select_rule($event)"
+              :data="valid_rulesets"
+              placeholder="Choose a rule set">
+              <template slot="suggestion" slot-scope="{ data, htmlText }">
+                <span v-html="htmlText"></span>&nbsp;<small>${ data.name || data.id }</small>
+              </template>
+            </vue-bootstrap-typeahead>
+            <span v-for="err in errors.ruleset_id" class="text-danger">${ err }</span>
+          </span>
+        </div>
+
+        <div id="div_topic_filter" class="form-group">
+          <label for="topic_filter" class="col-form-label" style="width:200px;">
+            Topic Filter
+          </label>
+          <span>
+            <div class="input-group">
+              <input type="text" name="topic_filter" id="topic_filter" ref="topic_filter" value="{{ form.topic_filter.initial|default:'' }}" class="form-control"/>
+            </div>
+            <span v-for="err in errors.topic_filter" class="text-danger">${ err }</span>
+          </span>
+        </div>
+
+        <div class="form-group d-flex justify-content-around mt-5">
+          {% if rule_set %}
+          <a href="{% url 'core:topictagruleset_detail' rule_set.id %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+          {% else %}
+          <a href="{% url 'core:topictagruleset_list' %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+          {% endif %}
+          <button :disabled="isSaving" class="btn btn-primary col-5" type="submit">
+            <b-spinner v-if="isSaving" small type="grow" class="mr-2"></b-spinner>
+            <i v-if="!isSaving" class="fa fa-cog mr-2"></i>
+            <span v-if="isSaving">Running ...</span>
+            <span v-if="!isSaving">Run Rule Set</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#rule-list',
+    name: 'rule-list',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        isSaving: false,
+        run_success: false,
+        errors: false,
+        valid_rulesets: [],
+        ruleset_name: {% if rule_set %}'{{ rule_set.name }}'{% else %}null{% endif %},
+        ruleset_id: {% if rule_set %}'{{ rule_set.id }}'{% else %}null{% endif %},
+      }
+    },
+    mounted() {
+      this.get_valid_rulesets()
+      {% if rule_set %}
+      this.$refs.ruleset_id.inputValue = '{{ rule_set.name }}'
+      {% endif %}
+    },
+    methods: {
+      get_valid_rulesets(site) {
+        url = dutils.urls.resolve('topic_rules')
+        axios.get(url)
+          .then(x => {
+            console.log('get_valid_rulesets', x.data.rules)
+            this.valid_rulesets = x.data.rules
+          })
+          .catch(err => {
+            console.error('loading valid_rulesets error :', err);
+          });
+      },
+      select_rule(event) {
+        console.log('select_rule', event)
+        this.ruleset_id = '' + event.id
+        if (this.errors && this.errors.ruleset_id) {
+          delete this.errors.ruleset_id
+        }
+      },
+      run_tag_ruleset(event) {
+        console.log('run_tag_ruleset', event)
+        const formData = new FormData()
+        if (this.$refs.topic_filter && this.$refs.topic_filter.value) {
+          formData.set('topic_filter', this.$refs.topic_filter.value)
+        }
+        if (!this.ruleset_id || !this.ruleset_id.length) {
+          console.log('run_tag_ruleset missing ruleset_id', this.ruleset_id)
+          this.errors = {'ruleset_id': 'This field is required.'}
+          return
+        }
+        url = dutils.urls.resolve('topictagruleset_run', {id: this.ruleset_id})
+        this.run_success = false
+        this.errors = false
+        this.isSaving = true
+        return axios.post(url, formData, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              this.isSaving = false
+              console.log('run_tag_ruleset Done', x)
+              if (x.success) {
+                this.run_success = x
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              this.isSaving = false
+              e = getResponseError(err)
+              console.error(e, err)
+              this.errors = e
+            });
+      },
+    }
+  })
+})();
+</script>
+{% endblock content %}

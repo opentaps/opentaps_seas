@@ -32,18 +32,13 @@
       <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
         ${ errors.error }
       </div>
-      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="run_success">
-        <div>Successfully ran on ${ run_success.updated } Topics.</div>
-        <button type="button" class="close" aria-label="Close" v-on:click="run_success = false">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
       {% load render_table from django_tables2 %}
+      {% url 'core:topictagruleset_run' id=object.id as rule_run_url %}
       {% url 'core:topictagrule_forset_create' id=object.id as rule_create_url %}
       {# ugly concatenation in django .. #}
       {% with id=object.id|safe %}
-        {% with e1='<a class="btn btn-secondary ml-sm-1 mt-sm-0 mt-1" href="#" v-confirm="run_tag_ruleset('|add:id %}
-          {% with e2=e1|add:')"><i class="fa fa-cog"></i> Run</a>' %}
+        {% with e1='<a class="btn btn-secondary ml-sm-1 mt-sm-0 mt-1" href="'|add:rule_run_url %}
+          {% with e2=e1|add:'"><i class="fa fa-cog"></i> Run</a>' %}
             {% include "core/_table_filter_add.html" with add_label='Add Rule' add_url=rule_create_url extra_buttons=e2 %}
           {% endwith %}
         {% endwith %}
@@ -64,42 +59,10 @@
     data() {
       return {
         csrfmiddlewaretoken: CSRF_TOKEN,
-        run_success: false,
         errors: false
       }
     },
     methods: {
-      run_tag_ruleset(id) {
-        return {
-          okText: 'Proceed',
-          ok: dialog => this.run_tag_ruleset_cb(dialog, id),
-          message: 'This will run all the Rules in this Rule Set, this may take a while to complete.'
-        }
-      },
-      run_tag_ruleset_cb(dialog, id) {
-        console.log('run set', id)
-        url = dutils.urls.resolve('topictagruleset_run', {id: id})
-        this.run_success = false
-        this.errors = false
-        return axios.post(url, {}, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
-            .then(x => x.data)
-            .then(x => {
-              console.log('run_tag_ruleset Done', x)
-              if (x.success) {
-                this.run_success = x
-                dialog.close()
-                return x
-              } else {
-                return Promise.reject(x.errors)
-              }
-            })
-            .catch(err => {
-              e = getResponseError(err)
-              console.error(e, err)
-              this.errors = e
-              dialog.close()
-            });
-      },
       delete_tag_rule(id) {
         return {
           okText: 'Delete',

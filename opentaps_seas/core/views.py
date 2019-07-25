@@ -44,6 +44,7 @@ from .forms import TopicExportForm
 from .forms import TopicTagRuleCreateForm
 from .forms import TopicTagRuleSetCreateForm
 from .forms import TopicTagRuleSetImportForm
+from .forms import TopicTagRuleSetRunForm
 from .forms import EquipmentCreateForm
 from .models import Entity
 from .models import EntityFile
@@ -342,12 +343,12 @@ class TopicTagRuleSetTable(Table):
 
     def render_buttons(self, record):
         return format_html('''
-            <a class="btn btn-secondary btn-sm" href="#" v-confirm="run_tag_ruleset({})">
+            <a class="btn btn-secondary btn-sm" href="{}">
             <i class="fa fa-cog"></i> Run
             </a>
             <a class="btn btn-danger btn-sm" href="#" v-confirm="delete_tag_ruleset({})">
             <i class="fa fa-trash"></i> Delete
-            </a>'''.format(record.id, record.id),)
+            </a>'''.format(reverse('core:topictagruleset_run', kwargs={'id': record.id}), record.id),)
 
     class Meta:
         order_by = 'name'
@@ -817,7 +818,7 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
         context = super(SiteDetailView, self).get_context_data(**kwargs)
         results = []
         site = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
-        equipments = EquipmentView.objects.filter(site_id=site.object_id)
+        equipments = EquipmentView.objects.filter(site_id=site.object_id).exclude(m_tags__contains=['point'])
         for e in equipments:
             data_points = PointView.objects.filter(equipment_id=e.object_id).count()
             results.append({'site': site, 'equipment': e, 'data_points': data_points})
@@ -1349,19 +1350,44 @@ class TopicTagRuleCreateView(LoginRequiredMixin, TopicTagRuleSetBCMixin, CreateV
 topictagrule_create_view = TopicTagRuleCreateView.as_view()
 
 
-@require_POST
-@login_required()
-def topictagruleset_run(request, id):
-    rule_set = get_object_or_404(TopicTagRuleSet, id=id)
-    # collect count of topics we ran for
-    updated_set = set()
-    for rule in rule_set.topictagrule_set.all():
+class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
+    form_class = TopicTagRuleSetRunForm
+    template_name = 'core/topictagruleset_run.html'
 
-        if rule.tags:
-            updated = utils.tag_topics(rule.filters, rule.tags, select_all=True)
-            for x in updated:
-                updated_set.add(x.get('topic'))
-    return JsonResponse({'success': 1, 'updated': len(updated_set)})
+    def get_initial(self):
+        logging.info('get_initial: %s', self.kwargs)
+        initials = {'ruleset_id': self.kwargs.get('id')}
+        if self.request.GET and 'topic_filter' in self.request.GET:
+            initials['topic_filter'] = self.request.GET['topic_filter']
+        return initials
+
+    def get_form_kwargs(self):
+        args = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            # first change the data to be a copy of POST
+            args.update({
+                'data': self.request.POST.copy(),
+            })
+            # add the URL given ID to the params for the Form
+            if 'id' in self.kwargs:
+                args['data'].update({'ruleset_id': self.kwargs.get('id')})
+        return args
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'id' in self.kwargs:
+            context['rule_set'] = get_object_or_404(TopicTagRuleSet, id=self.kwargs['id'])
+        return context
+
+    def form_valid(self, form):
+        updated_set = form.save()
+        return JsonResponse({'success': 1, 'updated': len(updated_set)})
+
+    def form_invalid(self, form):
+        return JsonResponse({'errors': form.errors})
+
+
+topictagrule_run_view = TopicTagRuleRunView.as_view()
 
 
 class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
@@ -1874,7 +1900,7 @@ def site_ahu_summary_json(request, site):
 @login_required()
 def site_pie_chart_data_json(request, site):
     s = get_object_or_404(SiteView, entity_id=site)
-    equipments = EquipmentView.objects.filter(site_id=s.object_id)
+    equipments = EquipmentView.objects.filter(site_id=s.object_id).exclude(m_tags__contains=['point'])
     pie = {}
     if request.GET.get('cold_threshold'):
         cold_threshold = float(request.GET.get('cold_threshold'))
@@ -1887,6 +1913,7 @@ def site_pie_chart_data_json(request, site):
     for e in equipments:
         data_points = PointView.objects.filter(equipment_id=e.object_id)
         data_points = data_points.filter(m_tags__contains=['air', 'his', 'point', 'sensor', 'temp'])
+        data_points = data_points.exclude(m_tags__contains=['equip'])
         for d in utils.add_current_values(data_points, raw=True):
             cv = d.current_value.get('value', 'N/A')
             logger.info('site_pie_chart_data_json got value %s -> %s', d.entity_id, cv)

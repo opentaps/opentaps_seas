@@ -143,6 +143,44 @@ class TopicTagRuleSetCreateForm(forms.ModelForm):
         fields = ["name"]
 
 
+class TopicTagRuleSetRunForm(forms.Form):
+    ruleset_id = ModelField(label='RuleSet', max_length=255, required=True)
+    topic_filter = ModelField(label='Topic Filter', max_length=255, required=False)
+
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        ruleset_id = self.cleaned_data['ruleset_id']
+        if not TopicTagRuleSet.objects.filter(id=ruleset_id).exists():
+            logger.error('TopicTagRuleSetRunForm: rule set %s not found.', ruleset_id)
+            self.add_error('ruleset_id', 'Rule Set not found.')
+            return False
+        return True
+
+    def save(self, commit=True):
+        # run the topic tag ruleset
+        topic_filter = self.cleaned_data['topic_filter']
+        ruleset_id = self.cleaned_data['ruleset_id']
+        logger.info('TopicTagRuleSetRunForm: for set %s and additional filter: %s', ruleset_id, topic_filter)
+        rule_set = TopicTagRuleSet.objects.get(id=ruleset_id)
+        # collect count of topics we ran for
+        updated_set = set()
+        for rule in rule_set.topictagrule_set.all():
+            if rule.tags:
+                rule_filters = rule.filters
+                # Add the topic_filter to the rule filters if given
+                if topic_filter:
+                    tf = {'type': 'c', 'value': topic_filter}
+                    if rule_filters:
+                        rule_filters.append(tf)
+                    else:
+                        rule_filters = [tf]
+                updated = utils.tag_topics(rule_filters, rule.tags, select_all=True)
+                for x in updated:
+                    updated_set.add(x.get('topic'))
+        return updated_set
+
+
 class TopicTagRuleCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
