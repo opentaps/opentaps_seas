@@ -33,10 +33,10 @@
 
   <div class="card mb-3">
     <div class="card-body" id="ruleset-list">
-      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error" v-cloak>
         ${ errors.error }
       </div>
-      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="run_success">
+      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="run_success" v-cloak>
         <div>Successfully ran on ${ run_success.updated } Topics.</div>
         <button type="button" class="close" aria-label="Close" v-on:click="run_success = false">
           <span aria-hidden="true">&times;</span>

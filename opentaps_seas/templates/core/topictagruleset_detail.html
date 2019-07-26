@@ -29,7 +29,7 @@
 
   <div class="card mb-3">
     <div class="card-body" id="rule-list">
-      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error" v-cloak>
         ${ errors.error }
       </div>
       {% load render_table from django_tables2 %}
