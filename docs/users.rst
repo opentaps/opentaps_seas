@@ -114,6 +114,8 @@ to the filter page, where you can change the tags and update it.  You can also c
 From this page, you can also click on "Run" to run this rule set.  You can put in a prefix so that your rules are only run for topics of that prefix, so you can run different rule sets for different
 buildings and equipment.
 
+You can use the Export and Import features to save your tagging rules as a JSON file download and then upload it again.
+
 Using SQL Scripts
 #################
 
