@@ -1250,11 +1250,13 @@ class TopicTagRuleSetImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormVi
         json_file = form.cleaned_data['json_file']
         fc = TextIOWrapper(json_file.file, encoding=json_file.charset if json_file.charset else 'utf-8')
 
-        import_errors = []
+        import_errors = False
+        success_rule_sets = []
         try:
             rule_sets_data = json.loads(fc.read())
         except json.decoder.JSONDecodeError:
-            import_errors.append("Cannot parse JSON file.")
+            messages.error(self.request, "Cannot parse JSON file.")
+            import_errors = True
         else:
             if rule_sets_data and rule_sets_data.get("tag_rule_sets"):
                 for tag_rule_set in rule_sets_data.get("tag_rule_sets"):
@@ -1271,6 +1273,7 @@ class TopicTagRuleSetImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormVi
                         # import
                         topic_tag_rule_set = TopicTagRuleSet(name=name)
                         topic_tag_rule_set.save()
+                        success_rule_sets.append(name)
 
                         rules = tag_rule_set.get("rules")
                         if rules:
@@ -1292,11 +1295,15 @@ class TopicTagRuleSetImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormVi
 
                                     topic_tag_rule.save()
             else:
-                import_errors.append("JSON file rule sets is empty.")
+                messages.error(self.request, "JSON file rule sets is empty.")
+                import_errors = True
 
         if import_errors:
-            for error in import_errors:
-                form.add_error(forms.forms.NON_FIELD_ERRORS, error)
+            return self.form_invalid(form)
+        elif success_rule_sets:
+            messages.success(self.request, 'Successfully imported {} rule sets.'.format(", ".join(success_rule_sets)))
+        else:
+            messages.error(self.request, "Rule sets list to import is empty.")
             return self.form_invalid(form)
 
         return super().form_valid(form)

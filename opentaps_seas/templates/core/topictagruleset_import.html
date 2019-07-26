@@ -26,14 +26,6 @@
 
   {% include "core/_breadcrumbs.html" %}
 
-  {% if form.non_field_errors %}
-      <div class="alert alert-danger">
-      {% for error in form.non_field_errors %}
-          {{error}}
-      {% endfor %}
-      </div>
-  {% endif %}
-
   <div class="card mb-3">
     <div class="card-body">
       <form enctype="multipart/form-data" method="POST" id="importt_form">
