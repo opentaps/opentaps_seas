@@ -1383,7 +1383,9 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if 'id' in self.kwargs:
-            context['rule_set'] = get_object_or_404(TopicTagRuleSet, id=self.kwargs['id'])
+            rule_set = get_object_or_404(TopicTagRuleSet, id=self.kwargs['id'])
+            context['rule_set'] = rule_set
+            context['object'] = rule_set
         return context
 
     def form_valid(self, form):
