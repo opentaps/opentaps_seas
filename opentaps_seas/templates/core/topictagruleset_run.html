@@ -46,7 +46,7 @@
           <label for="ruleset_id" class="col-form-label requiredField" style="width:200px;">
             Rule Set<span class="asteriskField">*</span>
           </label>
-          <span>
+          <span v-cloak>
             <vue-bootstrap-typeahead
               required
               :input-class="'form-control' + (errors['ruleset_id'] ? ' is-invalid' : '')"
@@ -75,7 +75,7 @@
             <div class="input-group">
               <input type="text" name="topic_filter" id="topic_filter" ref="topic_filter" value="{{ form.topic_filter.initial|default:'' }}" class="form-control"/>
             </div>
-            <span v-for="err in errors.topic_filter" class="text-danger">${ err }</span>
+            <span v-for="err in errors.topic_filter" class="text-danger" v-cloak>${ err }</span>
           </span>
         </div>
 
