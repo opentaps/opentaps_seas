@@ -72,6 +72,15 @@
         },
         "m_tags": ["model", "discharge", "air", "fan", "sensor"]
     },
+    {
+        "entity_id": "modelahudischargesfspd",
+        "kv_tags": {
+            "id": "model-AHU-discharge-sfspd",
+            "dis": "Supply Fan Speed",
+            "modelRef": "model-AHU-discharge"
+        },
+        "m_tags": ["model", "discharge", "air", "fan", "sensor", "his", "point", "speed"]
+    },
 
     {
         "entity_id": "modelahureturn",
@@ -89,7 +98,7 @@
             "dis": "Return Air Temperature",
             "modelRef": "model-AHU-return"
         },
-        "m_tags": ["model", "return", "air", "temp", "sensor"]
+        "m_tags": ["model", "return", "air", "temp", "sensor", "his", "point"]
     },
     {
         "entity_id": "modelahureturnrah",
@@ -374,7 +383,7 @@
             "dis": "Zone Temperature",
             "modelRef": "model-AHU-zone"
         },
-        "m_tags": ["model", "zone", "air", "temp", "sensor"]
+        "m_tags": ["model", "zone", "air", "his", "point", "temp", "sensor"]
     },
     {
         "entity_id": "modelahuzoneetempsp",
