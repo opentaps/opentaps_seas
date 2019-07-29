@@ -22,11 +22,12 @@ Site
 ^^^^
 
 The Site page shows 
+
  * tags associated with the site.  The Project Haystack abbreviated tag (i.e., ``site``) is displayed.  If you hover over a tag, it will display the description of the tag.
  * a summary of the current site.  On the left hand side you will see a pie chart of temperature readings from all the equipment sensors' data points which have the tags ``{air, his, point, sensor, temp}``.  You can adjust the temperature ranges (preset to 69 to 75) in the input box below the pie chart.  Green means comfortable, blue means cold, red means hot, and black means no data is available.   On the right hand side is a chart of all the Air Handling Unit equipment with tag ``ahu``.  The data displayed is:
 
   * Equipment Description: ``dis`` tag
-  * Space Air Temp:  ``{air,his,point,sensor,temp}``
+  * Space Air Temp:  ``{air,his,point,zone,sensor,temp}``
   * Return Air Temp: ``{air,his,point,return,sensor,temp}``
   * Supply Fan Speed - ``{air,discharge,fan,his,point,sensor,speed}``
   * Cooling -  ``{cooling,his,point,sensor}``
