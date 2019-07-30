@@ -128,7 +128,7 @@ def add_current_values(data, raw=False):
 
 def get_ahu_current_values(equipment_id):
     # this find the data points and current values for:
-    # Space Air Temp:  {air,his,point,sensor,temp}
+    # Space Air Temp:  {air,his,point,zone,sensor,temp}
     # Return Air Temp: {air,his,point,return,sensor,temp}
     # Supply Fan Speed - {air,discharge,fan,his,point,sensor,speed}
     # Cooling -  {cooling,his,point,sensor}
@@ -137,7 +137,7 @@ def get_ahu_current_values(equipment_id):
     # -> those are returned in a dictionary 'Point Name': {<current_data>}
     q = {
         'Space Air Temp': {
-            'has': ['air', 'his', 'point', 'sensor', 'temp'],
+            'has': ['air', 'his', 'point', 'zone', 'sensor', 'temp'],
             'exclude': ['mixed', 'discharge', 'return', 'outside']
         },
         'Return Air Temp': {'has': ['air', 'his', 'point', 'sensor', 'temp', 'return']},
