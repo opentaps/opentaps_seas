@@ -463,6 +463,82 @@ def create_grafana_dashboard(topic):
     return r
 
 
+def create_equipment_grafana_dashboard(topic, equipmen_ref):
+    logger.info('create_equipment_grafana_dashboard : %s', topic)
+    auth = (settings.GRAFANA_USER_NAME, settings.GRAFANA_USER_PASSWORD)
+    url = settings.GRAFANA_BASE_URL + "/api/dashboards/db"
+    template_file = str(settings.ROOT_DIR.path('')) + "/data/dashboard/ahu-dashboard.json"
+    f = open(template_file, 'r')
+    datastore = json.load(f)
+    title = datastore["dashboard"]["title"]
+    panel_title = datastore["dashboard"]["panels"][0]["title"]
+    targets = datastore["dashboard"]["panels"][0]["targets"]
+    target_item = targets[0]
+
+    datastore["dashboard"]["title"] = title.replace("${equipmentName}", topic)
+    datastore["dashboard"]["panels"][0]["title"] = panel_title.replace("${equipmentName}", topic)
+
+    metrics = get_equipment_metrics(equipmen_ref)
+    targets = []
+    for i, metric in enumerate(metrics):
+
+        target = target_item.copy()
+        target["refId"] = "A" + str(i)
+        raw_sql = target["rawSql"]
+        raw_sql = raw_sql.replace("${topic}", metric["topic"])
+        raw_sql = raw_sql.replace("${metric}", metric["metric"])
+        target["rawSql"] = raw_sql
+
+        targets.append(target)
+
+    datastore["dashboard"]["panels"][0]["targets"] = targets
+
+    try:
+        r = requests.post(url, verify=False, json=datastore, auth=auth)
+    except requests.exceptions.ConnectionError:
+        logger.exception('Could not create the grafan dashboard')
+        return None
+
+    logger.info('create_equipment_grafana_dashboard done : %s', r)
+    return r
+
+
+def get_equipment_metrics(equipmen_ref):
+    metrics = []
+    conditions = []
+    conditions.append({'metric': 'CoolValveCMD',
+                       'm_tags': ['cool', 'valve', 'cmd', 'his', 'point']
+                       })
+    conditions.append({'metric': 'HeatValveCmd',
+                       'm_tags': ['heat', 'valve', 'cmd', 'his', 'point']
+                       })
+    conditions.append({'metric': 'OADamperCMD',
+                       'm_tags': ['outside', 'air', 'damper', 'his', 'point']
+                       })
+    conditions.append({'metric': 'ZoneTemp',
+                       'm_tags': ['temp', 'zone', 'air', 'his', 'point'],
+                       'm_tags_exclude': ['sp']
+                       })
+    conditions.append({'metric': 'ZoneTempSP',
+                       'm_tags': ['temp', 'zone', 'air', 'sp', 'his', 'point']
+                       })
+    conditions.append({'metric': 'MixedAirTemp',
+                       'm_tags': ['temp', 'mixed', 'air', 'his', 'point']
+                       })
+
+    for condition in conditions:
+        data_points = PointView.objects.filter(equipment_id=equipmen_ref)
+        data_points = data_points.filter(m_tags__contains=condition['m_tags'])
+        if 'm_tags_exclude' in condition:
+            data_points = data_points.exclude(m_tags__contains=condition['m_tags_exclude'])
+        if data_points:
+            for data_point in data_points:
+                metric = {'metric': condition['metric'], 'topic': data_point.topic}
+                metrics.append(metric)
+
+    return metrics
+
+
 def delete_grafana_dashboard(dashboard_uid):
     logger.info('delete_grafana_dashboard, dashboard_uid : %s', dashboard_uid)
     if dashboard_uid:

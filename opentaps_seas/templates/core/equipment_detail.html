@@ -44,7 +44,23 @@
 
   <div class="card mb-3">
     <div class="card-body">
-      <h3>Data Points</h3>
+      <div id="dashboard_button">
+          <div class="alert alert-danger mt-3" role="alert" v-if="errors.error" v-cloak>
+            ${ errors.error }
+          </div>
+          <div class="alert alert-success mt-3" role="alert" v-if="successes.success" v-cloak>
+            ${ successes.success }
+          </div>
+          <h3>
+            <div class="row m-0">
+              <div>Data Points</div>
+              <div class="text-right flex-grow-1">
+                <a v-if="dashboard_uid" :href="get_dashboard_url()" target="_blank" v-cloak><img width="32" src="{% static 'images/grafana_icon.svg' %}" /></a>
+                <a v-if="!dashboard_uid" href="#" v-on:click="create_dashboard" v-cloak ><img width="32" src="{% static 'images/grafana_icon.svg' %}" /></a>
+              </div>
+            </div>
+          </h3>
+      </div>
       <hr class="mt-0"/>
       <div id="datetimelist">
         <h5 class="form-title position-relative" v-b-toggle.collapse_datapoints>
@@ -75,6 +91,9 @@
 </div>
 <script>
 (function(){
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
   new Vue({
     delimiters: ['${', '}'],
     el: '#datetimelist',
@@ -87,6 +106,53 @@
           container.innerHTML = response.data
         });
       }
+    }
+  });
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#dashboard_button',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        equipment_id:  '{{ object.entity_id|safe }}',
+        dashboard_uid: '{{ object.dashboard_uid|safe }}',
+        grafana_url: '{{ grafana_url }}',
+        errors: false,
+        successes: false,
+      }
+    },
+    methods: {
+      get_dashboard_url: function () {
+          var url = null;
+          if (this.grafana_url && this.dashboard_uid) {
+            url = this.grafana_url + this.dashboard_uid
+          }
+
+          return url;
+      },
+      create_dashboard : function(){
+        const formData = new FormData();
+        formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
+        url = dutils.urls.resolve('equipment_dashboard', {id: this.equipment_id})
+        this.errors = false
+        this.successes = false
+        return axios.post(url, formData)
+            .then(x => x.data)
+            .then(x => {
+              console.log('create_dashboard Done', x)
+              if (x.success) {
+                this.dashboard_uid = x.dashboard_uid
+                this.successes = {'success': x.success}
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              console.error('create_dashboard error :', err)
+              this.errors = getResponseError(err)
+            });
+      },
     }
   });
 })();

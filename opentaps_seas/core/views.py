@@ -99,9 +99,7 @@ from django_tables2.utils import A  # alias for Accessor
 from django_tables2.views import SingleTableMixin
 from easy_thumbnails.files import get_thumbnailer
 from filer.models import Image as FilerFile
-from opentaps_seas.core.utils import create_grafana_dashboard
 from rest_framework.decorators import api_view
-from django import forms
 
 logger = logging.getLogger(__name__)
 
@@ -1729,6 +1727,7 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
 
     def get_context_data(self, **kwargs):
         context = super(EquipmentDetailView, self).get_context_data(**kwargs)
+        context['grafana_url'] = settings.GRAFANA_BASE_URL + "/d/"
         # add the parent Site (optional)
         try:
             context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
@@ -1813,7 +1812,7 @@ class PointDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, WithPoi
 
     def get_context_data(self, **kwargs):
         context = super(PointDetailView, self).get_context_data(**kwargs)
-
+        context['grafana_url'] = settings.GRAFANA_BASE_URL + "/d/"
         # add the parent Site (optional)
         try:
             context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
@@ -2358,7 +2357,7 @@ def topic_assoc(request, topic):
         e.add_tag('equipRef', equipment_id, commit=False)
         e.save()
         # create grafana dashboard
-        r = create_grafana_dashboard(topic)
+        r = utils.create_grafana_dashboard(topic)
         if r:
             result = r.json()
             if r.status_code == 200:
@@ -2394,3 +2393,42 @@ class BacnetPrefixJsonView(LoginRequiredMixin, ListView):
 
 
 bacnet_prefix_list_json_view = BacnetPrefixJsonView.as_view()
+
+
+@require_POST
+@login_required()
+def equipment_dashboard(request, equip):
+    result = {}
+    try:
+        entity = Entity.objects.get(entity_id=equip)
+    except EquipmentView.DoesNotExist:
+        result = {'errors': 'Equipment not found : {}'.format(equip)}
+    else:
+        topic = None
+        if entity.kv_tags['dis']:
+            topic = entity.kv_tags['dis']
+        if not topic:
+            topic = entity.kv_tags['id']
+        if topic:
+            default_err = 'Cannot create grafana dashboard'
+            r = utils.create_equipment_grafana_dashboard(topic, entity.kv_tags['id'])
+            if r:
+                result = r.json()
+                if r.status_code == 200:
+                    if result["uid"]:
+                        entity.dashboard_uid = result["uid"]
+                        entity.save()
+                        result = {'success': 'Dashboard has been created.', 'dashboard_uid': result["uid"]}
+                    else:
+                        logger.error('create_equipment_grafana_dashboard did not return an uid : %s', result)
+                        result = {'errors': default_err}
+                else:
+                    logger.error('create_equipment_grafana_dashboard response status invalid : %s', r.status_code)
+                    result = {'errors': default_err}
+            else:
+                logger.error('create_equipment_grafana_dashboard empty response')
+                result = {'errors': default_err}
+        else:
+            result = {'errors': 'Cannot get Equipment {} description'.format(equip)}
+
+    return JsonResponse(result)

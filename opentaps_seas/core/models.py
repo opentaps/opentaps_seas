@@ -322,6 +322,7 @@ class EquipmentView(models.Model):
     object_id = CharField(_("Object ID"), max_length=255, blank=True)
     description = CharField(_("Description"), max_length=255, blank=True)
     site_id = CharField(_("Site"), max_length=255, blank=True)
+    dashboard_uid = CharField(_("Dashboard"), max_length=255, blank=True)
     kv_tags = HStoreField(blank=True, null=True)
     m_tags = ArrayField(CharField(max_length=255, blank=True, null=True))
 
