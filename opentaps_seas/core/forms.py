@@ -401,7 +401,7 @@ class TopicTagRuleSetImportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def save(self, commit=True):
+    def save(self, commit=True, run_rule=False):
         json_file = self.cleaned_data['json_file']
         fc = TextIOWrapper(json_file.file, encoding=json_file.charset if json_file.charset else 'utf-8')
 
@@ -409,6 +409,8 @@ class TopicTagRuleSetImportForm(forms.Form):
         import_errors = False
         # the imported rule sets
         success_rule_sets = []
+        # if the rulesets are run, count how many topics were affected
+        runner_count = 0
         try:
             rule_sets_data = json.loads(fc.read())
         except json.decoder.JSONDecodeError:
@@ -450,12 +452,21 @@ class TopicTagRuleSetImportForm(forms.Form):
                                         topic_tag_rule.tags = []
 
                                     topic_tag_rule.save()
+                        if run_rule:
+                            # run the imported ruleset
+                            runner = TopicTagRuleSetRunForm({'ruleset_id': topic_tag_rule_set.id})
+                            if runner.is_valid():
+                                updated_set = runner.save()
+                                runner_count += len(updated_set)
             else:
                 import_errors = "JSON file rule sets is empty."
 
         if import_errors:
             return {'import_errors': import_errors}
         elif success_rule_sets:
-            return {'success_rule_sets': success_rule_sets}
+            res = {'success_rule_sets': success_rule_sets}
+            if run_rule:
+                res['runner_count'] = runner_count
+            return res
         else:
             return {'import_errors': "Rule sets list to import is empty."}

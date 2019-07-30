@@ -42,15 +42,15 @@ def clean():
     conn.close()
 
 
-def demo():
-    import_files('demo')
+def demo(run_rules):
+    import_files('demo', run_rules)
 
 
-def seed():
-    import_files('seed')
+def seed(run_rules):
+    import_files('seed', run_rules)
 
 
-def import_files(which):
+def import_files(which, run_rules):
     print('Importing {} data...'.format(which))
     mypath = os.path.join(os.path.dirname(os.path.realpath(__file__)), which)
     if os.path.isdir(mypath):
@@ -58,14 +58,17 @@ def import_files(which):
             filename = os.path.join(mypath, f)
             if os.path.isfile(filename):
                 print('Importing {} data [{}]'.format(which, filename))
-                import_entities(filename)
+                import_entities(filename, run_rules)
     else:
         print('No {} data to import.'.format(which))
 
 
-def import_entities(source_file_name):
+def import_entities(source_file_name, run_rules):
     # note: we import the rules using the Django service
-    execute_from_command_line('manage.py runscript import_tagruleset --script-args {}'.format(source_file_name).split())
+    script = 'manage.py runscript import_tagruleset --script-args {}'.format(source_file_name)
+    if run_rules:
+        script += ' run'
+    execute_from_command_line(script.split())
 
 
 def print_help():
@@ -84,9 +87,12 @@ if __name__ == '__main__':
     sys.path.append(current_path)
     if len(sys.argv) == 1:
         print_help()
+    run_rules = False
+    if 'run_rules' in sys.argv:
+        run_rules = True
     if 'clean' in sys.argv:
         clean()
     if 'all' in sys.argv or 'clean' in sys.argv or 'seed' in sys.argv:
-        seed()
+        seed(run_rules)
     if 'all' in sys.argv or 'demo' in sys.argv:
-        demo()
+        demo(run_rules)
