@@ -2374,19 +2374,25 @@ def equipment_dashboard(request, equip):
             topic = entity.kv_tags['id']
         if topic:
             default_err = 'Cannot create grafana dashboard'
-            r = utils.create_equipment_grafana_dashboard(topic, entity.kv_tags['id'])
-            if r:
-                result = r.json()
-                if r.status_code == 200:
+            result_dashboard, result_shapshot = utils.create_equipment_grafana_dashboard(topic, entity.kv_tags['id'])
+            if result_dashboard:
+                result = result_dashboard.json()
+                if result_dashboard.status_code == 200:
                     if result["uid"]:
                         entity.dashboard_uid = result["uid"]
-                        entity.save()
                         result = {'success': 'Dashboard has been created.', 'dashboard_uid': result["uid"]}
+                        if result_shapshot and result_shapshot.status_code == 200:
+                            result_s = result_shapshot.json()
+                            if result_s["key"]:
+                                entity.dashboard_snapshot_uid = result_s["key"]
+                        entity.save()
+
                     else:
                         logger.error('create_equipment_grafana_dashboard did not return an uid : %s', result)
                         result = {'errors': default_err}
                 else:
-                    logger.error('create_equipment_grafana_dashboard response status invalid : %s', r.status_code)
+                    logger.error('create_equipment_grafana_dashboard response status invalid : %s',
+                                 result_dashboard.status_code)
                     result = {'errors': default_err}
             else:
                 logger.error('create_equipment_grafana_dashboard empty response')
