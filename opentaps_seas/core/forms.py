@@ -16,8 +16,9 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import json
+from io import TextIOWrapper
 from . import utils
-from .models import BacnetConfig
 from .models import EntityFile
 from .models import EntityNote
 from .models import Entity
@@ -399,3 +400,62 @@ class TopicTagRuleSetImportForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        json_file = self.cleaned_data['json_file']
+        fc = TextIOWrapper(json_file.file, encoding=json_file.charset if json_file.charset else 'utf-8')
+
+        # an error message
+        import_errors = False
+        # the imported rule sets
+        success_rule_sets = []
+        try:
+            rule_sets_data = json.loads(fc.read())
+        except json.decoder.JSONDecodeError:
+            import_errors = "Cannot parse JSON file."
+        else:
+            if rule_sets_data and rule_sets_data.get("tag_rule_sets"):
+                for tag_rule_set in rule_sets_data.get("tag_rule_sets"):
+                    name = tag_rule_set.get("name")
+                    if name:
+                        # check if rule sets with given name is already exists
+                        name = name.strip()
+                        topic_tag_rule_sets = TopicTagRuleSet.objects.filter(name=name)
+                        if topic_tag_rule_sets:
+                            for topic_tag_rule_set in topic_tag_rule_sets:
+                                TopicTagRule.objects.filter(rule_set=topic_tag_rule_set.id).delete()
+                                topic_tag_rule_set.delete()
+
+                        # import
+                        topic_tag_rule_set = TopicTagRuleSet(name=name)
+                        topic_tag_rule_set.save()
+                        success_rule_sets.append(name)
+
+                        rules = tag_rule_set.get("rules")
+                        if rules:
+                            for rule in rules:
+                                name = rule.get("name")
+                                if name:
+                                    topic_tag_rule = TopicTagRule(name=name, rule_set=topic_tag_rule_set)
+                                    filters = rule.get("filters")
+                                    if filters:
+                                        topic_tag_rule.filters = filters
+                                    else:
+                                        topic_tag_rule.filters = []
+
+                                    tags = rule.get("tags")
+                                    if tags:
+                                        topic_tag_rule.tags = tags
+                                    else:
+                                        topic_tag_rule.tags = []
+
+                                    topic_tag_rule.save()
+            else:
+                import_errors = "JSON file rule sets is empty."
+
+        if import_errors:
+            return {'import_errors': import_errors}
+        elif success_rule_sets:
+            return {'success_rule_sets': success_rule_sets}
+        else:
+            return {'import_errors': "Rule sets list to import is empty."}
