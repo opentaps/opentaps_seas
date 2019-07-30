@@ -54,7 +54,7 @@
           <h3>
             <div class="row m-0">
               <div>Data Points</div>
-              <div class="text-right flex-grow-1">
+              <div class="text-right flex-grow-1" v-if="is_ahu" v-cloak>
                 <a v-if="dashboard_uid" :href="get_dashboard_url()" target="_blank" v-cloak><img width="32" src="{% static 'images/grafana_icon.svg' %}" /></a>
                 <a v-if="!dashboard_uid" href="#" v-on:click="create_dashboard" v-cloak ><img width="32" src="{% static 'images/grafana_icon.svg' %}" /></a>
               </div>
@@ -119,6 +119,7 @@
         grafana_url: '{{ grafana_url }}',
         errors: false,
         successes: false,
+        is_ahu: {{ is_ahu|safe }},
       }
     },
     methods: {

@@ -1692,6 +1692,12 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
             pass
 
         context['data_points'] = PointView.objects.filter(equipment_id=context['object'].object_id).count()
+        is_ahu = 0
+        if 'ahu' in context['object'].m_tags:
+            is_ahu = 1
+
+        context['is_ahu'] = is_ahu
+
         return context
 
 
