@@ -16,7 +16,6 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-
 # get the script directory
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -26,16 +25,6 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-ARGS=$*
-if [ $# -lt 1 ]; then
-    ARGS="all"
-fi
-
 pushd ${DIR}
-./tag/import $ARGS
-./entity/import $ARGS
-./ahu/import $ARGS
-./timezone/import $ARGS
-./geo/import $ARGS
-./tagrule/import $ARGS
+python import_tagrules.py $*
 popd

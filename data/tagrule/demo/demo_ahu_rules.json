@@ -1,0 +1,272 @@
+{
+    "tag_rule_sets": [
+        {
+            "name": "Demo AHU Data Set Rules",
+            "rules": [
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "heat_Valve"
+                        },
+                        {
+                            "type": "c",
+                            "value": "CMD"
+                        }
+                    ],
+                    "name": "Heat CMD",
+                    "tags": [
+                        {
+                            "description": "Output, AO/BO, command, or actuator",
+                            "kind": "Marker",
+                            "tag": "cmd",
+                            "value": null
+                        },
+                        {
+                            "description": "Heating coil",
+                            "kind": "Marker",
+                            "tag": "heat",
+                            "value": null
+                        },
+                        {
+                            "description": "Historical data point",
+                            "kind": "Marker",
+                            "tag": "his",
+                            "value": null
+                        },
+                        {
+                            "description": "Data point",
+                            "kind": "Marker",
+                            "tag": "point",
+                            "value": null
+                        },
+                        {
+                            "description": "Input, AI/BI, or sensor",
+                            "kind": "Marker",
+                            "tag": "sensor",
+                            "value": null
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "cool_Valve"
+                        },
+                        {
+                            "type": "c",
+                            "value": "CMD"
+                        }
+                    ],
+                    "name": "Cooling CMD",
+                    "tags": [
+                        {
+                            "description": "Output, AO/BO, command, or actuator",
+                            "kind": "Marker",
+                            "tag": "cmd",
+                            "value": null
+                        },
+                        {
+                            "description": "HVAC cooling mode",
+                            "kind": "Marker",
+                            "tag": "cooling",
+                            "value": null
+                        },
+                        {
+                            "description": "Historical data point",
+                            "kind": "Marker",
+                            "tag": "his",
+                            "value": null
+                        },
+                        {
+                            "description": "Data point",
+                            "kind": "Marker",
+                            "tag": "point",
+                            "value": null
+                        },
+                        {
+                            "description": "Input, AI/BI, or sensor",
+                            "kind": "Marker",
+                            "tag": "sensor",
+                            "value": null
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "Avg_ZoneTemp"
+                        },
+                        {
+                            "type": "nc",
+                            "value": "SP"
+                        }
+                    ],
+                    "name": "Zone Temp",
+                    "tags": [
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "air"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "his"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "point"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "sensor"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "temp"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "zone"
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "RAT"
+                        }
+                    ],
+                    "name": "Return Air Temp",
+                    "tags": [
+                        {
+                            "parent_description": "Return Air Temperature",
+                            "parent_id": "modelahureturnrat",
+                            "tag": "air"
+                        },
+                        {
+                            "parent_description": "Return Air Temperature",
+                            "parent_id": "modelahureturnrat",
+                            "tag": "his"
+                        },
+                        {
+                            "parent_description": "Return Air Temperature",
+                            "parent_id": "modelahureturnrat",
+                            "tag": "point"
+                        },
+                        {
+                            "parent_description": "Return Air Temperature",
+                            "parent_id": "modelahureturnrat",
+                            "tag": "return"
+                        },
+                        {
+                            "parent_description": "Return Air Temperature",
+                            "parent_id": "modelahureturnrat",
+                            "tag": "sensor"
+                        },
+                        {
+                            "parent_description": "Return Air Temperature",
+                            "parent_id": "modelahureturnrat",
+                            "tag": "temp"
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "Demo_ahu3"
+                        }
+                    ],
+                    "name": "Demo AHU3",
+                    "tags": [
+                        {
+                            "description": "Equipment asset ID",
+                            "kind": "Ref",
+                            "tag": "equipRef",
+                            "value": "@Demo-AHU3"
+                        },
+                        {
+                            "description": "Air handler unit",
+                            "kind": "Marker",
+                            "tag": "ahu",
+                            "value": null
+                        },
+                        {
+                            "description": "Equipment asset",
+                            "kind": "Marker",
+                            "tag": "equip",
+                            "value": null
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "demo_ahu2"
+                        }
+                    ],
+                    "name": "Demo AHU2 Rules",
+                    "tags": [
+                        {
+                            "description": "Equipment asset ID",
+                            "kind": "Ref",
+                            "tag": "equipRef",
+                            "value": "@Demo-AHU2"
+                        },
+                        {
+                            "description": "Air handler unit",
+                            "kind": "Marker",
+                            "tag": "ahu",
+                            "value": null
+                        },
+                        {
+                            "description": "Equipment asset",
+                            "kind": "Marker",
+                            "tag": "equip",
+                            "value": null
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "Demo_ahu1"
+                        }
+                    ],
+                    "name": "Demo AHU1",
+                    "tags": [
+                        {
+                            "description": "Equipment asset ID",
+                            "kind": "Ref",
+                            "tag": "equipRef",
+                            "value": "@Demo-AHU1"
+                        },
+                        {
+                            "description": "Air handler unit",
+                            "kind": "Marker",
+                            "tag": "ahu",
+                            "value": null
+                        },
+                        {
+                            "description": "Equipment asset",
+                            "kind": "Marker",
+                            "tag": "equip",
+                            "value": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
