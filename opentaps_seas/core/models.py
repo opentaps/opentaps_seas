@@ -155,6 +155,7 @@ class Entity(models.Model):
     kv_tags = HStoreField(blank=True, null=True)
     m_tags = ArrayField(CharField(max_length=255, blank=True, null=True))
     dashboard_uid = CharField(_("Dashboard UID"), max_length=255, blank=True)
+    dashboard_snapshot_uid = CharField(_("Dashboard Snapshot UID"), max_length=255, blank=True, null=True)
     bacnet_fields = HStoreField(blank=True, null=True)
 
     def __str__(self):
@@ -323,6 +324,7 @@ class EquipmentView(models.Model):
     description = CharField(_("Description"), max_length=255, blank=True)
     site_id = CharField(_("Site"), max_length=255, blank=True)
     dashboard_uid = CharField(_("Dashboard"), max_length=255, blank=True)
+    dashboard_snapshot_uid = CharField(_("Dashboard Snapshot"), max_length=255, blank=True)
     kv_tags = HStoreField(blank=True, null=True)
     m_tags = ArrayField(CharField(max_length=255, blank=True, null=True))
 

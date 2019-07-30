@@ -497,12 +497,31 @@ def create_equipment_grafana_dashboard(topic, equipmen_ref):
     datastore["dashboard"]["panels"][0]["targets"] = targets
 
     try:
-        r = requests.post(url, verify=False, json=datastore, auth=auth)
+        result_dashboard = requests.post(url, verify=False, json=datastore, auth=auth)
     except requests.exceptions.ConnectionError:
         logger.exception('Could not create the grafan dashboard')
         return None
+    else:
+        try:
+            result_shapshot = create_grafana_dashboard_snapshot(datastore)
+        except requests.exceptions.ConnectionError:
+            result_shapshot = None
 
-    logger.info('create_equipment_grafana_dashboard done : %s', r)
+    logger.info('create_equipment_grafana_dashboard done : %s, %s', result_dashboard, result_shapshot)
+    return result_dashboard, result_shapshot
+
+
+def create_grafana_dashboard_snapshot(datastore):
+    auth = (settings.GRAFANA_USER_NAME, settings.GRAFANA_USER_PASSWORD)
+    url = settings.GRAFANA_BASE_URL + "/api/snapshots"
+
+    try:
+        r = requests.post(url, verify=False, json=datastore, auth=auth)
+    except requests.exceptions.ConnectionError:
+        logger.exception('Could not create the grafan dashboard snapshot')
+        return None
+
+    logger.info('create_grafana_dashboard_snapshot done : %s', r)
     return r
 
 
