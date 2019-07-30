@@ -1836,6 +1836,7 @@ def site_ahu_summary_json(request, site):
     epoch_1 = None
     for e in ahus:
         ahu_data_points = utils.get_ahu_current_values(e.object_id)
+        logger.info('site_ahu_summary_json ==> %s', e.object_id)
         points = []
         for k, point in ahu_data_points.items():
             logger.info('ahu_data_point %s ==> %s', k, point)

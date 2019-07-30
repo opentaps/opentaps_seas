@@ -36,6 +36,7 @@ def clean():
     cursor = conn.cursor()
 
     print('Deleting data ...')
+    cursor.execute('DELETE FROM core_bacnetconfig;')
     cursor.execute('DELETE FROM core_entity;')
 
     cursor.close()

@@ -199,12 +199,6 @@
                             "kind": "Marker",
                             "tag": "ahu",
                             "value": null
-                        },
-                        {
-                            "description": "Equipment asset",
-                            "kind": "Marker",
-                            "tag": "equip",
-                            "value": null
                         }
                     ]
                 },
@@ -228,12 +222,6 @@
                             "kind": "Marker",
                             "tag": "ahu",
                             "value": null
-                        },
-                        {
-                            "description": "Equipment asset",
-                            "kind": "Marker",
-                            "tag": "equip",
-                            "value": null
                         }
                     ]
                 },
@@ -256,12 +244,6 @@
                             "description": "Air handler unit",
                             "kind": "Marker",
                             "tag": "ahu",
-                            "value": null
-                        },
-                        {
-                            "description": "Equipment asset",
-                            "kind": "Marker",
-                            "tag": "equip",
                             "value": null
                         }
                     ]

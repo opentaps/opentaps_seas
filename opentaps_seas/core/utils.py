@@ -21,6 +21,7 @@ import hashlib
 import json
 import requests
 from .models import Entity
+from .models import EquipmentView
 from .models import PointView
 from .models import Tag
 from .models import Topic
@@ -166,7 +167,9 @@ def get_ahu_current_values(equipment_id):
                 for cp in pl:
                     logger.warning('--> %s with tag %s', cp.topic, cp.m_tags)
                 p = pl
-            results[n] = add_current_values([p[0]], raw=True)[0]
+            p = p[0]
+            logger.warning('get_ahu_current_values using point: %s', p)
+            results[n] = add_current_values([p], raw=True)[0]
     return results
 
 
@@ -651,8 +654,17 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
             if not e.kv_tags or not e.kv_tags.get('dis'):
                 e.add_tag('dis', topic, commit=False)
             for tag in tags:
-                logging.info('*** add tag %s', tag)
-                e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
+                # never tag with 'site' or 'equip'!
+                if tag != 'site' and tag != 'equip':
+                    logging.info('*** add tag %s', tag)
+                    e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
+            # if tagged with an equipRef make sure the siteRef also matches
+            equip_ref = e.kv_tags.get('equipRef')
+            if equip_ref:
+                # let it fail if the equipment does not exist
+                equip = EquipmentView.objects.get(object_id=equip_ref)
+                if equip and equip.site_id:
+                    e.add_tag('siteRef', equip.site_id, commit=False)
             e.save()
             updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
 
