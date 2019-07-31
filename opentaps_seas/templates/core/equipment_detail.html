@@ -60,6 +60,7 @@
               </div>
             </div>
           </h3>
+          <iframe :src="get_dashboard_snapshot_url()" width="100%" height="300" frameborder="0" v-if="is_ahu && dashboard_uid && get_dashboard_snapshot_url()" v-cloak></iframe>
       </div>
       <hr class="mt-0"/>
       <div id="datetimelist">
@@ -116,7 +117,9 @@
         csrfmiddlewaretoken: CSRF_TOKEN,
         equipment_id:  '{{ object.entity_id|safe }}',
         dashboard_uid: '{{ object.dashboard_uid|safe }}',
+        dashboard_snapshot_uid: '{{ object.dashboard_snapshot_uid|safe }}',
         grafana_url: '{{ grafana_url }}',
+        grafana_snapshot_url: '{{ grafana_snapshot_url }}',
         errors: false,
         successes: false,
         is_ahu: {{ is_ahu|safe }},
@@ -127,6 +130,14 @@
           var url = null;
           if (this.grafana_url && this.dashboard_uid) {
             url = this.grafana_url + this.dashboard_uid
+          }
+
+          return url;
+      },
+      get_dashboard_snapshot_url: function () {
+          var url = null;
+          if (this.grafana_snapshot_url && this.dashboard_snapshot_uid && this.dashboard_snapshot_uid != 'None') {
+            url = this.grafana_snapshot_url + this.dashboard_snapshot_uid + '?orgId=1&kiosk&fullscreen&panelId=2'
           }
 
           return url;
@@ -143,6 +154,11 @@
               console.log('create_dashboard Done', x)
               if (x.success) {
                 this.dashboard_uid = x.dashboard_uid
+                if (x.dashboard_snapshot_uid) {
+                    this.dashboard_snapshot_uid = x.dashboard_snapshot_uid
+                } else {
+                    this.dashboard_snapshot_uid = null
+                }
                 this.successes = {'success': x.success}
                 return x
               } else {

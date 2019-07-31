@@ -1685,6 +1685,7 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
     def get_context_data(self, **kwargs):
         context = super(EquipmentDetailView, self).get_context_data(**kwargs)
         context['grafana_url'] = settings.GRAFANA_BASE_URL + "/d/"
+        context['grafana_snapshot_url'] = settings.GRAFANA_BASE_URL + "/dashboard/snapshot/"
         # add the parent Site (optional)
         try:
             context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
@@ -2386,6 +2387,7 @@ def equipment_dashboard(request, equip):
                             result_s = result_shapshot.json()
                             if result_s["key"]:
                                 entity.dashboard_snapshot_uid = result_s["key"]
+                                result["dashboard_snapshot_uid"] = entity.dashboard_snapshot_uid
                         entity.save()
 
                     else:

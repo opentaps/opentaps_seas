@@ -18,15 +18,14 @@
 import logging
 from opentaps_seas.core.models import Entity
 from opentaps_seas.core.utils import delete_grafana_dashboard
+from opentaps_seas.core.utils import delete_grafana_dashboard_snapshot
 
 logger = logging.getLogger(__name__)
 
 
 def remove_dashboards():
-    entities = Entity.objects.raw('''SELECT entity_id, topic, dashboard_uid FROM {0}
-        WHERE 'point' = ANY (m_tags)
-        AND topic is not null
-        AND topic != ''
+    entities = Entity.objects.raw('''SELECT entity_id, topic, dashboard_uid, dashboard_snapshot_uid FROM {0}
+        WHERE ('point' = ANY (m_tags) or 'equip' = ANY (m_tags))
         AND (dashboard_uid is not null)
         AND (dashboard_uid != '') '''.format(Entity._meta.db_table), [])
 
@@ -42,6 +41,10 @@ def remove_dashboards():
             if result.status_code == 200:
                 ok_count += 1
                 row.dashboard_uid = ''
+                if row.dashboard_snapshot_uid:
+                    result_s = delete_grafana_dashboard_snapshot(row.dashboard_snapshot_uid)
+                    if result_s.status_code == 200:
+                        row.dashboard_snapshot_uid = ''
                 row.save()
             if result.status_code == 404:
                 # Not found

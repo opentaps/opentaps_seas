@@ -515,6 +515,10 @@ def create_grafana_dashboard_snapshot(datastore):
     auth = (settings.GRAFANA_USER_NAME, settings.GRAFANA_USER_PASSWORD)
     url = settings.GRAFANA_BASE_URL + "/api/snapshots"
 
+    datastore["dashboard"]["editable"] = False
+    datastore["dashboard"]["hideControls"] = True
+    datastore["dashboard"]["nav"] = [{"enable": False, "type": "timepicker"}]
+
     try:
         r = requests.post(url, verify=False, json=datastore, auth=auth)
     except requests.exceptions.ConnectionError:
@@ -577,6 +581,25 @@ def delete_grafana_dashboard(dashboard_uid):
         return r
     else:
         logger.error("dashboard_uid should not be empty")
+        return None
+
+
+def delete_grafana_dashboard_snapshot(dashboard_snapshot_uid):
+    logger.info('delete_grafana_dashboard_snapshot, dashboard_snapshot_uid : %s', dashboard_snapshot_uid)
+    if dashboard_snapshot_uid:
+        auth = (settings.GRAFANA_USER_NAME, settings.GRAFANA_USER_PASSWORD)
+        url = settings.GRAFANA_BASE_URL + "/api/snapshots/" + dashboard_snapshot_uid
+
+        try:
+            r = requests.delete(url, verify=False, auth=auth)
+        except requests.exceptions.ConnectionError:
+            logger.exception('Could not delete the grafan dashboard snapsho')
+            return None
+
+        logger.info('delete_grafana_dashboard_snapsho result : %s', r)
+        return r
+    else:
+        logger.error("dashboard_snapshot_uid should not be empty")
         return None
 
 
