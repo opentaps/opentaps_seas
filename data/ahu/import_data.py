@@ -173,7 +173,7 @@ def import_csv(source_file_name):
     counter_insert = 0
     row_index = 0
     # topics are each column minus the first 2 (timestamp, systemID)
-    # we'll prefix them as demo_"device name"/"topic" (device name being the basename of the file)
+    # we'll prefix them as demo_site1/demo_"device name"/"topic" (device name being the basename of the file)
     # ignore columns like VAVID that are not data column and repeat the ID present in the following columns
     ignores = []
     # write CSVs for each timeseries so we can bulk import them rather than doing millions of inserts
@@ -191,7 +191,7 @@ def import_csv(source_file_name):
                 if 'VAVID' == item:
                     ignores.append(index)
                     continue
-                topic = 'demo_' + name + '/' + item
+                topic = 'demo_site1/demo_' + name + '/' + item
                 csv_writers[item] = {}
                 fname = '/tmp/' + name + '_' + item + '.csv'
                 csv_writers[item]['started'] = False
