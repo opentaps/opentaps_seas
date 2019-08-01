@@ -17,7 +17,6 @@
 
 from django.db import connections
 from opentaps_seas.core.models import Entity
-from opentaps_seas.core.models import Topic
 
 
 def kv_tags_update_string(kv_tags, params_list):
@@ -35,24 +34,20 @@ def kv_tags_update_string(kv_tags, params_list):
 
 def sync_tags_to_crate():
     count = 0
-    # first make sure the CrateDB Topic table has the m_tags and kv_tags fields
-    # note: ignore Error in case the column already exists
+    # first make sure the CrateDB Entity table already exists
     with connections['crate'].cursor() as c:
-        sql = """ALTER TABLE "volttron"."topic" ADD COLUMN "m_tags" array(string);"""
-        try:
-            c.execute(sql)
-            print("Added CrateDB topic.m_tags column")
-        except Exception:
-            print("CrateDB topic.m_tags column already exists")
-            pass
-
-        sql = """ALTER TABLE "volttron"."topic" ADD COLUMN "kv_tags" object;"""
-        try:
-            c.execute(sql)
-            print("Added CrateDB topic.kv_tas column")
-        except Exception:
-            print("CrateDB topic.kv_tas column already exists")
-            pass
+        sql = """
+        CREATE TABLE IF NOT EXISTS "opentaps_seas"."entity" (
+           "topic" STRING,
+           "m_tags" ARRAY(STRING),
+           "kv_tags" OBJECT (DYNAMIC) AS (
+              "id" STRING,
+              "dis" STRING
+           ),
+           PRIMARY KEY ("topic")
+        );"""
+        c.execute(sql)
+        print("Added CrateDB opentaps_seas.entity table")
 
         entities = Entity.objects.raw('''SELECT entity_id, topic, m_tags, kv_tags FROM {0}
             WHERE 'point' = ANY (m_tags)
@@ -63,11 +58,18 @@ def sync_tags_to_crate():
         for row in entities:
             # make sure the topic is in CrateDB
             print(" --> {}".format(row.topic))
-            Topic.ensure_topic_exists(row.topic)
+
+            sql = """INSERT INTO {0} (topic)
+            VALUES (%s)""".format("opentaps_seas.entity")
+            try:
+                c.execute(sql, [row.topic])
+            except Exception:
+                # just make sure the topic exists
+                pass
 
             if row.m_tags or row.kv_tags:
                 params_list = []
-                sql = """ UPDATE "volttron"."topic" SET """
+                sql = """ UPDATE "opentaps_seas"."entity" SET """
                 if row.kv_tags:
                     sql += " kv_tags = {} ".format(kv_tags_update_string(row.kv_tags, params_list))
                 if row.m_tags:
