@@ -416,7 +416,7 @@ def entity_deleted(sender, instance, using, **kwargs):
     logger.info('entity_deleted: %s', instance.entity_id)
     EntityNote.objects.filter(entity_id=instance.entity_id).delete()
     EntityFile.objects.filter(entity_id=instance.entity_id).delete()
-    if not settings.SKIP_CRATE_TAG_AUTOSYNC:
+    if settings.CRATE_TAG_AUTOSYNC:
         delete_tags_from_crate_entity(instance)
 
 
@@ -424,7 +424,7 @@ def entity_deleted(sender, instance, using, **kwargs):
 def entity_saved(sender, instance, using, **kwargs):
     # remove all associated resourcese: notes, files, links ...
     logger.info('entity_saved: %s', instance.entity_id)
-    if not settings.SKIP_CRATE_TAG_AUTOSYNC:
+    if settings.CRATE_TAG_AUTOSYNC:
         sync_tags_to_crate_entity(instance)
 
 

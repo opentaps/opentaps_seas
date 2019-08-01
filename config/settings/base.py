@@ -283,6 +283,7 @@ VOLTTRON_VC_USER_NAME = get_secret('VOLTTRON_VC_USER_NAME', required=False)
 VOLTTRON_VC_PASSWORD = get_secret('VOLTTRON_VC_PASSWORD', required=False)
 
 GOOGLE_API_KEY = get_secret('GOOGLE_API_KEY', required=False)
+CRATE_TAG_AUTOSYNC = get_secret('CRATE_TAG_AUTOSYNC', required=False)
 
 # FIXTURES
 # ------------------------------------------------------------------------------
