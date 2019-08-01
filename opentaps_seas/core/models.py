@@ -635,7 +635,7 @@ def kv_tags_update_crate_entity_string(kv_tags, params_list):
     for k in kv_tags.keys():
         if not first:
             res += ', '
-        res += "{} = %s".format(k, kv_tags[k])
+        res += '"{}" = %s'.format(k, kv_tags[k])
         params_list.append(kv_tags[k])
         first = False
     res += '}'
@@ -682,4 +682,6 @@ def sync_tags_to_opentapsease_crate_entity(row):
                 params_list.append(row.m_tags)
             sql += """ WHERE topic = %s;"""
             params_list.append(row.topic)
+            logger.info('sync_tags_to_opentapsease_crate_entity SQL: %s', sql)
+            logger.info('sync_tags_to_opentapsease_crate_entity Params: %s', params_list)
             c.execute(sql, params_list)
