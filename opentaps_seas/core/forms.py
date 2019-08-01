@@ -268,6 +268,8 @@ class EquipmentCreateForm(forms.ModelForm):
     entity_id = forms.CharField(label='Equipment ID', max_length=255, required=False)
     description = forms.CharField(max_length=255, required=True)
     model = forms.ChoiceField(required=False)
+    bacnet_config_id = forms.CharField(max_length=255, required=False)
+    device_id = forms.CharField(max_length=255, required=False)
 
     def __init__(self, *args, **kwargs):
         self.site_id = kwargs.pop('site_id')
@@ -280,6 +282,8 @@ class EquipmentCreateForm(forms.ModelForm):
         if not entity_id or entity_id == '':
             entity_id = utils.make_random_id(description)
 
+        bacnet_config_id = self.cleaned_data['bacnet_config_id']
+        device_id = self.cleaned_data['device_id']
         object_id = entity_id
         entity_id = slugify(entity_id)
         self.cleaned_data['entity_id'] = entity_id
@@ -289,6 +293,15 @@ class EquipmentCreateForm(forms.ModelForm):
         equipment.add_tag('id', object_id, commit=False)
         equipment.add_tag('dis', description, commit=False)
         equipment.add_tag('siteRef', self.site_id, commit=False)
+        if bacnet_config_id:
+            equipment.add_tag('bacnetConfigId', bacnet_config_id, commit=False)
+            # get points with given bacnetConfigId and set equipRef
+            points = Entity.objects.filter(kv_tags__bacnetConfigId=bacnet_config_id).filter(m_tags__contains=['point'])
+            if points:
+                for point in points:
+                    point.add_tag('equipRef', object_id, commit=True)
+        if device_id:
+            equipment.add_tag('deviceId', device_id, commit=False)
 
         model = self.cleaned_data['model']
         if model:

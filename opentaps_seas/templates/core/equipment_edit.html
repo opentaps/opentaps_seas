@@ -31,7 +31,12 @@
     <div class="card-body">
       <form method="post">
         {% csrf_token %}
-        {{ form|crispy }}
+        <input type="hidden" name="bacnet_config_id" id="bacnet_config_id" ref="bacnet_config_id" value="{{ form.bacnet_config_id.initial|default:'' }}"/>
+        <input type="hidden" name="device_id" id="device_id" ref="device_id" value="{{ form.device_id.initial|default:'' }}"/>
+
+        {{ form.entity_id|as_crispy_field }}
+        {{ form.description|as_crispy_field }}
+        {{ form.model|as_crispy_field }}
 
         <div class="form-group d-flex justify-content-around mt-5">
           <a href="{% if object %}{% url 'core:site_detail' object.entity_id %}{% else %}{% url 'core:site_list' %}{% endif %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>

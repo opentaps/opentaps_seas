@@ -826,7 +826,29 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
         bacnet_configs = BacnetConfig.objects.filter(site=site.entity_id)
 
         if bacnet_configs:
-            context['bacnet_configs'] = bacnet_configs
+            bacnet_cfg = []
+            for bacnet_config in bacnet_configs:
+                item = {'id': bacnet_config.id, 'prefix': bacnet_config.prefix}
+                config_file = bacnet_config.config_file
+                if config_file:
+                    try:
+                        config_file_json = json.loads(config_file)
+                    except Exception:
+                        logging.error("Cannot parse bacnet_config json")
+                    else:
+                        driver_config = config_file_json["driver_config"]
+                        if driver_config:
+                            device_id = driver_config["device_id"]
+                            if device_id is not None:
+                                item["device_id"] = device_id
+
+                bc_equipments = EquipmentView.objects.filter(kv_tags__bacnetConfigId=bacnet_config.id)
+                if bc_equipments:
+                    bc_equipment = bc_equipments[0]
+                    if bc_equipment:
+                        item["bc_equipment_entity_id"] = bc_equipment.entity_id
+                bacnet_cfg.append(item)
+            context['bacnet_configs'] = bacnet_cfg
 
         return context
 
@@ -883,6 +905,14 @@ class EquipmentCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
     slug_url_kwarg = "entity_id"
     template_name = 'core/equipment_edit.html'
     form_class = EquipmentCreateForm
+
+    def get_initial(self):
+        initials = {}
+        if self.request.GET and 'bacnet_config_id' in self.request.GET:
+            initials['bacnet_config_id'] = self.request.GET['bacnet_config_id']
+        if self.request.GET and 'device_id' in self.request.GET:
+            initials['device_id'] = self.request.GET['device_id']
+        return initials
 
     def get_breadcrumbs(self, context):
         b = []
