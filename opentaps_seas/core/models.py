@@ -33,6 +33,7 @@ from django.db.models import IntegerField
 from django.db.models import ProtectedError
 from django.db.models import TextField
 from django.db.models.signals import post_delete
+from django.db.models.signals import post_save
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
@@ -415,6 +416,14 @@ def entity_deleted(sender, instance, using, **kwargs):
     logger.info('entity_deleted: %s', instance.entity_id)
     EntityNote.objects.filter(entity_id=instance.entity_id).delete()
     EntityFile.objects.filter(entity_id=instance.entity_id).delete()
+    delete_tags_from_opentapsease_crate_entity(instance)
+
+
+@receiver(post_save, sender=Entity, dispatch_uid='entity_post_save_signal')
+def entity_saved(sender, instance, using, **kwargs):
+    # remove all associated resourcese: notes, files, links ...
+    logger.info('entity_saved: %s', instance.entity_id)
+    sync_tags_to_opentapsease_crate_entity(instance)
 
 
 class Topic(models.Model):
@@ -603,3 +612,74 @@ class BacnetConfig(models.Model):
                                   for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
 
         return bacnet_choices
+
+
+def ensure_opentapsease_crate_entity_table():
+    with connections['crate'].cursor() as c:
+        sql = """
+        CREATE TABLE IF NOT EXISTS "opentaps_seas"."entity" (
+           "topic" STRING,
+           "m_tags" ARRAY(STRING),
+           "kv_tags" OBJECT (DYNAMIC) AS (
+              "id" STRING,
+              "dis" STRING
+           ),
+           PRIMARY KEY ("topic")
+        );"""
+        c.execute(sql)
+
+
+def kv_tags_update_crate_entity_string(kv_tags, params_list):
+    res = '{'
+    first = True
+    for k in kv_tags.keys():
+        if not first:
+            res += ', '
+        res += "{} = %s".format(k, kv_tags[k])
+        params_list.append(kv_tags[k])
+        first = False
+    res += '}'
+    return res
+
+
+def delete_tags_from_opentapsease_crate_entity(row):
+    # we only sync for entity linked to a topic
+    if not row.topic:
+        return
+    with connections['crate'].cursor() as c:
+        # make sure the topic is in CrateDB
+        sql = """DELETE {0} WHERE topic = %s;""".format("opentaps_seas.entity")
+        try:
+            c.execute(sql, [row.topic])
+        except Exception:
+            # ignore if the entity did not exist
+            pass
+
+
+def sync_tags_to_opentapsease_crate_entity(row):
+    # we only sync for entity linked to a topic
+    if not row.topic:
+        return
+    with connections['crate'].cursor() as c:
+        # make sure the topic is in CrateDB
+        sql = """INSERT INTO {0} (topic)
+        VALUES (%s)""".format("opentaps_seas.entity")
+        try:
+            c.execute(sql, [row.topic])
+        except Exception:
+            # just make sure the topic exists
+            pass
+
+        if row.m_tags or row.kv_tags:
+            params_list = []
+            sql = """ UPDATE "opentaps_seas"."entity" SET """
+            if row.kv_tags:
+                sql += " kv_tags = {} ".format(kv_tags_update_crate_entity_string(row.kv_tags, params_list))
+            if row.m_tags:
+                if row.kv_tags:
+                    sql += ", "
+                sql += " m_tags = %s "
+                params_list.append(row.m_tags)
+            sql += """ WHERE topic = %s;"""
+            params_list.append(row.topic)
+            c.execute(sql, params_list)
