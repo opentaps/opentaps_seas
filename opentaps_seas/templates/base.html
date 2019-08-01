@@ -34,15 +34,15 @@
 
     <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
 
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.6.12"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-apexcharts@1.3.5"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/moment@2.24.0/min/moment.min.js"></script>
-    <script src="https://unpkg.com/moment-timezone@0.5.23/builds/moment-timezone-with-data.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-vue@2.0.0-rc.15/dist/bootstrap-vue.min.js"></script>
-    <script src="https://unpkg.com/vue-bootstrap-typeahead"></script>
-    <script src="https://unpkg.com/vue-select@3.1.0"></script>
+    <script src="{% static 'js/vue.js' %}"></script>
+    <script src="{% static 'js/apexcharts-3.6.12.js' %}"></script>
+    <script src="{% static 'js/vue-apexcharts-1.3.5.js' %}"></script>
+    <script src="{% static 'js/axios.min.js' %}"></script>
+    <script src="{% static 'js/moment-2.24.0.min.js' %}"></script>
+    <script src="{% static 'js/moment-timezone-with-data-0.5.23.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-vue-2.0.0-rc.15.min.js' %}"></script>
+    <script src="{% static 'js/vue-bootstrap-typeahead.js' %}"></script>
+    <script src="{% static 'js/vue-select-3.1.0.js' %}"></script>
     <script src="{% static 'js/dutils.js' %}"></script>
     <script type="text/javascript">
     dutils.conf.urls = {
@@ -75,14 +75,12 @@
     {% block css %}
 
     <!-- Latest compiled and minified Bootstrap 4.1.1 CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.0.0-rc.15/dist/bootstrap-vue.min.css"/>
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/vue-bootstrap-typeahead/dist/VueBootstrapTypeahead.css"/>
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/vue-select@3.1.0/dist/vue-select.css"/>
+    <link href="{% static 'css/bootstrap-4.3.1.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-vue-2.0.0-rc.15.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/VueBootstrapTypeahead.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vue-select-3.1.0.css' %}" rel="stylesheet">
     <!-- fontawesome icons -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-
-
+    <link href="{% static 'css/fontawesome-5.7.2.all.js' %}" rel="stylesheet">
 
     <!-- Your stuff: Third-party CSS libraries go here -->
 
