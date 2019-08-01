@@ -416,14 +416,14 @@ def entity_deleted(sender, instance, using, **kwargs):
     logger.info('entity_deleted: %s', instance.entity_id)
     EntityNote.objects.filter(entity_id=instance.entity_id).delete()
     EntityFile.objects.filter(entity_id=instance.entity_id).delete()
-    delete_tags_from_opentapsease_crate_entity(instance)
+    delete_tags_from_crate_entity(instance)
 
 
 @receiver(post_save, sender=Entity, dispatch_uid='entity_post_save_signal')
 def entity_saved(sender, instance, using, **kwargs):
     # remove all associated resourcese: notes, files, links ...
     logger.info('entity_saved: %s', instance.entity_id)
-    sync_tags_to_opentapsease_crate_entity(instance)
+    sync_tags_to_crate_entity(instance)
 
 
 class Topic(models.Model):
@@ -614,10 +614,10 @@ class BacnetConfig(models.Model):
         return bacnet_choices
 
 
-def ensure_opentapsease_crate_entity_table():
+def ensure_crate_entity_table():
     with connections['crate'].cursor() as c:
         sql = """
-        CREATE TABLE IF NOT EXISTS "opentaps_seas"."entity" (
+        CREATE TABLE IF NOT EXISTS "volttron"."entity" (
            "topic" STRING,
            "m_tags" ARRAY(STRING),
            "kv_tags" OBJECT (DYNAMIC) AS (
@@ -642,13 +642,13 @@ def kv_tags_update_crate_entity_string(kv_tags, params_list):
     return res
 
 
-def delete_tags_from_opentapsease_crate_entity(row):
+def delete_tags_from_crate_entity(row):
     # we only sync for entity linked to a topic
     if not row.topic:
         return
     with connections['crate'].cursor() as c:
         # make sure the topic is in CrateDB
-        sql = """DELETE {0} WHERE topic = %s;""".format("opentaps_seas.entity")
+        sql = """DELETE {0} WHERE topic = %s;""".format("volttron.entity")
         try:
             c.execute(sql, [row.topic])
         except Exception:
@@ -656,14 +656,14 @@ def delete_tags_from_opentapsease_crate_entity(row):
             pass
 
 
-def sync_tags_to_opentapsease_crate_entity(row):
+def sync_tags_to_crate_entity(row):
     # we only sync for entity linked to a topic
     if not row.topic:
         return
     with connections['crate'].cursor() as c:
         # make sure the topic is in CrateDB
         sql = """INSERT INTO {0} (topic)
-        VALUES (%s)""".format("opentaps_seas.entity")
+        VALUES (%s)""".format("volttron.entity")
         try:
             c.execute(sql, [row.topic])
         except Exception:
@@ -672,7 +672,7 @@ def sync_tags_to_opentapsease_crate_entity(row):
 
         if row.m_tags or row.kv_tags:
             params_list = []
-            sql = """ UPDATE "opentaps_seas"."entity" SET """
+            sql = """ UPDATE "volttron"."entity" SET """
             if row.kv_tags:
                 sql += " kv_tags = {} ".format(kv_tags_update_crate_entity_string(row.kv_tags, params_list))
             if row.m_tags:
@@ -682,6 +682,6 @@ def sync_tags_to_opentapsease_crate_entity(row):
                 params_list.append(row.m_tags)
             sql += """ WHERE topic = %s;"""
             params_list.append(row.topic)
-            logger.info('sync_tags_to_opentapsease_crate_entity SQL: %s', sql)
-            logger.info('sync_tags_to_opentapsease_crate_entity Params: %s', params_list)
+            logger.info('sync_tags_to_crate_entity SQL: %s', sql)
+            logger.info('sync_tags_to_crate_entity Params: %s', params_list)
             c.execute(sql, params_list)

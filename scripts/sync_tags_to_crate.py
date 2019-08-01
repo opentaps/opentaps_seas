@@ -16,15 +16,15 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 from opentaps_seas.core.models import Entity
-from opentaps_seas.core.models import ensure_opentapsease_crate_entity_table
-from opentaps_seas.core.models import sync_tags_to_opentapsease_crate_entity
+from opentaps_seas.core.models import ensure_crate_entity_table
+from opentaps_seas.core.models import sync_tags_to_crate_entity
 
 
 def sync_tags_to_crate():
     count = 0
     # first make sure the CrateDB Entity table already exists
-    ensure_opentapsease_crate_entity_table()
-    print("Added CrateDB opentaps_seas.entity table")
+    ensure_crate_entity_table()
+    print("Added CrateDB volttron.entity table")
 
     entities = Entity.objects.raw('''SELECT entity_id, topic, m_tags, kv_tags FROM {0}
         WHERE 'point' = ANY (m_tags)
@@ -34,7 +34,7 @@ def sync_tags_to_crate():
     # iterate the topic data points and copy the tags
     for row in entities:
         print(" --> {}".format(row.topic))
-        sync_tags_to_opentapsease_crate_entity(row)
+        sync_tags_to_crate_entity(row)
 
         count = count + 1
 
