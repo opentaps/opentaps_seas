@@ -1,7 +1,8 @@
 Installation Instructions
 =========================
 
-You will need the following:
+You will need the following::
+
  * Linux
  * python3
  * pip
@@ -42,7 +43,7 @@ create a new one if you do not have one, and put in the following::
   
 Now edit your ``secrets.json`` file and put in the username, password, and ip address of your VOLTTRON Central instance.
 
-Verify the following:
+Verify the following - 
  * Your VOLTTRON instance is there with at http://VOLTTRON.central.ip.address:8080/vc/jsonrpc  You should see a response
  * Go to the VOLTTRON tab of opentaps SEAS web interface.  It should show you the agents that are running in VOLTTRON.  You should see a VOLTTRON central agent and a VOLTTRON central platform agent running.
  
