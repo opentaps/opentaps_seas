@@ -2,6 +2,7 @@ Installation Instructions
 =========================
 
 You will need the following:
+ * Linux
  * python3
  * pip
  * virtualenv
@@ -87,6 +88,17 @@ Also the HSTORE extension must be setup for test database before running tests::
 Then run the migrations::
 
     $ python manage.py migrate
+
+Syncing PostgreSQL and Crate
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, entity data such as sites, equipment, data points, and their tags are stored in PostgreSQL.  We do this because PostgreSQL is transactional.
+To make querying your data easier, you can also sync this data to Crate DB by configuring your ``secrets.json`` and setting ``CRATE_TAG_AUTOSYNC`` to ``true``.
+You can also run a script to sync all existing data to Crate::
+
+    $ python manage.py runscript sync_tags_to_crate
+
+This will create a table ``volttron.entity`` and store all the entity data there.
 
 Load seed data
 ^^^^^^^^^^^^^^
