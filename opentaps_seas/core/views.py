@@ -847,6 +847,7 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
                     bc_equipment = bc_equipments[0]
                     if bc_equipment:
                         item["bc_equipment_entity_id"] = bc_equipment.entity_id
+                        item["bc_equipment_description"] = bc_equipment.description
                 bacnet_cfg.append(item)
             context['bacnet_configs'] = bacnet_cfg
 
