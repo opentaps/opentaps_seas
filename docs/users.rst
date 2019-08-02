@@ -37,7 +37,8 @@ The Site page shows
  * all the equipment of a single site and the number of data points for each equipment.  If you click on the down arrow next to the count of data points, it will display the most recent readings for that equipment.
  * files associated with the site.  Here you can either upload a file, such as a photo or PDF document, or add a link to an external document or even video.  
  * notes associated with the site.  Here you can enter notes about the site.
- * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on View to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix. 
+ * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on Topics to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix.  From here you can also create an Equipment for this config.  This is helpful if each BACNet config points to a particular machine, rather than a supervisory
+ controller. 
 
 Equipment
 ^^^^^^^^^
