@@ -484,7 +484,6 @@ def create_equipment_grafana_dashboard(topic, equipmen_ref):
     metrics = get_equipment_metrics(equipmen_ref)
     targets = []
     for i, metric in enumerate(metrics):
-
         target = target_item.copy()
         target["refId"] = "A" + str(i)
         raw_sql = target["rawSql"]
@@ -541,12 +540,12 @@ def get_equipment_metrics(equipmen_ref):
     conditions.append({'metric': 'OADamperCMD',
                        'm_tags': ['outside', 'air', 'damper', 'his', 'point']
                        })
-    conditions.append({'metric': 'ZoneTemp',
-                       'm_tags': ['temp', 'zone', 'air', 'his', 'point'],
+    conditions.append({'metric': 'AvgZoneTemp',
+                       'm_tags': ['temp', 'zone', 'air', 'his', 'point', 'avg'],
                        'm_tags_exclude': ['sp']
                        })
-    conditions.append({'metric': 'ZoneTempSP',
-                       'm_tags': ['temp', 'zone', 'air', 'sp', 'his', 'point']
+    conditions.append({'metric': 'AvgZoneTempSP',
+                       'm_tags': ['temp', 'zone', 'air', 'sp', 'his', 'point', 'avg']
                        })
     conditions.append({'metric': 'MixedAirTemp',
                        'm_tags': ['temp', 'mixed', 'air', 'his', 'point']
@@ -556,7 +555,7 @@ def get_equipment_metrics(equipmen_ref):
         data_points = PointView.objects.filter(equipment_id=equipmen_ref)
         data_points = data_points.filter(m_tags__contains=condition['m_tags'])
         if 'm_tags_exclude' in condition:
-            data_points = data_points.exclude(m_tags__contains=condition['m_tags_exclude'])
+            data_points = data_points.exclude(m_tags__overlap=condition['m_tags_exclude'])
         if data_points:
             for data_point in data_points:
                 metric = {'metric': condition['metric'], 'topic': data_point.topic}

@@ -17,6 +17,7 @@ update core_entity set m_tags = '{"point","his","sensor","air"}', kv_tags = kv_t
 update core_entity set m_tags = '{"point","his","sensor","air","humidity"}', kv_tags = kv_tags || hstore(ARRAY['kind', 'Number', 'unit', '%RH']) where lower(topic) like 'demo\_%rhvalve%';
 
 update core_entity set m_tags = array_append(m_tags, 'zone') where lower(topic) like 'demo\_%zone%';
+update core_entity set m_tags = array_append(m_tags, 'avg') where lower(topic) like 'demo\_%avg_zonetemp%';
 update core_entity set m_tags = array_append(m_tags, 'cmd') where lower(topic) like 'demo\_%_cmd%';
 update core_entity set m_tags = array_append(m_tags, 'valve') where lower(topic) like 'demo\_%valve%';
 update core_entity set m_tags = array_append(m_tags, 'damper') where lower(topic) like 'demo\_%damper%';

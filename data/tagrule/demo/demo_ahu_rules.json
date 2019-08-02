@@ -135,6 +135,11 @@
                             "parent_description": "Zone Temperature",
                             "parent_id": "modelahuzonetemp",
                             "tag": "zone"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "avg"
                         }
                     ]
                 },
