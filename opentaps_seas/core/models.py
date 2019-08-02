@@ -35,6 +35,7 @@ from django.db.models import TextField
 from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.db.models.signals import pre_delete
+from django.db.utils import DatabaseError
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.timezone import now
@@ -658,7 +659,7 @@ def delete_tags_from_crate_entity(row):
             pass
 
 
-def sync_tags_to_crate_entity(row):
+def sync_tags_to_crate_entity(row, retried=False):
     # we only sync for entity linked to a topic
     if not row.topic:
         return
@@ -668,6 +669,13 @@ def sync_tags_to_crate_entity(row):
         VALUES (%s)""".format("volttron.entity")
         try:
             c.execute(sql, [row.topic])
+        except DatabaseError as e:
+            # could be the table is missing
+            if 'RelationUnknown' in str(e):
+                if not retried:
+                    ensure_crate_entity_table()
+                    # try again
+                    return sync_tags_to_crate_entity(row, retried=True)
         except Exception:
             # just make sure the topic exists
             pass
