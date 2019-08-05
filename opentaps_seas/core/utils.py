@@ -532,7 +532,7 @@ def get_equipment_metrics(equipmen_ref):
     metrics = []
     conditions = []
     conditions.append({'metric': 'CoolValveCMD',
-                       'm_tags': ['cool', 'valve', 'cmd', 'his', 'point']
+                       'm_tags': ['cooling', 'valve', 'cmd', 'his', 'point']
                        })
     conditions.append({'metric': 'HeatValveCmd',
                        'm_tags': ['heat', 'valve', 'cmd', 'his', 'point']
@@ -541,11 +541,11 @@ def get_equipment_metrics(equipmen_ref):
                        'm_tags': ['outside', 'air', 'damper', 'his', 'point']
                        })
     conditions.append({'metric': 'AvgZoneTemp',
-                       'm_tags': ['temp', 'zone', 'air', 'his', 'point', 'avg'],
+                       'm_tags': ['temp', 'zone', 'air', 'his', 'point'],
                        'm_tags_exclude': ['sp']
                        })
     conditions.append({'metric': 'AvgZoneTempSP',
-                       'm_tags': ['temp', 'zone', 'air', 'sp', 'his', 'point', 'avg']
+                       'm_tags': ['temp', 'zone', 'air', 'sp', 'his', 'point']
                        })
     conditions.append({'metric': 'MixedAirTemp',
                        'm_tags': ['temp', 'mixed', 'air', 'his', 'point']

@@ -7,14 +7,10 @@
                     "filters": [
                         {
                             "type": "c",
-                            "value": "heat_Valve"
-                        },
-                        {
-                            "type": "c",
-                            "value": "CMD"
+                            "value": "Heat_Valve_CMD"
                         }
                     ],
-                    "name": "Heat CMD",
+                    "name": "Heat Valve CMD",
                     "tags": [
                         {
                             "description": "Output, AO/BO, command, or actuator",
@@ -41,6 +37,12 @@
                             "value": null
                         },
                         {
+                            "description": "Fluid valve",
+                            "kind": "Marker",
+                            "tag": "valve",
+                            "value": null
+                        },
+                        {
                             "description": "Input, AI/BI, or sensor",
                             "kind": "Marker",
                             "tag": "sensor",
@@ -52,14 +54,10 @@
                     "filters": [
                         {
                             "type": "c",
-                            "value": "cool_Valve"
-                        },
-                        {
-                            "type": "c",
-                            "value": "CMD"
+                            "value": "Cool_Valve_CMD"
                         }
                     ],
-                    "name": "Cooling CMD",
+                    "name": "Cool Valve CMD",
                     "tags": [
                         {
                             "description": "Output, AO/BO, command, or actuator",
@@ -83,6 +81,12 @@
                             "description": "Data point",
                             "kind": "Marker",
                             "tag": "point",
+                            "value": null
+                        },
+                        {
+                            "description": "Fluid valve",
+                            "kind": "Marker",
+                            "tag": "valve",
                             "value": null
                         },
                         {
@@ -135,11 +139,146 @@
                             "parent_description": "Zone Temperature",
                             "parent_id": "modelahuzonetemp",
                             "tag": "zone"
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "Avg_ZoneTemp_SP"
+                        }
+                    ],
+                    "name": "Zone Temp SP",
+                    "tags": [
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "air"
                         },
                         {
                             "parent_description": "Zone Temperature",
                             "parent_id": "modelahuzonetemp",
-                            "tag": "avg"
+                            "tag": "his"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "point"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "sensor"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "temp"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "zone"
+                        },
+                        {
+                            "parent_description": "Zone Temperature",
+                            "parent_id": "modelahuzonetemp",
+                            "tag": "sp"
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "/MAT"
+                        }
+                    ],
+                    "name": "Mixed Air Temp",
+                    "tags": [
+                        {
+                            "description": "Air measurement",
+                            "kind": "Marker",
+                            "tag": "air",
+                            "value": null
+                        },
+                        {
+                            "description": "Historical data point",
+                            "kind": "Marker",
+                            "tag": "his",
+                            "value": null
+                        },
+                        {
+                            "description": "Data point",
+                            "kind": "Marker",
+                            "tag": "point",
+                            "value": null
+                        },
+                        {
+                            "description": "Input, AI/BI, or sensor",
+                            "kind": "Marker",
+                            "tag": "sensor",
+                            "value": null
+                        },
+                        {
+                            "description": "Temperature in C or F",
+                            "kind": "Marker",
+                            "tag": "temp",
+                            "value": null
+                        },
+                        {
+                            "description": "AHU mixed air",
+                            "kind": "Marker",
+                            "tag": "mixed",
+                            "value": null
+                        }
+                    ]
+                },
+                {
+                    "filters": [
+                        {
+                            "type": "c",
+                            "value": "OA_Damper_CMD"
+                        }
+                    ],
+                    "name": "OA Damper CMD",
+                    "tags": [
+                        {
+                            "description": "Air measurement",
+                            "kind": "Marker",
+                            "tag": "air",
+                            "value": null
+                        },
+                        {
+                            "description": "Historical data point",
+                            "kind": "Marker",
+                            "tag": "his",
+                            "value": null
+                        },
+                        {
+                            "description": "Data point",
+                            "kind": "Marker",
+                            "tag": "point",
+                            "value": null
+                        },
+                        {
+                            "description": "Input, AI/BI, or sensor",
+                            "kind": "Marker",
+                            "tag": "sensor",
+                            "value": null
+                        },
+                        {
+                            "description": "Damper",
+                            "kind": "Marker",
+                            "tag": "damper",
+                            "value": null
+                        },
+                        {
+                            "description": "Outside air",
+                            "kind": "Marker",
+                            "tag": "outside",
+                            "value": null
                         }
                     ]
                 },
