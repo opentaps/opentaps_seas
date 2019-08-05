@@ -196,7 +196,7 @@ Grafana is used to create dashboards.  It must be set up with Crate DB as a Post
  username crate
  no password
 
-Also ``allow_embedding = true`` should be added into the grafana.ini under Security section.
+To embed Grafana dashboards in opentaps SEAS, add ``allow_embedding = true`` into the ``grafana.ini`` under Security section.  (In Ubuntu, ``grafana.ini`` is in the ``/etc/grafana/`` directory.)
 
 We will automatically create Grafana dashboards for your data points.  You need to set up Grafana and then put the access credentials in your secrets.json::
 
@@ -212,11 +212,13 @@ To create dashboards for all existing data points, run the script::
 
 The dashboards are based on the template JSON file in ``data/dashboard/point-dashboard.json``. 
 
+There is also a template for summary dashboards for AHU's in ``data/dashboard/ahu-dashboard.json`` (see the user docs for more information about this dashboard.)
+
 To delete the dashboards, use the script ``scripts/remove_dashboards.py``::
 
  $ python manage.py runscript remove_dashboards all
 
-This will delete all the dashboards we have created for you, based on the dashboard_uid of your data points stored in PostgreSQL.
+This will delete all the dashboards we have created for you, based on the dashboard_uid of your data points and entities stored in PostgreSQL.
 
 Testing It
 ^^^^^^^^^^

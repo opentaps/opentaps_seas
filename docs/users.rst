@@ -37,19 +37,27 @@ The Site page shows
  * all the equipment of a single site and the number of data points for each equipment.  If you click on the down arrow next to the count of data points, it will display the most recent readings for that equipment.
  * files associated with the site.  Here you can either upload a file, such as a photo or PDF document, or add a link to an external document or even video.  
  * notes associated with the site.  Here you can enter notes about the site.
- * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on Topics to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix.  From here you can also create an Equipment for this config.  This is helpful if each BACNet config points to a particular machine, rather than a supervisory
- controller. 
+ * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on Topics to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix.  From here you can also create an Equipment for this config.  This is helpful if each BACNet config points to a particular machine, rather than a supervisory controller. 
+ 
 
 Equipment
 ^^^^^^^^^
 
 This page shows an item of equipment, with all its tags.  You can associate an Equipment with a Model (see below.)
 
-Below the tags are all the data points of the Equipment.
-There will be Grafana icon on the right of the Data Points section header for AHU equipment.
-First time clicking on the Grafana icon will create Grafana dashboard. Clicking on this icon next time will open up the Grafana dashboard in a separate browser window.
-If the a Grafana dashboard has been created the embedded dashboard snapshot will be shown up below data points section header. 
-Click on any data point to see its historical values.  Below the data points are files and notes associated with this equipment.
+Below the tags are is a section for the data points.  If the equipment is an AHU, there is a Grafana icon on the right of the Data Points section header.
+First time clicking on the Grafana icon will create a Grafana dashboard. Clicking on this icon next time will open up the Grafana dashboard in a separate browser window.
+If the a Grafana dashboard has been created the embedded dashboard snapshot will be shown up below data points section header.  You must be logged into Grafana for the
+embedded dashboard to show up.  The dashboard displays the data points for these tags:
+
+ * Cool Valve CMD - tags ``cool, valve, cmd, his, point``	
+ * Heat Valve CMD - tags ``heat, valve, cmd, his, point``
+ * OA_Damper_CMD - tags ``outside, air, damper, his, point``
+ * ZoneTemp - tags ``temp, zone, air, his, point``
+ * ZoneTempSP - tags ``temp, zone, air, sp, his, point``
+ * MixedAirTemp - tags ``temp, mixed, air, his point``
+
+Below the dashboard are the data points.  Click on any data point to see its historical values.  Below the data points are files and notes associated with this equipment.
 
 Data Points
 ^^^^^^^^^^^
