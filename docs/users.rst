@@ -45,7 +45,11 @@ Equipment
 
 This page shows an item of equipment, with all its tags.  You can associate an Equipment with a Model (see below.)
 
-Below the tags are all the data points of the Equipment.  Click on any data point to see its historical values.  Below the data points are files and notes associated with this equipment.
+Below the tags are all the data points of the Equipment.
+There will be Grafana icon on the right of the Data Points section header for AHU equipment.
+First time clicking on the Grafana icon will create Grafana dashboard. Clicking on this icon next time will open up the Grafana dashboard in a separate browser window.
+If the a Grafana dashboard has been created the embedded dashboard snapshot will be shown up below data points section header. 
+Click on any data point to see its historical values.  Below the data points are files and notes associated with this equipment.
 
 Data Points
 ^^^^^^^^^^^

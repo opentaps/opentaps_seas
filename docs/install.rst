@@ -196,6 +196,8 @@ Grafana is used to create dashboards.  It must be set up with Crate DB as a Post
  username crate
  no password
 
+Also ``allow_embedding = true`` should be added into the grafana.ini under Security section.
+
 We will automatically create Grafana dashboards for your data points.  You need to set up Grafana and then put the access credentials in your secrets.json::
 
  GRAFANA_USER_NAME
@@ -212,7 +214,7 @@ The dashboards are based on the template JSON file in ``data/dashboard/point-das
 
 To delete the dashboards, use the script ``scripts/remove_dashboards.py``::
 
- $ python manage.py runscript remove_dashboards
+ $ python manage.py runscript remove_dashboards all
 
 This will delete all the dashboards we have created for you, based on the dashboard_uid of your data points stored in PostgreSQL.
 
