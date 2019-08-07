@@ -35,13 +35,6 @@
         <h2>{{ object.description }}</h2>
       {% endif %}
       <p>Topic: {{ object.topic }}</p>
-      {% if object.bacnet_fields %}
-        <b>BACNET Fields:</b>
-        <hr/>
-        {% for k,v in object.bacnet_fields.items %}
-          <p>{{ k|title }}: {{ v }}</p>
-        {% endfor %}
-      {% endif %}
     </div>
   </div>
 
@@ -57,4 +50,3 @@
 
 </div>
 {% endblock content %}
-

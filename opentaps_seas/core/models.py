@@ -24,7 +24,6 @@ from django.contrib.postgres.fields import HStoreField
 from django.core.exceptions import ValidationError
 from django.db import connections
 from django.db import models
-from django.db.models import AutoField
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
@@ -64,6 +63,8 @@ class Tag(models.Model):
     kind = CharField(_("Kind"), blank=True, max_length=255, choices=[x.value for x in KINDS])
     description = CharField(_("Tag Description"), blank=True, null=True, max_length=512)
     details = CharField(_("Tag Details"), blank=True, null=True, max_length=512)
+
+    bacnet_tag_prefix = 'bacnet_'
 
     def __str__(self):
         return self.tag
@@ -158,7 +159,6 @@ class Entity(models.Model):
     m_tags = ArrayField(CharField(max_length=255, blank=True, null=True))
     dashboard_uid = CharField(_("Dashboard UID"), max_length=255, blank=True)
     dashboard_snapshot_uid = CharField(_("Dashboard Snapshot UID"), max_length=255, blank=True, null=True)
-    bacnet_fields = HStoreField(blank=True, null=True)
 
     def __str__(self):
         return self.entity_id
@@ -198,19 +198,6 @@ class Entity(models.Model):
         self.kv_tags.pop(tag, None)
         if tag in self.m_tags:
             self.m_tags.remove(tag)
-        if commit:
-            self.save()
-
-    def add_bacnet_field(self, key, value, commit=True):
-        logger.info('add_bacnet_field %s to %s value = %s', key, self, value)
-        if not self.bacnet_fields:
-            self.bacnet_fields = {}
-        self.bacnet_fields[key] = value
-        if commit:
-            self.save()
-
-    def remove_bacnet_field(self, key, commit=True):
-        self.bacnet_fields.pop(key, None)
         if commit:
             self.save()
 
@@ -359,7 +346,6 @@ class PointView(models.Model):
     equipment_id = CharField(_("Equipment"), max_length=255, blank=True)
     dashboard_uid = CharField(_("Dashboard"), max_length=255, blank=True)
     current_value = CharField(_("Current Value"), max_length=255, blank=True)
-    bacnet_fields = HStoreField(blank=True, null=True)
     kv_tags = HStoreField(blank=True, null=True)
     m_tags = ArrayField(CharField(max_length=255, blank=True, null=True))
 
@@ -576,45 +562,6 @@ class TopicTagRule(models.Model):
 
     def get_absolute_url(self):
         return reverse("core:topictagrule_detail", kwargs={"id": self.id})
-
-
-class BacnetConfig(models.Model):
-    id = AutoField(primary_key=True)
-    prefix = CharField(max_length=255, blank=False, null=False, unique=True)
-    config_file_name = CharField(max_length=255, blank=False, null=False)
-    config_file = TextField(blank=False, null=False)
-    site = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.prefix
-
-    def get_choices(site_id):
-        if not site_id:
-            sites = SiteView.objects.all().order_by('description')
-            if sites:
-                site_id = sites[0].entity_id
-        if site_id:
-            bacnet_choices = [(c.id, '{}'.format(c.prefix))
-                              for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
-        else:
-            bacnet_choices = [(c.id, '{}'.format(c.prefix)) for c in BacnetConfig.objects.all().order_by('prefix')]
-
-        return bacnet_choices
-
-    def get_choices_list(site_id):
-        bacnet_choices = []
-        if site_id:
-            site = None
-            try:
-                site = SiteView.objects.get(entity_id=site_id)
-            except SiteView.DoesNotExist:
-                pass
-
-            if site:
-                bacnet_choices = [{'id': c.id, 'prefix': c.prefix}
-                                  for c in BacnetConfig.objects.filter(site=site_id).order_by('prefix')]
-
-        return bacnet_choices
 
 
 def ensure_crate_entity_table():

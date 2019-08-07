@@ -60,7 +60,6 @@ from .models import TimeZone
 from .models import Topic
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
-from .models import BacnetConfig
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -823,26 +822,17 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
         context['equipments'] = results
         context['link_add_url'] = reverse("core:equipment_create", kwargs={"site": self.kwargs['site']})
 
-        bacnet_configs = BacnetConfig.objects.filter(site=site.entity_id)
-
+        bacnet_configs = PointView.objects.filter(site_id=site.object_id).exclude(
+            kv_tags__bacnet_prefix__isnull=True).exclude(
+            kv_tags__bacnet_prefix__exact='').values('kv_tags__bacnet_prefix', 'kv_tags__bacnet_device_id').annotate(
+            dcount=Count('kv_tags__bacnet_prefix'))
         if bacnet_configs:
             bacnet_cfg = []
             for bacnet_config in bacnet_configs:
-                item = {'id': bacnet_config.id, 'prefix': bacnet_config.prefix}
-                config_file = bacnet_config.config_file
-                if config_file:
-                    try:
-                        config_file_json = json.loads(config_file)
-                    except Exception:
-                        logging.error("Cannot parse bacnet_config json")
-                    else:
-                        driver_config = config_file_json["driver_config"]
-                        if driver_config:
-                            device_id = driver_config["device_id"]
-                            if device_id is not None:
-                                item["device_id"] = device_id
-
-                bc_equipments = EquipmentView.objects.filter(kv_tags__bacnetConfigId=bacnet_config.id)
+                item = {'prefix': bacnet_config['kv_tags__bacnet_prefix'],
+                        'device_id': bacnet_config['kv_tags__bacnet_device_id']}
+                bc_equipments = EquipmentView.objects.filter(
+                    kv_tags__bacnet_prefix=bacnet_config['kv_tags__bacnet_prefix'])
                 if bc_equipments:
                     bc_equipment = bc_equipments[0]
                     if bc_equipment:
@@ -909,8 +899,8 @@ class EquipmentCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
 
     def get_initial(self):
         initials = {}
-        if self.request.GET and 'bacnet_config_id' in self.request.GET:
-            initials['bacnet_config_id'] = self.request.GET['bacnet_config_id']
+        if self.request.GET and 'bacnet_prefix' in self.request.GET:
+            initials['bacnet_prefix'] = self.request.GET['bacnet_prefix']
         if self.request.GET and 'device_id' in self.request.GET:
             initials['device_id'] = self.request.GET['device_id']
         return initials
@@ -1426,16 +1416,6 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         if site:
             for row in records:
                 if 'Volttron Point Name' in row:
-                    # store/update config file first
-                    try:
-                        bacnet_config = BacnetConfig.objects.get(prefix=prefix)
-                    except BacnetConfig.DoesNotExist:
-                        bacnet_config = BacnetConfig(prefix=prefix)
-                    bacnet_config.config_file_name = config.name
-                    bacnet_config.config_file = config_data
-                    bacnet_config.site = site
-                    bacnet_config.save()
-
                     topic = '/'.join([prefix, row['Volttron Point Name']])
                     entity_id = utils.make_random_id(topic)
                     name = row['Volttron Point Name']
@@ -1450,16 +1430,38 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                     e.add_tag('point', commit=False)
                     e.add_tag('his', commit=False)
                     e.add_tag('dis', name, commit=False)
-                    e.add_tag('bacnetConfigId', bacnet_config.id, commit=False)
                     if site.kv_tags.get('id'):
                         e.add_tag('siteRef', site.kv_tags.get('id'), commit=False)
                     if row.get('Units'):
                         e.add_tag('unit', row['Units'], commit=False)
-                    # add all bacnet_fields
+
+                    e.add_tag(Tag.bacnet_tag_prefix + 'prefix', prefix, commit=False)
+                    # add all bacnet tags
                     for k, v in row.items():
                         field = k.lower()
-                        if 'point name' not in field:
-                            e.add_bacnet_field(field, v, commit=False)
+                        field = field.replace(' ', '_')
+                        if 'point_name' not in field and v:
+                            e.add_tag(Tag.bacnet_tag_prefix + field, v, commit=False)
+                    # add config file fields
+                    try:
+                        config_data_json = json.loads(config_data)
+                    except Exception:
+                        logging.error("Cannot parse bacnet_config json")
+                    else:
+                        for key in config_data_json.keys():
+                            value = config_data_json.get(key)
+                            field = key.lower()
+                            field = field.replace(' ', '_')
+                            if value:
+                                if key == 'driver_config':
+                                    for key1 in value.keys():
+                                        value1 = value.get(key1)
+                                        field = key1.lower()
+                                        field = field.replace(' ', '_')
+                                        e.add_tag(Tag.bacnet_tag_prefix + field, value1, commit=False)
+                                else:
+                                    e.add_tag(Tag.bacnet_tag_prefix + field, value, commit=False)
+
                     logger.info('TopicImportForm: imported Data Point %s as %s with topic %s', entity_id, name, topic)
                     e.save()
                     import_count += 1
@@ -1498,11 +1500,8 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
             except SiteView.DoesNotExist:
                 pass
 
-            if 'id' in self.kwargs:
-                try:
-                    context['current_prefix'] = BacnetConfig.objects.get(id=self.kwargs['id'])
-                except BacnetConfig.DoesNotExist:
-                    pass
+            if self.request.GET and 'bacnet_prefix' in self.request.GET:
+                context['current_prefix'] = self.request.GET['bacnet_prefix']
 
         else:
             context['back_url'] = reverse('core:topic_list')
@@ -1517,33 +1516,26 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
     def form_valid(self, form):
         return self.get_config_zip(self.get_context_data(form=form))
 
+    def set_bacnet_config_field(self, config_file_json, kv_tags, tag):
+        if kv_tags.get(tag):
+            tag_description = utils.get_tag_description(
+                tag, default=tag.replace(Tag.bacnet_tag_prefix, ''))
+            config_file_json[tag_description] = kv_tags.get(tag)
+
     def get_config_zip(self, context, **response_kwargs):
-        bacnet_config_id = context["form"].cleaned_data['device_prefix']
+        device_prefix = context["form"].cleaned_data['device_prefix']
         only_with_trending = context["form"].cleaned_data['only_with_trending']
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = "attachment; filename=bacnet_config.zip"
 
-        trendings = Entity.objects.filter(kv_tags__bacnetConfigId=bacnet_config_id).values(
+        trendings = Entity.objects.filter(kv_tags__bacnet_prefix=device_prefix).values(
                     'kv_tags__trending').annotate(dcount=Count('kv_tags__trending'))
-
-        config_file_json = {}
-        bacnet_config = None
-        try:
-            bacnet_config = BacnetConfig.objects.get(id=bacnet_config_id)
-        except BacnetConfig.DoesNotExist:
-            pass
-        else:
-            config_file = bacnet_config.config_file
-            if config_file:
-                try:
-                    config_file_json = json.loads(config_file)
-                except Exception:
-                    pass
 
         files_list = []
 
         if trendings:
             for tr in trendings:
+                config_file_json = {'driver_config': {}}
                 trending_interval = None
                 csv_file_name = "_Trending_Not_Set.csv"
                 config_file_name = "_Trending_Not_Set.config"
@@ -1558,8 +1550,22 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                 file_item = {'csv_file_name': csv_file_name, 'config_file_name': config_file_name}
 
                 rows = Entity.objects.filter(
-                       kv_tags__bacnetConfigId=bacnet_config_id, kv_tags__trending=trending_interval)
+                       kv_tags__bacnet_prefix=device_prefix,
+                       m_tags__contains=['point'],
+                       kv_tags__trending=trending_interval)
                 if rows:
+                    # get config file tags from first row
+                    kv_tags = rows[0].kv_tags
+                    if kv_tags:
+                        self.set_bacnet_config_field(config_file_json['driver_config'], kv_tags,
+                                                     Tag.bacnet_tag_prefix + 'device_address')
+                        self.set_bacnet_config_field(config_file_json['driver_config'], kv_tags,
+                                                     Tag.bacnet_tag_prefix + 'device_id')
+                        self.set_bacnet_config_field(config_file_json, kv_tags,
+                                                     Tag.bacnet_tag_prefix + 'driver_type')
+                        self.set_bacnet_config_field(config_file_json, kv_tags,
+                                                     Tag.bacnet_tag_prefix + 'timezone')
+
                     header, bacnet_data = utils.get_bacnet_trending_data(rows)
 
                 config_file_json["registry_config"] = "config://" + csv_file_name
@@ -1569,7 +1575,7 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                     if "interval" in config_file_json:
                         del config_file_json["interval"]
 
-                file_item["config_file"] = json.dumps(config_file_json)
+                file_item["config_file"] = json.dumps(config_file_json, indent=4, sort_keys=True)
 
                 output = StringIO()
                 writer = csv.writer(output)
@@ -2377,13 +2383,28 @@ def topic_assoc(request, topic):
 
 
 class BacnetPrefixJsonView(LoginRequiredMixin, ListView):
-    model = BacnetConfig
+    model = PointView
 
     def render_to_response(self, context, **response_kwargs):
-        site = self.kwargs['site']
+        site_id = self.kwargs['site']
         data = []
-        if site:
-            data = BacnetConfig.get_choices_list(site)
+        if site_id:
+            site = None
+            try:
+                site = SiteView.objects.get(entity_id=site_id)
+            except SiteView.DoesNotExist:
+                logger.error('Cannot get site by id : %s', site_id)
+            if site:
+                bacnet_configs = PointView.objects.filter(site_id=site.object_id).exclude(
+                    kv_tags__bacnet_prefix__isnull=True).exclude(
+                    kv_tags__bacnet_prefix__exact='').values('kv_tags__bacnet_prefix',
+                                                             'kv_tags__bacnet_device_id').annotate(
+                                                             dcount=Count('kv_tags__bacnet_prefix'))
+                if bacnet_configs:
+                    for bacnet_config in bacnet_configs:
+                        item = {'id': bacnet_config['kv_tags__bacnet_prefix'],
+                                'prefix': bacnet_config['kv_tags__bacnet_prefix']}
+                        data.append(item)
 
         return JsonResponse({'items': data})
 

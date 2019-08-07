@@ -4,5 +4,3 @@ model,Marker,Model,A Model or piece of equipment
 modelRef,Ref,Model ID,Association with a Model or piece of equipment
 trending,Number,Trending Interval in minutes
 yearBuilt,Number,Year built
-bacnetConfigId,Ref,Bacnet Config ID
-deviceId,Number,Device ID

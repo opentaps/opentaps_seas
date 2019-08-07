@@ -344,6 +344,14 @@ def get_tag(tag):
         return None
 
 
+def get_tag_description(tag, default=None):
+    tag_row = get_tag(tag)
+    if tag_row and tag_row.description:
+        return tag_row.description
+    else:
+        return default
+
+
 def get_tags_list(tags):
     tags_list = []
     for tag in tags:
@@ -715,31 +723,40 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
 def get_bacnet_trending_data(rows):
     header = ['Point Name', 'Volttron Point Name']
     bacnet_data = []
+    bacnet_tags = [Tag.bacnet_tag_prefix + 'units', Tag.bacnet_tag_prefix + 'unit_details',
+                   Tag.bacnet_tag_prefix + 'bacnet_object_type', Tag.bacnet_tag_prefix + 'property',
+                   Tag.bacnet_tag_prefix + 'writable', Tag.bacnet_tag_prefix + 'index',
+                   Tag.bacnet_tag_prefix + 'write_priority', Tag.bacnet_tag_prefix + 'notes']
+    data_tags = ['topic', 'dis']
 
     # make header
     for row in rows:
-        bacnet_fields = row.bacnet_fields
-        if bacnet_fields:
-            for key in bacnet_fields.keys():
-                if key not in header:
-                    header.append(key)
+        kv_tags = row.kv_tags
+        if kv_tags:
+            for key in kv_tags.keys():
+                if key not in data_tags and key in bacnet_tags:
+                    data_tags.append(key)
+                    header.append(get_tag_description(key, default=key.replace(Tag.bacnet_tag_prefix, '')))
 
     # make data
     for row in rows:
-        data_row = [row.topic]
+        data_row = []
         kv_tags = row.kv_tags
-        if kv_tags and kv_tags.get('dis'):
-            data_row.append(kv_tags.get('dis'))
+        if kv_tags:
+            for i in range(0, len(data_tags)):
+                key = data_tags[i]
+                if key == 'topic':
+                    value = row.topic
+                else:
+                    value = kv_tags.get(key)
+                if value:
+                    data_row.append(value)
+                else:
+                    data_row.append('')
         else:
-            data_row.append('')
-
-        bacnet_fields = row.bacnet_fields
-        if bacnet_fields:
-            for i in range(2, len(header)):
-                key = header[i]
-                bacnet_field_data = bacnet_fields.get(key)
-                if bacnet_field_data:
-                    data_row.append(bacnet_field_data)
+            for i in range(0, len(data_tags)):
+                if key == 'topic':
+                    data_row.append(row.topic)
                 else:
                     data_row.append('')
 

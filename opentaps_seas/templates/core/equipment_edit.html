@@ -31,7 +31,7 @@
     <div class="card-body">
       <form method="post">
         {% csrf_token %}
-        <input type="hidden" name="bacnet_config_id" id="bacnet_config_id" ref="bacnet_config_id" value="{{ form.bacnet_config_id.initial|default:'' }}"/>
+        <input type="hidden" name="bacnet_prefix" id="bacnet_prefix" ref="bacnet_prefix" value="{{ form.bacnet_prefix.initial|default:'' }}"/>
         <input type="hidden" name="device_id" id="device_id" ref="device_id" value="{{ form.device_id.initial|default:'' }}"/>
 
         {{ form.entity_id|as_crispy_field }}

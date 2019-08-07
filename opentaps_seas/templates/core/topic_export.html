@@ -52,8 +52,8 @@
             </div>
         {% endif %}
         {% if current_prefix %}
-            <h4>Device prefix {{ current_prefix.prefix }}</h4>
-            <input type="hidden" name="device_prefix" value="{{ current_prefix.id }}"/>
+            <h4>Device prefix {{ current_prefix }}</h4>
+            <input type="hidden" name="device_prefix" value="{{ current_prefix }}"/>
         {% else %}
             <div id="div_id_device_prefix" class="form-group">
                 <label for="id_device_prefix" class="col-form-label  requiredField">
