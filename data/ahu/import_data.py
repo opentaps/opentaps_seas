@@ -60,7 +60,6 @@ def clean():
 
     pgconnection = get_pgconnection()
     pgcursor = pgconnection.cursor()
-    pgcursor.execute("DELETE FROM core_bacnetconfig where site_id like '@Demo-Site%';")
     pgcursor.execute("DELETE FROM core_entity where entity_id like 'demo-site%';")
     pgcursor.execute("DELETE FROM core_entity where topic like 'demo_%';")
     pgconnection.commit()
