@@ -481,9 +481,7 @@
             "id": "model-boiler",
             "dis": "Boiler"
         },
-        "m_tags": [
-            "model"
-        ]
+        "m_tags": ["model", "equip", "boiler", "hvac"]
     },
     {
         "entity_id": "modelboilerrun",
@@ -525,9 +523,9 @@
         ]
     },
     {
-        "entity_id": "modelboilercpc",
+        "entity_id": "modelboilercircpc",
         "kv_tags": {
-            "id": "model-boiler-cpc",
+            "id": "model-boiler-circpc",
             "dis": "Circulation Pump Command",
             "modelRef": "model-boiler"
         },
@@ -539,9 +537,9 @@
         ]
     },
     {
-        "entity_id": "modelboilercps",
+        "entity_id": "modelboilercircps",
         "kv_tags": {
-            "id": "model-boiler-cps",
+            "id": "model-boiler-circps",
             "dis": "Circulation Pump Sensor",
             "modelRef": "model-boiler"
         },
@@ -553,9 +551,9 @@
         ]
     },
     {
-        "entity_id": "modelboilercpc",
+        "entity_id": "modelboilercondpc",
         "kv_tags": {
-            "id": "model-boiler-cpc",
+            "id": "model-boiler-condpc",
             "dis": "Condensate Pump Command",
             "modelRef": "model-boiler"
         },
@@ -567,9 +565,9 @@
         ]
     },
     {
-        "entity_id": "modelboilercps",
+        "entity_id": "modelboilercondps",
         "kv_tags": {
-            "id": "model-boiler-cps",
+            "id": "model-boiler-condps",
             "dis": "Condensate Pump Status",
             "modelRef": "model-boiler"
         },
@@ -587,7 +585,7 @@
             "dis": "Chilled Water Plant"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "chilledWaterPlant"
         ]
     },
     {
@@ -845,7 +843,7 @@
             "dis": "Chiller"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "chiller"
         ]
     },
     {
@@ -1368,7 +1366,7 @@
             "dis": "Cooling Tower"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "coolingTower"
         ]
     },
     {
@@ -1516,7 +1514,7 @@
             "dis": "FCU"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "fcu"
         ]
     },
     {
@@ -2237,7 +2235,7 @@
             "dis": "Heat Exchanger"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "heatExchanger"
         ]
     },
     {
@@ -2311,7 +2309,7 @@
             "dis": "Heat Pump"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "heatPump"
         ]
     },
     {
@@ -3032,7 +3030,7 @@
             "dis": "Hot Water Plant"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "hotWaterPlant"
         ]
     },
     {
@@ -3278,7 +3276,7 @@
             "dis": "Steam Plant"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "steamPlant"
         ]
     },
     {
@@ -3527,7 +3525,7 @@
             "dis": "Tank"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "tank"
         ]
     },
     {
@@ -3576,7 +3574,7 @@
             "dis": "UV"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "uv"
         ]
     },
     {
@@ -4297,7 +4295,7 @@
             "dis": "VAV"
         },
         "m_tags": [
-            "model"
+            "model", "equip", "hvac", "vav"
         ]
     },
     {
