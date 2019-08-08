@@ -568,7 +568,7 @@
         "entity_id": "modelboilercondps",
         "kv_tags": {
             "id": "model-boiler-condps",
-            "dis": "Condensate Pump Status",
+            "dis": "Condensate Pump Sensor",
             "modelRef": "model-boiler"
         },
         "m_tags": [
