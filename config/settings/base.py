@@ -38,7 +38,7 @@ with open(str(ROOT_DIR.path('secrets.json'))) as f:
     secrets = json.loads(f.read())
 
 
-def get_secret(setting, secrets=secrets, required=True):
+def get_secret(setting, secrets=secrets, required=False):
     '''Get the secret variable or return explicit exception.'''
     try:
         v = secrets[setting]
