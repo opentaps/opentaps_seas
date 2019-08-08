@@ -72,6 +72,7 @@ from .views import (
     topictagrule_create_view,
     tag_topics,
     bacnet_prefix_list_json_view,
+    tag_import_view,
 )
 
 app_name = "core"
@@ -108,6 +109,7 @@ urlpatterns = [
     path("tag/edit/<path:tag>", view=tag_edit_view, name="tag_edit"),
     path("tag/delete/<path:tag>", view=tag_delete_view, name="tag_delete"),
     path("tag/view/<path:tag>", view=tag_detail_view, name="tag_detail"),
+    path("tag/import", view=tag_import_view, name="tag_import"),
     path("model/", view=model_list_view, name="model_list"),
     path("model.json", view=model_list_json_view, name="model_list_json"),
     path("newmodel/", view=model_create_view, name="model_create"),

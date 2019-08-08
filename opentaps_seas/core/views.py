@@ -46,6 +46,7 @@ from .forms import TopicTagRuleSetCreateForm
 from .forms import TopicTagRuleSetImportForm
 from .forms import TopicTagRuleSetRunForm
 from .forms import EquipmentCreateForm
+from .forms import TagImportForm
 from .models import Entity
 from .models import EntityFile
 from .models import EntityNote
@@ -2456,3 +2457,32 @@ def equipment_dashboard(request, equip):
             result = {'errors': 'Cannot get Equipment {} description'.format(equip)}
 
     return JsonResponse(result)
+
+
+class TagImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
+    model = Topic
+    template_name = 'core/tag_import.html'
+    form_class = TagImportForm
+
+    def get_success_url(self):
+        return reverse("core:topic_list")
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            form_results = form.save()
+
+            import_errors = form_results.get('import_errors')
+            import_success = form_results.get('import_success')
+            if import_errors:
+                messages.error(self.request, import_errors)
+            elif import_success:
+                messages.success(self.request, import_success)
+
+            return self.form_valid(form)
+        else:
+            messages.error(self.request, 'Source file is empty')
+            return self.form_invalid(form)
+
+
+tag_import_view = TagImportView.as_view()

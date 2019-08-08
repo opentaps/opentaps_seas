@@ -201,6 +201,12 @@ class Entity(models.Model):
         if commit:
             self.save()
 
+    def remove_all_tags(self, commit=True):
+        self.kv_tags = {}
+        self.m_tags = []
+        if commit:
+            self.save()
+
 
 class ModelView(models.Model):
     entity_id = CharField(_("Model ID"), max_length=255, primary_key=True)
