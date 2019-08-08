@@ -475,35 +475,22 @@
         },
         "m_tags": ["model", "zone", "air", "co2", "sp"]
     },
-
     {
         "entity_id": "modelboiler",
         "kv_tags": {
-            "id": "model-Boiler",
+            "id": "model-boiler",
             "dis": "Boiler"
         },
         "m_tags": [
-            "model", "equip","hvac","boiler"
+            "model"
         ]
     },
     {
-        "entity_id": "modelboilerall",
+        "entity_id": "modelboilerrun",
         "kv_tags": {
-            "id": "model-Boiler-All",
-            "dis": "All",
-            "modelRef": "model-Boiler"
-        },
-        "m_tags": [
-            "model",
-            "all"
-        ]
-    },
-    {
-        "entity_id": "modelboilerallrun",
-        "kv_tags": {
-            "id": "model-Boiler-All-Run",
+            "id": "model-boiler-run",
             "dis": "Run",
-            "modelRef": "model-Boiler-All"
+            "modelRef": "model-boiler"
         },
         "m_tags": [
             "run",
@@ -512,11 +499,11 @@
         ]
     },
     {
-        "entity_id": "modelboilerallstatus",
+        "entity_id": "modelboilerstatus",
         "kv_tags": {
-            "id": "model-Boiler-All-Status",
+            "id": "model-boiler-status",
             "dis": "Status",
-            "modelRef": "model-Boiler-All"
+            "modelRef": "model-boiler"
         },
         "m_tags": [
             "run",
@@ -525,11 +512,11 @@
         ]
     },
     {
-        "entity_id": "modelboilerallenable",
+        "entity_id": "modelboilerenable",
         "kv_tags": {
-            "id": "model-Boiler-All-Enable",
+            "id": "model-boiler-enable",
             "dis": "Enable",
-            "modelRef": "model-Boiler-All"
+            "modelRef": "model-boiler"
         },
         "m_tags": [
             "enable",
@@ -538,11 +525,11 @@
         ]
     },
     {
-        "entity_id": "modelboilerallcirculation_pump_command",
+        "entity_id": "modelboilercpc",
         "kv_tags": {
-            "id": "model-Boiler-All-Circulation_Pump_Command",
+            "id": "model-boiler-cpc",
             "dis": "Circulation Pump Command",
-            "modelRef": "model-Boiler-All"
+            "modelRef": "model-boiler"
         },
         "m_tags": [
             "circ",
@@ -552,11 +539,11 @@
         ]
     },
     {
-        "entity_id": "modelboilerallcirculation_pump_sensor",
+        "entity_id": "modelboilercps",
         "kv_tags": {
-            "id": "model-Boiler-All-Circulation_Pump_Sensor",
+            "id": "model-boiler-cps",
             "dis": "Circulation Pump Sensor",
-            "modelRef": "model-Boiler-All"
+            "modelRef": "model-boiler"
         },
         "m_tags": [
             "circ",
@@ -566,11 +553,11 @@
         ]
     },
     {
-        "entity_id": "modelboilerallcondensate_pump_command",
+        "entity_id": "modelboilercpc",
         "kv_tags": {
-            "id": "model-Boiler-All-Condensate_Pump_Command",
+            "id": "model-boiler-cpc",
             "dis": "Condensate Pump Command",
-            "modelRef": "model-Boiler-All"
+            "modelRef": "model-boiler"
         },
         "m_tags": [
             "condensate",
@@ -580,11 +567,11 @@
         ]
     },
     {
-        "entity_id": "modelboilerallcondensate_pump_status",
+        "entity_id": "modelboilercps",
         "kv_tags": {
-            "id": "model-Boiler-All-Condensate_Pump_Status",
+            "id": "model-boiler-cps",
             "dis": "Condensate Pump Status",
-            "modelRef": "model-Boiler-All"
+            "modelRef": "model-boiler"
         },
         "m_tags": [
             "condensate",
@@ -594,21 +581,21 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plant",
+        "entity_id": "modelchilledwaterplant",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant",
+            "id": "model-chilledwaterplant",
             "dis": "Chilled Water Plant"
         },
         "m_tags": [
-            "model", "equip","hvac","chilledWaterPlant"
+            "model"
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahus",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahus",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus",
             "dis": "Chilled water to/from AHUs",
-            "modelRef": "model-Chilled_Water_Plant"
+            "modelRef": "model-chilledwaterplant"
         },
         "m_tags": [
             "model",
@@ -616,11 +603,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahusleaving_chilled_water_temperature",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuslcwt",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Temperature",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-lcwt",
             "dis": "Leaving Chilled Water Temperature",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -632,11 +619,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahusleaving_chilled_water_setpoint",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuslcws",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Setpoint",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-lcws",
             "dis": "Leaving Chilled Water Setpoint",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -648,11 +635,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahusleaving_chilled_water_flow",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuslcwf",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Flow",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-lcwf",
             "dis": "Leaving Chilled Water Flow",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -664,11 +651,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahusleaving_chilled_water_pressure",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuslcwp",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Pressure",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-lcwp",
             "dis": "Leaving Chilled Water Pressure",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -680,11 +667,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahusentering_chilled_water_temperature",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahusecwt",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Entering_Chilled_Water_Temperature",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-ecwt",
             "dis": "Entering Chilled Water Temperature",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -696,11 +683,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahusentering_chilled_water_flow",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahusecwf",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Entering_Chilled_Water_Flow",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-ecwf",
             "dis": "Entering Chilled Water Flow",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -712,11 +699,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahusentering_chilled_water_pressure",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahusecwp",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Entering_Chilled_Water_Pressure",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-ecwp",
             "dis": "Entering Chilled Water Pressure",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -728,11 +715,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahuschilled_water_delta_temperature",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuscwdt",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Chilled_Water_Delta_Temperature",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-cwdt",
             "dis": "Chilled Water Delta Temperature",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -744,11 +731,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahuschilled_water_delta_flow",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuscwdf",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Chilled_Water_Delta_Flow",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-cwdf",
             "dis": "Chilled Water Delta Flow",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -760,11 +747,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahuschilled_water_delta_pressure",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuscwdp",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Chilled_Water_Delta_Pressure",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-cwdp",
             "dis": "Chilled Water Delta Pressure",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -776,11 +763,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahuschilled_water_delta_pressure_setpoint",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuscwdps",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-Chilled_Water_Delta_Pressure_Setpoint",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-cwdps",
             "dis": "Chilled Water Delta Pressure Setpoint",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -792,11 +779,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantchilled_water_to/from_ahuschilled_water_bypass_valve_command",
+        "entity_id": "modelchilledwaterplantchilledwaterto/fromahuscwbvc",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs-chilled_Water_Bypass_Valve_Command",
+            "id": "model-chilledwaterplant-chilledwaterto/fromahus-cwbvc",
             "dis": "chilled Water Bypass Valve Command",
-            "modelRef": "model-Chilled_Water_Plant-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chilledwaterplant-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -808,11 +795,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantcondenser_water_between_chillers/cooling_towers",
+        "entity_id": "modelchilledwaterplantcondenserwaterbetweenchillers/coolingtowers",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Condenser_water_between_Chillers/Cooling_Towers",
+            "id": "model-chilledwaterplant-condenserwaterbetweenchillers/coolingtowers",
             "dis": "Condenser water between Chillers/Cooling Towers",
-            "modelRef": "model-Chilled_Water_Plant"
+            "modelRef": "model-chilledwaterplant"
         },
         "m_tags": [
             "model",
@@ -820,11 +807,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantcondenser_water_between_chillers/cooling_towerscondenser_water_delta_pressure",
+        "entity_id": "modelchilledwaterplantcondenserwaterbetweenchillers/coolingtowerscwdp",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Condenser_water_between_Chillers/Cooling_Towers-Condenser_Water_Delta_Pressure",
+            "id": "model-chilledwaterplant-condenserwaterbetweenchillers/coolingtowers-cwdp",
             "dis": "Condenser Water Delta Pressure",
-            "modelRef": "model-Chilled_Water_Plant-Condenser_water_between_Chillers/Cooling_Towers"
+            "modelRef": "model-chilledwaterplant-condenserwaterbetweenchillers/coolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -836,11 +823,11 @@
         ]
     },
     {
-        "entity_id": "modelchilled_water_plantcondenser_water_between_chillers/cooling_towerscondenser_water_bypass_valve_command",
+        "entity_id": "modelchilledwaterplantcondenserwaterbetweenchillers/coolingtowerscwbvc",
         "kv_tags": {
-            "id": "model-Chilled_Water_Plant-Condenser_water_between_Chillers/Cooling_Towers-Condenser_Water_Bypass_Valve_Command",
+            "id": "model-chilledwaterplant-condenserwaterbetweenchillers/coolingtowers-cwbvc",
             "dis": "Condenser Water Bypass Valve Command",
-            "modelRef": "model-Chilled_Water_Plant-Condenser_water_between_Chillers/Cooling_Towers"
+            "modelRef": "model-chilledwaterplant-condenserwaterbetweenchillers/coolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -854,19 +841,19 @@
     {
         "entity_id": "modelchiller",
         "kv_tags": {
-            "id": "model-Chiller",
+            "id": "model-chiller",
             "dis": "Chiller"
         },
         "m_tags": [
-            "model", "equip","hvac","chiller"
+            "model"
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_",
+        "entity_id": "modelchillerrun/status",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_",
+            "id": "model-chiller-run/status",
             "dis": " Run/Status ",
-            "modelRef": "model-Chiller"
+            "modelRef": "model-chiller"
         },
         "m_tags": [
             "model",
@@ -874,11 +861,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_run",
+        "entity_id": "modelchillerrun/statusrun",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Run",
+            "id": "model-chiller-run/status-run",
             "dis": "Run",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "run",
@@ -887,11 +874,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_status",
+        "entity_id": "modelchillerrun/statusstatus",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Status",
+            "id": "model-chiller-run/status-status",
             "dis": "Status",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "run",
@@ -900,11 +887,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_enable",
+        "entity_id": "modelchillerrun/statusenable",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Enable",
+            "id": "model-chiller-run/status-enable",
             "dis": "Enable",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "enable",
@@ -913,11 +900,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_load_command",
+        "entity_id": "modelchillerrun/statuslc",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Load_Command",
+            "id": "model-chiller-run/status-lc",
             "dis": "Load Command",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "load",
@@ -926,11 +913,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_load_status",
+        "entity_id": "modelchillerrun/statusls",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Load_Status",
+            "id": "model-chiller-run/status-ls",
             "dis": "Load Status",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "load",
@@ -939,11 +926,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_efficiency",
+        "entity_id": "modelchillerrun/statusefficiency",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Efficiency",
+            "id": "model-chiller-run/status-efficiency",
             "dis": "Efficiency",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "efficiency",
@@ -952,11 +939,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_power",
+        "entity_id": "modelchillerrun/statuspower",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Power",
+            "id": "model-chiller-run/status-power",
             "dis": "Power",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "power",
@@ -965,11 +952,11 @@
         ]
     },
     {
-        "entity_id": "modelchiller_run/status_energy",
+        "entity_id": "modelchillerrun/statusenergy",
         "kv_tags": {
-            "id": "model-Chiller-_Run/Status_-Energy",
+            "id": "model-chiller-run/status-energy",
             "dis": "Energy",
-            "modelRef": "model-Chiller-_Run/Status_"
+            "modelRef": "model-chiller-run/status"
         },
         "m_tags": [
             "energy",
@@ -978,11 +965,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahus",
+        "entity_id": "modelchillerchilledwaterto/fromahus",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs",
+            "id": "model-chiller-chilledwaterto/fromahus",
             "dis": "Chilled water to/from AHUs",
-            "modelRef": "model-Chiller"
+            "modelRef": "model-chiller"
         },
         "m_tags": [
             "model",
@@ -990,11 +977,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahusleaving_chilled_water_temperature",
+        "entity_id": "modelchillerchilledwaterto/fromahuslcwt",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Temperature",
+            "id": "model-chiller-chilledwaterto/fromahus-lcwt",
             "dis": "Leaving Chilled Water Temperature",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1006,11 +993,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahusleaving_chilled_water_temperature_setpoint",
+        "entity_id": "modelchillerchilledwaterto/fromahuslcwts",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Temperature_Setpoint",
+            "id": "model-chiller-chilledwaterto/fromahus-lcwts",
             "dis": "Leaving Chilled Water Temperature Setpoint",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1022,11 +1009,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahusleaving_chilled_water_flow",
+        "entity_id": "modelchillerchilledwaterto/fromahuslcwf",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Flow",
+            "id": "model-chiller-chilledwaterto/fromahus-lcwf",
             "dis": "Leaving Chilled Water Flow",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1038,11 +1025,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahusleaving_chilled_water_pressure",
+        "entity_id": "modelchillerchilledwaterto/fromahuslcwp",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Leaving_Chilled_Water_Pressure",
+            "id": "model-chiller-chilledwaterto/fromahus-lcwp",
             "dis": "Leaving Chilled Water Pressure",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1054,11 +1041,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahusentering_chilled_water_temperature",
+        "entity_id": "modelchillerchilledwaterto/fromahusecwt",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Entering_Chilled_Water_Temperature",
+            "id": "model-chiller-chilledwaterto/fromahus-ecwt",
             "dis": "Entering Chilled Water Temperature",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1070,11 +1057,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahusentering_chilled_water_flow",
+        "entity_id": "modelchillerchilledwaterto/fromahusecwf",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Entering_Chilled_Water_Flow",
+            "id": "model-chiller-chilledwaterto/fromahus-ecwf",
             "dis": "Entering Chilled Water Flow",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1086,11 +1073,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahusentering_chilled_water_pressure",
+        "entity_id": "modelchillerchilledwaterto/fromahusecwp",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Entering_Chilled_Water_Pressure",
+            "id": "model-chiller-chilledwaterto/fromahus-ecwp",
             "dis": "Entering Chilled Water Pressure",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1102,11 +1089,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahuschilled_water_delta_temperature",
+        "entity_id": "modelchillerchilledwaterto/fromahuscwdt",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Chilled_Water_Delta_Temperature",
+            "id": "model-chiller-chilledwaterto/fromahus-cwdt",
             "dis": "Chilled Water Delta Temperature",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1118,11 +1105,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahuschilled_water_delta_flow",
+        "entity_id": "modelchillerchilledwaterto/fromahuscwdf",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Chilled_Water_Delta_Flow",
+            "id": "model-chiller-chilledwaterto/fromahus-cwdf",
             "dis": "Chilled Water Delta Flow",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1134,11 +1121,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahuschilled_water_delta_pressure",
+        "entity_id": "modelchillerchilledwaterto/fromahuscwdp",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Chilled_Water_Delta_Pressure",
+            "id": "model-chiller-chilledwaterto/fromahus-cwdp",
             "dis": "Chilled Water Delta Pressure",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1150,11 +1137,11 @@
         ]
     },
     {
-        "entity_id": "modelchillerchilled_water_to/from_ahuschilled_water_isolation_valve_command",
+        "entity_id": "modelchillerchilledwaterto/fromahuscwivc",
         "kv_tags": {
-            "id": "model-Chiller-Chilled_water_to/from_AHUs-Chilled_Water_Isolation_Valve_Command",
+            "id": "model-chiller-chilledwaterto/fromahus-cwivc",
             "dis": "Chilled Water Isolation Valve Command",
-            "modelRef": "model-Chiller-Chilled_water_to/from_AHUs"
+            "modelRef": "model-chiller-chilledwaterto/fromahus"
         },
         "m_tags": [
             "chilled",
@@ -1166,11 +1153,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towers",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowers",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers",
             "dis": "Condenser water to/from cooling towers",
-            "modelRef": "model-Chiller"
+            "modelRef": "model-chiller"
         },
         "m_tags": [
             "model",
@@ -1178,11 +1165,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towerscondenser_water_leaving_temperature",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowerscwlt",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers-Condenser_Water_Leaving_Temperature",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers-cwlt",
             "dis": "Condenser Water Leaving Temperature",
-            "modelRef": "model-Chiller-Condenser_water_to/from_cooling_towers"
+            "modelRef": "model-chiller-condenserwaterto/fromcoolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -1194,11 +1181,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towerscondenser_water_leaving_flow",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowerscwlf",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers-Condenser_Water_Leaving_Flow",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers-cwlf",
             "dis": "Condenser Water Leaving Flow",
-            "modelRef": "model-Chiller-Condenser_water_to/from_cooling_towers"
+            "modelRef": "model-chiller-condenserwaterto/fromcoolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -1210,11 +1197,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towerscondenser_water_levaing_pressure",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowerscwlp",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers-Condenser_Water_Levaing_Pressure",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers-cwlp",
             "dis": "Condenser Water Levaing Pressure",
-            "modelRef": "model-Chiller-Condenser_water_to/from_cooling_towers"
+            "modelRef": "model-chiller-condenserwaterto/fromcoolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -1226,11 +1213,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towerscondenser_water_entering_temperature",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowerscwet",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers-Condenser_Water_Entering_Temperature",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers-cwet",
             "dis": "Condenser Water Entering Temperature",
-            "modelRef": "model-Chiller-Condenser_water_to/from_cooling_towers"
+            "modelRef": "model-chiller-condenserwaterto/fromcoolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -1242,11 +1229,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towerscondenser_water_entering_pressure",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowerscwep",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers-Condenser_Water_Entering_Pressure",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers-cwep",
             "dis": "Condenser Water Entering Pressure",
-            "modelRef": "model-Chiller-Condenser_water_to/from_cooling_towers"
+            "modelRef": "model-chiller-condenserwaterto/fromcoolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -1258,11 +1245,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towerscondenser_water_entering_flow",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowerscwef",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers-Condenser_Water_Entering_Flow",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers-cwef",
             "dis": "Condenser Water Entering Flow",
-            "modelRef": "model-Chiller-Condenser_water_to/from_cooling_towers"
+            "modelRef": "model-chiller-condenserwaterto/fromcoolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -1274,11 +1261,11 @@
         ]
     },
     {
-        "entity_id": "modelchillercondenser_water_to/from_cooling_towerscondenser_water_isolation_valve_command",
+        "entity_id": "modelchillercondenserwaterto/fromcoolingtowerscwivc",
         "kv_tags": {
-            "id": "model-Chiller-Condenser_water_to/from_cooling_towers-Condenser_Water_Isolation_Valve_Command",
+            "id": "model-chiller-condenserwaterto/fromcoolingtowers-cwivc",
             "dis": "Condenser Water Isolation Valve Command",
-            "modelRef": "model-Chiller-Condenser_water_to/from_cooling_towers"
+            "modelRef": "model-chiller-condenserwaterto/fromcoolingtowers"
         },
         "m_tags": [
             "condenser",
@@ -1290,11 +1277,11 @@
         ]
     },
     {
-        "entity_id": "modelchillermisc_internal",
+        "entity_id": "modelchillermiscinternal",
         "kv_tags": {
-            "id": "model-Chiller-Misc_Internal",
+            "id": "model-chiller-miscinternal",
             "dis": "Misc Internal",
-            "modelRef": "model-Chiller"
+            "modelRef": "model-chiller"
         },
         "m_tags": [
             "model",
@@ -1302,11 +1289,11 @@
         ]
     },
     {
-        "entity_id": "modelchillermisc_internalcondenser_command",
+        "entity_id": "modelchillermiscinternalcc",
         "kv_tags": {
-            "id": "model-Chiller-Misc_Internal-Condenser_Command",
+            "id": "model-chiller-miscinternal-cc",
             "dis": "Condenser Command",
-            "modelRef": "model-Chiller-Misc_Internal"
+            "modelRef": "model-chiller-miscinternal"
         },
         "m_tags": [
             "condenser",
@@ -1315,11 +1302,11 @@
         ]
     },
     {
-        "entity_id": "modelchillermisc_internalcondenser_refrigeration_temperature",
+        "entity_id": "modelchillermiscinternalcrt",
         "kv_tags": {
-            "id": "model-Chiller-Misc_Internal-Condenser_Refrigeration_Temperature",
+            "id": "model-chiller-miscinternal-crt",
             "dis": "Condenser Refrigeration Temperature",
-            "modelRef": "model-Chiller-Misc_Internal"
+            "modelRef": "model-chiller-miscinternal"
         },
         "m_tags": [
             "condenser",
@@ -1330,11 +1317,11 @@
         ]
     },
     {
-        "entity_id": "modelchillermisc_internalcondenser_refrigeration_pressure",
+        "entity_id": "modelchillermiscinternalcrp",
         "kv_tags": {
-            "id": "model-Chiller-Misc_Internal-Condenser_Refrigeration_Pressure",
+            "id": "model-chiller-miscinternal-crp",
             "dis": "Condenser Refrigeration Pressure",
-            "modelRef": "model-Chiller-Misc_Internal"
+            "modelRef": "model-chiller-miscinternal"
         },
         "m_tags": [
             "condenser",
@@ -1345,11 +1332,11 @@
         ]
     },
     {
-        "entity_id": "modelchillermisc_internalevaporator_refrigeration_temperature",
+        "entity_id": "modelchillermiscinternalert",
         "kv_tags": {
-            "id": "model-Chiller-Misc_Internal-Evaporator_Refrigeration_Temperature",
+            "id": "model-chiller-miscinternal-ert",
             "dis": "Evaporator Refrigeration Temperature",
-            "modelRef": "model-Chiller-Misc_Internal"
+            "modelRef": "model-chiller-miscinternal"
         },
         "m_tags": [
             "evaporator",
@@ -1360,11 +1347,11 @@
         ]
     },
     {
-        "entity_id": "modelchillermisc_internalevaporator_refrigeration_pressure",
+        "entity_id": "modelchillermiscinternalerp",
         "kv_tags": {
-            "id": "model-Chiller-Misc_Internal-Evaporator_Refrigeration_Pressure",
+            "id": "model-chiller-miscinternal-erp",
             "dis": "Evaporator Refrigeration Pressure",
-            "modelRef": "model-Chiller-Misc_Internal"
+            "modelRef": "model-chiller-miscinternal"
         },
         "m_tags": [
             "evaporator",
@@ -1375,33 +1362,21 @@
         ]
     },
     {
-        "entity_id": "modelcooling_tower",
+        "entity_id": "modelcoolingtower",
         "kv_tags": {
-            "id": "model-Cooling_Tower",
+            "id": "model-coolingtower",
             "dis": "Cooling Tower"
         },
         "m_tags": [
-            "model", "equip","hvac","coolingTower"
+            "model"
         ]
     },
     {
-        "entity_id": "modelcooling_towerall",
+        "entity_id": "modelcoolingtowercwlt",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All",
-            "dis": "All",
-            "modelRef": "model-Cooling_Tower"
-        },
-        "m_tags": [
-            "model",
-            "all"
-        ]
-    },
-    {
-        "entity_id": "modelcooling_towerallcondenser_water_leaving_temperature",
-        "kv_tags": {
-            "id": "model-Cooling_Tower-All-Condenser_Water_Leaving_Temperature",
+            "id": "model-coolingtower-cwlt",
             "dis": "Condenser Water Leaving Temperature",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "condenser",
@@ -1413,11 +1388,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallcondenser_water_leaving_temperature_setpoint",
+        "entity_id": "modelcoolingtowercwlts",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Condenser_Water_Leaving_Temperature_Setpoint",
+            "id": "model-coolingtower-cwlts",
             "dis": "Condenser Water Leaving Temperature Setpoint",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "condenser",
@@ -1429,11 +1404,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallcondenser_water_leaving_flow",
+        "entity_id": "modelcoolingtowercwlf",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Condenser_Water_Leaving_Flow",
+            "id": "model-coolingtower-cwlf",
             "dis": "Condenser Water Leaving Flow",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "condenser",
@@ -1445,11 +1420,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallcondenser_water_leaving_pressure",
+        "entity_id": "modelcoolingtowercwlp",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Condenser_Water_Leaving_Pressure",
+            "id": "model-coolingtower-cwlp",
             "dis": "Condenser Water Leaving Pressure",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "condenser",
@@ -1461,11 +1436,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallcondenser_water_entering_temperature",
+        "entity_id": "modelcoolingtowercwet",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Condenser_Water_Entering_Temperature",
+            "id": "model-coolingtower-cwet",
             "dis": "Condenser Water Entering Temperature",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "condenser",
@@ -1477,11 +1452,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallcondenser_water_entering_pressure",
+        "entity_id": "modelcoolingtowercwep",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Condenser_Water_Entering_Pressure",
+            "id": "model-coolingtower-cwep",
             "dis": "Condenser Water Entering Pressure",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "condenser",
@@ -1493,11 +1468,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallcondenser_water_entering_flow",
+        "entity_id": "modelcoolingtowercwef",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Condenser_Water_Entering_Flow",
+            "id": "model-coolingtower-cwef",
             "dis": "Condenser Water Entering Flow",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "condenser",
@@ -1509,11 +1484,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallfan_command",
+        "entity_id": "modelcoolingtowerfc",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Fan_Command",
+            "id": "model-coolingtower-fc",
             "dis": "Fan Command",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "fan",
@@ -1522,11 +1497,11 @@
         ]
     },
     {
-        "entity_id": "modelcooling_towerallfan_status",
+        "entity_id": "modelcoolingtowerfs",
         "kv_tags": {
-            "id": "model-Cooling_Tower-All-Fan_Status",
+            "id": "model-coolingtower-fs",
             "dis": "Fan Status",
-            "modelRef": "model-Cooling_Tower-All"
+            "modelRef": "model-coolingtower"
         },
         "m_tags": [
             "fan",
@@ -1537,19 +1512,19 @@
     {
         "entity_id": "modelfcu",
         "kv_tags": {
-            "id": "model-FCU",
+            "id": "model-fcu",
             "dis": "FCU"
         },
         "m_tags": [
-            "model", "equip","hvac","fcu"
+            "model"
         ]
     },
     {
         "entity_id": "modelfcudischarge",
         "kv_tags": {
-            "id": "model-FCU-Discharge",
+            "id": "model-fcu-discharge",
             "dis": "Discharge",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -1557,11 +1532,11 @@
         ]
     },
     {
-        "entity_id": "modelfcudischargesupply_air_temperature",
+        "entity_id": "modelfcudischargesat",
         "kv_tags": {
-            "id": "model-FCU-Discharge-Supply_Air_Temperature",
+            "id": "model-fcu-discharge-sat",
             "dis": "Supply Air Temperature",
-            "modelRef": "model-FCU-Discharge"
+            "modelRef": "model-fcu-discharge"
         },
         "m_tags": [
             "discharge",
@@ -1572,11 +1547,11 @@
         ]
     },
     {
-        "entity_id": "modelfcudischargesupply_air_humidity",
+        "entity_id": "modelfcudischargesah",
         "kv_tags": {
-            "id": "model-FCU-Discharge-Supply_Air_Humidity",
+            "id": "model-fcu-discharge-sah",
             "dis": "Supply Air Humidity",
-            "modelRef": "model-FCU-Discharge"
+            "modelRef": "model-fcu-discharge"
         },
         "m_tags": [
             "discharge",
@@ -1587,11 +1562,11 @@
         ]
     },
     {
-        "entity_id": "modelfcudischargesupply_static_pressure",
+        "entity_id": "modelfcudischargessp",
         "kv_tags": {
-            "id": "model-FCU-Discharge-Supply_Static_Pressure",
+            "id": "model-fcu-discharge-ssp",
             "dis": "Supply Static Pressure",
-            "modelRef": "model-FCU-Discharge"
+            "modelRef": "model-fcu-discharge"
         },
         "m_tags": [
             "discharge",
@@ -1602,11 +1577,11 @@
         ]
     },
     {
-        "entity_id": "modelfcudischargesupply_airflow",
+        "entity_id": "modelfcudischargesa",
         "kv_tags": {
-            "id": "model-FCU-Discharge-Supply_Airflow",
+            "id": "model-fcu-discharge-sa",
             "dis": "Supply Airflow",
-            "modelRef": "model-FCU-Discharge"
+            "modelRef": "model-fcu-discharge"
         },
         "m_tags": [
             "discharge",
@@ -1617,11 +1592,11 @@
         ]
     },
     {
-        "entity_id": "modelfcudischargesupply_fan_command",
+        "entity_id": "modelfcudischargesfc",
         "kv_tags": {
-            "id": "model-FCU-Discharge-Supply_Fan_Command",
+            "id": "model-fcu-discharge-sfc",
             "dis": "Supply Fan Command",
-            "modelRef": "model-FCU-Discharge"
+            "modelRef": "model-fcu-discharge"
         },
         "m_tags": [
             "discharge",
@@ -1632,11 +1607,11 @@
         ]
     },
     {
-        "entity_id": "modelfcudischargesupply_fan_status",
+        "entity_id": "modelfcudischargesfs",
         "kv_tags": {
-            "id": "model-FCU-Discharge-Supply_Fan_Status",
+            "id": "model-fcu-discharge-sfs",
             "dis": "Supply Fan Status",
-            "modelRef": "model-FCU-Discharge"
+            "modelRef": "model-fcu-discharge"
         },
         "m_tags": [
             "discharge",
@@ -1649,9 +1624,9 @@
     {
         "entity_id": "modelfcureturn",
         "kv_tags": {
-            "id": "model-FCU-Return",
+            "id": "model-fcu-return",
             "dis": "Return",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -1659,11 +1634,11 @@
         ]
     },
     {
-        "entity_id": "modelfcureturnreturn_air_temperature",
+        "entity_id": "modelfcureturnrat",
         "kv_tags": {
-            "id": "model-FCU-Return-Return_Air_Temperature",
+            "id": "model-fcu-return-rat",
             "dis": "Return Air Temperature",
-            "modelRef": "model-FCU-Return"
+            "modelRef": "model-fcu-return"
         },
         "m_tags": [
             "return",
@@ -1674,11 +1649,11 @@
         ]
     },
     {
-        "entity_id": "modelfcureturnreturn_air_humidity",
+        "entity_id": "modelfcureturnrah",
         "kv_tags": {
-            "id": "model-FCU-Return-Return_Air_Humidity",
+            "id": "model-fcu-return-rah",
             "dis": "Return Air Humidity",
-            "modelRef": "model-FCU-Return"
+            "modelRef": "model-fcu-return"
         },
         "m_tags": [
             "return",
@@ -1689,11 +1664,11 @@
         ]
     },
     {
-        "entity_id": "modelfcureturnreturn_static_pressure",
+        "entity_id": "modelfcureturnrsp",
         "kv_tags": {
-            "id": "model-FCU-Return-Return_Static_Pressure",
+            "id": "model-fcu-return-rsp",
             "dis": "Return Static Pressure",
-            "modelRef": "model-FCU-Return"
+            "modelRef": "model-fcu-return"
         },
         "m_tags": [
             "return",
@@ -1704,11 +1679,11 @@
         ]
     },
     {
-        "entity_id": "modelfcureturnreturn_airflow",
+        "entity_id": "modelfcureturnra",
         "kv_tags": {
-            "id": "model-FCU-Return-Return_Airflow",
+            "id": "model-fcu-return-ra",
             "dis": "Return Airflow",
-            "modelRef": "model-FCU-Return"
+            "modelRef": "model-fcu-return"
         },
         "m_tags": [
             "return",
@@ -1719,11 +1694,11 @@
         ]
     },
     {
-        "entity_id": "modelfcureturnreturn_co2",
+        "entity_id": "modelfcureturnrc",
         "kv_tags": {
-            "id": "model-FCU-Return-Return_CO2",
+            "id": "model-fcu-return-rc",
             "dis": "Return CO2",
-            "modelRef": "model-FCU-Return"
+            "modelRef": "model-fcu-return"
         },
         "m_tags": [
             "return",
@@ -1734,11 +1709,11 @@
         ]
     },
     {
-        "entity_id": "modelfcureturnreturn_fan_command",
+        "entity_id": "modelfcureturnrfc",
         "kv_tags": {
-            "id": "model-FCU-Return-Return_Fan_Command",
+            "id": "model-fcu-return-rfc",
             "dis": "Return Fan Command",
-            "modelRef": "model-FCU-Return"
+            "modelRef": "model-fcu-return"
         },
         "m_tags": [
             "return",
@@ -1749,11 +1724,11 @@
         ]
     },
     {
-        "entity_id": "modelfcureturnreturn_air_damper_command",
+        "entity_id": "modelfcureturnradc",
         "kv_tags": {
-            "id": "model-FCU-Return-Return_Air_Damper_Command",
+            "id": "model-fcu-return-radc",
             "dis": "Return Air Damper Command",
-            "modelRef": "model-FCU-Return"
+            "modelRef": "model-fcu-return"
         },
         "m_tags": [
             "return",
@@ -1766,9 +1741,9 @@
     {
         "entity_id": "modelfcumixed",
         "kv_tags": {
-            "id": "model-FCU-Mixed",
+            "id": "model-fcu-mixed",
             "dis": "Mixed",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -1776,11 +1751,11 @@
         ]
     },
     {
-        "entity_id": "modelfcumixedmixed_air_temperature",
+        "entity_id": "modelfcumixedmat",
         "kv_tags": {
-            "id": "model-FCU-Mixed-Mixed_Air_Temperature",
+            "id": "model-fcu-mixed-mat",
             "dis": "Mixed Air Temperature",
-            "modelRef": "model-FCU-Mixed"
+            "modelRef": "model-fcu-mixed"
         },
         "m_tags": [
             "mixed",
@@ -1793,9 +1768,9 @@
     {
         "entity_id": "modelfcuoutside",
         "kv_tags": {
-            "id": "model-FCU-Outside",
+            "id": "model-fcu-outside",
             "dis": "Outside",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -1803,11 +1778,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuoutsideoutside_air_temperature",
+        "entity_id": "modelfcuoutsideoat",
         "kv_tags": {
-            "id": "model-FCU-Outside-Outside_Air_Temperature",
+            "id": "model-fcu-outside-oat",
             "dis": "Outside Air Temperature",
-            "modelRef": "model-FCU-Outside"
+            "modelRef": "model-fcu-outside"
         },
         "m_tags": [
             "outside",
@@ -1818,11 +1793,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuoutsideoutside_air_humidity",
+        "entity_id": "modelfcuoutsideoah",
         "kv_tags": {
-            "id": "model-FCU-Outside-Outside_Air_Humidity",
+            "id": "model-fcu-outside-oah",
             "dis": "Outside Air Humidity",
-            "modelRef": "model-FCU-Outside"
+            "modelRef": "model-fcu-outside"
         },
         "m_tags": [
             "outside",
@@ -1833,11 +1808,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuoutsideoutside_air_pressure",
+        "entity_id": "modelfcuoutsideoap",
         "kv_tags": {
-            "id": "model-FCU-Outside-Outside_Air_Pressure",
+            "id": "model-fcu-outside-oap",
             "dis": "Outside Air Pressure",
-            "modelRef": "model-FCU-Outside"
+            "modelRef": "model-fcu-outside"
         },
         "m_tags": [
             "outside",
@@ -1848,11 +1823,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuoutsideoutside_airflow",
+        "entity_id": "modelfcuoutsideoa",
         "kv_tags": {
-            "id": "model-FCU-Outside-Outside_Airflow",
+            "id": "model-fcu-outside-oa",
             "dis": "Outside Airflow",
-            "modelRef": "model-FCU-Outside"
+            "modelRef": "model-fcu-outside"
         },
         "m_tags": [
             "outside",
@@ -1863,11 +1838,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuoutsideoutside_airflow_setpoint",
+        "entity_id": "modelfcuoutsideoas",
         "kv_tags": {
-            "id": "model-FCU-Outside-Outside_Airflow_Setpoint",
+            "id": "model-fcu-outside-oas",
             "dis": "Outside Airflow Setpoint",
-            "modelRef": "model-FCU-Outside"
+            "modelRef": "model-fcu-outside"
         },
         "m_tags": [
             "outside",
@@ -1878,11 +1853,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuoutsideoutside_air_damper_command",
+        "entity_id": "modelfcuoutsideoadc",
         "kv_tags": {
-            "id": "model-FCU-Outside-Outside_Air_Damper_Command",
+            "id": "model-fcu-outside-oadc",
             "dis": "Outside Air Damper Command",
-            "modelRef": "model-FCU-Outside"
+            "modelRef": "model-fcu-outside"
         },
         "m_tags": [
             "outside",
@@ -1895,9 +1870,9 @@
     {
         "entity_id": "modelfcuexhaust",
         "kv_tags": {
-            "id": "model-FCU-Exhaust",
+            "id": "model-fcu-exhaust",
             "dis": "Exhaust",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -1905,11 +1880,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuexhaustexhaust_fan_command",
+        "entity_id": "modelfcuexhaustefc",
         "kv_tags": {
-            "id": "model-FCU-Exhaust-Exhaust_Fan_Command",
+            "id": "model-fcu-exhaust-efc",
             "dis": "Exhaust Fan Command",
-            "modelRef": "model-FCU-Exhaust"
+            "modelRef": "model-fcu-exhaust"
         },
         "m_tags": [
             "exhaust",
@@ -1920,11 +1895,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuexhaustexhaust_damper_command",
+        "entity_id": "modelfcuexhaustedc",
         "kv_tags": {
-            "id": "model-FCU-Exhaust-Exhaust_Damper_Command",
+            "id": "model-fcu-exhaust-edc",
             "dis": "Exhaust Damper Command",
-            "modelRef": "model-FCU-Exhaust"
+            "modelRef": "model-fcu-exhaust"
         },
         "m_tags": [
             "exhaust",
@@ -1937,9 +1912,9 @@
     {
         "entity_id": "modelfcuconditioning",
         "kv_tags": {
-            "id": "model-FCU-Conditioning",
+            "id": "model-fcu-conditioning",
             "dis": "Conditioning",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -1947,11 +1922,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuconditioningcool_stage_command",
+        "entity_id": "modelfcuconditioningcsc",
         "kv_tags": {
-            "id": "model-FCU-Conditioning-Cool_Stage_Command",
+            "id": "model-fcu-conditioning-csc",
             "dis": "Cool Stage Command",
-            "modelRef": "model-FCU-Conditioning"
+            "modelRef": "model-fcu-conditioning"
         },
         "m_tags": [
             "cool",
@@ -1961,11 +1936,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuconditioningheat_stage_command",
+        "entity_id": "modelfcuconditioninghsc",
         "kv_tags": {
-            "id": "model-FCU-Conditioning-Heat_Stage_Command",
+            "id": "model-fcu-conditioning-hsc",
             "dis": "Heat Stage Command",
-            "modelRef": "model-FCU-Conditioning"
+            "modelRef": "model-fcu-conditioning"
         },
         "m_tags": [
             "heat",
@@ -1975,11 +1950,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuconditioninghumidifier_command",
+        "entity_id": "modelfcuconditioninghc",
         "kv_tags": {
-            "id": "model-FCU-Conditioning-Humidifier_Command",
+            "id": "model-fcu-conditioning-hc",
             "dis": "Humidifier Command",
-            "modelRef": "model-FCU-Conditioning"
+            "modelRef": "model-fcu-conditioning"
         },
         "m_tags": [
             "humidifier",
@@ -1988,11 +1963,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuconditioningfilter_sensor",
+        "entity_id": "modelfcuconditioningfs",
         "kv_tags": {
-            "id": "model-FCU-Conditioning-Filter_Sensor",
+            "id": "model-fcu-conditioning-fs",
             "dis": "Filter Sensor",
-            "modelRef": "model-FCU-Conditioning"
+            "modelRef": "model-fcu-conditioning"
         },
         "m_tags": [
             "filter",
@@ -2003,9 +1978,9 @@
     {
         "entity_id": "modelfcumisc",
         "kv_tags": {
-            "id": "model-FCU-Misc",
+            "id": "model-fcu-misc",
             "dis": "Misc",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -2015,9 +1990,9 @@
     {
         "entity_id": "modelfcumiscfreezestat",
         "kv_tags": {
-            "id": "model-FCU-Misc-FreezeStat",
+            "id": "model-fcu-misc-freezestat",
             "dis": "FreezeStat",
-            "modelRef": "model-FCU-Misc"
+            "modelRef": "model-fcu-misc"
         },
         "m_tags": [
             "freezeStat",
@@ -2026,11 +2001,11 @@
         ]
     },
     {
-        "entity_id": "modelfcumischeat_wheel_cmd",
+        "entity_id": "modelfcumischwc",
         "kv_tags": {
-            "id": "model-FCU-Misc-Heat_Wheel_cmd",
+            "id": "model-fcu-misc-hwc",
             "dis": "Heat Wheel cmd",
-            "modelRef": "model-FCU-Misc"
+            "modelRef": "model-fcu-misc"
         },
         "m_tags": [
             "heatWheel",
@@ -2039,11 +2014,11 @@
         ]
     },
     {
-        "entity_id": "modelfcumiscface/bypass_damper_command",
+        "entity_id": "modelfcumiscfdc",
         "kv_tags": {
-            "id": "model-FCU-Misc-Face/Bypass_Damper_Command",
+            "id": "model-fcu-misc-fdc",
             "dis": "Face/Bypass Damper Command",
-            "modelRef": "model-FCU-Misc"
+            "modelRef": "model-fcu-misc"
         },
         "m_tags": [
             "faceBypass",
@@ -2052,11 +2027,11 @@
         ]
     },
     {
-        "entity_id": "modelfcumiscbypass_damper_command",
+        "entity_id": "modelfcumiscbdc",
         "kv_tags": {
-            "id": "model-FCU-Misc-Bypass_Damper_Command",
+            "id": "model-fcu-misc-bdc",
             "dis": "Bypass Damper Command",
-            "modelRef": "model-FCU-Misc"
+            "modelRef": "model-fcu-misc"
         },
         "m_tags": [
             "bypass",
@@ -2068,9 +2043,9 @@
     {
         "entity_id": "modelfcuzone",
         "kv_tags": {
-            "id": "model-FCU-Zone",
+            "id": "model-fcu-zone",
             "dis": "Zone",
-            "modelRef": "model-FCU"
+            "modelRef": "model-fcu"
         },
         "m_tags": [
             "model",
@@ -2078,11 +2053,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_temperature",
+        "entity_id": "modelfcuzonezt",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Temperature",
+            "id": "model-fcu-zone-zt",
             "dis": "Zone Temperature",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2093,11 +2068,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzoneeffective_zone_temperature_setpoint",
+        "entity_id": "modelfcuzoneezts",
         "kv_tags": {
-            "id": "model-FCU-Zone-Effective_Zone_Temperature_Setpoint",
+            "id": "model-fcu-zone-ezts",
             "dis": "Effective Zone Temperature Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2109,11 +2084,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_occupied_cooling_setpoint",
+        "entity_id": "modelfcuzonezocs",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Occupied_Cooling_Setpoint",
+            "id": "model-fcu-zone-zocs",
             "dis": "Zone Occupied Cooling Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2126,11 +2101,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_occupied_heating_setpoint",
+        "entity_id": "modelfcuzonezohs",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Occupied_Heating_Setpoint",
+            "id": "model-fcu-zone-zohs",
             "dis": "Zone Occupied Heating Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2143,11 +2118,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_unoccupied_cooling_setpoint",
+        "entity_id": "modelfcuzonezucs",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Unoccupied_Cooling_Setpoint",
+            "id": "model-fcu-zone-zucs",
             "dis": "Zone Unoccupied Cooling Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2160,11 +2135,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_unoccupied_heating_setpoint",
+        "entity_id": "modelfcuzonezuhs",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Unoccupied_Heating_Setpoint",
+            "id": "model-fcu-zone-zuhs",
             "dis": "Zone Unoccupied Heating Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2177,11 +2152,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_standby_cooling_setpoint",
+        "entity_id": "modelfcuzonezscs",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Standby_Cooling_Setpoint",
+            "id": "model-fcu-zone-zscs",
             "dis": "Zone Standby Cooling Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2194,11 +2169,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_standby_heating_setpoint",
+        "entity_id": "modelfcuzonezshs",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Standby_Heating_Setpoint",
+            "id": "model-fcu-zone-zshs",
             "dis": "Zone Standby Heating Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2211,11 +2186,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_humidity",
+        "entity_id": "modelfcuzonezh",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_Humidity",
+            "id": "model-fcu-zone-zh",
             "dis": "Zone Humidity",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2226,11 +2201,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_co2",
+        "entity_id": "modelfcuzonezc",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_CO2",
+            "id": "model-fcu-zone-zc",
             "dis": "Zone CO2",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2241,11 +2216,11 @@
         ]
     },
     {
-        "entity_id": "modelfcuzonezone_co2_setpoint",
+        "entity_id": "modelfcuzonezcs",
         "kv_tags": {
-            "id": "model-FCU-Zone-Zone_CO2_Setpoint",
+            "id": "model-fcu-zone-zcs",
             "dis": "Zone CO2 Setpoint",
-            "modelRef": "model-FCU-Zone"
+            "modelRef": "model-fcu-zone"
         },
         "m_tags": [
             "zone",
@@ -2256,33 +2231,21 @@
         ]
     },
     {
-        "entity_id": "modelheat_exchanger",
+        "entity_id": "modelheatexchanger",
         "kv_tags": {
-            "id": "model-Heat_Exchanger",
+            "id": "model-heatexchanger",
             "dis": "Heat Exchanger"
         },
         "m_tags": [
-            "model", "equip","hvac","heatExchanger"
+            "model"
         ]
     },
     {
-        "entity_id": "modelheat_exchangerall",
+        "entity_id": "modelheatexchangercwlt",
         "kv_tags": {
-            "id": "model-Heat_Exchanger-All",
-            "dis": "All",
-            "modelRef": "model-Heat_Exchanger"
-        },
-        "m_tags": [
-            "model",
-            "all"
-        ]
-    },
-    {
-        "entity_id": "modelheat_exchangerallchilled_water_leaving_temperature",
-        "kv_tags": {
-            "id": "model-Heat_Exchanger-All-Chilled_Water_Leaving_Temperature",
+            "id": "model-heatexchanger-cwlt",
             "dis": "Chilled Water Leaving Temperature",
-            "modelRef": "model-Heat_Exchanger-All"
+            "modelRef": "model-heatexchanger"
         },
         "m_tags": [
             "chilled",
@@ -2294,11 +2257,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_exchangerallchilled_water_entering_temperature",
+        "entity_id": "modelheatexchangercwet",
         "kv_tags": {
-            "id": "model-Heat_Exchanger-All-Chilled_Water_Entering_Temperature",
+            "id": "model-heatexchanger-cwet",
             "dis": "Chilled Water Entering Temperature",
-            "modelRef": "model-Heat_Exchanger-All"
+            "modelRef": "model-heatexchanger"
         },
         "m_tags": [
             "chilled",
@@ -2310,11 +2273,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_exchangerallcondenser_water_leaving_temperature",
+        "entity_id": "modelheatexchangercwlt",
         "kv_tags": {
-            "id": "model-Heat_Exchanger-All-Condenser_Water_Leaving_Temperature",
+            "id": "model-heatexchanger-cwlt",
             "dis": "Condenser Water Leaving Temperature",
-            "modelRef": "model-Heat_Exchanger-All"
+            "modelRef": "model-heatexchanger"
         },
         "m_tags": [
             "condenser",
@@ -2326,11 +2289,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_exchangerallcondenser_water_entering_flow",
+        "entity_id": "modelheatexchangercwef",
         "kv_tags": {
-            "id": "model-Heat_Exchanger-All-Condenser_Water_Entering_Flow",
+            "id": "model-heatexchanger-cwef",
             "dis": "Condenser Water Entering Flow",
-            "modelRef": "model-Heat_Exchanger-All"
+            "modelRef": "model-heatexchanger"
         },
         "m_tags": [
             "condenser",
@@ -2342,21 +2305,21 @@
         ]
     },
     {
-        "entity_id": "modelheat_pump",
+        "entity_id": "modelheatpump",
         "kv_tags": {
-            "id": "model-Heat_Pump",
+            "id": "model-heatpump",
             "dis": "Heat Pump"
         },
         "m_tags": [
-            "model", "equip","hvac","heatPump"
+            "model"
         ]
     },
     {
-        "entity_id": "modelheat_pumpdischarge",
+        "entity_id": "modelheatpumpdischarge",
         "kv_tags": {
-            "id": "model-Heat_Pump-Discharge",
+            "id": "model-heatpump-discharge",
             "dis": "Discharge",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2364,11 +2327,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpdischargesupply_air_temperature",
+        "entity_id": "modelheatpumpdischargesat",
         "kv_tags": {
-            "id": "model-Heat_Pump-Discharge-Supply_Air_Temperature",
+            "id": "model-heatpump-discharge-sat",
             "dis": "Supply Air Temperature",
-            "modelRef": "model-Heat_Pump-Discharge"
+            "modelRef": "model-heatpump-discharge"
         },
         "m_tags": [
             "discharge",
@@ -2379,11 +2342,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpdischargesupply_air_humidity",
+        "entity_id": "modelheatpumpdischargesah",
         "kv_tags": {
-            "id": "model-Heat_Pump-Discharge-Supply_Air_Humidity",
+            "id": "model-heatpump-discharge-sah",
             "dis": "Supply Air Humidity",
-            "modelRef": "model-Heat_Pump-Discharge"
+            "modelRef": "model-heatpump-discharge"
         },
         "m_tags": [
             "discharge",
@@ -2394,11 +2357,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpdischargesupply_static_pressure",
+        "entity_id": "modelheatpumpdischargessp",
         "kv_tags": {
-            "id": "model-Heat_Pump-Discharge-Supply_Static_Pressure",
+            "id": "model-heatpump-discharge-ssp",
             "dis": "Supply Static Pressure",
-            "modelRef": "model-Heat_Pump-Discharge"
+            "modelRef": "model-heatpump-discharge"
         },
         "m_tags": [
             "discharge",
@@ -2409,11 +2372,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpdischargesupply_airflow",
+        "entity_id": "modelheatpumpdischargesa",
         "kv_tags": {
-            "id": "model-Heat_Pump-Discharge-Supply_Airflow",
+            "id": "model-heatpump-discharge-sa",
             "dis": "Supply Airflow",
-            "modelRef": "model-Heat_Pump-Discharge"
+            "modelRef": "model-heatpump-discharge"
         },
         "m_tags": [
             "discharge",
@@ -2424,11 +2387,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpdischargesupply_fan_command",
+        "entity_id": "modelheatpumpdischargesfc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Discharge-Supply_Fan_Command",
+            "id": "model-heatpump-discharge-sfc",
             "dis": "Supply Fan Command",
-            "modelRef": "model-Heat_Pump-Discharge"
+            "modelRef": "model-heatpump-discharge"
         },
         "m_tags": [
             "discharge",
@@ -2439,11 +2402,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpdischargesupply_fan_status",
+        "entity_id": "modelheatpumpdischargesfs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Discharge-Supply_Fan_Status",
+            "id": "model-heatpump-discharge-sfs",
             "dis": "Supply Fan Status",
-            "modelRef": "model-Heat_Pump-Discharge"
+            "modelRef": "model-heatpump-discharge"
         },
         "m_tags": [
             "discharge",
@@ -2454,11 +2417,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturn",
+        "entity_id": "modelheatpumpreturn",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return",
+            "id": "model-heatpump-return",
             "dis": "Return",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2466,11 +2429,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturnreturn_air_temperature",
+        "entity_id": "modelheatpumpreturnrat",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return-Return_Air_Temperature",
+            "id": "model-heatpump-return-rat",
             "dis": "Return Air Temperature",
-            "modelRef": "model-Heat_Pump-Return"
+            "modelRef": "model-heatpump-return"
         },
         "m_tags": [
             "return",
@@ -2481,11 +2444,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturnreturn_air_humidity",
+        "entity_id": "modelheatpumpreturnrah",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return-Return_Air_Humidity",
+            "id": "model-heatpump-return-rah",
             "dis": "Return Air Humidity",
-            "modelRef": "model-Heat_Pump-Return"
+            "modelRef": "model-heatpump-return"
         },
         "m_tags": [
             "return",
@@ -2496,11 +2459,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturnreturn_static_pressure",
+        "entity_id": "modelheatpumpreturnrsp",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return-Return_Static_Pressure",
+            "id": "model-heatpump-return-rsp",
             "dis": "Return Static Pressure",
-            "modelRef": "model-Heat_Pump-Return"
+            "modelRef": "model-heatpump-return"
         },
         "m_tags": [
             "return",
@@ -2511,11 +2474,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturnreturn_airflow",
+        "entity_id": "modelheatpumpreturnra",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return-Return_Airflow",
+            "id": "model-heatpump-return-ra",
             "dis": "Return Airflow",
-            "modelRef": "model-Heat_Pump-Return"
+            "modelRef": "model-heatpump-return"
         },
         "m_tags": [
             "return",
@@ -2526,11 +2489,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturnreturn_co2",
+        "entity_id": "modelheatpumpreturnrc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return-Return_CO2",
+            "id": "model-heatpump-return-rc",
             "dis": "Return CO2",
-            "modelRef": "model-Heat_Pump-Return"
+            "modelRef": "model-heatpump-return"
         },
         "m_tags": [
             "return",
@@ -2541,11 +2504,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturnreturn_fan_command",
+        "entity_id": "modelheatpumpreturnrfc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return-Return_Fan_Command",
+            "id": "model-heatpump-return-rfc",
             "dis": "Return Fan Command",
-            "modelRef": "model-Heat_Pump-Return"
+            "modelRef": "model-heatpump-return"
         },
         "m_tags": [
             "return",
@@ -2556,11 +2519,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpreturnreturn_air_damper_command",
+        "entity_id": "modelheatpumpreturnradc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Return-Return_Air_Damper_Command",
+            "id": "model-heatpump-return-radc",
             "dis": "Return Air Damper Command",
-            "modelRef": "model-Heat_Pump-Return"
+            "modelRef": "model-heatpump-return"
         },
         "m_tags": [
             "return",
@@ -2571,11 +2534,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpmixed",
+        "entity_id": "modelheatpumpmixed",
         "kv_tags": {
-            "id": "model-Heat_Pump-Mixed",
+            "id": "model-heatpump-mixed",
             "dis": "Mixed",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2583,11 +2546,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpmixedmixed_air_temperature",
+        "entity_id": "modelheatpumpmixedmat",
         "kv_tags": {
-            "id": "model-Heat_Pump-Mixed-Mixed_Air_Temperature",
+            "id": "model-heatpump-mixed-mat",
             "dis": "Mixed Air Temperature",
-            "modelRef": "model-Heat_Pump-Mixed"
+            "modelRef": "model-heatpump-mixed"
         },
         "m_tags": [
             "mixed",
@@ -2598,11 +2561,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpoutside",
+        "entity_id": "modelheatpumpoutside",
         "kv_tags": {
-            "id": "model-Heat_Pump-Outside",
+            "id": "model-heatpump-outside",
             "dis": "Outside",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2610,11 +2573,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpoutsideoutside_air_temperature",
+        "entity_id": "modelheatpumpoutsideoat",
         "kv_tags": {
-            "id": "model-Heat_Pump-Outside-Outside_Air_Temperature",
+            "id": "model-heatpump-outside-oat",
             "dis": "Outside Air Temperature",
-            "modelRef": "model-Heat_Pump-Outside"
+            "modelRef": "model-heatpump-outside"
         },
         "m_tags": [
             "outside",
@@ -2625,11 +2588,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpoutsideoutside_air_humidity",
+        "entity_id": "modelheatpumpoutsideoah",
         "kv_tags": {
-            "id": "model-Heat_Pump-Outside-Outside_Air_Humidity",
+            "id": "model-heatpump-outside-oah",
             "dis": "Outside Air Humidity",
-            "modelRef": "model-Heat_Pump-Outside"
+            "modelRef": "model-heatpump-outside"
         },
         "m_tags": [
             "outside",
@@ -2640,11 +2603,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpoutsideoutside_air_pressure",
+        "entity_id": "modelheatpumpoutsideoap",
         "kv_tags": {
-            "id": "model-Heat_Pump-Outside-Outside_Air_Pressure",
+            "id": "model-heatpump-outside-oap",
             "dis": "Outside Air Pressure",
-            "modelRef": "model-Heat_Pump-Outside"
+            "modelRef": "model-heatpump-outside"
         },
         "m_tags": [
             "outside",
@@ -2655,11 +2618,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpoutsideoutside_airflow",
+        "entity_id": "modelheatpumpoutsideoa",
         "kv_tags": {
-            "id": "model-Heat_Pump-Outside-Outside_Airflow",
+            "id": "model-heatpump-outside-oa",
             "dis": "Outside Airflow",
-            "modelRef": "model-Heat_Pump-Outside"
+            "modelRef": "model-heatpump-outside"
         },
         "m_tags": [
             "outside",
@@ -2670,11 +2633,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpoutsideoutside_airflow_setpoint",
+        "entity_id": "modelheatpumpoutsideoas",
         "kv_tags": {
-            "id": "model-Heat_Pump-Outside-Outside_Airflow_Setpoint",
+            "id": "model-heatpump-outside-oas",
             "dis": "Outside Airflow Setpoint",
-            "modelRef": "model-Heat_Pump-Outside"
+            "modelRef": "model-heatpump-outside"
         },
         "m_tags": [
             "outside",
@@ -2685,11 +2648,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpoutsideoutside_air_damper_command",
+        "entity_id": "modelheatpumpoutsideoadc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Outside-Outside_Air_Damper_Command",
+            "id": "model-heatpump-outside-oadc",
             "dis": "Outside Air Damper Command",
-            "modelRef": "model-Heat_Pump-Outside"
+            "modelRef": "model-heatpump-outside"
         },
         "m_tags": [
             "outside",
@@ -2700,11 +2663,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpexhaust",
+        "entity_id": "modelheatpumpexhaust",
         "kv_tags": {
-            "id": "model-Heat_Pump-Exhaust",
+            "id": "model-heatpump-exhaust",
             "dis": "Exhaust",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2712,11 +2675,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpexhaustexhaust_fan_command",
+        "entity_id": "modelheatpumpexhaustefc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Exhaust-Exhaust_Fan_Command",
+            "id": "model-heatpump-exhaust-efc",
             "dis": "Exhaust Fan Command",
-            "modelRef": "model-Heat_Pump-Exhaust"
+            "modelRef": "model-heatpump-exhaust"
         },
         "m_tags": [
             "exhaust",
@@ -2727,11 +2690,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpexhaustexhaust_damper_command",
+        "entity_id": "modelheatpumpexhaustedc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Exhaust-Exhaust_Damper_Command",
+            "id": "model-heatpump-exhaust-edc",
             "dis": "Exhaust Damper Command",
-            "modelRef": "model-Heat_Pump-Exhaust"
+            "modelRef": "model-heatpump-exhaust"
         },
         "m_tags": [
             "exhaust",
@@ -2742,11 +2705,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpconditioning",
+        "entity_id": "modelheatpumpconditioning",
         "kv_tags": {
-            "id": "model-Heat_Pump-Conditioning",
+            "id": "model-heatpump-conditioning",
             "dis": "Conditioning",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2754,11 +2717,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpconditioningcool_stage_command",
+        "entity_id": "modelheatpumpconditioningcsc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Conditioning-Cool_Stage_Command",
+            "id": "model-heatpump-conditioning-csc",
             "dis": "Cool Stage Command",
-            "modelRef": "model-Heat_Pump-Conditioning"
+            "modelRef": "model-heatpump-conditioning"
         },
         "m_tags": [
             "cool",
@@ -2768,11 +2731,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpconditioningheat_stage_command",
+        "entity_id": "modelheatpumpconditioninghsc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Conditioning-Heat_Stage_Command",
+            "id": "model-heatpump-conditioning-hsc",
             "dis": "Heat Stage Command",
-            "modelRef": "model-Heat_Pump-Conditioning"
+            "modelRef": "model-heatpump-conditioning"
         },
         "m_tags": [
             "heat",
@@ -2782,11 +2745,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpconditioninghumidifier_command",
+        "entity_id": "modelheatpumpconditioninghc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Conditioning-Humidifier_Command",
+            "id": "model-heatpump-conditioning-hc",
             "dis": "Humidifier Command",
-            "modelRef": "model-Heat_Pump-Conditioning"
+            "modelRef": "model-heatpump-conditioning"
         },
         "m_tags": [
             "humidifier",
@@ -2795,11 +2758,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpconditioningfilter_sensor",
+        "entity_id": "modelheatpumpconditioningfs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Conditioning-Filter_Sensor",
+            "id": "model-heatpump-conditioning-fs",
             "dis": "Filter Sensor",
-            "modelRef": "model-Heat_Pump-Conditioning"
+            "modelRef": "model-heatpump-conditioning"
         },
         "m_tags": [
             "filter",
@@ -2808,11 +2771,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpmisc",
+        "entity_id": "modelheatpumpmisc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Misc",
+            "id": "model-heatpump-misc",
             "dis": "Misc",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2820,11 +2783,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpmiscfreezestat",
+        "entity_id": "modelheatpumpmiscfreezestat",
         "kv_tags": {
-            "id": "model-Heat_Pump-Misc-FreezeStat",
+            "id": "model-heatpump-misc-freezestat",
             "dis": "FreezeStat",
-            "modelRef": "model-Heat_Pump-Misc"
+            "modelRef": "model-heatpump-misc"
         },
         "m_tags": [
             "freezeStat",
@@ -2833,11 +2796,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpmischeat_wheel_cmd",
+        "entity_id": "modelheatpumpmischwc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Misc-Heat_Wheel_cmd",
+            "id": "model-heatpump-misc-hwc",
             "dis": "Heat Wheel cmd",
-            "modelRef": "model-Heat_Pump-Misc"
+            "modelRef": "model-heatpump-misc"
         },
         "m_tags": [
             "heatWheel",
@@ -2846,11 +2809,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpmiscface/bypass_damper_command",
+        "entity_id": "modelheatpumpmiscfdc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Misc-Face/Bypass_Damper_Command",
+            "id": "model-heatpump-misc-fdc",
             "dis": "Face/Bypass Damper Command",
-            "modelRef": "model-Heat_Pump-Misc"
+            "modelRef": "model-heatpump-misc"
         },
         "m_tags": [
             "faceBypass",
@@ -2859,11 +2822,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpmiscbypass_damper_command",
+        "entity_id": "modelheatpumpmiscbdc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Misc-Bypass_Damper_Command",
+            "id": "model-heatpump-misc-bdc",
             "dis": "Bypass Damper Command",
-            "modelRef": "model-Heat_Pump-Misc"
+            "modelRef": "model-heatpump-misc"
         },
         "m_tags": [
             "bypass",
@@ -2873,11 +2836,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzone",
+        "entity_id": "modelheatpumpzone",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone",
+            "id": "model-heatpump-zone",
             "dis": "Zone",
-            "modelRef": "model-Heat_Pump"
+            "modelRef": "model-heatpump"
         },
         "m_tags": [
             "model",
@@ -2885,11 +2848,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_temperature",
+        "entity_id": "modelheatpumpzonezt",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Temperature",
+            "id": "model-heatpump-zone-zt",
             "dis": "Zone Temperature",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -2900,11 +2863,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzoneeffective_zone_temperature_setpoint",
+        "entity_id": "modelheatpumpzoneezts",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Effective_Zone_Temperature_Setpoint",
+            "id": "model-heatpump-zone-ezts",
             "dis": "Effective Zone Temperature Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -2916,11 +2879,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_occupied_cooling_setpoint",
+        "entity_id": "modelheatpumpzonezocs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Occupied_Cooling_Setpoint",
+            "id": "model-heatpump-zone-zocs",
             "dis": "Zone Occupied Cooling Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -2933,11 +2896,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_occupied_heating_setpoint",
+        "entity_id": "modelheatpumpzonezohs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Occupied_Heating_Setpoint",
+            "id": "model-heatpump-zone-zohs",
             "dis": "Zone Occupied Heating Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -2950,11 +2913,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_unoccupied_cooling_setpoint",
+        "entity_id": "modelheatpumpzonezucs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Unoccupied_Cooling_Setpoint",
+            "id": "model-heatpump-zone-zucs",
             "dis": "Zone Unoccupied Cooling Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -2967,11 +2930,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_unoccupied_heating_setpoint",
+        "entity_id": "modelheatpumpzonezuhs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Unoccupied_Heating_Setpoint",
+            "id": "model-heatpump-zone-zuhs",
             "dis": "Zone Unoccupied Heating Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -2984,11 +2947,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_standby_cooling_setpoint",
+        "entity_id": "modelheatpumpzonezscs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Standby_Cooling_Setpoint",
+            "id": "model-heatpump-zone-zscs",
             "dis": "Zone Standby Cooling Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -3001,11 +2964,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_standby_heating_setpoint",
+        "entity_id": "modelheatpumpzonezshs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Standby_Heating_Setpoint",
+            "id": "model-heatpump-zone-zshs",
             "dis": "Zone Standby Heating Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -3018,11 +2981,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_humidity",
+        "entity_id": "modelheatpumpzonezh",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_Humidity",
+            "id": "model-heatpump-zone-zh",
             "dis": "Zone Humidity",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -3033,11 +2996,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_co2",
+        "entity_id": "modelheatpumpzonezc",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_CO2",
+            "id": "model-heatpump-zone-zc",
             "dis": "Zone CO2",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -3048,11 +3011,11 @@
         ]
     },
     {
-        "entity_id": "modelheat_pumpzonezone_co2_setpoint",
+        "entity_id": "modelheatpumpzonezcs",
         "kv_tags": {
-            "id": "model-Heat_Pump-Zone-Zone_CO2_Setpoint",
+            "id": "model-heatpump-zone-zcs",
             "dis": "Zone CO2 Setpoint",
-            "modelRef": "model-Heat_Pump-Zone"
+            "modelRef": "model-heatpump-zone"
         },
         "m_tags": [
             "zone",
@@ -3063,33 +3026,21 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plant",
+        "entity_id": "modelhotwaterplant",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant",
+            "id": "model-hotwaterplant",
             "dis": "Hot Water Plant"
         },
         "m_tags": [
-            "model", "equip","hvac","hotWaterPlant"
+            "model"
         ]
     },
     {
-        "entity_id": "modelhot_water_plantall",
+        "entity_id": "modelhotwaterplanthwlt",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All",
-            "dis": "All",
-            "modelRef": "model-Hot_Water_Plant"
-        },
-        "m_tags": [
-            "model",
-            "all"
-        ]
-    },
-    {
-        "entity_id": "modelhot_water_plantallhot_water_leaving_temperature",
-        "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Leaving_Temperature",
+            "id": "model-hotwaterplant-hwlt",
             "dis": "Hot Water Leaving Temperature",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3101,11 +3052,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_leaving_temperature_setpoint",
+        "entity_id": "modelhotwaterplanthwlts",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Leaving_Temperature_Setpoint",
+            "id": "model-hotwaterplant-hwlts",
             "dis": "Hot Water Leaving Temperature Setpoint",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3117,11 +3068,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_entering_temperature",
+        "entity_id": "modelhotwaterplanthwet",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Entering_Temperature",
+            "id": "model-hotwaterplant-hwet",
             "dis": "Hot Water Entering Temperature",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3133,11 +3084,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_leaving_flow",
+        "entity_id": "modelhotwaterplanthwlf",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Leaving_Flow",
+            "id": "model-hotwaterplant-hwlf",
             "dis": "Hot Water Leaving Flow",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3149,11 +3100,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_leaving_pressure",
+        "entity_id": "modelhotwaterplanthwlp",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Leaving_Pressure",
+            "id": "model-hotwaterplant-hwlp",
             "dis": "Hot Water Leaving Pressure",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3165,11 +3116,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_entering_flow",
+        "entity_id": "modelhotwaterplanthwef",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Entering_Flow",
+            "id": "model-hotwaterplant-hwef",
             "dis": "Hot Water Entering Flow",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3181,11 +3132,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_entering_pressure",
+        "entity_id": "modelhotwaterplanthwep",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Entering_Pressure",
+            "id": "model-hotwaterplant-hwep",
             "dis": "Hot Water Entering Pressure",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3197,11 +3148,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_delta_pressure",
+        "entity_id": "modelhotwaterplanthwdp",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Delta_Pressure",
+            "id": "model-hotwaterplant-hwdp",
             "dis": "Hot Water Delta Pressure",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3213,11 +3164,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_delta_flow",
+        "entity_id": "modelhotwaterplanthwdf",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Delta_Flow",
+            "id": "model-hotwaterplant-hwdf",
             "dis": "Hot Water Delta Flow",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3229,11 +3180,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_delta_temperature",
+        "entity_id": "modelhotwaterplanthwdt",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Delta_Temperature",
+            "id": "model-hotwaterplant-hwdt",
             "dis": "Hot Water Delta Temperature",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3245,11 +3196,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_bypass_valve_command",
+        "entity_id": "modelhotwaterplanthwbvc",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Bypass_Valve_Command",
+            "id": "model-hotwaterplant-hwbvc",
             "dis": "Hot Water Bypass Valve Command",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3261,11 +3212,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallhot_water_mixing_valve_command",
+        "entity_id": "modelhotwaterplanthwmvc",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Hot_Water_Mixing_Valve_Command",
+            "id": "model-hotwaterplant-hwmvc",
             "dis": "Hot Water Mixing Valve Command",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "hot",
@@ -3277,11 +3228,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallmakeup_water_flow",
+        "entity_id": "modelhotwaterplantmwf",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Makeup_Water_Flow",
+            "id": "model-hotwaterplant-mwf",
             "dis": "Makeup Water Flow",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "makeup",
@@ -3292,11 +3243,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantalloutside_air_damper_command",
+        "entity_id": "modelhotwaterplantoadc",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Outside_Air_Damper_Command",
+            "id": "model-hotwaterplant-oadc",
             "dis": "Outside Air Damper Command",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "outside",
@@ -3307,11 +3258,11 @@
         ]
     },
     {
-        "entity_id": "modelhot_water_plantallflue_temperature",
+        "entity_id": "modelhotwaterplantft",
         "kv_tags": {
-            "id": "model-Hot_Water_Plant-All-Flue_Temperature",
+            "id": "model-hotwaterplant-ft",
             "dis": "Flue Temperature",
-            "modelRef": "model-Hot_Water_Plant-All"
+            "modelRef": "model-hotwaterplant"
         },
         "m_tags": [
             "flue",
@@ -3321,33 +3272,21 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plant",
+        "entity_id": "modelsteamplant",
         "kv_tags": {
-            "id": "model-Steam_Plant",
+            "id": "model-steamplant",
             "dis": "Steam Plant"
         },
         "m_tags": [
-            "model", "equip","hvac","steamPlant"
+            "model"
         ]
     },
     {
-        "entity_id": "modelsteam_plantall",
+        "entity_id": "modelsteamplantlst",
         "kv_tags": {
-            "id": "model-Steam_Plant-All",
-            "dis": "All",
-            "modelRef": "model-Steam_Plant"
-        },
-        "m_tags": [
-            "model",
-            "all"
-        ]
-    },
-    {
-        "entity_id": "modelsteam_plantallleaving_steam_temperature",
-        "kv_tags": {
-            "id": "model-Steam_Plant-All-Leaving_Steam_Temperature",
+            "id": "model-steamplant-lst",
             "dis": "Leaving Steam Temperature",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3358,11 +3297,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallleaving_steam_temperature_setpoint",
+        "entity_id": "modelsteamplantlsts",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Leaving_Steam_Temperature_Setpoint",
+            "id": "model-steamplant-lsts",
             "dis": "Leaving Steam Temperature Setpoint",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3373,11 +3312,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallleaving_steam_flow",
+        "entity_id": "modelsteamplantlsf",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Leaving_Steam_Flow",
+            "id": "model-steamplant-lsf",
             "dis": "Leaving Steam Flow",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3388,11 +3327,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallleaving_steam_pressure",
+        "entity_id": "modelsteamplantlsp",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Leaving_Steam_Pressure",
+            "id": "model-steamplant-lsp",
             "dis": "Leaving Steam Pressure",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3403,11 +3342,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallentering_steam_flow",
+        "entity_id": "modelsteamplantesf",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Entering_Steam_Flow",
+            "id": "model-steamplant-esf",
             "dis": "Entering Steam Flow",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3418,11 +3357,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallentering_steam_pressure",
+        "entity_id": "modelsteamplantesp",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Entering_Steam_Pressure",
+            "id": "model-steamplant-esp",
             "dis": "Entering Steam Pressure",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3433,11 +3372,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantalldelta_steam_pressure",
+        "entity_id": "modelsteamplantdsp",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Delta_Steam_Pressure",
+            "id": "model-steamplant-dsp",
             "dis": "Delta Steam Pressure",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3448,11 +3387,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantalldelta_steam_flow",
+        "entity_id": "modelsteamplantdsf",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Delta_Steam_Flow",
+            "id": "model-steamplant-dsf",
             "dis": "Delta Steam Flow",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3463,11 +3402,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantalldelta_steam_temperature",
+        "entity_id": "modelsteamplantdst",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Delta_Steam_Temperature",
+            "id": "model-steamplant-dst",
             "dis": "Delta Steam Temperature",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3478,11 +3417,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallsteam_bypass_valve_command",
+        "entity_id": "modelsteamplantsbvc",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Steam_Bypass_Valve_Command",
+            "id": "model-steamplant-sbvc",
             "dis": "Steam Bypass Valve Command",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3493,11 +3432,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallsteam_mixing_valve_command",
+        "entity_id": "modelsteamplantsmvc",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Steam_Mixing_Valve_Command",
+            "id": "model-steamplant-smvc",
             "dis": "Steam Mixing Valve Command",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3508,11 +3447,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallsteam_header_pressure",
+        "entity_id": "modelsteamplantshp",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Steam_Header_Pressure",
+            "id": "model-steamplant-shp",
             "dis": "Steam Header Pressure",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "steam",
@@ -3523,11 +3462,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallentering_condensate_temperature",
+        "entity_id": "modelsteamplantect",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Entering_Condensate_Temperature",
+            "id": "model-steamplant-ect",
             "dis": "Entering Condensate Temperature",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "condensate",
@@ -3538,11 +3477,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallmakeup_water_flow",
+        "entity_id": "modelsteamplantmwf",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Makeup_Water_Flow",
+            "id": "model-steamplant-mwf",
             "dis": "Makeup Water Flow",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "makeup",
@@ -3553,11 +3492,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantalloutside_air_damper_command",
+        "entity_id": "modelsteamplantoadc",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Outside_Air_Damper_Command",
+            "id": "model-steamplant-oadc",
             "dis": "Outside Air Damper Command",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "outside",
@@ -3568,11 +3507,11 @@
         ]
     },
     {
-        "entity_id": "modelsteam_plantallflue_temperature",
+        "entity_id": "modelsteamplantft",
         "kv_tags": {
-            "id": "model-Steam_Plant-All-Flue_Temperature",
+            "id": "model-steamplant-ft",
             "dis": "Flue Temperature",
-            "modelRef": "model-Steam_Plant-All"
+            "modelRef": "model-steamplant"
         },
         "m_tags": [
             "flue",
@@ -3584,31 +3523,19 @@
     {
         "entity_id": "modeltank",
         "kv_tags": {
-            "id": "model-Tank",
+            "id": "model-tank",
             "dis": "Tank"
         },
         "m_tags": [
-            "model", "equip","hvac","tank"
+            "model"
         ]
     },
     {
-        "entity_id": "modeltankall",
+        "entity_id": "modeltanktemperature",
         "kv_tags": {
-            "id": "model-Tank-All",
-            "dis": "All",
-            "modelRef": "model-Tank"
-        },
-        "m_tags": [
-            "model",
-            "all"
-        ]
-    },
-    {
-        "entity_id": "modeltankalltemperature",
-        "kv_tags": {
-            "id": "model-Tank-All-Temperature",
+            "id": "model-tank-temperature",
             "dis": "Temperature",
-            "modelRef": "model-Tank-All"
+            "modelRef": "model-tank"
         },
         "m_tags": [
             "temp",
@@ -3617,11 +3544,11 @@
         ]
     },
     {
-        "entity_id": "modeltankallpressure",
+        "entity_id": "modeltankpressure",
         "kv_tags": {
-            "id": "model-Tank-All-Pressure",
+            "id": "model-tank-pressure",
             "dis": "Pressure",
-            "modelRef": "model-Tank-All"
+            "modelRef": "model-tank"
         },
         "m_tags": [
             "pressure",
@@ -3630,11 +3557,11 @@
         ]
     },
     {
-        "entity_id": "modeltankalllevel",
+        "entity_id": "modeltanklevel",
         "kv_tags": {
-            "id": "model-Tank-All-Level",
+            "id": "model-tank-level",
             "dis": "Level",
-            "modelRef": "model-Tank-All"
+            "modelRef": "model-tank"
         },
         "m_tags": [
             "level",
@@ -3645,19 +3572,19 @@
     {
         "entity_id": "modeluv",
         "kv_tags": {
-            "id": "model-UV",
+            "id": "model-uv",
             "dis": "UV"
         },
         "m_tags": [
-            "model", "equip","hvac","uv"
+            "model"
         ]
     },
     {
         "entity_id": "modeluvdischarge",
         "kv_tags": {
-            "id": "model-UV-Discharge",
+            "id": "model-uv-discharge",
             "dis": "Discharge",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -3665,11 +3592,11 @@
         ]
     },
     {
-        "entity_id": "modeluvdischargesupply_air_temperature",
+        "entity_id": "modeluvdischargesat",
         "kv_tags": {
-            "id": "model-UV-Discharge-Supply_Air_Temperature",
+            "id": "model-uv-discharge-sat",
             "dis": "Supply Air Temperature",
-            "modelRef": "model-UV-Discharge"
+            "modelRef": "model-uv-discharge"
         },
         "m_tags": [
             "discharge",
@@ -3680,11 +3607,11 @@
         ]
     },
     {
-        "entity_id": "modeluvdischargesupply_air_humidity",
+        "entity_id": "modeluvdischargesah",
         "kv_tags": {
-            "id": "model-UV-Discharge-Supply_Air_Humidity",
+            "id": "model-uv-discharge-sah",
             "dis": "Supply Air Humidity",
-            "modelRef": "model-UV-Discharge"
+            "modelRef": "model-uv-discharge"
         },
         "m_tags": [
             "discharge",
@@ -3695,11 +3622,11 @@
         ]
     },
     {
-        "entity_id": "modeluvdischargesupply_static_pressure",
+        "entity_id": "modeluvdischargessp",
         "kv_tags": {
-            "id": "model-UV-Discharge-Supply_Static_Pressure",
+            "id": "model-uv-discharge-ssp",
             "dis": "Supply Static Pressure",
-            "modelRef": "model-UV-Discharge"
+            "modelRef": "model-uv-discharge"
         },
         "m_tags": [
             "discharge",
@@ -3710,11 +3637,11 @@
         ]
     },
     {
-        "entity_id": "modeluvdischargesupply_airflow",
+        "entity_id": "modeluvdischargesa",
         "kv_tags": {
-            "id": "model-UV-Discharge-Supply_Airflow",
+            "id": "model-uv-discharge-sa",
             "dis": "Supply Airflow",
-            "modelRef": "model-UV-Discharge"
+            "modelRef": "model-uv-discharge"
         },
         "m_tags": [
             "discharge",
@@ -3725,11 +3652,11 @@
         ]
     },
     {
-        "entity_id": "modeluvdischargesupply_fan_command",
+        "entity_id": "modeluvdischargesfc",
         "kv_tags": {
-            "id": "model-UV-Discharge-Supply_Fan_Command",
+            "id": "model-uv-discharge-sfc",
             "dis": "Supply Fan Command",
-            "modelRef": "model-UV-Discharge"
+            "modelRef": "model-uv-discharge"
         },
         "m_tags": [
             "discharge",
@@ -3740,11 +3667,11 @@
         ]
     },
     {
-        "entity_id": "modeluvdischargesupply_fan_status",
+        "entity_id": "modeluvdischargesfs",
         "kv_tags": {
-            "id": "model-UV-Discharge-Supply_Fan_Status",
+            "id": "model-uv-discharge-sfs",
             "dis": "Supply Fan Status",
-            "modelRef": "model-UV-Discharge"
+            "modelRef": "model-uv-discharge"
         },
         "m_tags": [
             "discharge",
@@ -3757,9 +3684,9 @@
     {
         "entity_id": "modeluvreturn",
         "kv_tags": {
-            "id": "model-UV-Return",
+            "id": "model-uv-return",
             "dis": "Return",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -3767,11 +3694,11 @@
         ]
     },
     {
-        "entity_id": "modeluvreturnreturn_air_temperature",
+        "entity_id": "modeluvreturnrat",
         "kv_tags": {
-            "id": "model-UV-Return-Return_Air_Temperature",
+            "id": "model-uv-return-rat",
             "dis": "Return Air Temperature",
-            "modelRef": "model-UV-Return"
+            "modelRef": "model-uv-return"
         },
         "m_tags": [
             "return",
@@ -3782,11 +3709,11 @@
         ]
     },
     {
-        "entity_id": "modeluvreturnreturn_air_humidity",
+        "entity_id": "modeluvreturnrah",
         "kv_tags": {
-            "id": "model-UV-Return-Return_Air_Humidity",
+            "id": "model-uv-return-rah",
             "dis": "Return Air Humidity",
-            "modelRef": "model-UV-Return"
+            "modelRef": "model-uv-return"
         },
         "m_tags": [
             "return",
@@ -3797,11 +3724,11 @@
         ]
     },
     {
-        "entity_id": "modeluvreturnreturn_static_pressure",
+        "entity_id": "modeluvreturnrsp",
         "kv_tags": {
-            "id": "model-UV-Return-Return_Static_Pressure",
+            "id": "model-uv-return-rsp",
             "dis": "Return Static Pressure",
-            "modelRef": "model-UV-Return"
+            "modelRef": "model-uv-return"
         },
         "m_tags": [
             "return",
@@ -3812,11 +3739,11 @@
         ]
     },
     {
-        "entity_id": "modeluvreturnreturn_airflow",
+        "entity_id": "modeluvreturnra",
         "kv_tags": {
-            "id": "model-UV-Return-Return_Airflow",
+            "id": "model-uv-return-ra",
             "dis": "Return Airflow",
-            "modelRef": "model-UV-Return"
+            "modelRef": "model-uv-return"
         },
         "m_tags": [
             "return",
@@ -3827,11 +3754,11 @@
         ]
     },
     {
-        "entity_id": "modeluvreturnreturn_co2",
+        "entity_id": "modeluvreturnrc",
         "kv_tags": {
-            "id": "model-UV-Return-Return_CO2",
+            "id": "model-uv-return-rc",
             "dis": "Return CO2",
-            "modelRef": "model-UV-Return"
+            "modelRef": "model-uv-return"
         },
         "m_tags": [
             "return",
@@ -3842,11 +3769,11 @@
         ]
     },
     {
-        "entity_id": "modeluvreturnreturn_fan_command",
+        "entity_id": "modeluvreturnrfc",
         "kv_tags": {
-            "id": "model-UV-Return-Return_Fan_Command",
+            "id": "model-uv-return-rfc",
             "dis": "Return Fan Command",
-            "modelRef": "model-UV-Return"
+            "modelRef": "model-uv-return"
         },
         "m_tags": [
             "return",
@@ -3857,11 +3784,11 @@
         ]
     },
     {
-        "entity_id": "modeluvreturnreturn_air_damper_command",
+        "entity_id": "modeluvreturnradc",
         "kv_tags": {
-            "id": "model-UV-Return-Return_Air_Damper_Command",
+            "id": "model-uv-return-radc",
             "dis": "Return Air Damper Command",
-            "modelRef": "model-UV-Return"
+            "modelRef": "model-uv-return"
         },
         "m_tags": [
             "return",
@@ -3874,9 +3801,9 @@
     {
         "entity_id": "modeluvmixed",
         "kv_tags": {
-            "id": "model-UV-Mixed",
+            "id": "model-uv-mixed",
             "dis": "Mixed",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -3884,11 +3811,11 @@
         ]
     },
     {
-        "entity_id": "modeluvmixedmixed_air_temperature",
+        "entity_id": "modeluvmixedmat",
         "kv_tags": {
-            "id": "model-UV-Mixed-Mixed_Air_Temperature",
+            "id": "model-uv-mixed-mat",
             "dis": "Mixed Air Temperature",
-            "modelRef": "model-UV-Mixed"
+            "modelRef": "model-uv-mixed"
         },
         "m_tags": [
             "mixed",
@@ -3901,9 +3828,9 @@
     {
         "entity_id": "modeluvoutside",
         "kv_tags": {
-            "id": "model-UV-Outside",
+            "id": "model-uv-outside",
             "dis": "Outside",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -3911,11 +3838,11 @@
         ]
     },
     {
-        "entity_id": "modeluvoutsideoutside_air_temperature",
+        "entity_id": "modeluvoutsideoat",
         "kv_tags": {
-            "id": "model-UV-Outside-Outside_Air_Temperature",
+            "id": "model-uv-outside-oat",
             "dis": "Outside Air Temperature",
-            "modelRef": "model-UV-Outside"
+            "modelRef": "model-uv-outside"
         },
         "m_tags": [
             "outside",
@@ -3926,11 +3853,11 @@
         ]
     },
     {
-        "entity_id": "modeluvoutsideoutside_air_humidity",
+        "entity_id": "modeluvoutsideoah",
         "kv_tags": {
-            "id": "model-UV-Outside-Outside_Air_Humidity",
+            "id": "model-uv-outside-oah",
             "dis": "Outside Air Humidity",
-            "modelRef": "model-UV-Outside"
+            "modelRef": "model-uv-outside"
         },
         "m_tags": [
             "outside",
@@ -3941,11 +3868,11 @@
         ]
     },
     {
-        "entity_id": "modeluvoutsideoutside_air_pressure",
+        "entity_id": "modeluvoutsideoap",
         "kv_tags": {
-            "id": "model-UV-Outside-Outside_Air_Pressure",
+            "id": "model-uv-outside-oap",
             "dis": "Outside Air Pressure",
-            "modelRef": "model-UV-Outside"
+            "modelRef": "model-uv-outside"
         },
         "m_tags": [
             "outside",
@@ -3956,11 +3883,11 @@
         ]
     },
     {
-        "entity_id": "modeluvoutsideoutside_airflow",
+        "entity_id": "modeluvoutsideoa",
         "kv_tags": {
-            "id": "model-UV-Outside-Outside_Airflow",
+            "id": "model-uv-outside-oa",
             "dis": "Outside Airflow",
-            "modelRef": "model-UV-Outside"
+            "modelRef": "model-uv-outside"
         },
         "m_tags": [
             "outside",
@@ -3971,11 +3898,11 @@
         ]
     },
     {
-        "entity_id": "modeluvoutsideoutside_airflow_setpoint",
+        "entity_id": "modeluvoutsideoas",
         "kv_tags": {
-            "id": "model-UV-Outside-Outside_Airflow_Setpoint",
+            "id": "model-uv-outside-oas",
             "dis": "Outside Airflow Setpoint",
-            "modelRef": "model-UV-Outside"
+            "modelRef": "model-uv-outside"
         },
         "m_tags": [
             "outside",
@@ -3986,11 +3913,11 @@
         ]
     },
     {
-        "entity_id": "modeluvoutsideoutside_air_damper_command",
+        "entity_id": "modeluvoutsideoadc",
         "kv_tags": {
-            "id": "model-UV-Outside-Outside_Air_Damper_Command",
+            "id": "model-uv-outside-oadc",
             "dis": "Outside Air Damper Command",
-            "modelRef": "model-UV-Outside"
+            "modelRef": "model-uv-outside"
         },
         "m_tags": [
             "outside",
@@ -4003,9 +3930,9 @@
     {
         "entity_id": "modeluvexhaust",
         "kv_tags": {
-            "id": "model-UV-Exhaust",
+            "id": "model-uv-exhaust",
             "dis": "Exhaust",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -4013,11 +3940,11 @@
         ]
     },
     {
-        "entity_id": "modeluvexhaustexhaust_fan_command",
+        "entity_id": "modeluvexhaustefc",
         "kv_tags": {
-            "id": "model-UV-Exhaust-Exhaust_Fan_Command",
+            "id": "model-uv-exhaust-efc",
             "dis": "Exhaust Fan Command",
-            "modelRef": "model-UV-Exhaust"
+            "modelRef": "model-uv-exhaust"
         },
         "m_tags": [
             "exhaust",
@@ -4028,11 +3955,11 @@
         ]
     },
     {
-        "entity_id": "modeluvexhaustexhaust_damper_command",
+        "entity_id": "modeluvexhaustedc",
         "kv_tags": {
-            "id": "model-UV-Exhaust-Exhaust_Damper_Command",
+            "id": "model-uv-exhaust-edc",
             "dis": "Exhaust Damper Command",
-            "modelRef": "model-UV-Exhaust"
+            "modelRef": "model-uv-exhaust"
         },
         "m_tags": [
             "exhaust",
@@ -4045,9 +3972,9 @@
     {
         "entity_id": "modeluvconditioning",
         "kv_tags": {
-            "id": "model-UV-Conditioning",
+            "id": "model-uv-conditioning",
             "dis": "Conditioning",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -4055,11 +3982,11 @@
         ]
     },
     {
-        "entity_id": "modeluvconditioningcool_stage_command",
+        "entity_id": "modeluvconditioningcsc",
         "kv_tags": {
-            "id": "model-UV-Conditioning-Cool_Stage_Command",
+            "id": "model-uv-conditioning-csc",
             "dis": "Cool Stage Command",
-            "modelRef": "model-UV-Conditioning"
+            "modelRef": "model-uv-conditioning"
         },
         "m_tags": [
             "cool",
@@ -4069,11 +3996,11 @@
         ]
     },
     {
-        "entity_id": "modeluvconditioningheat_stage_command",
+        "entity_id": "modeluvconditioninghsc",
         "kv_tags": {
-            "id": "model-UV-Conditioning-Heat_Stage_Command",
+            "id": "model-uv-conditioning-hsc",
             "dis": "Heat Stage Command",
-            "modelRef": "model-UV-Conditioning"
+            "modelRef": "model-uv-conditioning"
         },
         "m_tags": [
             "heat",
@@ -4083,11 +4010,11 @@
         ]
     },
     {
-        "entity_id": "modeluvconditioninghumidifier_command",
+        "entity_id": "modeluvconditioninghc",
         "kv_tags": {
-            "id": "model-UV-Conditioning-Humidifier_Command",
+            "id": "model-uv-conditioning-hc",
             "dis": "Humidifier Command",
-            "modelRef": "model-UV-Conditioning"
+            "modelRef": "model-uv-conditioning"
         },
         "m_tags": [
             "humidifier",
@@ -4096,11 +4023,11 @@
         ]
     },
     {
-        "entity_id": "modeluvconditioningfilter_sensor",
+        "entity_id": "modeluvconditioningfs",
         "kv_tags": {
-            "id": "model-UV-Conditioning-Filter_Sensor",
+            "id": "model-uv-conditioning-fs",
             "dis": "Filter Sensor",
-            "modelRef": "model-UV-Conditioning"
+            "modelRef": "model-uv-conditioning"
         },
         "m_tags": [
             "filter",
@@ -4111,9 +4038,9 @@
     {
         "entity_id": "modeluvmisc",
         "kv_tags": {
-            "id": "model-UV-Misc",
+            "id": "model-uv-misc",
             "dis": "Misc",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -4123,9 +4050,9 @@
     {
         "entity_id": "modeluvmiscfreezestat",
         "kv_tags": {
-            "id": "model-UV-Misc-FreezeStat",
+            "id": "model-uv-misc-freezestat",
             "dis": "FreezeStat",
-            "modelRef": "model-UV-Misc"
+            "modelRef": "model-uv-misc"
         },
         "m_tags": [
             "freezeStat",
@@ -4134,11 +4061,11 @@
         ]
     },
     {
-        "entity_id": "modeluvmischeat_wheel_cmd",
+        "entity_id": "modeluvmischwc",
         "kv_tags": {
-            "id": "model-UV-Misc-Heat_Wheel_cmd",
+            "id": "model-uv-misc-hwc",
             "dis": "Heat Wheel cmd",
-            "modelRef": "model-UV-Misc"
+            "modelRef": "model-uv-misc"
         },
         "m_tags": [
             "heatWheel",
@@ -4147,11 +4074,11 @@
         ]
     },
     {
-        "entity_id": "modeluvmiscface/bypass_damper_command",
+        "entity_id": "modeluvmiscfdc",
         "kv_tags": {
-            "id": "model-UV-Misc-Face/Bypass_Damper_Command",
+            "id": "model-uv-misc-fdc",
             "dis": "Face/Bypass Damper Command",
-            "modelRef": "model-UV-Misc"
+            "modelRef": "model-uv-misc"
         },
         "m_tags": [
             "faceBypass",
@@ -4160,11 +4087,11 @@
         ]
     },
     {
-        "entity_id": "modeluvmiscbypass_damper_command",
+        "entity_id": "modeluvmiscbdc",
         "kv_tags": {
-            "id": "model-UV-Misc-Bypass_Damper_Command",
+            "id": "model-uv-misc-bdc",
             "dis": "Bypass Damper Command",
-            "modelRef": "model-UV-Misc"
+            "modelRef": "model-uv-misc"
         },
         "m_tags": [
             "bypass",
@@ -4176,9 +4103,9 @@
     {
         "entity_id": "modeluvzone",
         "kv_tags": {
-            "id": "model-UV-Zone",
+            "id": "model-uv-zone",
             "dis": "Zone",
-            "modelRef": "model-UV"
+            "modelRef": "model-uv"
         },
         "m_tags": [
             "model",
@@ -4186,11 +4113,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_temperature",
+        "entity_id": "modeluvzonezt",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Temperature",
+            "id": "model-uv-zone-zt",
             "dis": "Zone Temperature",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4201,11 +4128,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzoneeffective_zone_temperature_setpoint",
+        "entity_id": "modeluvzoneezts",
         "kv_tags": {
-            "id": "model-UV-Zone-Effective_Zone_Temperature_Setpoint",
+            "id": "model-uv-zone-ezts",
             "dis": "Effective Zone Temperature Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4217,11 +4144,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_occupied_cooling_setpoint",
+        "entity_id": "modeluvzonezocs",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Occupied_Cooling_Setpoint",
+            "id": "model-uv-zone-zocs",
             "dis": "Zone Occupied Cooling Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4234,11 +4161,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_occupied_heating_setpoint",
+        "entity_id": "modeluvzonezohs",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Occupied_Heating_Setpoint",
+            "id": "model-uv-zone-zohs",
             "dis": "Zone Occupied Heating Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4251,11 +4178,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_unoccupied_cooling_setpoint",
+        "entity_id": "modeluvzonezucs",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Unoccupied_Cooling_Setpoint",
+            "id": "model-uv-zone-zucs",
             "dis": "Zone Unoccupied Cooling Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4268,11 +4195,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_unoccupied_heating_setpoint",
+        "entity_id": "modeluvzonezuhs",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Unoccupied_Heating_Setpoint",
+            "id": "model-uv-zone-zuhs",
             "dis": "Zone Unoccupied Heating Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4285,11 +4212,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_standby_cooling_setpoint",
+        "entity_id": "modeluvzonezscs",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Standby_Cooling_Setpoint",
+            "id": "model-uv-zone-zscs",
             "dis": "Zone Standby Cooling Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4302,11 +4229,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_standby_heating_setpoint",
+        "entity_id": "modeluvzonezshs",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Standby_Heating_Setpoint",
+            "id": "model-uv-zone-zshs",
             "dis": "Zone Standby Heating Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4319,11 +4246,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_humidity",
+        "entity_id": "modeluvzonezh",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_Humidity",
+            "id": "model-uv-zone-zh",
             "dis": "Zone Humidity",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4334,11 +4261,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_co2",
+        "entity_id": "modeluvzonezc",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_CO2",
+            "id": "model-uv-zone-zc",
             "dis": "Zone CO2",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4349,11 +4276,11 @@
         ]
     },
     {
-        "entity_id": "modeluvzonezone_co2_setpoint",
+        "entity_id": "modeluvzonezcs",
         "kv_tags": {
-            "id": "model-UV-Zone-Zone_CO2_Setpoint",
+            "id": "model-uv-zone-zcs",
             "dis": "Zone CO2 Setpoint",
-            "modelRef": "model-UV-Zone"
+            "modelRef": "model-uv-zone"
         },
         "m_tags": [
             "zone",
@@ -4366,31 +4293,19 @@
     {
         "entity_id": "modelvav",
         "kv_tags": {
-            "id": "model-VAV",
+            "id": "model-vav",
             "dis": "VAV"
         },
         "m_tags": [
-            "model", "equip","hvac","vav"
+            "model"
         ]
     },
     {
-        "entity_id": "modelvavall",
+        "entity_id": "modelvavsat",
         "kv_tags": {
-            "id": "model-VAV-All",
-            "dis": "All",
-            "modelRef": "model-VAV"
-        },
-        "m_tags": [
-            "model",
-            "all"
-        ]
-    },
-    {
-        "entity_id": "modelvavallsupply_air_temperature",
-        "kv_tags": {
-            "id": "model-VAV-All-Supply_Air_Temperature",
+            "id": "model-vav-sat",
             "dis": "Supply Air Temperature",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "discharge",
@@ -4401,11 +4316,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallentering_air_temperature",
+        "entity_id": "modelvaveat",
         "kv_tags": {
-            "id": "model-VAV-All-Entering_Air_Temperature",
+            "id": "model-vav-eat",
             "dis": "Entering Air Temperature",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "entering",
@@ -4416,11 +4331,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallair_pressure",
+        "entity_id": "modelvavap",
         "kv_tags": {
-            "id": "model-VAV-All-Air_Pressure",
+            "id": "model-vav-ap",
             "dis": "Air Pressure",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4430,11 +4345,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallairflow",
+        "entity_id": "modelvavairflow",
         "kv_tags": {
-            "id": "model-VAV-All-Airflow",
+            "id": "model-vav-airflow",
             "dis": "Airflow",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4444,11 +4359,11 @@
         ]
     },
     {
-        "entity_id": "modelvavalleffective_airflow_setpoint",
+        "entity_id": "modelvaveas",
         "kv_tags": {
-            "id": "model-VAV-All-Effective_Airflow_Setpoint",
+            "id": "model-vav-eas",
             "dis": "Effective Airflow Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4459,11 +4374,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallminimum_airflow_setpoint",
+        "entity_id": "modelvavmas",
         "kv_tags": {
-            "id": "model-VAV-All-Minimum_Airflow_Setpoint",
+            "id": "model-vav-mas",
             "dis": "Minimum Airflow Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4474,11 +4389,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallmaximum_airflow_setpoint",
+        "entity_id": "modelvavmas",
         "kv_tags": {
-            "id": "model-VAV-All-Maximum_Airflow_Setpoint",
+            "id": "model-vav-mas",
             "dis": "Maximum Airflow Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4489,11 +4404,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallmax_reheat_airflow_setpoint",
+        "entity_id": "modelvavmras",
         "kv_tags": {
-            "id": "model-VAV-All-Max_Reheat_Airflow_Setpoint",
+            "id": "model-vav-mras",
             "dis": "Max Reheat Airflow Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4505,11 +4420,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallstandby_airflow_setpoint",
+        "entity_id": "modelvavsas",
         "kv_tags": {
-            "id": "model-VAV-All-Standby_Airflow_Setpoint",
+            "id": "model-vav-sas",
             "dis": "Standby Airflow Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4520,11 +4435,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallfan_command",
+        "entity_id": "modelvavfc",
         "kv_tags": {
-            "id": "model-VAV-All-Fan_Command",
+            "id": "model-vav-fc",
             "dis": "Fan Command",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4534,11 +4449,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallfan_status",
+        "entity_id": "modelvavfs",
         "kv_tags": {
-            "id": "model-VAV-All-Fan_Status",
+            "id": "model-vav-fs",
             "dis": "Fan Status",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4548,11 +4463,11 @@
         ]
     },
     {
-        "entity_id": "modelvavalldamper_command",
+        "entity_id": "modelvavdc",
         "kv_tags": {
-            "id": "model-VAV-All-Damper_Command",
+            "id": "model-vav-dc",
             "dis": "Damper Command",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "air",
@@ -4562,11 +4477,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallreheat_command",
+        "entity_id": "modelvavrc",
         "kv_tags": {
-            "id": "model-VAV-All-Reheat_Command",
+            "id": "model-vav-rc",
             "dis": "Reheat Command",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "reheat",
@@ -4575,11 +4490,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallmode",
+        "entity_id": "modelvavmode",
         "kv_tags": {
-            "id": "model-VAV-All-Mode",
+            "id": "model-vav-mode",
             "dis": "Mode",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "vavMode",
@@ -4588,11 +4503,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallduct_area",
+        "entity_id": "modelvavda",
         "kv_tags": {
-            "id": "model-VAV-All-Duct_Area",
+            "id": "model-vav-da",
             "dis": "Duct Area",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "ductArea",
@@ -4601,11 +4516,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallpreimeter_heat_command",
+        "entity_id": "modelvavphc",
         "kv_tags": {
-            "id": "model-VAV-All-Preimeter_Heat_Command",
+            "id": "model-vav-phc",
             "dis": "Preimeter Heat Command",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "perimeterHeat",
@@ -4614,11 +4529,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_temperature",
+        "entity_id": "modelvavzt",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Temperature",
+            "id": "model-vav-zt",
             "dis": "Zone Temperature",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4629,11 +4544,11 @@
         ]
     },
     {
-        "entity_id": "modelvavalleffective_zone_temperature_setpoint",
+        "entity_id": "modelvavezts",
         "kv_tags": {
-            "id": "model-VAV-All-Effective_Zone_Temperature_Setpoint",
+            "id": "model-vav-ezts",
             "dis": "Effective Zone Temperature Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4645,11 +4560,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_occupied_cooling_setpoint",
+        "entity_id": "modelvavzocs",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Occupied_Cooling_Setpoint",
+            "id": "model-vav-zocs",
             "dis": "Zone Occupied Cooling Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4662,11 +4577,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_occupied_heating_setpoint",
+        "entity_id": "modelvavzohs",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Occupied_Heating_Setpoint",
+            "id": "model-vav-zohs",
             "dis": "Zone Occupied Heating Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4679,11 +4594,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_unoccupied_cooling_setpoint",
+        "entity_id": "modelvavzucs",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Unoccupied_Cooling_Setpoint",
+            "id": "model-vav-zucs",
             "dis": "Zone Unoccupied Cooling Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4696,11 +4611,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_unoccupied_heating_setpoint",
+        "entity_id": "modelvavzuhs",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Unoccupied_Heating_Setpoint",
+            "id": "model-vav-zuhs",
             "dis": "Zone Unoccupied Heating Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4713,11 +4628,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_standby_cooling_setpoint",
+        "entity_id": "modelvavzscs",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Standby_Cooling_Setpoint",
+            "id": "model-vav-zscs",
             "dis": "Zone Standby Cooling Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4730,11 +4645,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_standby_heating_setpoint",
+        "entity_id": "modelvavzshs",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Standby_Heating_Setpoint",
+            "id": "model-vav-zshs",
             "dis": "Zone Standby Heating Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4747,11 +4662,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_humidity",
+        "entity_id": "modelvavzh",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_Humidity",
+            "id": "model-vav-zh",
             "dis": "Zone Humidity",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4762,11 +4677,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_co2",
+        "entity_id": "modelvavzc",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_CO2",
+            "id": "model-vav-zc",
             "dis": "Zone CO2",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
@@ -4777,11 +4692,11 @@
         ]
     },
     {
-        "entity_id": "modelvavallzone_co2_setpoint",
+        "entity_id": "modelvavzcs",
         "kv_tags": {
-            "id": "model-VAV-All-Zone_CO2_Setpoint",
+            "id": "model-vav-zcs",
             "dis": "Zone CO2 Setpoint",
-            "modelRef": "model-VAV-All"
+            "modelRef": "model-vav"
         },
         "m_tags": [
             "zone",
