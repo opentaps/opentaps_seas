@@ -126,7 +126,8 @@ The second way is to click on the "Tagging Rules" button.  Then you will see all
 to the filter page, where you can change the tags and update it.  You can also create new rule sets and rules in these screens.
 
 From this page, you can also click on "Run" to run this rule set.  You can put in a prefix so that your rules are only run for topics of that prefix, so you can run different rule sets for different
-buildings and equipment.
+buildings and equipment.  Before you run the rules, you can use the Preview feature to see the result of running your rules on the existing topics.  This can be displayed on screen or downloaded in
+a CSV file format.
 
 You can use the Export and Import features to save your tagging rules as a JSON file download and then upload it again.
 
