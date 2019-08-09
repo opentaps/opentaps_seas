@@ -73,6 +73,7 @@ from .views import (
     tag_topics,
     bacnet_prefix_list_json_view,
     tag_import_view,
+    report_preview_csv_view,
 )
 
 app_name = "core"
@@ -143,4 +144,5 @@ urlpatterns = [
     path("state.json/<str:country>", view=state_list_json_view, name="state_list_json"),
     path("timezone.json/<str:geo_id>", view=timezone_list_json_view, name="timezone_list_json"),
     path("bacnet_prefix.json/<str:site>", view=bacnet_prefix_list_json_view, name="bacnet_prefix_list_json"),
+    path("report/preview/csv", view=report_preview_csv_view, name="report_preview_csv"),
 ]
