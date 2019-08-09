@@ -854,8 +854,7 @@
             "modelRef": "model-chiller"
         },
         "m_tags": [
-            "model",
-            " run/status "
+            "model"
         ]
     },
     {
@@ -970,8 +969,7 @@
             "modelRef": "model-chiller"
         },
         "m_tags": [
-            "model",
-            "chilled water to/from ahus"
+            "model"
         ]
     },
     {
@@ -1158,8 +1156,7 @@
             "modelRef": "model-chiller"
         },
         "m_tags": [
-            "model",
-            "condenser water to/from cooling towers"
+            "model"
         ]
     },
     {
@@ -1282,8 +1279,7 @@
             "modelRef": "model-chiller"
         },
         "m_tags": [
-            "model",
-            "misc internal"
+            "model"
         ]
     },
     {
@@ -1525,8 +1521,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "discharge"
+            "model"
         ]
     },
     {
@@ -1627,8 +1622,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "return"
+            "model"
         ]
     },
     {
@@ -1744,8 +1738,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "mixed"
+            "model"
         ]
     },
     {
@@ -1771,8 +1764,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "outside"
+            "model"
         ]
     },
     {
@@ -1873,8 +1865,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "exhaust"
+            "model"
         ]
     },
     {
@@ -1915,8 +1906,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "conditioning"
+            "model"
         ]
     },
     {
@@ -1981,8 +1971,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "misc"
+            "model"
         ]
     },
     {
@@ -2046,8 +2035,7 @@
             "modelRef": "model-fcu"
         },
         "m_tags": [
-            "model",
-            "zone"
+            "model"
         ]
     },
     {
@@ -2320,8 +2308,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "discharge"
+            "model"
         ]
     },
     {
@@ -2422,8 +2409,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "return"
+            "model"
         ]
     },
     {
@@ -2539,8 +2525,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "mixed"
+            "model"
         ]
     },
     {
@@ -2566,8 +2551,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "outside"
+            "model"
         ]
     },
     {
@@ -2668,8 +2652,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "exhaust"
+            "model"
         ]
     },
     {
@@ -2710,8 +2693,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "conditioning"
+            "model"
         ]
     },
     {
@@ -2776,8 +2758,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "misc"
+            "model"
         ]
     },
     {
@@ -2841,8 +2822,7 @@
             "modelRef": "model-heatpump"
         },
         "m_tags": [
-            "model",
-            "zone"
+            "model"
         ]
     },
     {
@@ -3585,8 +3565,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "discharge"
+            "model"
         ]
     },
     {
@@ -3687,8 +3666,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "return"
+            "model"
         ]
     },
     {
@@ -3804,8 +3782,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "mixed"
+            "model"
         ]
     },
     {
@@ -3831,8 +3808,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "outside"
+            "model"
         ]
     },
     {
@@ -3933,8 +3909,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "exhaust"
+            "model"
         ]
     },
     {
@@ -3975,8 +3950,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "conditioning"
+            "model"
         ]
     },
     {
@@ -4041,8 +4015,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "misc"
+            "model"
         ]
     },
     {
@@ -4106,8 +4079,7 @@
             "modelRef": "model-uv"
         },
         "m_tags": [
-            "model",
-            "zone"
+            "model"
         ]
     },
     {
