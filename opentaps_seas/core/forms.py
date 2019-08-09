@@ -148,6 +148,7 @@ class TopicTagRuleSetCreateForm(forms.ModelForm):
 class TopicTagRuleSetRunForm(forms.Form):
     ruleset_id = ModelField(label='RuleSet', max_length=255, required=True)
     topic_filter = ModelField(label='Topic Filter', max_length=255, required=False)
+    preview_type = forms.CharField(required=False)
 
     def is_valid(self):
         if not super().is_valid():
@@ -163,10 +164,16 @@ class TopicTagRuleSetRunForm(forms.Form):
         # run the topic tag ruleset
         topic_filter = self.cleaned_data['topic_filter']
         ruleset_id = self.cleaned_data['ruleset_id']
+        preview_type = self.cleaned_data['preview_type']
+        pretend = False
+        if preview_type:
+            pretend = True
+
         logger.info('TopicTagRuleSetRunForm: for set %s and additional filter: %s', ruleset_id, topic_filter)
         rule_set = TopicTagRuleSet.objects.get(id=ruleset_id)
         # collect count of topics we ran for
         updated_set = set()
+        updated_entities = {}
         for rule in rule_set.topictagrule_set.all():
             if rule.tags:
                 rule_filters = rule.filters
@@ -177,10 +184,10 @@ class TopicTagRuleSetRunForm(forms.Form):
                         rule_filters.append(tf)
                     else:
                         rule_filters = [tf]
-                updated = utils.tag_topics(rule_filters, rule.tags, select_all=True)
+                updated, updated_entities = utils.tag_topics(rule_filters, rule.tags, select_all=True, pretend=pretend)
                 for x in updated:
                     updated_set.add(x.get('topic'))
-        return updated_set
+        return updated_set, updated_entities, preview_type
 
 
 class TopicTagRuleCreateForm(forms.ModelForm):

@@ -306,6 +306,58 @@ def get_topics_tags_report():
     return report_rows, report_header
 
 
+def tag_rulesets_run_report(entities):
+    report_rows = []
+    report_header = []
+    topics_tags = {}
+
+    for key, entity in entities.items():
+        tags_exists = False
+        topic_tags = {}
+        if entity.kv_tags:
+            topic_tags["kv_tags"] = entity.kv_tags
+            tags_exists = True
+            for key in entity.kv_tags.keys():
+                if key not in report_header:
+                    report_header.append(key)
+
+        if entity.m_tags:
+            topic_tags["m_tags"] = entity.m_tags
+            tags_exists = True
+            for tag in entity.m_tags:
+                if tag not in report_header:
+                    report_header.append(tag)
+
+        if tags_exists:
+            topics_tags[entity.topic] = topic_tags
+    report_header = sorted(report_header)
+
+    for key, entity in entities.items():
+        topic_tags = topics_tags.get(entity.topic)
+        row = [entity.topic]
+        if not topic_tags:
+            row.extend([''] * len(report_header))
+        else:
+            kv_tags = topic_tags.get("kv_tags", {})
+            m_tags = topic_tags.get("m_tags", [])
+            if kv_tags or m_tags:
+                for tag in report_header:
+                    if kv_tags and tag in kv_tags.keys():
+                        value = kv_tags[tag]
+                        row.append(value)
+                    elif m_tags and tag in m_tags:
+                        row.append("X")
+                    else:
+                        row.append("")
+            else:
+                row.append("")
+
+        report_rows.append(row)
+
+    report_header.insert(0, "topic")
+    return report_rows, report_header
+
+
 def charts_for_points(points):
     charts = []
     i = 0
@@ -662,7 +714,7 @@ def get_site_addr_loc(tags, site_id, session):
     return addr_loc
 
 
-def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_topics=None):
+def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_topics=None, pretend=False):
     qs = Topic.objects.all()
 
     if select_not_mapped_topics:
@@ -687,6 +739,7 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
 
     # store a dict of topic -> data_point.entity_id
     updated = []
+    updated_entities = {}
     for etopic in qs:
         topic = etopic.topic
         if select_all or topic in topics:
@@ -714,10 +767,13 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
                 equip = EquipmentView.objects.get(object_id=equip_ref)
                 if equip and equip.site_id:
                     e.add_tag('siteRef', equip.site_id, commit=False)
-            e.save()
+            if pretend:
+                updated_entities[topic] = e
+            else:
+                e.save()
             updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
 
-    return updated
+    return updated, updated_entities
 
 
 def get_bacnet_trending_data(rows):

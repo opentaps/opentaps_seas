@@ -39,7 +39,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form enctype="multipart/form-data" method="POST" v-on:submit.prevent="run_tag_ruleset">
+      <form ref="form" enctype="multipart/form-data" method="POST">
         {% csrf_token %}
 
         <div id="div_ruleset_id" class="form-group">
@@ -81,16 +81,27 @@
 
         <div class="form-group d-flex justify-content-around mt-5">
           {% if rule_set %}
-          <a href="{% url 'core:topictagruleset_detail' rule_set.id %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+          <a href="{% url 'core:topictagruleset_detail' rule_set.id %}" class="btn btn-secondary col-4" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
           {% else %}
-          <a href="{% url 'core:topictagruleset_list' %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+          <a href="{% url 'core:topictagruleset_list' %}" class="btn btn-secondary col-4" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
           {% endif %}
-          <button :disabled="isSaving" class="btn btn-primary col-5" type="submit">
+
+          <b-input-group :disabled="isSaving" class="col-4" v-cloak>
+            <b-input-group-prepend>
+              <b-button variant="primary" type="submit">Preview</b-button>
+            </b-input-group-prepend>
+            <select id="preview_type" name="preview_type" v-model="selectedType" class="form-control select">
+              <option value="preview_csv">To CSV File</option>
+              <option value="preview_screen">On Screen</option>
+            </select>
+          </b-input-group>
+
+          <b-button :disabled="isSaving" class="col-4" variant="primary" v-on:click="submitForm($event, null)">
             <b-spinner v-if="isSaving" small type="grow" class="mr-2"></b-spinner>
             <i v-if="!isSaving" class="fa fa-cog mr-2"></i>
             <span v-if="isSaving">Running ...</span>
             <span v-if="!isSaving">Run Rule Set</span>
-          </button>
+          </b-button>
         </div>
       </form>
     </div>
@@ -111,6 +122,8 @@
         isSaving: false,
         run_success: false,
         errors: false,
+        preview_type: false,
+        selectedType: 'preview_csv',
         valid_rulesets: [],
         ruleset_name: {% if rule_set %}'{{ rule_set.name }}'{% else %}null{% endif %},
         ruleset_id: {% if rule_set %}'{{ rule_set.id }}'{% else %}null{% endif %},
@@ -141,11 +154,14 @@
           delete this.errors.ruleset_id
         }
       },
-      run_tag_ruleset(event) {
-        console.log('run_tag_ruleset', event)
+      run_tag_ruleset(event, preview_type) {
+        console.log('run_tag_ruleset', event, preview_type)
         const formData = new FormData()
         if (this.$refs.topic_filter && this.$refs.topic_filter.value) {
           formData.set('topic_filter', this.$refs.topic_filter.value)
+        }
+        if (preview_type) {
+            formData.set('preview_type', preview_type)
         }
         if (!this.ruleset_id || !this.ruleset_id.length) {
           console.log('run_tag_ruleset missing ruleset_id', this.ruleset_id)
@@ -174,6 +190,10 @@
               console.error(e, err)
               this.errors = e
             });
+      },
+      submitForm(event, preview_type) {
+          console.log('submitForm :', event, preview_type)
+          this.run_tag_ruleset(event, preview_type)
       },
     }
   })

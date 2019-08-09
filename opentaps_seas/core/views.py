@@ -17,6 +17,8 @@
 
 import csv
 import json
+import os
+import tempfile
 from io import TextIOWrapper
 from io import BytesIO
 from io import StringIO
@@ -87,6 +89,7 @@ from django.views.generic import DetailView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
 from django.views.generic.edit import FormView
+from django.views.generic import TemplateView
 from django_filters import CharFilter
 from django_filters import FilterSet
 from django_filters.views import FilterView
@@ -1365,12 +1368,50 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
             context['object'] = rule_set
         return context
 
-    def form_valid(self, form):
-        updated_set = form.save()
-        return JsonResponse({'success': 1, 'updated': len(updated_set)})
-
     def form_invalid(self, form):
         return JsonResponse({'errors': form.errors})
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            updated_set, updated_entities, preview_type = form.save()
+            if preview_type:
+                report_rows, report_header = utils.tag_rulesets_run_report(updated_entities)
+                if preview_type == 'preview_csv':
+                    response = HttpResponse(content_type='text/csv')
+                    response['Content-Disposition'] = 'attachment; filename="TagRulesetsRunReport.csv"'
+
+                    writer = csv.writer(response)
+                    if report_header:
+                        writer.writerow(report_header)
+                        if report_rows:
+                            for row in report_rows:
+                                writer.writerow(row)
+                    else:
+                        writer.writerow([''])
+
+                else:
+                    temp = tempfile.NamedTemporaryFile(delete=False)
+                    temp.close()
+                    with open(temp.name, 'w') as file_csv:
+                        writer = csv.writer(file_csv)
+                        if report_header:
+                            writer.writerow(report_header)
+                            if report_rows:
+                                for row in report_rows:
+                                    writer.writerow(row)
+                        else:
+                            writer.writerow([''])
+
+                    response = HttpResponseRedirect(
+                        reverse("core:report_preview_csv") + '?file=' + temp.name + '&name=Tag Rulesets Run Preview')
+
+                return response
+            else:
+                return JsonResponse({'success': 1, 'updated': len(updated_set)})
+
+        else:
+            return self.form_invalid(form)
 
 
 topictagrule_run_view = TopicTagRuleRunView.as_view()
@@ -2486,3 +2527,40 @@ class TagImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
 
 tag_import_view = TagImportView.as_view()
+
+
+class ReportPreviewCsvView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
+    model = Topic
+    template_name = 'core/report_preview_csv.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ReportPreviewCsvView, self).get_context_data(**kwargs)
+        file_name = self.request.GET.get('file')
+        report_name = self.request.GET.get('name')
+        if file_name:
+            report_rows = []
+            report_header = []
+            try:
+                with open(file_name, 'rb') as csv_file:
+                    f = TextIOWrapper(csv_file, encoding='utf-8')
+                    reader = csv.reader(f)
+                    first_row = True
+                    for row in reader:
+                        if first_row:
+                            report_header.append(row)
+                            first_row = False
+                        else:
+                            report_rows.append(row)
+            except OSError:
+                messages.error(self.request, 'Cannot open repot file')
+            else:
+                os.remove(file_name)
+
+            context['report_name'] = report_name
+            context['report_header'] = report_header
+            context['report_rows'] = report_rows
+
+        return context
+
+
+report_preview_csv_view = ReportPreviewCsvView.as_view()
