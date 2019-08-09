@@ -87,12 +87,12 @@
           {% endif %}
 
           <b-input-group :disabled="isSaving" class="col-4" v-cloak>
-            <b-input-group-prepend>
-              <b-button variant="primary" type="submit">Preview</b-button>
+            <b-input-group-prepend style="width:62%">
+              <b-button variant="primary" type="submit" style="width:100%">Preview</b-button>
             </b-input-group-prepend>
-            <select id="preview_type" name="preview_type" v-model="selectedType" class="form-control select">
-              <option value="preview_csv">To CSV File</option>
-              <option value="preview_screen">On Screen</option>
+            <select id="preview_type" name="preview_type" v-model="selectedType" class="form-control">
+              <option value="preview_csv">CSV</option>
+              <option value="preview_screen">Screen</option>
             </select>
           </b-input-group>
 
