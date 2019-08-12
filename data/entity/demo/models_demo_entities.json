@@ -16,7 +16,7 @@
             "dis": "Discharge",
             "modelRef": "model-AHU"
         },
-        "m_tags": ["model", "discharge"]
+        "m_tags": ["model"]
     },
     {
         "entity_id": "modelahudischargesat",
@@ -89,7 +89,7 @@
             "dis": "Return",
             "modelRef": "model-AHU"
         },
-        "m_tags": ["model", "return"]
+        "m_tags": ["model"]
     },
     {
         "entity_id": "modelahureturnrat",
@@ -171,7 +171,7 @@
             "dis": "Mixed",
             "modelRef": "model-AHU"
         },
-        "m_tags": ["model", "mixed"]
+        "m_tags": ["model"]
     },
     {
         "entity_id": "modelahumixedmat",
@@ -190,7 +190,7 @@
             "dis": "Outside",
             "modelRef": "model-AHU"
         },
-        "m_tags": ["model", "outside"]
+        "m_tags": ["model"]
     },
     {
         "entity_id": "modelahuoutsideoat",
@@ -254,7 +254,7 @@
             "dis": "Exhaust",
             "modelRef": "model-AHU"
         },
-        "m_tags": ["model", "exhaust"]
+        "m_tags": ["model"]
     },
     {
         "entity_id": "modelahuexhaustefc",
@@ -374,7 +374,7 @@
             "dis": "Zone",
             "modelRef": "model-AHU"
         },
-        "m_tags": ["model", "zone"]
+        "m_tags": ["model"]
     },
     {
         "entity_id": "modelahuzonetemp",
