@@ -42,6 +42,8 @@ from django.utils.translation import ugettext_lazy as _
 from enum import Enum
 from filer.fields.file import FilerFileField
 from filer.models import Image as FilerFile
+from cratedb.fields import HStoreField as CrateHStoreField
+from cratedb.fields import ArrayField as CrateArrayField
 
 logger = logging.getLogger(__name__)
 
@@ -423,6 +425,8 @@ def entity_saved(sender, instance, using, **kwargs):
 
 class Topic(models.Model):
     topic = CharField(_("Topic"), max_length=255, primary_key=True)
+    kv_tags = CrateHStoreField(blank=True, null=True)
+    m_tags = CrateArrayField(CharField(max_length=255, blank=True, null=True))
 
     tried_related_point = False
     related_point = None
@@ -485,7 +489,7 @@ class Topic(models.Model):
 
     class Meta:
         managed = False
-        db_table = '"volttron"."topic"'
+        db_table = '"volttron"."entity"'
 
     class Db:
         cratedb = True
