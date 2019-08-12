@@ -43,7 +43,7 @@
     <div v-if="!editingTags">
       <div class="container tags-list d-flex flex-wrap">
         <div v-for="(item, idx) in sorted_items" class="tag d-inline-flex" v-if="should_display_tag(item)" v-bind:id="item.tag + idx">
-          <div class="tag-content d-inline-flex flex-wrap align-items-center text-nowrap">
+          <div class="tag-content d-inline-flex flex-wrap align-items-center text-wrap">
             <span v-if="!get_link(item)">${display_tag_short(item)}</span>
             <a v-if="get_link(item)" :href="get_link(item)">${display_tag_short(item)}</a>
             <div v-if="item.parent" class="text-muted text-small text-wrap ml-1">
@@ -63,7 +63,7 @@
     <div v-if="editingTags">
       <div class="container tags-table ftable">
         <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
-          <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
+          <div :class="[item._protect ? 'col-12' : 'col-10', 'text-wrap', 'm-0']">
             <span v-if="!get_link(item)" v-bind:id="item.tag + idx + 'e'">${display_tag_short(item)}</span>
             <a v-if="get_link(item)" :href="get_link(item)" v-bind:id="item.tag + idx + 'e'">${display_tag_short(item)}</a>
             <div v-if="item.parent" class="text-muted text-small text-wrap">
@@ -76,7 +76,7 @@
               <div v-if="get_link(item)">Links to: <a :href="get_link(item)">${display_tag_short(item)}</a></div>
             </b-popover>
           </div>
-          <div v-if="!item._protect" class="buttons text-nowrap col-auto row">
+          <div v-if="!item._protect" class="buttons text-nowrap col-2 text-right">
             <button v-if="item.value" v-on:click="edit_tag(idx)" class="btn btn-outline-primary btn-sm mr-1"><i class="fas fa-edit"></i></button>
             <button v-confirm="set_confirm(idx)" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
           </div>
