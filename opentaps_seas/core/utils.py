@@ -714,6 +714,85 @@ def get_site_addr_loc(tags, site_id, session):
     return addr_loc
 
 
+def filter_Q(name, operator, value, valid_tags):
+    logger.info('filter_Q %s %s %s', name, operator, value)
+    # do a dynamic Q filter, for example:
+    # kwargs = {
+    #     '{0}__{1}'.format('name', 'startswith'): 'A',
+    #     '{0}__{1}'.format('name', 'endswith'): 'Z'
+    # }
+    # Q(**kwargs)
+    #
+    # topic is the only direct field
+    # for all others we check both in kv_tags and bacnet_fields
+    # -> note: bacnet_fields are not availabe in the Crate entity yet
+    # for present and absent we also check in m_tags (using the operator isnull)
+    #
+    if 'topic' == name:
+        return Q(**{'{0}__{1}'.format(name, operator): value})
+    else:
+        condition = Q()
+        if name in valid_tags:
+            condition.add(Q(**{'kv_tags__{0}__{1}'.format(name, operator): value}), Q.OR)
+        else:
+            # for NotEqual, NotContain, Absent we do not need to check the kv_tags since the
+            # value does not exist at all
+            # for Present this will just check the m_tags array
+            # for Equal and Contain we already check in apply_filter_to_queryset
+            pass
+        if operator == 'isnull' and not value:
+            # note this is only for operator isnull
+            # note: only contains which is equivalent to isnull=False
+            condition.add(Q(**{'m_tags__contains': [name]}), Q.OR)
+        return condition
+
+
+def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_tags):
+    logger.info('apply_filter_to_queryset: %s %s %s', filter_field, filter_type, filter_value)
+    if not filter_field or filter_field == 'undefined':
+        name = 'topic'
+    else:
+        name = filter_field
+    if filter_type:
+        if filter_type == 'present':
+            qs = qs.filter(filter_Q(name, 'isnull', False, valid_tags))
+        elif filter_type == 'absent':
+            qs = qs.exclude(filter_Q(name, 'isnull', False, valid_tags))
+        elif filter_value:
+            # all of those test either topic OR a kv_tags
+            # so fail if trying to match a kv_tag
+            if not name == 'topic' and name not in valid_tags and (filter_type == 'c' or filter_type == 'eq'):
+                logger.warning('topic filter found an unused tag: %s', name)
+                return qs.none()
+            if filter_type == 'c':
+                qs = qs.filter(filter_Q(name, 'icontains', filter_value, valid_tags))
+            elif filter_type == 'nc':
+                qs = qs.exclude(filter_Q(name, 'icontains', filter_value, valid_tags))
+            elif filter_type == 'eq':
+                qs = qs.filter(filter_Q(name, 'iexact', filter_value, valid_tags))
+            elif filter_type == 'neq':
+                qs = qs.exclude(filter_Q(name, 'iexact', filter_value, valid_tags))
+    return qs
+
+
+def apply_filters_to_queryset(qs, filters):
+    # first we do a schema check since trying to fetch unused tags will cause a DB error
+    conn = get_crate_connection()
+    cursor = conn.cursor()
+    sql = """SELECT column_name from information_schema.columns
+             WHERE table_schema = 'volttron' and table_name = 'entity' and column_name like 'kv_tags[%';"""
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    valid_tags = []
+    for (cn, ) in rows:
+        # extract the tag name from "kv_tags['tag_name']"
+        valid_tags.append(cn[9:-2])
+
+    for (filter_field, filter_type, filter_value) in filters:
+        qs = apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_tags)
+    return qs
+
+
 def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_topics=None, pretend=False):
     qs = Topic.objects.all()
 
@@ -729,13 +808,10 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
     if filters:
         for qfilter in filters:
             filter_type = qfilter.get('t') or qfilter.get('type')
+            filter_field = qfilter.get('n') or qfilter.get('field')
             if filter_type:
                 filter_value = qfilter.get('f') or qfilter.get('value')
-                if filter_value:
-                    if filter_type == 'c':
-                        qs = qs.filter(Q(topic__icontains=filter_value))
-                    elif filter_type == 'nc':
-                        qs = qs.exclude(Q(topic__icontains=filter_value))
+                qs = apply_filter_to_queryset(qs, filter_field, filter_type, filter_value)
 
     # store a dict of topic -> data_point.entity_id
     updated = []

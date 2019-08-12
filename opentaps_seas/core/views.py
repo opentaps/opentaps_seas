@@ -969,12 +969,15 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
             rule_id = self.kwargs['id']
             logging.info('got a rule ID given: %s', rule_id)
             self.rule = get_object_or_404(TopicTagRule, id=rule_id)
+            q_filters = []
             for f in self.rule.filters:
-                self.used_filters.append({'type': f['type'], 'value': f['value']})
-                if f['type'] == 'c':
-                    qs = qs.filter(Q(topic__icontains=f['value']))
-                elif f['type'] == 'nc':
-                    qs = qs.exclude(Q(topic__icontains=f['value']))
+                self.used_filters.append({
+                    'field': f['field'],
+                    'type': f['type'],
+                    'value': f['value']
+                })
+                q_filters.append((f['field'], f['type'], f['value']))
+            qs = utils.apply_filters_to_queryset(qs, q_filters)
 
         elif topic_filter:
             filter_elem = {'type': 'c', 'value': topic_filter}
@@ -987,17 +990,21 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
             if filters_count:
                 n = int(filters_count)
 
+            q_filters = []
             for i in range(n):
                 filter_type = self.request.GET.get('t' + str(i))
+                filter_field = self.request.GET.get('n' + str(i))
                 if filter_type:
                     filter_value = self.request.GET.get('f' + str(i))
-                    if filter_value:
-                        self.used_filters.append({'type': filter_type, 'value': filter_value})
-                        logging.info('TopicListView get_queryset got filter [%s : %s]', filter_type, filter_value)
-                        if filter_type == 'c':
-                            qs = qs.filter(Q(topic__icontains=filter_value))
-                        elif filter_type == 'nc':
-                            qs = qs.exclude(Q(topic__icontains=filter_value))
+                    logging.info('TopicListView get_queryset got filter [%s - %s : %s]',
+                                 filter_field, filter_type, filter_value)
+                    self.used_filters.append({
+                        'field': filter_field,
+                        'type': filter_type,
+                        'value': filter_value
+                    })
+                    q_filters.append((filter_field, filter_type, filter_value))
+            qs = utils.apply_filters_to_queryset(qs, q_filters)
 
         # add empty filter at the end
         self.used_filters.append({'type': '', 'value': ''})
@@ -1051,15 +1058,14 @@ def topic_list_table(request):
     if filters_count:
         n = int(filters_count)
 
+    q_filters = []
     for i in range(n):
+        filter_field = request.POST.get('n' + str(i))
         filter_type = request.POST.get('t' + str(i))
         if filter_type:
             filter_value = request.POST.get('f' + str(i))
-            if filter_value:
-                if filter_type == 'c':
-                    qs = qs.filter(Q(topic__icontains=filter_value))
-                elif filter_type == 'nc':
-                    qs = qs.exclude(Q(topic__icontains=filter_value))
+            q_filters.append((filter_field, filter_type, filter_value))
+    qs = utils.apply_filters_to_queryset(qs, q_filters)
 
     rc = RequestConfig(request, paginate={'per_page': 15})
     table = TopicTable(qs, orderable=True, order_by='topic')
