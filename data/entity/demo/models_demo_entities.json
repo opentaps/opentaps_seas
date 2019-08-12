@@ -596,8 +596,7 @@
             "modelRef": "model-chilledwaterplant"
         },
         "m_tags": [
-            "model",
-            "chilled water to/from ahus"
+            "model"
         ]
     },
     {
@@ -800,8 +799,7 @@
             "modelRef": "model-chilledwaterplant"
         },
         "m_tags": [
-            "model",
-            "condenser water between chillers/cooling towers"
+            "model"
         ]
     },
     {
