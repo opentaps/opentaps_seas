@@ -256,33 +256,12 @@ def get_topics_tags_report():
     report_header = []
     topics_tags = {}
 
-    for topic in topics:
-        point = topic.get_related_point()
-        if point:
-            tags_exists = False
-            topic_tags = {}
-            if point.kv_tags:
-                topic_tags["kv_tags"] = point.kv_tags
-                tags_exists = True
-                for key in point.kv_tags.keys():
-                    if key not in report_header:
-                        report_header.append(key)
-
-            if point.m_tags:
-                topic_tags["m_tags"] = point.m_tags
-                tags_exists = True
-                for tag in point.m_tags:
-                    if tag not in report_header:
-                        report_header.append(tag)
-
-            if tags_exists:
-                topics_tags[topic.topic] = topic_tags
-    report_header = sorted(report_header)
+    report_header, topics_tags = get_topics_tags_report_header()
 
     # prepare report rows
     for topic in topics:
         topic_tags = topics_tags.get(topic.topic)
-        row = [topic.topic]
+        row = ['__' + topic.topic]
         if not topic_tags:
             row.extend([''] * len(report_header))
         else:
@@ -306,35 +285,46 @@ def get_topics_tags_report():
     return report_rows, report_header
 
 
+def get_topics_tags_report_header():
+    points = PointView.objects.all().order_by('topic')
+    report_header = []
+    topics_tags = {}
+
+    for point in points:
+        tags_exists = False
+        topic_tags = {}
+        if point.kv_tags:
+            topic_tags["kv_tags"] = point.kv_tags
+            tags_exists = True
+            for key in point.kv_tags.keys():
+                if key not in report_header:
+                    report_header.append(key)
+
+        if point.m_tags:
+            topic_tags["m_tags"] = point.m_tags
+            tags_exists = True
+            for tag in point.m_tags:
+                if tag not in report_header:
+                    report_header.append(tag)
+
+        if tags_exists:
+            topics_tags[point.topic] = topic_tags
+    report_header = sorted(report_header)
+
+    return report_header, topics_tags
+
+
 def tag_rulesets_run_report(entities):
     report_rows = []
     report_header = []
     topics_tags = {}
 
-    for key, entity in entities.items():
-        tags_exists = False
-        topic_tags = {}
-        if entity.kv_tags:
-            topic_tags["kv_tags"] = entity.kv_tags
-            tags_exists = True
-            for key in entity.kv_tags.keys():
-                if key not in report_header:
-                    report_header.append(key)
+    report_header, topics_tags = get_topics_tags_report_header()
 
-        if entity.m_tags:
-            topic_tags["m_tags"] = entity.m_tags
-            tags_exists = True
-            for tag in entity.m_tags:
-                if tag not in report_header:
-                    report_header.append(tag)
-
-        if tags_exists:
-            topics_tags[entity.topic] = topic_tags
-    report_header = sorted(report_header)
-
-    for key, entity in entities.items():
+    for key in sorted(entities.keys()):
+        entity = entities[key]
         topic_tags = topics_tags.get(entity.topic)
-        row = [entity.topic]
+        row = ['__' + entity.topic]
         if not topic_tags:
             row.extend([''] * len(report_header))
         else:

@@ -1379,7 +1379,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
                 report_rows, report_header = utils.tag_rulesets_run_report(updated_entities)
                 if preview_type == 'preview_csv':
                     response = HttpResponse(content_type='text/csv')
-                    response['Content-Disposition'] = 'attachment; filename="TagRulesetsRunReport.csv"'
+                    response['Content-Disposition'] = 'attachment; filename="TagRulesetsPreviewReport.csv"'
 
                     writer = csv.writer(response)
                     if report_header:
@@ -1404,7 +1404,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
                             writer.writerow([''])
 
                     response = HttpResponseRedirect(
-                        reverse("core:report_preview_csv") + '?file=' + temp.name + '&name=Tag Rulesets Run Preview')
+                        reverse("core:report_preview_csv") + '?file=' + temp.name + '&name=Tag Rulesets Preview Report')
 
                 return response
             else:
