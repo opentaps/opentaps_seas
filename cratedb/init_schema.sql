@@ -73,29 +73,8 @@ WITH (
 
 CREATE TABLE IF NOT EXISTS "volttron"."entity" (
    "kv_tags" OBJECT (DYNAMIC) AS (
-      "bacnetConfigId" STRING,
-      "bacnet_bacnet_object_type" STRING,
-      "bacnet_device_address" STRING,
-      "bacnet_device_id" LONG,
-      "bacnet_driver_type" STRING,
-      "bacnet_index" STRING,
-      "bacnet_interval" LONG,
-      "bacnet_notes" STRING,
-      "bacnet_prefix" STRING,
-      "bacnet_property" STRING,
-      "bacnet_registry_config" STRING,
-      "bacnet_timezone" STRING,
-      "bacnet_unit_details" STRING,
-      "bacnet_units" STRING,
-      "bacnet_writable" STRING,
       "dis" STRING,
-      "equipRef" STRING,
-      "id" STRING,
-      "kind" STRING,
-      "siteRef" STRING,
-      "tz" STRING,
-      "unit" STRING,
-      "writeStatus" STRING
+      "id" STRING
    ),
    "m_tags" ARRAY(STRING),
    "topic" STRING,
