@@ -509,48 +509,47 @@ class TagImportForm(forms.Form):
         import_errors = False
         import_success = False
         count = 0
-        count_ignored = 0
         count_imported = 0
         count_notfound = 0
         if records:
             # the first row is the tags
             for row in records:
-                if row['topic'].startswith('__'):
-                    count_ignored += 1
-                else:
-                    entities = Entity.objects.filter(topic=row['topic'])
-                    if entities:
-                        for entity in entities:
-                            if clear_existing_tags:
-                                entity.remove_all_tags(commit=False)
-                            for tag in row.keys():
-                                if tag != 'topic':
-                                    value = row.get(tag)
-                                    # check tag Kind
-                                    if value:
-                                        try:
-                                            tag_object = Tag.objects.get(tag=tag)
-                                        except Tag.DoesNotExist:
-                                            logging.error("Cannot get tag {}".format(tag))
-                                        else:
-                                            if tag_object.kind == 'Marker':
-                                                entity.add_tag(tag, value=None, commit=False)
-                                            else:
-                                                entity.add_tag(tag, value=value, commit=False)
-
-                            entity.save()
-
-                        count_imported += 1
-                    else:
-                        count_notfound += 1
-
                 count += 1
+                topic = row.get('topic')
+                if not topic:
+                    topic = row.get('__topic')
+                entities = Entity.objects.filter(topic=topic)
+                if entities:
+                    for entity in entities:
+                        if clear_existing_tags:
+                            entity.remove_all_tags(commit=False)
+                        for tag in row.keys():
+                            if tag != 'topic' and not tag.startswith('__'):
+                                value = row.get(tag)
+                                # check tag Kind
+                                if value:
+                                    try:
+                                        tag_object = Tag.objects.get(tag=tag)
+                                    except Tag.DoesNotExist:
+                                        logging.error("Cannot get tag {}".format(tag))
+                                    else:
+                                        if tag_object.kind == 'Marker':
+                                            entity.add_tag(tag, value=None, commit=False)
+                                        else:
+                                            entity.add_tag(tag, value=value, commit=False)
+
+                        entity.save()
+
+                    count_imported += 1
+                else:
+                    count_notfound += 1
+
         else:
             import_errors = 'Cannot parse source file'
 
         if count:
-            import_success = "Imported {}, ignored {}, not found {} of {} rows".format(
-                count_imported, count_ignored, count_notfound, count)
+            import_success = "Imported {}, not found {} of {} rows".format(
+                count_imported, count_notfound, count)
         else:
             import_errors = 'There is no any data row in the source file'
 

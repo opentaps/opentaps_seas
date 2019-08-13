@@ -261,7 +261,7 @@ def get_topics_tags_report():
     # prepare report rows
     for topic in topics:
         topic_tags = topics_tags.get(topic.topic)
-        row = ['__' + topic.topic]
+        row = [topic.topic]
         if not topic_tags:
             row.extend([''] * len(report_header))
         else:
@@ -281,7 +281,7 @@ def get_topics_tags_report():
 
         report_rows.append(row)
 
-    report_header.insert(0, "topic")
+    report_header.insert(0, "__topic")
     return report_rows, report_header
 
 
@@ -324,7 +324,7 @@ def tag_rulesets_run_report(entities):
     for key in sorted(entities.keys()):
         entity = entities[key]
         topic_tags = topics_tags.get(entity.topic)
-        row = ['__' + entity.topic]
+        row = [entity.topic]
         if not topic_tags:
             row.extend([''] * len(report_header))
         else:
@@ -344,7 +344,7 @@ def tag_rulesets_run_report(entities):
 
         report_rows.append(row)
 
-    report_header.insert(0, "topic")
+    report_header.insert(0, "__topic")
     return report_rows, report_header
 
 
@@ -845,7 +845,7 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
 
 
 def get_bacnet_trending_data(rows):
-    header = ['Point Name', 'Volttron Point Name']
+    header = ['Reference Point Name', 'Volttron Point Name']
     bacnet_data = []
     bacnet_tags = [Tag.bacnet_tag_prefix + 'units', Tag.bacnet_tag_prefix + 'unit_details',
                    Tag.bacnet_tag_prefix + 'bacnet_object_type', Tag.bacnet_tag_prefix + 'property',
