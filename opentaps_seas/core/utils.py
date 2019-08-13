@@ -261,7 +261,7 @@ def get_topics_tags_report():
     # prepare report rows
     for topic in topics:
         topic_tags = topics_tags.get(topic.topic)
-        row = ['__' + topic.topic]
+        row = [topic.topic]
         if not topic_tags:
             row.extend([''] * len(report_header))
         else:
@@ -281,7 +281,7 @@ def get_topics_tags_report():
 
         report_rows.append(row)
 
-    report_header.insert(0, "topic")
+    report_header.insert(0, "__topic")
     return report_rows, report_header
 
 
@@ -324,7 +324,7 @@ def tag_rulesets_run_report(entities):
     for key in sorted(entities.keys()):
         entity = entities[key]
         topic_tags = topics_tags.get(entity.topic)
-        row = ['__' + entity.topic]
+        row = [entity.topic]
         if not topic_tags:
             row.extend([''] * len(report_header))
         else:
@@ -344,7 +344,7 @@ def tag_rulesets_run_report(entities):
 
         report_rows.append(row)
 
-    report_header.insert(0, "topic")
+    report_header.insert(0, "__topic")
     return report_rows, report_header
 
 
@@ -796,12 +796,14 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
 
     logging.info('tag_topics: using filters %s', filters)
     if filters:
+        q_filters = []
         for qfilter in filters:
             filter_type = qfilter.get('t') or qfilter.get('type')
             filter_field = qfilter.get('n') or qfilter.get('field')
             if filter_type:
                 filter_value = qfilter.get('f') or qfilter.get('value')
-                qs = apply_filter_to_queryset(qs, filter_field, filter_type, filter_value)
+                q_filters.append((filter_field, filter_type, filter_value))
+        qs = apply_filters_to_queryset(qs, q_filters)
 
     # store a dict of topic -> data_point.entity_id
     updated = []
@@ -843,42 +845,28 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
 
 
 def get_bacnet_trending_data(rows):
-    header = ['Point Name', 'Volttron Point Name']
+    header = []
     bacnet_data = []
-    bacnet_tags = [Tag.bacnet_tag_prefix + 'units', Tag.bacnet_tag_prefix + 'unit_details',
+    bacnet_tags = [Tag.bacnet_tag_prefix + 'reference_point_name', Tag.bacnet_tag_prefix + 'volttron_point_name',
+                   Tag.bacnet_tag_prefix + 'units', Tag.bacnet_tag_prefix + 'unit_details',
                    Tag.bacnet_tag_prefix + 'bacnet_object_type', Tag.bacnet_tag_prefix + 'property',
                    Tag.bacnet_tag_prefix + 'writable', Tag.bacnet_tag_prefix + 'index',
                    Tag.bacnet_tag_prefix + 'write_priority', Tag.bacnet_tag_prefix + 'notes']
-    data_tags = ['topic', 'dis']
 
     # make header
-    for row in rows:
-        kv_tags = row.kv_tags
-        if kv_tags:
-            for key in kv_tags.keys():
-                if key not in data_tags and key in bacnet_tags:
-                    data_tags.append(key)
-                    header.append(get_tag_description(key, default=key.replace(Tag.bacnet_tag_prefix, '')))
+    for tag in bacnet_tags:
+        header.append(get_tag_description(tag, default=tag.replace(Tag.bacnet_tag_prefix, '')))
 
     # make data
     for row in rows:
         data_row = []
         kv_tags = row.kv_tags
         if kv_tags:
-            for i in range(0, len(data_tags)):
-                key = data_tags[i]
-                if key == 'topic':
-                    value = row.topic
-                else:
-                    value = kv_tags.get(key)
+            for i in range(0, len(bacnet_tags)):
+                key = bacnet_tags[i]
+                value = kv_tags.get(key)
                 if value:
                     data_row.append(value)
-                else:
-                    data_row.append('')
-        else:
-            for i in range(0, len(data_tags)):
-                if key == 'topic':
-                    data_row.append(row.topic)
                 else:
                     data_row.append('')
 
