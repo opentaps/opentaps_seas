@@ -972,11 +972,11 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
             q_filters = []
             for f in self.rule.filters:
                 self.used_filters.append({
-                    'field': f['field'],
-                    'type': f['type'],
-                    'value': f['value']
+                    'field': f.get('field'),
+                    'type': f.get('type'),
+                    'value': f.get('value')
                 })
-                q_filters.append((f['field'], f['type'], f['value']))
+                q_filters.append((f.get('field'), f.get('type'), f.get('value')))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
         elif topic_filter:
