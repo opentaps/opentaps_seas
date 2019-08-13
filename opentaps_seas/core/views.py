@@ -24,6 +24,7 @@ from io import BytesIO
 from io import StringIO
 from zipfile import ZipFile
 import logging
+from urllib.parse import urlparse
 
 from datetime import datetime
 
@@ -972,11 +973,11 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
             q_filters = []
             for f in self.rule.filters:
                 self.used_filters.append({
-                    'field': f['field'],
-                    'type': f['type'],
-                    'value': f['value']
+                    'field': f.get('field'),
+                    'type': f.get('type'),
+                    'value': f.get('value')
                 })
-                q_filters.append((f['field'], f['type'], f['value']))
+                q_filters.append((f.get('field'), f.get('type'), f.get('value')))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
         elif topic_filter:
@@ -1488,7 +1489,7 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                     for k, v in row.items():
                         field = k.lower()
                         field = field.replace(' ', '_')
-                        if 'point_name' not in field and v:
+                        if v:
                             e.add_tag(Tag.bacnet_tag_prefix + field, v, commit=False)
                     # add config file fields
                     try:
@@ -1612,11 +1613,28 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                         self.set_bacnet_config_field(config_file_json, kv_tags,
                                                      Tag.bacnet_tag_prefix + 'driver_type')
                         self.set_bacnet_config_field(config_file_json, kv_tags,
+                                                     Tag.bacnet_tag_prefix + 'registry_config')
+                        self.set_bacnet_config_field(config_file_json, kv_tags,
                                                      Tag.bacnet_tag_prefix + 'timezone')
 
                     header, bacnet_data = utils.get_bacnet_trending_data(rows)
 
-                config_file_json["registry_config"] = "config://" + csv_file_name
+                registry_config = config_file_json.get("registry_config")
+                registry_config_new = None
+                if registry_config:
+                    parse_result = urlparse(registry_config)
+                    if parse_result and parse_result.path:
+                        arr = parse_result.path.split('/')
+                        if arr:
+                            arr[-1] = csv_file_name
+                            path = '/'.join(arr)
+                            parse_result = parse_result._replace(path=path)
+                            registry_config_new = parse_result.geturl()
+
+                if registry_config_new:
+                    config_file_json["registry_config"] = registry_config_new
+                else:
+                    config_file_json["registry_config"] = "config://" + csv_file_name
                 if trending_interval:
                     config_file_json["interval"] = trending_interval
                 else:

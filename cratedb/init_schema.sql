@@ -70,3 +70,57 @@ WITH (
    "warmer.enabled" = true,
    "write.wait_for_active_shards" = 'ALL'
 );
+
+CREATE TABLE IF NOT EXISTS "volttron"."entity" (
+   "kv_tags" OBJECT (DYNAMIC) AS (
+      "bacnetConfigId" STRING,
+      "bacnet_bacnet_object_type" STRING,
+      "bacnet_device_address" STRING,
+      "bacnet_device_id" LONG,
+      "bacnet_driver_type" STRING,
+      "bacnet_index" STRING,
+      "bacnet_interval" LONG,
+      "bacnet_notes" STRING,
+      "bacnet_prefix" STRING,
+      "bacnet_property" STRING,
+      "bacnet_registry_config" STRING,
+      "bacnet_timezone" STRING,
+      "bacnet_unit_details" STRING,
+      "bacnet_units" STRING,
+      "bacnet_writable" STRING,
+      "dis" STRING,
+      "equipRef" STRING,
+      "id" STRING,
+      "kind" STRING,
+      "siteRef" STRING,
+      "tz" STRING,
+      "unit" STRING,
+      "writeStatus" STRING
+   ),
+   "m_tags" ARRAY(STRING),
+   "topic" STRING,
+   PRIMARY KEY ("topic")
+)
+CLUSTERED BY ("topic") INTO 4 SHARDS
+WITH (
+   "allocation.max_retries" = 5,
+   "blocks.metadata" = false,
+   "blocks.read" = false,
+   "blocks.read_only" = false,
+   "blocks.read_only_allow_delete" = false,
+   "blocks.write" = false,
+   column_policy = 'dynamic',
+   "mapping.total_fields.limit" = 1000,
+   max_ngram_diff = 1,
+   max_shingle_diff = 3,
+   number_of_replicas = '0-1',
+   refresh_interval = 1000,
+   "routing.allocation.enable" = 'all',
+   "routing.allocation.total_shards_per_node" = -1,
+   "translog.durability" = 'REQUEST',
+   "translog.flush_threshold_size" = 536870912,
+   "translog.sync_interval" = 5000,
+   "unassigned.node_left.delayed_timeout" = 60000,
+   "warmer.enabled" = true,
+   "write.wait_for_active_shards" = 'ALL'
+);
