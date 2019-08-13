@@ -35,7 +35,6 @@ class ArrayContains(Lookup):
 
     def as_sql(self, qn, connection):
         # note: RHS will be an array by default, but we want a scalar here
-        print('**** ArrayContains rhs : %s is %s' % (str(self.rhs), type(self.rhs)))
         if isinstance(self.rhs, list):
             self.rhs = self.rhs[0]
         lhs, lhs_params = self.process_lhs(qn, connection)
@@ -48,5 +47,4 @@ class ArrayContains(Lookup):
         # but in crate this should be written: RHS = ANY(LHS)
         # sql, params = super().as_sql(qn, connection)
         # sql = '%s::%s' % (sql, self.lhs.output_field.db_type(connection))
-        print('**** ArrayContains as_sql : ' + str(sql))
         return sql, params
