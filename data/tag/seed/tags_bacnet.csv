@@ -1,16 +1,18 @@
 tag,kind,description,details
-bacnet_prefix,Str,Prefix
-bacnet_index,Str,Index
-bacnet_notes,Str,Notes
-bacnet_units,Str,Units
-bacnet_property,Str,Property
-bacnet_writable,Str,Writable
-bacnet_unit_details,Str,Unit Details
-bacnet_bacnet_object_type,Str,BACnet Object Type
-bacnet_write_priority,Str,Write Priority
-bacnet_device_address,Uri,device_address
-bacnet_device_id,Number,device_id
-bacnet_driver_type,Str,driver_type
-bacnet_registry_config,Uri,registry_config
-bacnet_interval,Number,interval
-bacnet_timezone,Str,timezone
+bacnet_prefix,Str,Prefix,BACNet prefix from VOLTTRON devices JSON file
+bacnet_reference_point_name,Str,Reference Point Name,BACNet reference point name from VOLTTRON registry_config CSV file
+bacnet_volttron_point_name,Str,Volttron Point Name,BACNet volttron point name from VOLTTRON registry_config CSV file
+bacnet_index,Str,Index,BACNet index from VOLTTRON registry_config CSV file
+bacnet_notes,Str,Notes,BACNet notes from VOLTTRON registry_config CSV file
+bacnet_units,Str,Units,BACNet units from VOLTTRON registry_config CSV file
+bacnet_property,Str,Property,BACNet property from VOLTTRON registry_config CSV file
+bacnet_writable,Str,Writable,BACNet writable from VOLTTRON registry_config CSV file
+bacnet_unit_details,Str,Unit Details,BACNet unit details from VOLTTRON registry_config CSV file
+bacnet_bacnet_object_type,Str,BACnet Object Type, BACNet object type from VOLTTRON registry_config CSV file
+bacnet_write_priority,Str,Write Priority,BACNet write priority from VOLTTRON registry_config CSV file
+bacnet_device_address,Uri,device_address,BACNet device address from VOLTTRON devices JSON file
+bacnet_device_id,Number,device_id,BACNet device id from VOLTTRON devices JSON file
+bacnet_driver_type,Str,driver_type,BACNet driver type from VOLTTRON devices JSON file
+bacnet_registry_config,Uri,registry_config,BACNet registry config from VOLTTRON devices JSON file
+bacnet_interval,Number,interval,BACNet interval from VOLTTRON devices JSON file
+bacnet_timezone,Str,timezone,BACNet timezone from VOLTTRON devices JSON file
