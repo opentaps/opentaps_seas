@@ -595,7 +595,7 @@ def kv_tags_update_crate_entity_string(kv_tags, params_list):
     for k in kv_tags.keys():
         if not first:
             res += ', '
-        res += '"{}" = %s'.format(k, kv_tags[k])
+        res += '"{}" = CAST(%s AS STRING)'.format(k, kv_tags[k])
         params_list.append(kv_tags[k])
         first = False
     res += '}'
