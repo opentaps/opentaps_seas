@@ -796,12 +796,14 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
 
     logging.info('tag_topics: using filters %s', filters)
     if filters:
+        q_filters = []
         for qfilter in filters:
             filter_type = qfilter.get('t') or qfilter.get('type')
             filter_field = qfilter.get('n') or qfilter.get('field')
             if filter_type:
                 filter_value = qfilter.get('f') or qfilter.get('value')
-                qs = apply_filter_to_queryset(qs, filter_field, filter_type, filter_value)
+                q_filters.append((filter_field, filter_type, filter_value))
+        qs = apply_filters_to_queryset(qs, q_filters)
 
     # store a dict of topic -> data_point.entity_id
     updated = []
