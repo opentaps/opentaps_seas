@@ -1375,8 +1375,16 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
             context['object'] = rule_set
         return context
 
-    def form_invalid(self, form):
-        return JsonResponse({'errors': form.errors})
+    def form_invalid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        errors = {}
+        for field in form:
+            for error in field.errors:
+                errors[field.name] = error
+
+        if errors:
+            context['errors'] = errors
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -1418,7 +1426,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
                 return JsonResponse({'success': 1, 'updated': len(updated_set)})
 
         else:
-            return self.form_invalid(form)
+            return self.form_invalid(form, **kwargs)
 
 
 topictagrule_run_view = TopicTagRuleRunView.as_view()
