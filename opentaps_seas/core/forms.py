@@ -548,8 +548,9 @@ class TagImportForm(forms.Form):
             import_errors = 'Cannot parse source file'
 
         if count:
-            import_success = "Imported {}, not found {} of {} rows".format(
-                count_imported, count_notfound, count)
+            import_success = "Imported {} rows successfully.".format(count_imported)
+            if count_notfound > 0:
+                import_success += " {} rows from your CSV could not be found.".format(count_notfound)
         else:
             import_errors = 'There is no any data row in the source file'
 
