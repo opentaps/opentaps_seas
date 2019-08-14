@@ -22,9 +22,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
-from opentaps_seas.core.models import Entity
-from opentaps_seas.core.models import EntityNote
-from opentaps_seas.core.models import Tag
+from opentaps_seas.core.models import Entity, SiteView, EntityNote, Tag, EquipmentView
 
 
 class ModelAPITests(TestCase):
@@ -47,6 +45,16 @@ class ModelAPITests(TestCase):
             'kind': 'Str',
             'description': 'Display name'
             })
+
+        Entity.objects.get_or_create(entity_id='@A', defaults={'m_tags': ['site'], 'kv_tags': {
+            'geoState': 'VA',
+            'area': '1000ft²',
+            'geoAddr': 'Richmond,VA',
+            'tz': 'New_York',
+            'id': '@A',
+            'geoCity': 'Richmond',
+            'dis': 'A'
+        }})
 
     def setUp(self):
         self._cleanup_data()
@@ -217,3 +225,73 @@ class ModelAPITests(TestCase):
 
         note = EntityNote.objects.filter(entity_id=entity_id).first()
         self.assertIsNone(note)
+
+    def test_model_apply_create_equipment(self):
+        model_id = '_test/mymodel'
+        equipment_id = '_test/myequipment'
+        self._login()
+
+        # create tags
+        tag_create_url = reverse('core:tag_create')
+        tag1 = {'tag': '_test/mytag1', 'description': 'this is a test tag', 'kind': 'Marker'}
+        tag2 = {'tag': '_test/mytag2', 'description': 'this is a test tag', 'kind': 'Marker'}
+        self.client.post(tag_create_url, tag1)
+        self.client.post(tag_create_url, tag2)
+
+        # create model
+        model_data = {'entity_id': model_id, 'description': 'This is a test model'}
+        model_create_url = reverse('core:model_create')
+        self.client.post(model_create_url, model_data)
+        # update created model's tags
+        model_update_url = reverse('core:entity_tag', kwargs={'entity_id': slugify(model_id)})
+        self.client.post(model_update_url, {'tag': '_test/mytag1'})
+        self.client.post(model_update_url, {'tag': '_test/mytag2'})
+
+        # create equipment with created model
+        eq_data = {'entity_id': equipment_id, 'description': 'This is a test equipment', 'model': model_id}
+        eq_create_url = reverse('core:equipment_create', kwargs={'site': '@A'})
+        self.client.post(eq_create_url, eq_data)
+
+        # check model's tags applied to equipment's tags
+        equipment = Entity.objects.get(entity_id=slugify(equipment_id))
+        self.assertIn('_test/mytag1', equipment.m_tags)
+        self.assertIn('_test/mytag2', equipment.m_tags)
+
+    def test_model_apply_update_equipment(self):
+        model_id = '_test/mymodel'
+        equipment_id = '_test/myequipment'
+        self._login()
+
+        # create tags
+        tag_create_url = reverse('core:tag_create')
+        tag1 = {'tag': '_test/mytag1', 'description': 'this is a test tag', 'kind': 'Marker'}
+        tag2 = {'tag': '_test/mytag2', 'description': 'this is a test tag', 'kind': 'Marker'}
+        self.client.post(tag_create_url, tag1)
+        self.client.post(tag_create_url, tag2)
+
+        # create model
+        model_data = {'entity_id': model_id, 'description': 'This is a test model'}
+        model_create_url = reverse('core:model_create')
+        self.client.post(model_create_url, model_data)
+        # update created model's tags
+        model_update_url = reverse('core:entity_tag', kwargs={'entity_id': slugify(model_id)})
+        self.client.post(model_update_url, {'tag': '_test/mytag1'})
+        self.client.post(model_update_url, {'tag': '_test/mytag2'})
+
+        # create equipment without model
+        eq_data = {'entity_id': equipment_id, 'description': 'This is a test equipment'}
+        eq_create_url = reverse('core:equipment_create', kwargs={'site': '@A'})
+        self.client.post(eq_create_url, eq_data)
+        # update created equipment's model
+        eq_update_url = reverse('core:entity_tag', kwargs={'entity_id': slugify(equipment_id)})
+        eq_update_data = {
+            'update': 1,
+            'tag': 'modelRef',
+            'value': model_id
+        }
+        self.client.post(eq_update_url, eq_update_data)
+
+        # check model's tags applied to equipment's tags
+        equipment = Entity.objects.get(entity_id=slugify(equipment_id))
+        self.assertIn('_test/mytag1', equipment.m_tags)
+        self.assertIn('_test/mytag2', equipment.m_tags)
