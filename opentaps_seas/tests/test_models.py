@@ -16,13 +16,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import json
-from datetime import date
 
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
-from opentaps_seas.core.models import Entity, SiteView, EntityNote, Tag, EquipmentView
+from opentaps_seas.core.models import Entity, EntityNote, Tag
 
 
 class ModelAPITests(TestCase):
