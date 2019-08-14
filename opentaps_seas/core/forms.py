@@ -404,7 +404,7 @@ class TopicImportForm(forms.Form):
 class TopicExportForm(forms.Form):
     site = forms.ChoiceField(required=False)
     device_prefix = forms.CharField(required=False)
-    only_with_trending = forms.BooleanField(label="Only export topics with Trending set", required=False, initial=True)
+    only_with_trending = forms.BooleanField(label="Only export topics with Interval set", required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
         site_id = kwargs.pop('site_id')
