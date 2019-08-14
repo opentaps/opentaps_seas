@@ -739,7 +739,7 @@ def filter_Q(name, operator, value, valid_tags):
 
 def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_tags):
     logger.info('apply_filter_to_queryset: %s %s %s', filter_field, filter_type, filter_value)
-    if not filter_field or filter_field == 'undefined':
+    if not filter_field or filter_field == 'undefined' or filter_field == 'Topic':
         name = 'topic'
     else:
         name = filter_field
