@@ -673,6 +673,9 @@
           })
         }
       },
+      is_value_required(filter) {
+        return !(filter.type == 'absent' || filter.type == 'present')
+      },
       set_save_rule(update_data) {
         // check there are filters or tags to save
         filters = eventHub.get_filters()
@@ -691,14 +694,29 @@
         for (var i=0; i<filters.length; i++) {
           // check at least one has value
           f = filters[i]
-          if (f.value) {
-            valid_filters.push({type: f.type, value: f.value})
+          if (!this.is_value_required(f) || f.value) {
+            console.log('*** filter = ', f)
+            var field = f.field ? (f.field.value || f.field) : 'topic'
+            valid_filters.push({
+              field: field,
+              type: f.type,
+              value: f.value
+            })
+            if (field != 'topic' && field != 'Topic') {
+              details += ' ' + field
+            }
             if (f.type == 'c') {
-              details += ' contain'
+              details += ' contains'
             } else if (f.type == 'nc') {
               details += ' does not contain'
+            } else if (f.type == 'present') {
+              details += ' is present, '
+            } else if (f.type == 'absent') {
+              details += ' is absent, '
             }
-            details += ' "' + f.value + '", '
+            if (this.is_value_required(f)) {
+              details += ' "' + f.value + '", '
+            }
           }
         }
         if (valid_filters.length) {
@@ -988,15 +1006,18 @@
         this.filters.splice(index, 1)
         this.submit_filters()
       },
+      append_blank_filter() {
+        this.filters.push({field: 'Topic', type: 'c', value: ''})
+      },
       check_add_blank_filter() {
         f = this.filters[this.filters.length-1]
         console.log('check_add_blank_filter last filter', f, this.filters)
-        if (!this.is_value_required(f) || (f.value && f.value.trim().length)) this.filters.push({field: 'Topic', type: 'c', value: ''})
+        if (!this.is_value_required(f) || (f.value && f.value.trim().length)) this.append_blank_filter()
       },
       add_filter(filter) {
         console.log('add_filter', filter)
         if (!this.is_value_required(filter) ||(filter.value)) {
-            this.filters.push({type: 'c', value: ''})
+            this.append_blank_filter()
             this.submit_filters()
         }
       },
@@ -1004,8 +1025,9 @@
         n = 0
         for (i=0; i<this.filters.length; i++) {
             f = this.filters[i]
+            var field = f.field ? (f.field.value || f.field) : 'topic'
             if (!this.is_value_required(f) || f.value) {
-                formData.set('n'+n, f.field.value)
+                formData.set('n'+n, field)
                 formData.set('t'+n, f.type)
                 formData.set('f'+n, f.value)
                 n++
@@ -1067,8 +1089,14 @@
         }
         filters = []
         for (i=0; i<this.filters.length; i++) {
-          if (this.filters[i].value && this.filters[i].value.length) {
-            filters.push({t: this.filters[i].type, f: this.filters[i].value})
+          var f = this.filters[i]
+          if (f.value && f.value.length) {
+            var field = f.field ? (f.field.value || f.field) : 'topic'
+            filters.push({
+              n: field,
+              t: f.type,
+              f: f.value
+            })
           }
         }
         data = {tags: tags, topics: topics, filters: filters, select_all: this.select_all_matching}
