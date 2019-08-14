@@ -723,7 +723,7 @@ def filter_Q(name, operator, value, valid_tags):
     else:
         condition = Q()
         if name in valid_tags:
-            condition.add(Q(**{'kv_tags__{0}__{1}'.format(name, operator): value}), Q.OR)
+            condition.add(Q(**{'crateentity__kv_tags__{0}__{1}'.format(name, operator): value}), Q.OR)
         else:
             # for NotEqual, NotContain, Absent we do not need to check the kv_tags since the
             # value does not exist at all
@@ -733,7 +733,7 @@ def filter_Q(name, operator, value, valid_tags):
         if operator == 'isnull' and not value:
             # note this is only for operator isnull
             # note: only contains which is equivalent to isnull=False
-            condition.add(Q(**{'m_tags__contains': [name]}), Q.OR)
+            condition.add(Q(**{'crateentity__m_tags__contains': [name]}), Q.OR)
         return condition
 
 

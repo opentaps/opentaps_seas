@@ -29,6 +29,7 @@ from django.db.models import CharField
 from django.db.models import DateTimeField
 from django.db.models import ForeignKey
 from django.db.models import IntegerField
+from django.db.models import OneToOneField
 from django.db.models import ProtectedError
 from django.db.models import TextField
 from django.db.models.signals import post_delete
@@ -425,8 +426,6 @@ def entity_saved(sender, instance, using, **kwargs):
 
 class Topic(models.Model):
     topic = CharField(_("Topic"), max_length=255, primary_key=True)
-    kv_tags = CrateHStoreField(blank=True, null=True)
-    m_tags = CrateArrayField(CharField(max_length=255, blank=True, null=True))
 
     tried_related_point = False
     related_point = None
@@ -489,10 +488,87 @@ class Topic(models.Model):
 
     class Meta:
         managed = False
+        db_table = '"volttron"."topic"'
+
+    class Db:
+        cratedb = True
+
+
+class CrateEntity(models.Model):
+    topic = OneToOneField(Topic,
+                          on_delete=models.DO_NOTHING,
+                          db_column='topic',
+                          primary_key=True)
+    kv_tags = CrateHStoreField(blank=True, null=True)
+    m_tags = CrateArrayField(CharField(max_length=255, blank=True, null=True))
+
+    tried_related_point = False
+    related_point = None
+
+    def __str__(self):
+        return self.topic.topic
+
+    @property
+    def point_description(self):
+        p = self.get_related_point()
+        if p:
+            return p.description
+        return None
+
+    @property
+    def equipment_id(self):
+        p = self.get_related_point()
+        if p:
+            return p.equipment_id
+        return None
+
+    @property
+    def entity_id(self):
+        p = self.get_related_point()
+        if p:
+            return p.entity_id
+        return None
+
+    @property
+    def site_id(self):
+        p = self.get_related_point()
+        if p:
+            return p.site_id
+        return None
+
+    @classmethod
+    def ensure_topic_exists(cls, topic):
+        with connections['crate'].cursor() as c:
+            sql = """INSERT INTO {0} (topic)
+            VALUES (%s)""".format("volttron.topic")
+            try:
+                c.execute(sql, [topic])
+            except Exception:
+                # just make sure the topic exists
+                pass
+
+    def get_related_point(self):
+        if not self.related_point and not self.tried_related_point:
+            try:
+                self.related_point = PointView.objects.filter(topic=self.topic)[0]
+            except IndexError:
+                self.tried_related_point = True
+
+        return self.related_point
+
+    def get_absolute_url(self):
+        if self.entity_id:
+            return reverse("core:point_detail", kwargs={"entity_id": self.entity_id})
+        return reverse("core:entity_detail", kwargs={"entity_id": self.topic})
+
+    class Meta:
+        managed = False
         db_table = '"volttron"."entity"'
 
     class Db:
         cratedb = True
+
+
 
 
 class TimeZone(models.Model):
@@ -563,7 +639,7 @@ class TopicTagRuleSet(models.Model):
 
 class TopicTagRule(models.Model):
     name = CharField(_("Name"), max_length=255)
-    rule_set = models.ForeignKey(TopicTagRuleSet, on_delete=models.CASCADE)
+    rule_set = ForeignKey(TopicTagRuleSet, on_delete=models.CASCADE)
     filters = ArrayField(HStoreField(blank=True, null=True), default=list)
     tags = ArrayField(HStoreField(blank=True, null=True), default=list)
 
