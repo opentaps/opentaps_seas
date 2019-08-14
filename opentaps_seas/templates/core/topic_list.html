@@ -991,7 +991,7 @@
       check_add_blank_filter() {
         f = this.filters[this.filters.length-1]
         console.log('check_add_blank_filter last filter', f, this.filters)
-        if (!this.is_value_required(f) || (f.value && f.value.trim().length)) this.filters.push({type: 'c', value: ''})
+        if (!this.is_value_required(f) || (f.value && f.value.trim().length)) this.filters.push({field: 'Topic', type: 'c', value: ''})
       },
       add_filter(filter) {
         console.log('add_filter', filter)
