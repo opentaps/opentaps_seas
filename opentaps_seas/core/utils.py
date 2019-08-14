@@ -845,42 +845,28 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
 
 
 def get_bacnet_trending_data(rows):
-    header = ['Reference Point Name', 'Volttron Point Name']
+    header = []
     bacnet_data = []
-    bacnet_tags = [Tag.bacnet_tag_prefix + 'units', Tag.bacnet_tag_prefix + 'unit_details',
+    bacnet_tags = [Tag.bacnet_tag_prefix + 'reference_point_name', Tag.bacnet_tag_prefix + 'volttron_point_name',
+                   Tag.bacnet_tag_prefix + 'units', Tag.bacnet_tag_prefix + 'unit_details',
                    Tag.bacnet_tag_prefix + 'bacnet_object_type', Tag.bacnet_tag_prefix + 'property',
                    Tag.bacnet_tag_prefix + 'writable', Tag.bacnet_tag_prefix + 'index',
                    Tag.bacnet_tag_prefix + 'write_priority', Tag.bacnet_tag_prefix + 'notes']
-    data_tags = ['topic', 'dis']
 
     # make header
-    for row in rows:
-        kv_tags = row.kv_tags
-        if kv_tags:
-            for key in kv_tags.keys():
-                if key not in data_tags and key in bacnet_tags:
-                    data_tags.append(key)
-                    header.append(get_tag_description(key, default=key.replace(Tag.bacnet_tag_prefix, '')))
+    for tag in bacnet_tags:
+        header.append(get_tag_description(tag, default=tag.replace(Tag.bacnet_tag_prefix, '')))
 
     # make data
     for row in rows:
         data_row = []
         kv_tags = row.kv_tags
         if kv_tags:
-            for i in range(0, len(data_tags)):
-                key = data_tags[i]
-                if key == 'topic':
-                    value = row.topic
-                else:
-                    value = kv_tags.get(key)
+            for i in range(0, len(bacnet_tags)):
+                key = bacnet_tags[i]
+                value = kv_tags.get(key)
                 if value:
                     data_row.append(value)
-                else:
-                    data_row.append('')
-        else:
-            for i in range(0, len(data_tags)):
-                if key == 'topic':
-                    data_row.append(row.topic)
                 else:
                     data_row.append('')
 
