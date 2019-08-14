@@ -41,7 +41,7 @@
       </div>
       <form ref="form" enctype="multipart/form-data" method="POST">
         {% csrf_token %}
-
+        <input type="hidden" name="ruleset_id" v-model="ruleset_id"/>
         <div id="div_ruleset_id" class="form-group">
           <label for="ruleset_id" class="col-form-label requiredField" style="width:200px;">
             Rule Set<span class="asteriskField">*</span>
@@ -54,7 +54,7 @@
               :min-matching-chars="0"
               ref="ruleset_id"
               id="ruleset_id"
-              name="ruleset_id"
+              name="ruleset_id_select"
               v-model="ruleset_name"
               @hit="select_rule($event)"
               :data="valid_rulesets"
@@ -66,6 +66,8 @@
             <span v-for="err in errors.ruleset_id" class="text-danger">${ err }</span>
           </span>
         </div>
+
+
 
         <div id="div_topic_filter" class="form-group">
           <label for="topic_filter" class="col-form-label" style="width:200px;">
@@ -121,7 +123,7 @@
         csrfmiddlewaretoken: CSRF_TOKEN,
         isSaving: false,
         run_success: false,
-        errors: false,
+        errors: {% if errors %} {{ errors|safe }}{% else %} false {% endif %},
         preview_type: false,
         selectedType: 'preview_csv',
         valid_rulesets: [],
