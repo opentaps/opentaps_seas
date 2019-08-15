@@ -323,14 +323,12 @@ def tag_rulesets_run_report(entities):
 
     for key in sorted(entities.keys()):
         entity = entities[key]
-        topic_tags = topics_tags.get(entity.topic)
-        row = [entity.topic]
-        if not topic_tags:
+        row = [key]
+        if not entity:
             row.extend([''] * len(report_header))
         else:
-            logging.info('tag_rulesets_run_report: %s', topic_tags)
-            kv_tags = topic_tags.get("kv_tags", {})
-            m_tags = topic_tags.get("m_tags", [])
+            kv_tags = entity.kv_tags
+            m_tags = entity.m_tags
             if kv_tags or m_tags:
                 for tag in report_header:
                     if kv_tags and tag in kv_tags.keys():
