@@ -14,5 +14,4 @@ bacnet_device_address,Uri,device_address,BACNet device address from VOLTTRON dev
 bacnet_device_id,Number,device_id,BACNet device id from VOLTTRON devices JSON file
 bacnet_driver_type,Str,driver_type,BACNet driver type from VOLTTRON devices JSON file
 bacnet_registry_config,Uri,registry_config,BACNet registry config from VOLTTRON devices JSON file
-bacnet_interval,Number,interval,BACNet interval from VOLTTRON devices JSON file
 bacnet_timezone,Str,timezone,BACNet timezone from VOLTTRON devices JSON file
