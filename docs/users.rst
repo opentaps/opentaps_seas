@@ -146,16 +146,16 @@ cells.  If the tags is a marker tag, there will be an X.
 Exporting Topics
 ################
 
-This can be used to create VOLTTRON BACNet CSV and JSON configuration files, so you can choose which topics to trend or set different trending intervals for your topics.
-To use this feature, first set the ``trending`` tag to the trending interval in minutes for your topics, as
+This can be used to create VOLTTRON BACNet CSV and JSON configuration files, so you can choose which topics to trend or set different intervals for your topics.
+To use this feature, first set the ``interval`` tag to the interval in minutes for your topics, as
 part of your Tagging Rules or applying tags to your filtered topics.  Then, click on Export from the Topics page or from the BACNet Configs section of your Site.  If you come from
 the Topics page, you will have to choose the Site and the BACNet Config prefix.
 
 Then you can
-choose to only export the topics with Trending set, which means only the topics with ``trending`` set will be exported, or uncheck this to export all the topics with this prefix.  
-You will get a zip file with CSV and JSON for each distinct ``trending`` tag value for this BACNet Config prefix.  For example, if you set some topics to trend at 5 minutes, some at
+choose to only export the topics with Interval set, which means only the topics with ``interval`` set will be exported, or uncheck this to export all the topics with this prefix.  
+You will get a zip file with CSV and JSON for each distinct ``interval`` tag value for this BACNet Config prefix.  For example, if you set some topics to trend at 5 minutes, some at
 15 minutes, and some at 60 minutes, you will get CSV and JSON files for 5, 15, and 60 minutes with _5, _15, and _60 in their file names.  If you unchecked "Only export the topics with
-Trending set", then you will get a CSV and JSON file combination for all the other topics that do not have trending set as well.  These config files can then be loaded into your 
+Interval set", then you will get a CSV and JSON file combination for all the other topics that do not have interval set as well.  These config files can then be loaded into your 
 on site VOLTTRON instance. 
 
 Models
