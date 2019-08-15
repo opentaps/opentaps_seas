@@ -826,8 +826,12 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
             for tag in tags:
                 # never tag with 'site' or 'equip'!
                 if tag != 'site' and tag != 'equip':
-                    logging.info('*** add tag %s', tag)
-                    e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
+                    if tag.get('remove') is True or tag.get('remove') == 'True':
+                        logging.info('*** remove tag %s', tag)
+                        e.remove_tag(tag.get('tag'), commit=False)
+                    else:
+                        logging.info('*** add tag %s', tag)
+                        e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
             # if tagged with an equipRef make sure the siteRef also matches
             equip_ref = e.kv_tags.get('equipRef')
             if equip_ref:
