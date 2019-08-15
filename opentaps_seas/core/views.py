@@ -1375,8 +1375,16 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
             context['object'] = rule_set
         return context
 
-    def form_invalid(self, form):
-        return JsonResponse({'errors': form.errors})
+    def form_invalid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        errors = {}
+        for field in form:
+            for error in field.errors:
+                errors[field.name] = error
+
+        if errors:
+            context['errors'] = errors
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -1418,7 +1426,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
                 return JsonResponse({'success': 1, 'updated': len(updated_set)})
 
         else:
-            return self.form_invalid(form)
+            return self.form_invalid(form, **kwargs)
 
 
 topictagrule_run_view = TopicTagRuleRunView.as_view()
@@ -1489,6 +1497,8 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                     for k, v in row.items():
                         field = k.lower()
                         field = field.replace(' ', '_')
+                        if field == 'point_name':
+                            field = 'reference_point_name'
                         if v:
                             e.add_tag(Tag.bacnet_tag_prefix + field, v, commit=False)
                     # add config file fields
@@ -1509,7 +1519,10 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                                         field = field.replace(' ', '_')
                                         e.add_tag(Tag.bacnet_tag_prefix + field, value1, commit=False)
                                 else:
-                                    e.add_tag(Tag.bacnet_tag_prefix + field, value, commit=False)
+                                    if key == 'interval':
+                                        e.add_tag(field, value, commit=False)
+                                    else:
+                                        e.add_tag(Tag.bacnet_tag_prefix + field, value, commit=False)
 
                     logger.info('TopicImportForm: imported Data Point %s as %s with topic %s', entity_id, name, topic)
                     e.save()
@@ -1578,7 +1591,7 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         response["Content-Disposition"] = "attachment; filename=bacnet_config.zip"
 
         trendings = Entity.objects.filter(kv_tags__bacnet_prefix=device_prefix).values(
-                    'kv_tags__trending').annotate(dcount=Count('kv_tags__trending'))
+                    'kv_tags__interval').annotate(dcount=Count('kv_tags__interval'))
 
         files_list = []
 
@@ -1586,12 +1599,12 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
             for tr in trendings:
                 config_file_json = {'driver_config': {}}
                 trending_interval = None
-                csv_file_name = "_Trending_Not_Set.csv"
-                config_file_name = "_Trending_Not_Set.config"
-                if tr['kv_tags__trending']:
-                    trending_interval = tr['kv_tags__trending']
-                    csv_file_name = '_Trending_' + trending_interval + ".csv"
-                    config_file_name = '_Trending_' + trending_interval + ".config"
+                csv_file_name = "_Interval_Not_Set.csv"
+                config_file_name = "_Interval_Not_Set.config"
+                if tr['kv_tags__interval']:
+                    trending_interval = tr['kv_tags__interval']
+                    csv_file_name = '_Interval_' + trending_interval + ".csv"
+                    config_file_name = '_Interval_' + trending_interval + ".config"
 
                 if trending_interval is None and only_with_trending:
                     continue
@@ -1601,7 +1614,7 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                 rows = Entity.objects.filter(
                        kv_tags__bacnet_prefix=device_prefix,
                        m_tags__contains=['point'],
-                       kv_tags__trending=trending_interval)
+                       kv_tags__interval=trending_interval)
                 if rows:
                     # get config file tags from first row
                     kv_tags = rows[0].kv_tags
