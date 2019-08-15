@@ -169,7 +169,8 @@ class TopicTagRuleSetRunForm(forms.Form):
         if preview_type:
             pretend = True
 
-        logger.info('TopicTagRuleSetRunForm: for set %s and additional filter: %s', ruleset_id, topic_filter)
+        logger.info('TopicTagRuleSetRunForm: for set %s and additional filter: %s, pretend: %s',
+                    ruleset_id, topic_filter, pretend)
         rule_set = TopicTagRuleSet.objects.get(id=ruleset_id)
         # collect count of topics we ran for
         updated_set = set()
