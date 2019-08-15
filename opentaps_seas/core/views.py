@@ -1389,7 +1389,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            updated_set, updated_entities, preview_type = form.save()
+            updated_set, updated_entities, preview_type, updated_tags, removed_tags = form.save()
             if preview_type:
                 report_rows, report_header = utils.tag_rulesets_run_report(updated_entities)
                 if preview_type == 'preview_csv':
@@ -1414,7 +1414,27 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
                             writer.writerow(report_header)
                             if report_rows:
                                 for row in report_rows:
-                                    writer.writerow(row)
+                                    updated_tag = updated_tags.get(row[0])
+                                    removed_tag = removed_tags.get(row[0])
+                                    if updated_tag or removed_tag:
+                                        if not updated_tag:
+                                            updated_tag = {}
+                                        if not removed_tag:
+                                            removed_tag = {}
+                                        row_new = []
+                                        for i, value in enumerate(row):
+                                            header = report_header[i]
+                                            value_updated = updated_tag.get(header)
+                                            value_removed = removed_tag.get(header)
+                                            if value_updated:
+                                                value += "::$$updated$$"
+                                            elif value_removed:
+                                                value = value_removed + "::$$removed$$"
+                                            row_new.append(value)
+
+                                        writer.writerow(row_new)
+                                    else:
+                                        writer.writerow(row)
                         else:
                             writer.writerow([''])
 
@@ -2587,7 +2607,21 @@ class ReportPreviewCsvView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateVie
                             report_header.append(row)
                             first_row = False
                         else:
-                            report_rows.append(row)
+                            row_new = []
+                            for value in row:
+                                item = {'value': value}
+                                if '::$$updated$$' in value:
+                                    item['op'] = 'updated'
+                                    item['value'] = value.replace('::$$updated$$', '')
+                                elif '::$$removed$$' in value:
+                                    item['op'] = 'removed'
+                                    item['value'] = value.replace('::$$removed$$', '')
+
+                                if 'type:MARKER' in value:
+                                    item['value'] = 'X'
+
+                                row_new.append(item)
+                            report_rows.append(row_new)
             except OSError:
                 messages.error(self.request, 'Cannot open repot file')
             else:

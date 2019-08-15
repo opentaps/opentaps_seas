@@ -327,8 +327,8 @@ def tag_rulesets_run_report(entities):
         if not entity:
             row.extend([''] * len(report_header))
         else:
-            kv_tags = entity.kv_tags
-            m_tags = entity.m_tags
+            kv_tags = entity.get('kv_tags')
+            m_tags = entity.get('m_tags')
             if kv_tags or m_tags:
                 for tag in report_header:
                     if kv_tags and tag in kv_tags.keys():
@@ -807,6 +807,8 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
     # store a dict of topic -> data_point.entity_id
     updated = []
     updated_entities = {}
+    updated_tags = {}
+    removed_tags = {}
     for etopic in qs:
         topic = etopic.topic
         if select_all or topic in topics:
@@ -827,9 +829,40 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
                 if tag != 'site' and tag != 'equip':
                     if tag.get('remove') is True or tag.get('remove') == 'True':
                         logging.info('*** remove tag %s', tag)
+                        if pretend:
+                            current_tag = None
+                            current_value = None
+                            tag_tag = tag.get('tag')
+                            if tag_tag in e.m_tags:
+                                current_tag = tag_tag
+                                current_value = 'type:MARKER'
+                            else:
+                                value = e.kv_tags.get(tag_tag)
+                                if value:
+                                    current_tag = tag_tag
+                                    current_value = value
+
+                            if current_tag:
+                                tt = removed_tags.get(topic)
+                                if not tt:
+                                    tt = {}
+                                tt[current_tag] = current_value
+
+                                removed_tags[topic] = tt
+
                         e.remove_tag(tag.get('tag'), commit=False)
                     else:
                         logging.info('*** add tag %s', tag)
+                        if pretend:
+                            tt = updated_tags.get(topic)
+                            if not tt:
+                                tt = {}
+                            if tag.get('value'):
+                                tt[tag.get('tag')] = tag.get('value')
+                            else:
+                                tt[tag.get('tag')] = 'type:MARKER'
+
+                            updated_tags[topic] = tt
                         e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
             # if tagged with an equipRef make sure the siteRef also matches
             equip_ref = e.kv_tags.get('equipRef')
@@ -845,7 +878,7 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
                 e.save()
             updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
 
-    return updated, updated_entities
+    return updated, updated_entities, updated_tags, removed_tags
 
 
 def get_bacnet_trending_data(rows):

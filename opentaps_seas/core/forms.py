@@ -175,6 +175,8 @@ class TopicTagRuleSetRunForm(forms.Form):
         # collect count of topics we ran for
         updated_set = set()
         updated_entities = {}
+        updated_tags = {}
+        removed_tags = {}
         for rule in rule_set.topictagrule_set.all():
             if rule.tags:
                 rule_filters = rule.filters
@@ -185,10 +187,45 @@ class TopicTagRuleSetRunForm(forms.Form):
                         rule_filters.append(tf)
                     else:
                         rule_filters = [tf]
-                updated, updated_entities = utils.tag_topics(rule_filters, rule.tags, select_all=True, pretend=pretend)
+                updated, updated_curr_entities, updated_curr_tags, removed_curr_tags = utils.tag_topics(
+                    rule_filters, rule.tags, select_all=True, pretend=pretend)
                 for x in updated:
                     updated_set.add(x.get('topic'))
-        return updated_set, updated_entities, preview_type
+
+                #updated_entities = dict(updated_entities, **updated_curr_entities)
+                for key in updated_curr_entities.keys():
+                    updated_curr_entity = updated_curr_entities.get(key, {})
+                    topic = updated_curr_entity.topic
+                    kv_tags = updated_curr_entity.kv_tags
+                    m_tags = updated_curr_entity.m_tags
+                    updated_entity = updated_entities.get(key, {})
+                    updated_entity['topic'] = topic
+                    updated_kv_tags = updated_entity.get('kv_tags', {})
+                    updated_m_tags = updated_entity.get('m_tags', [])
+                    for tag, value in kv_tags.items():
+                        updated_kv_tags[tag] = value
+                    for tag in m_tags:
+                        if tag not in updated_m_tags:
+                            updated_m_tags.append(tag)
+
+                    updated_entity['kv_tags'] = updated_kv_tags
+                    updated_entity['m_tags'] = updated_m_tags
+
+                    updated_entities[key] = updated_entity
+
+                for key, updated_curr_tag in updated_curr_tags.items():
+                    updated_tag = updated_tags.get(key, {})
+                    for tag, value in updated_curr_tag.items():
+                        updated_tag[tag] = value
+                    updated_tags[key] = updated_tag
+
+                for key, removed_curr_tag in removed_curr_tags.items():
+                    removed_tag = removed_tags.get(key, {})
+                    for tag, value in removed_curr_tag.items():
+                        removed_tag[tag] = value
+                    removed_tags[key] = removed_tag
+
+        return updated_set, updated_entities, preview_type, updated_tags, removed_tags
 
 
 class TopicTagRuleCreateForm(forms.ModelForm):
