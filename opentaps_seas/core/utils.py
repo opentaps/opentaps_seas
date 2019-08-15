@@ -328,6 +328,7 @@ def tag_rulesets_run_report(entities):
         if not topic_tags:
             row.extend([''] * len(report_header))
         else:
+            logging.info('tag_rulesets_run_report: %s', topic_tags)
             kv_tags = topic_tags.get("kv_tags", {})
             m_tags = topic_tags.get("m_tags", [])
             if kv_tags or m_tags:
@@ -841,6 +842,7 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
                     e.add_tag('siteRef', equip.site_id, commit=False)
             if pretend:
                 updated_entities[topic] = e
+                logging.info('tag_topics: pretend changed %s %s %s', e, e.m_tags, e.kv_tags)
             else:
                 e.save()
             updated.append({'topic': topic, 'point': e.entity_id, 'name': e.kv_tags.get('dis')})
