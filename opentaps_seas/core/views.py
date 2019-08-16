@@ -1467,99 +1467,54 @@ class TopicImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
             context["no_sites"] = True
         return context
 
-    def form_valid(self, form):
-        prefix = form.cleaned_data['device_prefix']
-        file = form.cleaned_data['csv_file']
-        config = form.cleaned_data['config_file']
-        site_id = form.cleaned_data['site']
-        import_count = 0
-        error_count = 0
-        logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
-                    prefix, file.name, file.content_type, file.size)
-        f = TextIOWrapper(file.file, encoding=file.charset if file.charset else 'utf-8')
-        records = csv.DictReader(f)
-        logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
-                    prefix, config.name, config.content_type, config.size)
-        fc = TextIOWrapper(config.file, encoding=config.charset if config.charset else 'utf-8')
-        config_data = fc.read()
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            form_results = form.save()
 
-        site = None
-        if site_id:
-            try:
-                site = Entity.objects.get(entity_id=site_id)
-            except TopicTagRuleSet.DoesNotExist:
-                messages.warning(self.request, 'Could not get site {}'.format(site_id))
+            import_errors = form_results.get('import_errors')
+            import_success = form_results.get('import_success')
+            if import_errors:
+                messages.error(self.request, import_errors)
+            if import_success:
+                messages.success(self.request, import_success)
 
-        if site:
-            for row in records:
-                if 'Volttron Point Name' in row:
-                    topic = '/'.join([prefix, row['Volttron Point Name']])
-                    entity_id = utils.make_random_id(topic)
-                    name = row['Volttron Point Name']
-                    # create the topic if it does not exist in the Crate Database
-                    Topic.ensure_topic_exists(topic)
-                    # update or create the Data Point
-                    try:
-                        e = Entity.objects.get(topic=topic)
-                    except Entity.DoesNotExist:
-                        e = Entity(entity_id=entity_id, topic=topic)
-                        e.add_tag('id', entity_id, commit=False)
-                    e.add_tag('point', commit=False)
-                    e.add_tag('his', commit=False)
-                    e.add_tag('dis', name, commit=False)
-                    if site.kv_tags.get('id'):
-                        e.add_tag('siteRef', site.kv_tags.get('id'), commit=False)
-                    if row.get('Units'):
-                        e.add_tag('unit', row['Units'], commit=False)
-
-                    e.add_tag(Tag.bacnet_tag_prefix + 'prefix', prefix, commit=False)
-                    # add all bacnet tags
-                    for k, v in row.items():
-                        field = k.lower()
-                        field = field.replace(' ', '_')
-                        if field == 'point_name':
-                            field = 'reference_point_name'
-                        if v:
-                            e.add_tag(Tag.bacnet_tag_prefix + field, v, commit=False)
-                    # add config file fields
-                    try:
-                        config_data_json = json.loads(config_data)
-                    except Exception:
-                        logging.error("Cannot parse bacnet_config json")
-                    else:
-                        for key in config_data_json.keys():
-                            value = config_data_json.get(key)
-                            field = key.lower()
-                            field = field.replace(' ', '_')
-                            if value:
-                                if key == 'driver_config':
-                                    for key1 in value.keys():
-                                        value1 = value.get(key1)
-                                        field = key1.lower()
-                                        field = field.replace(' ', '_')
-                                        e.add_tag(Tag.bacnet_tag_prefix + field, value1, commit=False)
-                                else:
-                                    if key == 'interval':
-                                        e.add_tag(field, value, commit=False)
-                                    else:
-                                        e.add_tag(Tag.bacnet_tag_prefix + field, value, commit=False)
-
-                    logger.info('TopicImportForm: imported Data Point %s as %s with topic %s', entity_id, name, topic)
-                    e.save()
-                    import_count += 1
-                else:
-                    error_count += 1
-                    logger.error('TopicImportView cannot import row, no point name found, %s', row)
-
-            messages.success(self.request,
-                             'Imported {} topics and Data Points with prefix {}'.format(import_count, prefix))
-            if error_count:
-                messages.warning(self.request, 'Could not Import {} records.'.format(error_count))
-
-        return super(TopicImportView, self).form_valid(form)
+            return self.form_valid(form)
+        else:
+            messages.error(self.request, 'Cannot import data')
+            return self.form_invalid(form)
 
 
 topic_import_view = TopicImportView.as_view()
+
+
+class TagImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
+    model = Topic
+    template_name = 'core/tag_import.html'
+    form_class = TagImportForm
+
+    def get_success_url(self):
+        return reverse("core:topic_list")
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            form_results = form.save()
+
+            import_errors = form_results.get('import_errors')
+            import_success = form_results.get('import_success')
+            if import_errors:
+                messages.error(self.request, import_errors)
+            elif import_success:
+                messages.success(self.request, import_success)
+
+            return self.form_valid(form)
+        else:
+            messages.error(self.request, 'Source file is empty')
+            return self.form_invalid(form)
+
+
+tag_import_view = TagImportView.as_view()
 
 
 class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
@@ -2555,35 +2510,6 @@ def equipment_dashboard(request, equip):
             result = {'errors': 'Cannot get Equipment {} description'.format(equip)}
 
     return JsonResponse(result)
-
-
-class TagImportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
-    model = Topic
-    template_name = 'core/tag_import.html'
-    form_class = TagImportForm
-
-    def get_success_url(self):
-        return reverse("core:topic_list")
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            form_results = form.save()
-
-            import_errors = form_results.get('import_errors')
-            import_success = form_results.get('import_success')
-            if import_errors:
-                messages.error(self.request, import_errors)
-            elif import_success:
-                messages.success(self.request, import_success)
-
-            return self.form_valid(form)
-        else:
-            messages.error(self.request, 'Source file is empty')
-            return self.form_invalid(form)
-
-
-tag_import_view = TagImportView.as_view()
 
 
 class ReportPreviewCsvView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
