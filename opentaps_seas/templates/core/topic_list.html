@@ -42,10 +42,15 @@
         </div>
         <form action="" method="get" class="form" ref="topics_filter_form" v-on:submit.prevent="noop">
             <div class="filters">
-
               <div class="m-0 mb-2 mr-2 p-0 col-auto text-right flex-grow-1 d-flex flex-column flex-sm-row justify-content-end">
-                {% bootstrap_button '<i class="fa fa-upload"></i> Import Tags' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=tag_import_url %}
-                {% bootstrap_button '<i class="fa fa-upload"></i> Import ' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_import_url %}
+                <button type="button" class="btn btn-primary mb-2 mb-sm-0 mr-sm-2" data-toggle="dropdown">
+                  <i class="fa fa-upload"></i>Import
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ tag_import_url }}">Topics with Tags</a>
+                  <a class="dropdown-item" href="{{ topic_import_url }}">BACNet Scans</a>
+                </div>
+
                 {% bootstrap_button '<i class="fa fa-robot"></i> Rules' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topictagruleset_list %}
                 {% bootstrap_button '<i class="fa fa-file-alt"></i> Report' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_report_tags_url %}
                 {% bootstrap_button '<i class="fa fa-download"></i> Export' button_class='btn-primary' href=topic_export_url %}
