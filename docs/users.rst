@@ -74,7 +74,14 @@ Topics
 This page shows a list of the topics that are in the time series database.  If the topic has been mapped to a data point, the data point will be shown next to it.
 Otherwise, click on Add to add this topic as a new data point.
 
-You can also use the Import Topics button import the BACNet scans from VOLTTRON.  This imports a combination of CSV and JSON files as new topics.  The CSV and JSON files should be 
+You can also use the Import Topics button import to import your topics.  Here you can choose to import from either a CSV file or from the BACNet scans from VOLTTRON.  
+
+The CSV file import allows you to import the topics in the same format as the CSV file that the topics were exported as a Report (see below.)  When importing the topics, you can 
+choose to "Clear existing tags", which would remove all the existing tags for all your topics and then set only the tags in your CSV file.  If you do not choose this, then
+the tags in your CSV file would only be added or modified, and whatever tags are already on your topics will still be there.  Tags which begin with "__" will be ignored.  For example,
+topic names are usually downloaded as "__topic", so they cannot be changed by importing from the spreadsheet.
+
+You can also import from VOLTTRON BACNet scans, which is a combination of CSV and JSON files as new topics.  The CSV and JSON files should be 
 in the format of .csv and .config files in the 
 ``/examples/configurations/drivers/`` directory of the VOLTTRON repository.  If coming from the VOLTTRON BACNet scans, the CSV file would be from the ``registry_configs`` directory,
 and the JSON file would be from the ``devices`` directory.  
@@ -151,7 +158,9 @@ Topics Report
 
 To see how you're doing with the tagging, use this report.  It provides you a CSV file of all the topics and their current tags.  
 The topics are in rows and the tags are in columns, and the value will be in the
-cells.  If the tags is a marker tag, there will be an X.
+cells.  If the tags is a marker tag, there will be an X.  
+
+This CSV file can then be modified and imported back into the system (see above.)  Tags which start with "__" should not be modified, as they will be ignored when you import the CSV file again. 
 
 Exporting Topics
 ################
