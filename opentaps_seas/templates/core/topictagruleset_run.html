@@ -81,6 +81,8 @@
           </span>
         </div>
 
+        {{ form.diff_format|as_crispy_field }}
+
         <div class="form-group d-flex justify-content-around mt-5">
           {% if rule_set %}
           <a href="{% url 'core:topictagruleset_detail' rule_set.id %}" class="btn btn-secondary col-4" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
