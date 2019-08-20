@@ -106,14 +106,14 @@ class SyncAPITests(TestCase):
         self.client.post(entity_tag_delete_url, {'tag': '_testtag1', 'delete': 1})
 
         postgres_tags = Entity.objects.get(entity_id=self.entity_id).m_tags
-        self.assertEqual(['_testtag2'], postgres_tags)
+        self.assertNotIn(['_testtag1'], postgres_tags)
 
         with connections['crate'].cursor() as c:
             sql = """SELECT "m_tags" FROM {0} WHERE topic = %s""".format("volttron.entity")
             c.execute(sql, ['_testTopic'])
             for record in c:
                 m_tags = record[0]
-                self.assertEqual(['_testtag2'], m_tags)
+                self.assertNotIn(['_testtag1'], m_tags)
 
     def test_sync_kv_tags(self):
         self._login()
@@ -156,11 +156,11 @@ class SyncAPITests(TestCase):
         self.client.post(entity_tag_delete_url, {'tag': '_testdis', 'value': 1, 'delete': 1})
 
         postgres_tags = Entity.objects.get(entity_id=self.entity_id).kv_tags
-        self.assertEqual({'_testkind': 'test'}, postgres_tags)
+        self.assertNotIn(str(postgres_tags), '_testdis')
 
         with connections['crate'].cursor() as c:
             sql = """SELECT "kv_tags" FROM {0} WHERE topic = %s""".format("volttron.entity")
             c.execute(sql, ['_testTopic'])
             for record in c:
                 kv_tags = record[0]
-                self.assertEqual({'_testkind': 'test'}, kv_tags)
+                self.assertNotIn(str(kv_tags), '_testdis')
