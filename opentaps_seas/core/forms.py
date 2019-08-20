@@ -28,6 +28,7 @@ from .models import SiteView
 from .models import Tag
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
+from .models import Topic
 from .models import TimeZone
 from django import forms
 from django.template.defaultfilters import slugify
@@ -169,11 +170,14 @@ class TopicTagRuleSetRunForm(forms.Form):
         if preview_type:
             pretend = True
 
-        logger.info('TopicTagRuleSetRunForm: for set %s and additional filter: %s', ruleset_id, topic_filter)
+        logger.info('TopicTagRuleSetRunForm: for set %s and additional filter: %s, pretend: %s',
+                    ruleset_id, topic_filter, pretend)
         rule_set = TopicTagRuleSet.objects.get(id=ruleset_id)
         # collect count of topics we ran for
         updated_set = set()
         updated_entities = {}
+        updated_tags = {}
+        removed_tags = {}
         for rule in rule_set.topictagrule_set.all():
             if rule.tags:
                 rule_filters = rule.filters
@@ -184,10 +188,45 @@ class TopicTagRuleSetRunForm(forms.Form):
                         rule_filters.append(tf)
                     else:
                         rule_filters = [tf]
-                updated, updated_entities = utils.tag_topics(rule_filters, rule.tags, select_all=True, pretend=pretend)
+                updated, updated_curr_entities, updated_curr_tags, removed_curr_tags = utils.tag_topics(
+                    rule_filters, rule.tags, select_all=True, pretend=pretend)
                 for x in updated:
                     updated_set.add(x.get('topic'))
-        return updated_set, updated_entities, preview_type
+
+                #updated_entities = dict(updated_entities, **updated_curr_entities)
+                for key in updated_curr_entities.keys():
+                    updated_curr_entity = updated_curr_entities.get(key, {})
+                    topic = updated_curr_entity.topic
+                    kv_tags = updated_curr_entity.kv_tags
+                    m_tags = updated_curr_entity.m_tags
+                    updated_entity = updated_entities.get(key, {})
+                    updated_entity['topic'] = topic
+                    updated_kv_tags = updated_entity.get('kv_tags', {})
+                    updated_m_tags = updated_entity.get('m_tags', [])
+                    for tag, value in kv_tags.items():
+                        updated_kv_tags[tag] = value
+                    for tag in m_tags:
+                        if tag not in updated_m_tags:
+                            updated_m_tags.append(tag)
+
+                    updated_entity['kv_tags'] = updated_kv_tags
+                    updated_entity['m_tags'] = updated_m_tags
+
+                    updated_entities[key] = updated_entity
+
+                for key, updated_curr_tag in updated_curr_tags.items():
+                    updated_tag = updated_tags.get(key, {})
+                    for tag, value in updated_curr_tag.items():
+                        updated_tag[tag] = value
+                    updated_tags[key] = updated_tag
+
+                for key, removed_curr_tag in removed_curr_tags.items():
+                    removed_tag = removed_tags.get(key, {})
+                    for tag, value in removed_curr_tag.items():
+                        removed_tag[tag] = value
+                    removed_tags[key] = removed_tag
+
+        return updated_set, updated_entities, preview_type, updated_tags, removed_tags
 
 
 class TopicTagRuleCreateForm(forms.ModelForm):
@@ -389,18 +428,6 @@ class TopicAssocForm(forms.Form):
     data_point_name = forms.CharField(max_length=255)
 
 
-class TopicImportForm(forms.Form):
-    site = forms.ChoiceField(required=True)
-    device_prefix = forms.CharField(max_length=255)
-    csv_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))
-    config_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.config'}))
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['site'] = forms.ChoiceField(choices=SiteView.get_choices())
-        self.fields['device_prefix'].widget.attrs.update({'placeholder': 'eg: campus/building/device'})
-
-
 class TopicExportForm(forms.Form):
     site = forms.ChoiceField(required=False)
     device_prefix = forms.CharField(required=False)
@@ -493,6 +520,117 @@ class TopicTagRuleSetImportForm(forms.Form):
             return {'import_errors': "Rule sets list to import is empty."}
 
 
+class TopicImportForm(forms.Form):
+    site = forms.ChoiceField(required=True)
+    device_prefix = forms.CharField(max_length=255)
+    csv_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))
+    config_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.config'}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['site'] = forms.ChoiceField(choices=SiteView.get_choices())
+        self.fields['device_prefix'].widget.attrs.update({'placeholder': 'eg: campus/building/device'})
+
+    def save(self, commit=True):
+        prefix = self.cleaned_data['device_prefix']
+        file = self.cleaned_data['csv_file']
+        config = self.cleaned_data['config_file']
+        site_id = self.cleaned_data['site']
+        import_count = 0
+        error_count = 0
+        logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
+                    prefix, file.name, file.content_type, file.size)
+        f = TextIOWrapper(file.file, encoding=file.charset if file.charset else 'utf-8')
+        records = csv.DictReader(f)
+        logger.info('TopicImportForm: with prefix %s and file %s / %s / %s',
+                    prefix, config.name, config.content_type, config.size)
+        fc = TextIOWrapper(config.file, encoding=config.charset if config.charset else 'utf-8')
+        config_data = fc.read()
+
+        import_errors = False
+        import_success = False
+        site = None
+        if site_id:
+            try:
+                site = Entity.objects.get(entity_id=site_id)
+            except TopicTagRuleSet.DoesNotExist:
+                import_errors = 'Could not get site {}'.format(site_id)
+
+        if site:
+            for row in records:
+                if 'Volttron Point Name' in row:
+                    topic = '/'.join([prefix, row['Volttron Point Name']])
+                    entity_id = utils.make_random_id(topic)
+                    name = row['Volttron Point Name']
+                    # create the topic if it does not exist in the Crate Database
+                    Topic.ensure_topic_exists(topic)
+                    # update or create the Data Point
+                    try:
+                        e = Entity.objects.get(topic=topic)
+                    except Entity.DoesNotExist:
+                        e = Entity(entity_id=entity_id, topic=topic)
+                        e.add_tag('id', entity_id, commit=False)
+                    e.add_tag('point', commit=False)
+                    e.add_tag('his', commit=False)
+                    e.add_tag('dis', name, commit=False)
+                    if site.kv_tags.get('id'):
+                        e.add_tag('siteRef', site.kv_tags.get('id'), commit=False)
+                    if row.get('Units'):
+                        e.add_tag('unit', row['Units'], commit=False)
+
+                    e.add_tag(Tag.bacnet_tag_prefix + 'prefix', prefix, commit=False)
+                    # add all bacnet tags
+                    for k, v in row.items():
+                        field = k.lower()
+                        field = field.replace(' ', '_')
+                        if field == 'point_name':
+                            field = 'reference_point_name'
+                        if v:
+                            e.add_tag(Tag.bacnet_tag_prefix + field, v, commit=False)
+                    # add config file fields
+                    try:
+                        config_data_json = json.loads(config_data)
+                    except Exception:
+                        logging.error("Cannot parse bacnet_config json")
+                    else:
+                        for key in config_data_json.keys():
+                            value = config_data_json.get(key)
+                            field = key.lower()
+                            field = field.replace(' ', '_')
+                            if value:
+                                if key == 'driver_config':
+                                    for key1 in value.keys():
+                                        value1 = value.get(key1)
+                                        field = key1.lower()
+                                        field = field.replace(' ', '_')
+                                        e.add_tag(Tag.bacnet_tag_prefix + field, value1, commit=False)
+                                else:
+                                    if key == 'interval':
+                                        e.add_tag(field, value, commit=False)
+                                    else:
+                                        e.add_tag(Tag.bacnet_tag_prefix + field, value, commit=False)
+
+                    logger.info('TopicImportForm: imported Data Point %s as %s with topic %s', entity_id, name, topic)
+                    e.save()
+                    import_count += 1
+                else:
+                    error_count += 1
+                    logger.error('TopicImportView cannot import row, no point name found, %s', row)
+
+            import_success = 'Imported {} topics and Data Points with prefix {}'.format(import_count, prefix)
+            if error_count:
+                import_errors = 'Could not Import {} records.'.format(error_count)
+
+        result = {}
+
+        if import_errors:
+            result['import_errors'] = import_errors
+        if import_success:
+            result['import_success'] = import_success
+
+        return result
+
+
 class TagImportForm(forms.Form):
     csv_file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))
     clear_existing_tags = forms.BooleanField(label="Clear existing tags", required=False, initial=False)
@@ -548,15 +686,22 @@ class TagImportForm(forms.Form):
             import_errors = 'Cannot parse source file'
 
         if count:
-            import_success = "Imported {} rows successfully.".format(count_imported)
-            if count_notfound > 0:
-                import_success += " {} rows from your CSV could not be found.".format(count_notfound)
+            if count_imported:
+                t = "row" if count_imported == 1 else "rows"
+                import_success = "Imported {count} {t} successfully. ".format(count=count_imported, t=t)
+            else:
+                import_success = ""
+            if count_notfound:
+                t = "row" if count_notfound == 1 else "rows"
+                import_success += "{count} {t} from your CSV could not be found.".format(count=count_notfound, t=t)
         else:
             import_errors = 'There is no any data row in the source file'
 
-        if import_errors:
-            return {'import_errors': import_errors}
-        elif import_success:
-            return {'import_success': import_success}
+        result = {}
 
-        return {}
+        if import_errors:
+            result['import_errors'] = import_errors
+        elif import_success:
+            result['import_success'] = import_success
+
+        return result

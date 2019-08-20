@@ -48,7 +48,13 @@
           {% for row in report_rows %}
              <tr>
               {% for col in row %}
-                <td scope="col">{{ col }}</td>
+                {% if col.op and col.op == 'updated' %}
+                    <td scope="col"><span style="color:lightseagreen;">{{ col.value }}</span></td>
+                {% elif col.op and col.op == 'removed' %}
+                    <td scope="col"><span style="color:red;text-decoration: line-through;">{{ col.value }}</span></td>
+                {% else %}
+                    <td scope="col">{{ col.value }}</td>
+                {% endif %}
               {% endfor %}
             </tr>
           {% endfor %}
