@@ -42,10 +42,15 @@
         </div>
         <form action="" method="get" class="form" ref="topics_filter_form" v-on:submit.prevent="noop">
             <div class="filters">
-
               <div class="m-0 mb-2 mr-2 p-0 col-auto text-right flex-grow-1 d-flex flex-column flex-sm-row justify-content-end">
-                {% bootstrap_button '<i class="fa fa-upload"></i> Import Tags' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=tag_import_url %}
-                {% bootstrap_button '<i class="fa fa-upload"></i> Import ' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_import_url %}
+                <button type="button" class="btn btn-primary mb-2 mb-sm-0 mr-sm-2" data-toggle="dropdown">
+                  <i class="fa fa-upload"></i>Import
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ tag_import_url }}">from CSV</a>
+                  <a class="dropdown-item" href="{{ topic_import_url }}">from BACNet Scans</a>
+                </div>
+
                 {% bootstrap_button '<i class="fa fa-robot"></i> Rules' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topictagruleset_list %}
                 {% bootstrap_button '<i class="fa fa-file-alt"></i> Report' button_class='btn-primary mb-2 mb-sm-0 mr-sm-2' href=topic_report_tags_url %}
                 {% bootstrap_button '<i class="fa fa-download"></i> Export' button_class='btn-primary' href=topic_export_url %}
@@ -120,7 +125,8 @@
       <div class="card-body">
         <h4 class="position-relative">Tag Selected Topics <div class="a-rt">
           <button class="btn btn-secondary mr-2" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save_tags_from_model()"><i class="fa fa-plus mr-2"></i> Add From Model</button>
-          <button class="btn btn-secondary" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
+          <button class="btn btn-secondary" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save_remove()"><i class="fa fa-minus mr-2"></i> Remove Tag</button>
+          <button class="btn btn-secondary" style="top:-0.5em" :disabled="isSaving" v-on:click.stop.prevent="save_add()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
         </div></h4>
         <!--Add Tag-->
         <form novalidate v-if="isInitial || isSaving" class="main-form">
@@ -174,7 +180,7 @@
                 </button>
               </div>
               <div class="form-group">
-                <label for="tagInput">Tag</label>
+                <label for="tagInput">${ isAddingTagToRemove ? 'Remove' : 'Add' } Tag</label>
                 <vue-bootstrap-typeahead
                   input-class="form-control"
                   :serializer="s => s.tag + ': ' + s.description"
@@ -191,12 +197,13 @@
               </div>
 
               <tag-value-input
+                v-if="!isAddingTagToRemove"
                 :csrfmiddlewaretoken="csrfmiddlewaretoken"
                 :selected-tag="selectedTag"
                 v-model="value"
                 :errors="errors.value"></tag-value-input>
 
-              <button class="invisible a-rt" :disabled="isSaving" v-on:click.stop.prevent="save()"><i class="fa fa-plus mr-2"></i> Add Tag</button>
+              <button class="invisible a-rt" :disabled="isSaving" v-on:click.stop.prevent="save()">Save</button>
             </div>
           </div>
         </form>
@@ -204,6 +211,8 @@
         <div class="container tags-table ftable" ref="tag_list">
           <div scope="row" v-for="(item, idx) in sorted_items" :class="{ 'even': idx % 2 === 0, 'odd': idx % 2 !== 0, 'row': 1, 'align-items-start': 1, 'justify-content-between': 1, 'ftable-row': 1 }" v-if="should_display_tag(item)">
             <div :class="[item._protect ? 'col-12' : 'col-8', 'col-lg-auto', 'text-nowrap', 'm-0']">
+              <i class="fa fa-minus" v-if="item.remove && item.remove === true || item.remove == 'True'"></i>
+              <i class="fa fa-plus" v-else></i>
               <span v-if="!get_link(item)">${display_tag(item)}</span>
               <a v-if="get_link(item)" :href="get_link(item)">${display_tag(item)}</a>
               <div v-if="item.parent_id" class="text-muted text-small text-wrap">
@@ -339,6 +348,7 @@
         value: '',
         isAddingTag: false,
         isAddingModel: false,
+        isAddingTagToRemove: false,
         tag_topics_success: false,
         create_rule_success: false,
         editing_rule: {% if rule %}true{%else%}false{%endif%},
@@ -379,7 +389,7 @@
     },
     watch: {
       selectedTag: function (val) {
-        if (val.kind == 'Marker') {
+        if (val.kind == 'Marker' || this.isAddingTagToRemove) {
           this.save()
         }
       },
@@ -410,6 +420,7 @@
         this.editing_rule = false
         this.isAddingTag = false
         this.isAddingModel = false
+        this.isAddingTagToRemove = false
         this.show_save_rule = false
         this.ruleset_type = 'new'
         this.ruleset_name = ''
@@ -462,7 +473,7 @@
         eventHub.$emit('showModal_tag', item)
       },
       tag_needs_value(item) {
-        return (item && item.kind && item.kind != 'Marker')
+        return (!this.isAddingTagToRemove && item && item.kind && item.kind != 'Marker')
       },
       display_tag(item) {
         if (item.value) {
@@ -540,6 +551,14 @@
           },100)
         }
       },
+      save_remove() {
+        this.isAddingTagToRemove = true
+        this.save()
+      },
+      save_add() {
+        this.isAddingTagToRemove = false
+        this.save()
+      },
       save() {
         this.scroll_add_tag()
         if (!this.isAddingTag) {
@@ -565,7 +584,7 @@
             return
           }
         }
-        _tag = {tag: t, value: v}
+        _tag = {tag: t, value: v, remove: this.isAddingTagToRemove}
         if (this.selectedTag) {
           _tag.kind = this.selectedTag.kind
           _tag.description = this.selectedTag.description
@@ -726,12 +745,35 @@
         }
         console.log('*** valid_filters =', valid_filters)
         if (tags.length) {
-          details += ' apply the tags: '
+          var apply_tags_list = []
+          var remove_tags_list = []
+
           for (var i=0; i<tags.length; i++) {
-            if (i > 0) details += ', '
             tag = tags[i]
-            details += tag.tag
-            if (tag.value) details += '=' + tag.value
+            if (tag.remove && tag.remove === true || tag.remove == "True") {
+              remove_tags_list.push(tag)
+            } else {
+              apply_tags_list.push(tag)
+            }
+          }
+
+          if (apply_tags_list.length) {
+            details += ' apply the tags: '
+            for (var i=0; i<apply_tags_list.length; i++) {
+              if (i>0) details += ', '
+              tag = apply_tags_list[i]
+              details += tag.tag
+              if (tag.value) details += '=' + tag.value
+            }
+          }
+
+          if (remove_tags_list.length) {
+            details += ' remove the tags: '
+            for (var i=0; i<remove_tags_list.length; i++) {
+              if (i>0) details += ', '
+              tag = remove_tags_list[i]
+              details += tag.tag
+            }
           }
         }
         if (!valid_filters.length || !tags.length) {
@@ -1079,7 +1121,7 @@
         // post as JSON
         tags = []
         for (var i=0; i<items.length; i++) {
-          tags.push({tag: items[i].tag, value: items[i].value})
+          tags.push({tag: items[i].tag, value: items[i].value, remove: items[i].remove})
         }
         topics = []
         for (x in this.selected_topics) {

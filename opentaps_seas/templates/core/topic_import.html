@@ -32,6 +32,7 @@
       {% if no_sites %}
       <div>Please <a href="{% url 'core:site_create' %}">set up</a> at least one Site before uploading topics.</div>
       {% else %}
+      <h2>Import VOLTTRON BACNet Scans</h2></br>
       <form enctype="multipart/form-data" method="POST">
         {% csrf_token %}
 
