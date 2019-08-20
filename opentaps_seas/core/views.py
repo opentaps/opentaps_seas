@@ -1389,59 +1389,100 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            updated_set, updated_entities, preview_type, updated_tags, removed_tags = form.save()
+            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format = form.save()
             if preview_type:
-                report_rows, report_header = utils.tag_rulesets_run_report(updated_entities)
-                if preview_type == 'preview_csv':
-                    response = HttpResponse(content_type='text/csv')
-                    response['Content-Disposition'] = 'attachment; filename="TagRulesetsPreviewReport.csv"'
-
-                    writer = csv.writer(response)
-                    if report_header:
-                        writer.writerow(report_header)
-                        if report_rows:
-                            for row in report_rows:
-                                writer.writerow(row)
+                if diff_format:
+                    report_rows, report_header = utils.tag_rulesets_run_report_diff(
+                                                       updated_entities, updated_tags, removed_tags)
+                    if not report_rows:
+                        messages.error(self.request, "Preview diff is empty")
+                        context = self.get_context_data(**kwargs)
+                        return self.render_to_response(context)
                     else:
-                        writer.writerow([''])
+                        if preview_type == 'preview_csv':
+                            response = HttpResponse(content_type='text/csv')
+                            response['Content-Disposition'] = 'attachment; filename="TagRulesetsPreviewDiffReport.csv"'
 
+                            writer = csv.writer(response)
+                            if report_header:
+                                writer.writerow(report_header)
+                                if report_rows:
+                                    for row in report_rows:
+                                        writer.writerow(row)
+                            else:
+                                writer.writerow([''])
+
+                        else:
+                            temp = tempfile.NamedTemporaryFile(delete=False)
+                            temp.close()
+                            with open(temp.name, 'w') as file_csv:
+                                writer = csv.writer(file_csv)
+                                if report_header:
+                                    writer.writerow(report_header)
+                                    if report_rows:
+                                        for row in report_rows:
+                                            writer.writerow(row)
+
+                                    response = HttpResponseRedirect(
+                                        reverse("core:report_preview_csv") + '?file=' + temp.name
+                                        + '&name=Tag Rulesets Preview Diff Report')
+                                else:
+                                    writer.writerow([''])
+
+                        return response
                 else:
-                    temp = tempfile.NamedTemporaryFile(delete=False)
-                    temp.close()
-                    with open(temp.name, 'w') as file_csv:
-                        writer = csv.writer(file_csv)
+                    report_rows, report_header = utils.tag_rulesets_run_report(updated_entities)
+                    if preview_type == 'preview_csv':
+                        response = HttpResponse(content_type='text/csv')
+                        response['Content-Disposition'] = 'attachment; filename="TagRulesetsPreviewReport.csv"'
+
+                        writer = csv.writer(response)
                         if report_header:
                             writer.writerow(report_header)
                             if report_rows:
                                 for row in report_rows:
-                                    updated_tag = updated_tags.get(row[0])
-                                    removed_tag = removed_tags.get(row[0])
-                                    if updated_tag or removed_tag:
-                                        if not updated_tag:
-                                            updated_tag = {}
-                                        if not removed_tag:
-                                            removed_tag = {}
-                                        row_new = []
-                                        for i, value in enumerate(row):
-                                            header = report_header[i]
-                                            value_updated = updated_tag.get(header)
-                                            value_removed = removed_tag.get(header)
-                                            if value_updated:
-                                                value += "::$$updated$$"
-                                            elif value_removed:
-                                                value = value_removed + "::$$removed$$"
-                                            row_new.append(value)
-
-                                        writer.writerow(row_new)
-                                    else:
-                                        writer.writerow(row)
+                                    writer.writerow(row)
                         else:
                             writer.writerow([''])
 
-                    response = HttpResponseRedirect(
-                        reverse("core:report_preview_csv") + '?file=' + temp.name + '&name=Tag Rulesets Preview Report')
+                    else:
+                        temp = tempfile.NamedTemporaryFile(delete=False)
+                        temp.close()
+                        with open(temp.name, 'w') as file_csv:
+                            writer = csv.writer(file_csv)
+                            if report_header:
+                                writer.writerow(report_header)
+                                if report_rows:
+                                    for row in report_rows:
+                                        updated_tag = updated_tags.get(row[0])
+                                        removed_tag = removed_tags.get(row[0])
+                                        if updated_tag or removed_tag:
+                                            if not updated_tag:
+                                                updated_tag = {}
+                                            if not removed_tag:
+                                                removed_tag = {}
+                                            row_new = []
+                                            for i, value in enumerate(row):
+                                                header = report_header[i]
+                                                value_updated = updated_tag.get(header)
+                                                value_removed = removed_tag.get(header)
+                                                if value_updated:
+                                                    value += "::$$updated$$"
+                                                elif value_removed:
+                                                    value = value_removed + "::$$removed$$"
+                                                row_new.append(value)
 
-                return response
+                                            writer.writerow(row_new)
+                                        else:
+                                            writer.writerow(row)
+                            else:
+                                writer.writerow([''])
+
+                        response = HttpResponseRedirect(
+                            reverse("core:report_preview_csv") + '?file=' + temp.name
+                            + '&name=Tag Rulesets Preview Report')
+
+                    return response
             else:
                 return JsonResponse({'success': 1, 'updated': len(updated_set)})
 
