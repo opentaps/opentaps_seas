@@ -1363,7 +1363,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
                 'data': self.request.POST.copy(),
             })
             # add the URL given ID to the params for the Form
-            if 'id' in self.kwargs:
+            if 'id' in self.kwargs and 'ruleset_id' not in args['data']:
                 args['data'].update({'ruleset_id': self.kwargs.get('id')})
         return args
 
