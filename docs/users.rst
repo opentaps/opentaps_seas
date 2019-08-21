@@ -74,7 +74,14 @@ Topics
 This page shows a list of the topics that are in the time series database.  If the topic has been mapped to a data point, the data point will be shown next to it.
 Otherwise, click on Add to add this topic as a new data point.
 
-You can also use the Import Topics button import the BACNet scans from VOLTTRON.  This imports a combination of CSV and JSON files as new topics.  The CSV and JSON files should be 
+You can also use the Import Topics button import to import your topics.  Here you can choose to import from either a CSV file or from the BACNet scans from VOLTTRON.  
+
+The CSV file import allows you to import the topics in the same format as the CSV file that the topics were exported as a Report (see below.)  When importing the topics, you can 
+choose to "Clear existing tags", which would remove all the existing tags for all your topics and then set only the tags in your CSV file.  If you do not choose this, then
+the tags in your CSV file would only be added or modified, and whatever tags are already on your topics will still be there.  Tags which begin with "__" will be ignored.  For example,
+topic names are usually downloaded as "__topic", so they cannot be changed by importing from the spreadsheet.
+
+You can also import from VOLTTRON BACNet scans, which is a combination of CSV and JSON files as new topics.  The CSV and JSON files should be 
 in the format of .csv and .config files in the 
 ``/examples/configurations/drivers/`` directory of the VOLTTRON repository.  If coming from the VOLTTRON BACNet scans, the CSV file would be from the ``registry_configs`` directory,
 and the JSON file would be from the ``devices`` directory.  
@@ -84,7 +91,8 @@ By default, the CSV files from VOLTTRON only have the file portion of the full d
 ``campus_A/building_2/controller_3/equipment_4/status``, it will be ``equipment_4/status`` in the VOLTTRON CSV.  In that case, you will need to
 put ``campus_A/building_2/controller_3`` here.  
 They will be added to your topics with a ``/`` between your prefix and the topic name.  
-The import will add them as topics and data points, with a reference to the site ID, and the additional BACNET data will be stored with the data point.  
+The import will add them as topics and data points, with a reference to the site ID.  The BACNET configuration and Additional BACNET data will be stored with the data point as tags with
+prefix ``bacnet_``.  
 
 After importing the data points, they will need to be associated with equipment and site.  You can do this by clicking on the data point, then edit tags, and adding the equipRef
 and siteRef tags.  
@@ -101,6 +109,15 @@ like this:
  * Topics could be filtered by several conditions.  For example, we can filter our topics to those that contain "SP" and "ZoneTemp".
  * We can then apply tags to our filtered list of topics.  For example, for all topics which contain "ZoneTemp" and "SP", we can apply the tags sp, temp, zone.  This is called a **rule**.
  * We can then group many rules together in to a **rule set**.  Rule sets could be used to organize rules by equipment manufacturer or building owner, so they can be used to tag topics with similar syntax. 
+
+The rules and filters can be run for either the topic name (Topic) or any tag associated with the topic, including all the ``bacnet_`` tags acquired when the topic was originally imported.  
+The options for the rules and filters are:
+
+ * ``Equals``, ``Not Equals`` - value must be strictly equal or not equal condition.  This is case sensitive.
+ * ``Contains``, ``Not Contains`` - value must contain or not contain condition.  The condition could be in beginning, middle, or end of the value.  This is also case sensitive.
+ * ``Is Present``, ``Is Absent`` - used to check if the tag is present or absent on the topic.  
+
+**IMPORTANT!** The rules are just run once in the sequence given, so if you rely on tags to apply other tags, the sequence of the rules will affect the final output.
 
 There are a couple of ways to do this in the user interface.  First, from the Topics page, you can start filtering the topics by selecting Contains or Not Contains and putting text 
 into the "Filter Topics" input box.  You can use wildcards and regex here.  This will show you a list of filtered topics.
@@ -141,7 +158,9 @@ Topics Report
 
 To see how you're doing with the tagging, use this report.  It provides you a CSV file of all the topics and their current tags.  
 The topics are in rows and the tags are in columns, and the value will be in the
-cells.  If the tags is a marker tag, there will be an X.
+cells.  If the tags is a marker tag, there will be an X.  
+
+This CSV file can then be modified and imported back into the system (see above.)  Tags which start with "__" should not be modified, as they will be ignored when you import the CSV file again. 
 
 Exporting Topics
 ################
