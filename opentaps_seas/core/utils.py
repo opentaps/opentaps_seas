@@ -754,13 +754,13 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
                 logger.warning('topic filter found an unused tag: %s', name)
                 return qs.none()
             if filter_type == 'c':
-                qs = qs.filter(filter_Q(name, 'icontains', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, 'contains', filter_value, valid_tags))
             elif filter_type == 'nc':
-                qs = qs.exclude(filter_Q(name, 'icontains', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, 'contains', filter_value, valid_tags))
             elif filter_type == 'eq':
-                qs = qs.filter(filter_Q(name, 'iexact', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, 'exact', filter_value, valid_tags))
             elif filter_type == 'neq':
-                qs = qs.exclude(filter_Q(name, 'iexact', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, 'exact', filter_value, valid_tags))
     return qs
 
 
