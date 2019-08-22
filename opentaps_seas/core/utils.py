@@ -347,6 +347,68 @@ def tag_rulesets_run_report(entities):
     return report_rows, report_header
 
 
+def tag_rulesets_run_report_diff(entities, updated_tags, removed_tags):
+    report_rows = []
+    report_header = []
+    report_header_diff = []
+    topics_tags = {}
+
+    if updated_tags or removed_tags:
+        report_header_all, topics_tags = get_topics_tags_report_header()
+        for key in updated_tags.keys():
+            tags = updated_tags.get(key)
+            for tag in report_header_all:
+                if tag in tags.keys() and tag not in report_header:
+                    report_header.append(tag)
+        for key in removed_tags.keys():
+            tags = removed_tags.get(key)
+            for tag in report_header_all:
+                if tag in tags.keys() and tag not in report_header:
+                    report_header.append(tag)
+
+        report_header = sorted(report_header)
+        for tag in report_header:
+            report_header_diff.append(tag + ' previous')
+            report_header_diff.append(tag + ' new')
+
+        for key in sorted(entities.keys()):
+            entity = entities[key]
+            removed = removed_tags.get(key, {})
+            updated = updated_tags.get(key, {})
+            row = []
+            if entity:
+                if removed or updated:
+                    for tag in report_header:
+                        previous = ''
+                        new = ''
+                        if tag in removed.keys():
+                            previous = removed.get(tag, '')
+                        elif tag in updated.keys():
+                            value_item = updated.get(tag, '')
+                            if value_item:
+                                previous = value_item.get('previous', '')
+                                new = value_item.get('new', '')
+
+                        if previous == 'type:MARKER':
+                            previous = 'X'
+                        if new == 'type:MARKER':
+                            new = 'X'
+                        if previous is None:
+                            previous = ''
+                        if new is None:
+                            new = ''
+                        row.append(previous)
+                        row.append(new)
+
+                if row:
+                    row.insert(0, key)
+                    report_rows.append(row)
+
+    if report_header_diff:
+        report_header_diff.insert(0, "__topic")
+    return report_rows, report_header_diff
+
+
 def charts_for_points(points):
     charts = []
     i = 0
@@ -754,13 +816,13 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
                 logger.warning('topic filter found an unused tag: %s', name)
                 return qs.none()
             if filter_type == 'c':
-                qs = qs.filter(filter_Q(name, 'icontains', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, 'contains', filter_value, valid_tags))
             elif filter_type == 'nc':
-                qs = qs.exclude(filter_Q(name, 'icontains', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, 'contains', filter_value, valid_tags))
             elif filter_type == 'eq':
-                qs = qs.filter(filter_Q(name, 'iexact', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, 'exact', filter_value, valid_tags))
             elif filter_type == 'neq':
-                qs = qs.exclude(filter_Q(name, 'iexact', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, 'exact', filter_value, valid_tags))
     return qs
 
 
@@ -854,13 +916,22 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
                     else:
                         logging.info('*** add tag %s', tag)
                         if pretend:
+                            current_value = None
+                            tag_tag = tag.get('tag')
+                            if tag_tag in e.m_tags:
+                                current_value = 'type:MARKER'
+                            else:
+                                value = e.kv_tags.get(tag_tag)
+                                if value:
+                                    current_value = value
+
                             tt = updated_tags.get(topic)
                             if not tt:
                                 tt = {}
                             if tag.get('value'):
-                                tt[tag.get('tag')] = tag.get('value')
+                                tt[tag.get('tag')] = {'new': tag.get('value'), 'previous': current_value}
                             else:
-                                tt[tag.get('tag')] = 'type:MARKER'
+                                tt[tag.get('tag')] = {'new': 'type:MARKER', 'previous': current_value}
 
                             updated_tags[topic] = tt
                         e.add_tag(tag.get('tag'), value=tag.get('value'), commit=False)
