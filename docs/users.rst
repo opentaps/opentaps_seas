@@ -116,6 +116,7 @@ The options for the rules and filters are:
  * ``Equals``, ``Not Equals`` - value must be strictly equal or not equal condition.  This is case sensitive.
  * ``Contains``, ``Not Contains`` - value must contain or not contain condition.  The condition could be in beginning, middle, or end of the value.  This is also case sensitive.
  * ``Is Present``, ``Is Absent`` - used to check if the tag is present or absent on the topic.  
+ * ``Matches`` - used to specify a regular expression matching
 
 **IMPORTANT!** The rules are just run once in the sequence given, so if you rely on tags to apply other tags, the sequence of the rules will affect the final output.
 
@@ -129,11 +130,15 @@ not just what you see on the current page.
 Then you can choose the topics you want to add tags.  Once you've selected some topics, you can click on "Select all that match the filters on all pages" to select
 all the topics on all the pages that match your filter conditions.  You can later click "Clear selection" to uncheck this option.
 
-Next, go below to the "Tag Selected Topics" section to add tags for these topics.  You can choose either to add individual tags or add tags from a Model (see below.)  If you choose to add tags
+Next, go below to the "Tag Selected Topics" section to specify what to do for these topics.  You can choose to add individual tags or add tags from a Model (see below.)  If you choose to add tags
 from a Model, it will ask you to choose from top level Models first.  Then, it will show you the tags from the top level Model, and then ask you to select from any child Models of your Model.
 You can choose to add either the current Model's tags or choose a child Model.  Click on "Add these Tags"
 to add the tags of the Model you've chosen.  This adds the tags of the currently selected model to the list of tags that could be applied.  
-At any one time, you can only choose to add tags from one Model, and not its parents at the same time.  
+At any one time, you can only choose to add tags from one Model, and not its parents at the same time. 
+
+You can also choose to remove tags, which means that the topics matching the conditions will have the tags removed.  If you do this, also remember that the rules are just run once in their
+specified sequence, so the tags would have to exist or been added by other rules before they could be removed. 
+ 
 Then click "Apply Tags" to apply these tags to the topics.   
 
 From here you can also click on "Save as a Rule", and it will open a dialog box below.  Here you can choose to save to a new rule set or an existing one, then put a name for your rule, and save
