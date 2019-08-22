@@ -15,7 +15,7 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-import json
+import tempfile, os, csv
 
 from django.test import TestCase
 from django.urls import reverse
@@ -164,3 +164,77 @@ class SyncAPITests(TestCase):
             for record in c:
                 kv_tags = record[0]
                 self.assertNotIn(str(kv_tags), '_testdis')
+
+    def test_import_tags_csv_clear(self):
+        self._login()
+
+        # create test topic
+        Entity.objects.get_or_create(
+            entity_id="_test_topic",
+            topic="_test_topic",
+            m_tags=["_testtag1"],
+            kv_tags={'_testkind': 'test'}
+        )
+
+        # import csv tags with clear option
+        csv_import_url = reverse('core:tag_import')
+
+        temp_csv = os.path.join(tempfile.gettempdir(), 'temp_tag_csv.csv')
+        with open(temp_csv, 'w') as f:
+            file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            file_header = ['__topic', '_testtag2', '_testdis']
+            file_writer.writerow(file_header)
+            file_writer.writerow(['_test_topic', 'X', 'test'])
+
+        with open(temp_csv, 'r') as f:
+            data = {
+                'clear_existing_tags': True,
+                'csv_file': f
+            }
+            self.client.post(csv_import_url, data)
+
+        # check prev tags removed and new tags added
+        entity = Entity.objects.get(entity_id='_test_topic')
+
+        self.assertNotIn('_testtag1', entity.m_tags)
+        self.assertNotIn('_testkind', str(entity.kv_tags))
+
+        self.assertEqual(['_testtag2'], entity.m_tags)
+        self.assertEqual({'_testdis': 'test'}, entity.kv_tags)
+
+    def test_import_tags_csv_not_clear(self):
+        self._login()
+
+        # create test topic
+        Entity.objects.get_or_create(
+            entity_id="_test_topic_not_clear",
+            topic="_test_topic_not_clear",
+            m_tags=["_testtag1"],
+            kv_tags={'_testkind': 'test'}
+        )
+
+        # import csv tags without clear option
+        csv_import_url = reverse('core:tag_import')
+
+        temp_csv = os.path.join(tempfile.gettempdir(), 'temp_tag_csv.csv')
+        with open(temp_csv, 'w') as f:
+            file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            file_header = ['__topic', '_testtag2', '_testdis']
+            file_writer.writerow(file_header)
+            file_writer.writerow(['_test_topic_not_clear', 'X', 'test'])
+
+        with open(temp_csv, 'r') as f:
+            data = {
+                'clear_existing_tags': False,
+                'csv_file': f
+            }
+            self.client.post(csv_import_url, data)
+
+        # check prev tags removed and new tags added
+        entity = Entity.objects.get(entity_id='_test_topic_not_clear')
+
+        self.assertIn('_testtag1', entity.m_tags)
+        self.assertIn('_testkind', str(entity.kv_tags))
+
+        self.assertIn('_testtag2', entity.m_tags)
+        self.assertIn('_testdis', str(entity.kv_tags))
