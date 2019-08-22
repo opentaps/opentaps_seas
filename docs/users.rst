@@ -149,7 +149,14 @@ to the filter page, where you can change the tags and update it.  You can also c
 
 From this page, you can also click on "Run" to run this rule set.  You can put in a prefix so that your rules are only run for topics of that prefix, so you can run different rule sets for different
 buildings and equipment.  Before you run the rules, you can use the Preview feature to see the result of running your rules on the existing topics.  This can be displayed on screen or downloaded in
-a CSV file format.
+a CSV file format.  The standard format is to show all the topics with their tags if the rules had been run.  However, you can also choose to "Preview in diff format", which would show the difference
+in tags before and after running the rules.  Each topic would be listed in a row, and for each tag that is changed, there is a before and an after column to show the effect of the rules:
+
+ * If previous is empty and new is X - this means it was added
+ * If previous is X and new is empty - this means it was removed
+ * If previous is X and new is X - this means it was set before and after (ie no change)
+ * If previous is empty and new is empty - this means it was empty before and after (ie no change)
+ * If previous is X and new is Y - this means it was changed (for kv tags)
 
 You can use the Export and Import features to save your tagging rules as a JSON file download and then upload it again.
 
