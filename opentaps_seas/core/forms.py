@@ -150,6 +150,7 @@ class TopicTagRuleSetRunForm(forms.Form):
     ruleset_id = ModelField(label='RuleSet', max_length=255, required=True)
     topic_filter = ModelField(label='Topic Filter', max_length=255, required=False)
     preview_type = forms.CharField(required=False)
+    diff_format = forms.BooleanField(label="Preview in a diff format", required=False, initial=False)
 
     def is_valid(self):
         if not super().is_valid():
@@ -166,6 +167,7 @@ class TopicTagRuleSetRunForm(forms.Form):
         topic_filter = self.cleaned_data['topic_filter']
         ruleset_id = self.cleaned_data['ruleset_id']
         preview_type = self.cleaned_data['preview_type']
+        diff_format = self.cleaned_data['diff_format']
         pretend = False
         if preview_type:
             pretend = True
@@ -193,7 +195,6 @@ class TopicTagRuleSetRunForm(forms.Form):
                 for x in updated:
                     updated_set.add(x.get('topic'))
 
-                #updated_entities = dict(updated_entities, **updated_curr_entities)
                 for key in updated_curr_entities.keys():
                     updated_curr_entity = updated_curr_entities.get(key, {})
                     topic = updated_curr_entity.topic
@@ -226,7 +227,7 @@ class TopicTagRuleSetRunForm(forms.Form):
                         removed_tag[tag] = value
                     removed_tags[key] = removed_tag
 
-        return updated_set, updated_entities, preview_type, updated_tags, removed_tags
+        return updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format
 
 
 class TopicTagRuleCreateForm(forms.ModelForm):
