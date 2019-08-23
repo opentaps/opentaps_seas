@@ -15,6 +15,9 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import tempfile
+import os
+import csv
 import json
 
 from django.test import TestCase
@@ -164,3 +167,130 @@ class SyncAPITests(TestCase):
             for record in c:
                 kv_tags = record[0]
                 self.assertNotIn(str(kv_tags), '_testdis')
+
+    def test_import_tags_csv_clear(self):
+        self._login()
+
+        # create test topic
+        Entity.objects.get_or_create(
+            entity_id="_test_topic",
+            topic="_test_topic",
+            m_tags=["_testtag1"],
+            kv_tags={'_testkind': 'test'}
+        )
+
+        # import csv tags with clear option
+        csv_import_url = reverse('core:tag_import')
+
+        temp_csv = os.path.join(tempfile.gettempdir(), 'temp_tag_csv.csv')
+        with open(temp_csv, 'w') as f:
+            file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            file_header = ['__topic', '_testtag2', '_testdis']
+            file_writer.writerow(file_header)
+            file_writer.writerow(['_test_topic', 'X', 'test'])
+
+        with open(temp_csv, 'r') as f:
+            data = {
+                'clear_existing_tags': True,
+                'csv_file': f
+            }
+            self.client.post(csv_import_url, data)
+
+        # check prev tags removed and new tags added
+        entity = Entity.objects.get(entity_id='_test_topic')
+
+        self.assertNotIn('_testtag1', entity.m_tags)
+        self.assertNotIn('_testkind', str(entity.kv_tags))
+
+        self.assertEqual(['_testtag2'], entity.m_tags)
+        self.assertEqual({'_testdis': 'test'}, entity.kv_tags)
+
+    def test_import_tags_csv_not_clear(self):
+        self._login()
+
+        # create test topic
+        Entity.objects.get_or_create(
+            entity_id="_test_topic_not_clear",
+            topic="_test_topic_not_clear",
+            m_tags=["_testtag1"],
+            kv_tags={'_testkind': 'test'}
+        )
+
+        # import csv tags without clear option
+        csv_import_url = reverse('core:tag_import')
+
+        temp_csv = os.path.join(tempfile.gettempdir(), 'temp_tag_csv.csv')
+        with open(temp_csv, 'w') as f:
+            file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            file_header = ['__topic', '_testtag2', '_testdis']
+            file_writer.writerow(file_header)
+            file_writer.writerow(['_test_topic_not_clear', 'X', 'test'])
+
+        with open(temp_csv, 'r') as f:
+            data = {
+                'clear_existing_tags': False,
+                'csv_file': f
+            }
+            self.client.post(csv_import_url, data)
+
+        # check prev tags removed and new tags added
+        entity = Entity.objects.get(entity_id='_test_topic_not_clear')
+
+        self.assertIn('_testtag1', entity.m_tags)
+        self.assertIn('_testkind', str(entity.kv_tags))
+
+        self.assertIn('_testtag2', entity.m_tags)
+        self.assertIn('_testdis', str(entity.kv_tags))
+
+    def test_tag_imports_bacnet_config(self):
+        self._login()
+
+        # create site
+        Entity.objects.get_or_create(entity_id='_test_site', defaults={'m_tags': ['site'], 'kv_tags': {}})
+
+        # create temp file for bacnet csv and config file
+        bacnet_csv = os.path.join(tempfile.gettempdir(), 'bacnet.csv')
+        with open(bacnet_csv, 'w') as f:
+            file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            file_header = ['Point Name', 'Volttron Point Name', 'Units', 'Unit Details', 'BACnet Object Type']
+            file_writer.writerow(file_header)
+            file_writer.writerow(['_test_topic_bacnet1', '_test_topic_bacnet1', 'test', 'test', 'test'])
+
+        bacnet_config = os.path.join(tempfile.gettempdir(), 'bacnet.config')
+        with open(bacnet_config, 'w') as b:
+            config_json = {
+                "driver_config": {
+                    "device_address": "10.0.0.1"
+                },
+                "driver_type": "test",
+            }
+            json.dump(config_json, b)
+
+        f = open(bacnet_csv, 'r')
+        b = open(bacnet_config, 'r')
+
+        data = {
+            'site': '_test_site',
+            'device_prefix': '_test',
+            'csv_file': f,
+            'config_file': b
+        }
+
+        # import tags from bacnet scans
+        bacnet_scans_import_url = reverse('core:topic_import')
+        self.client.post(bacnet_scans_import_url, data)
+
+        # check all tags are imported correctly
+        entity = Entity.objects.get(entity_id__contains='_test_topic_bacnet1')
+
+        # tags from csv
+        self.assertIn('bacnet_units', str(entity.kv_tags))
+        self.assertIn('bacnet_prefix', str(entity.kv_tags))
+        self.assertIn('bacnet_unit_details', str(entity.kv_tags))
+        self.assertIn('bacnet_object_type', str(entity.kv_tags))
+        self.assertIn('bacnet_volttron_point_name', str(entity.kv_tags))
+        self.assertIn('bacnet_reference_point_name', str(entity.kv_tags))
+
+        # tags from config file
+        self.assertIn('bacnet_device_address', str(entity.kv_tags))
+        self.assertIn('bacnet_driver_type', str(entity.kv_tags))
