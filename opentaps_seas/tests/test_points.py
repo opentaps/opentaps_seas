@@ -15,7 +15,10 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-import tempfile, os, csv
+import tempfile
+import os
+import csv
+import json
 
 from django.test import TestCase
 from django.urls import reverse
@@ -238,3 +241,56 @@ class SyncAPITests(TestCase):
 
         self.assertIn('_testtag2', entity.m_tags)
         self.assertIn('_testdis', str(entity.kv_tags))
+
+    def test_tag_imports_bacnet_config(self):
+        self._login()
+
+        # create site
+        Entity.objects.get_or_create(entity_id='_test_site', defaults={'m_tags': ['site'], 'kv_tags': {}})
+
+        # create temp file for bacnet csv and config file
+        bacnet_csv = os.path.join(tempfile.gettempdir(), 'bacnet.csv')
+        with open(bacnet_csv, 'w') as f:
+            file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            file_header = ['Point Name', 'Volttron Point Name', 'Units', 'Unit Details', 'BACnet Object Type']
+            file_writer.writerow(file_header)
+            file_writer.writerow(['_test_topic_bacnet1', '_test_topic_bacnet1', 'test', 'test', 'test'])
+
+        bacnet_config = os.path.join(tempfile.gettempdir(), 'bacnet.config')
+        with open(bacnet_config, 'w') as b:
+            config_json = {
+                "driver_config": {
+                    "device_address": "10.0.0.1"
+                },
+                "driver_type": "test",
+            }
+            json.dump(config_json, b)
+
+        f = open(bacnet_csv, 'r')
+        b = open(bacnet_config, 'r')
+
+        data = {
+            'site': '_test_site',
+            'device_prefix': '_test',
+            'csv_file': f,
+            'config_file': b
+        }
+
+        # import tags from bacnet scans
+        bacnet_scans_import_url = reverse('core:topic_import')
+        self.client.post(bacnet_scans_import_url, data)
+
+        # check all tags are imported correctly
+        entity = Entity.objects.get(entity_id__contains='_test_topic_bacnet1')
+
+        # tags from csv
+        self.assertIn('bacnet_units', str(entity.kv_tags))
+        self.assertIn('bacnet_prefix', str(entity.kv_tags))
+        self.assertIn('bacnet_unit_details', str(entity.kv_tags))
+        self.assertIn('bacnet_object_type', str(entity.kv_tags))
+        self.assertIn('bacnet_volttron_point_name', str(entity.kv_tags))
+        self.assertIn('bacnet_reference_point_name', str(entity.kv_tags))
+
+        # tags from config file
+        self.assertIn('bacnet_device_address', str(entity.kv_tags))
+        self.assertIn('bacnet_driver_type', str(entity.kv_tags))
