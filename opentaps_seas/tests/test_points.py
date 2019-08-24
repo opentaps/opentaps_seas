@@ -19,6 +19,9 @@ import tempfile
 import os
 import csv
 import json
+import io
+import zipfile
+from io import StringIO
 
 from django.test import TestCase
 from django.urls import reverse
@@ -252,17 +255,28 @@ class SyncAPITests(TestCase):
         bacnet_csv = os.path.join(tempfile.gettempdir(), 'bacnet.csv')
         with open(bacnet_csv, 'w') as f:
             file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            file_header = ['Point Name', 'Volttron Point Name', 'Units', 'Unit Details', 'BACnet Object Type']
+            file_header = [
+                'Point Name', 'Volttron Point Name', 'Units', 'Unit Details', 'Object Type', 'Property',
+                'Writable', 'Index', 'Notes'
+            ]
             file_writer.writerow(file_header)
-            file_writer.writerow(['_test_topic_bacnet1', '_test_topic_bacnet1', 'test', 'test', 'test'])
+            file_writer.writerow(
+                [
+                    '_test_topic_bacnet1', '_test_topic_bacnet1', 'test_units', 'test_unit_details', 'test_object_type',
+                    'test_property', 'test_writeable', 'test_index', 'test_notes'
+                ]
+            )
 
         bacnet_config = os.path.join(tempfile.gettempdir(), 'bacnet.config')
         with open(bacnet_config, 'w') as b:
             config_json = {
                 "driver_config": {
-                    "device_address": "10.0.0.1"
+                    "device_address": "10.0.0.1",
+                    "device_id": "100"
                 },
                 "driver_type": "test",
+                "registry_config": "config://bacnet.csv",
+                "interval": 10
             }
             json.dump(config_json, b)
 
@@ -290,7 +304,150 @@ class SyncAPITests(TestCase):
         self.assertIn('bacnet_object_type', str(entity.kv_tags))
         self.assertIn('bacnet_volttron_point_name', str(entity.kv_tags))
         self.assertIn('bacnet_reference_point_name', str(entity.kv_tags))
+        self.assertIn('bacnet_property', str(entity.kv_tags))
+        self.assertIn('bacnet_index', str(entity.kv_tags))
+        self.assertIn('bacnet_writable', str(entity.kv_tags))
+        self.assertIn('bacnet_notes', str(entity.kv_tags))
 
         # tags from config file
         self.assertIn('bacnet_device_address', str(entity.kv_tags))
         self.assertIn('bacnet_driver_type', str(entity.kv_tags))
+        self.assertIn('bacnet_device_id', str(entity.kv_tags))
+        self.assertIn('bacnet_registry_config', str(entity.kv_tags))
+        self.assertIn('interval', str(entity.kv_tags))
+
+        # check topic name includes prefix + /
+        self.assertEqual('_test/_test_topic_bacnet1', entity.topic)
+
+    def test_exporting_imported_tags(self):
+        self._login()
+
+        # create site
+        Entity.objects.get_or_create(entity_id='_test_site', defaults={'m_tags': ['site'], 'kv_tags': {}})
+
+        # create temp file for bacnet csv and config file
+        bacnet_csv = os.path.join(tempfile.gettempdir(), 'bacnet.csv')
+        with open(bacnet_csv, 'w') as f:
+            file_writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            file_header = [
+                'Point Name', 'Volttron Point Name', 'Units', 'Unit Details', 'Object Type', 'Property',
+                'Writable', 'Index', 'Notes'
+            ]
+            file_writer.writerow(file_header)
+            for i in range(3):
+                file_writer.writerow(
+                    [
+                        '_test_topic_bacnet{}'.format(i + 1), '_test_topic_bacnet{}'.format(i + 1), 'test_units',
+                        'test_unit_details', 'test_object_type', 'test_property', 'test_writable', 'test_index',
+                        'test_notes'
+                    ]
+                )
+
+        bacnet_config = os.path.join(tempfile.gettempdir(), 'bacnet.config')
+        with open(bacnet_config, 'w') as b:
+            config_json = {
+                "driver_config": {
+                    "device_address": "10.0.0.1",
+                    "device_id": "100"
+                },
+                "driver_type": "test",
+                "registry_config": "config://bacnet.csv",
+                "interval": 10
+            }
+            json.dump(config_json, b)
+
+        f = open(bacnet_csv, 'r')
+        b = open(bacnet_config, 'r')
+
+        data = {
+            'site': '_test_site',
+            'device_prefix': '_test',
+            'csv_file': f,
+            'config_file': b
+        }
+
+        # import tags from bacnet scans
+        bacnet_scans_import_url = reverse('core:topic_import')
+        self.client.post(bacnet_scans_import_url, data)
+
+        # modify interval values
+        topic2 = Entity.objects.get(entity_id__contains='_test_topic_bacnet2')
+        topic2.kv_tags['interval'] = 5
+        topic2.save()
+
+        topic3 = Entity.objects.get(entity_id__contains='_test_topic_bacnet3')
+        topic3.kv_tags['interval'] = None
+        topic3.save()
+
+        # Export imported tags by interval
+        export_config_url = reverse('core:topic_export0')
+        data = {
+            'site': '_test_site',
+            'device_prefix': '_test'
+        }
+        response = self.client.post(export_config_url, data)
+
+        try:
+            exported_file = io.BytesIO(response.content)
+            zipped_file = zipfile.ZipFile(exported_file, 'r')
+
+            # check exported file includes all config files by interval
+            self.assertIn('_Interval_10.csv', zipped_file.namelist())
+            self.assertIn('_Interval_10.config', zipped_file.namelist())
+            self.assertIn('_Interval_5.csv', zipped_file.namelist())
+            self.assertIn('_Interval_5.config', zipped_file.namelist())
+            self.assertIn('_Interval_Not_Set.csv', zipped_file.namelist())
+            self.assertIn('_Interval_Not_Set.csv', zipped_file.namelist())
+
+            # check config files and csv files include all values
+            topic_count = 0
+
+            for finfo in zipped_file.infolist():
+                # check config files
+                if finfo.filename.endswith('.config'):
+                    interval = finfo.filename.replace('_Interval_', '').replace('.config', '')
+                    try:
+                        interval = int(interval)
+                    except ValueError:
+                        interval = None
+
+                    ifile = zipped_file.open(finfo)
+                    config_content = ifile.read()
+                    config_json_str = config_content.decode('utf8').replace("'", "")
+                    config_interval = json.loads(config_json_str)
+
+                    self.assertIn('driver_config', config_json_str)
+                    self.assertIn('device_address', config_json_str)
+                    self.assertIn('driver_type', config_json_str)
+                    self.assertEqual('10.0.0.1', config_interval['driver_config']['device_address'])
+                    self.assertEqual('100', config_interval['driver_config']['device_id'])
+                    self.assertEqual('test', config_interval['driver_type'])
+                    if interval:
+                        self.assertIn('interval', config_json_str)
+                        self.assertEqual(str(interval), config_interval['interval'])
+
+                # check csv files
+                if finfo.filename.endswith('.csv'):
+                    ifile = zipped_file.read(finfo).decode('utf8')
+                    csv_content = StringIO(ifile)
+                    reader = csv.reader(csv_content)
+                    for index, row in enumerate(reader):
+                        if index == 0:
+                            self.assertIn('reference_point_name', row)
+                            self.assertIn('volttron_point_name', row)
+                            self.assertIn('units', row)
+                            self.assertIn('unit_details', row)
+                            self.assertIn('object_type', row)
+                            self.assertIn('property', row)
+                            self.assertIn('writable', row)
+                            self.assertIn('index', row)
+                            self.assertIn('notes', row)
+                        else:
+                            topic_count += 1
+
+            # check total topics are same with sum of separated topics
+            self.assertEqual(topic_count, 3)
+
+        finally:
+            zipped_file.close()
+            exported_file.close()
