@@ -26,7 +26,7 @@ crate==0.22.1
 
 # Django
 # ------------------------------------------------------------------------------
-django==2.1.10
+django==2.1.11
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==3.1.2  # https://github.com/jazzband/django-model-utils
 django-allauth==0.38.0  # https://github.com/pennersr/django-allauth
