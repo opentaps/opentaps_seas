@@ -16,6 +16,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import json
+import time
 
 from django.test import TestCase
 from django.urls import reverse
@@ -31,8 +32,7 @@ class TopicAPITests(TestCase):
     topic_list_get_url = reverse('core:topic_list')
     topic_list_post_url = reverse('core:topic_table')
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
         # create site
         Entity.objects.get_or_create(entity_id='_test_filters_site', defaults={'m_tags': ['site'], 'kv_tags': {}})
 
@@ -87,8 +87,9 @@ class TopicAPITests(TestCase):
             }
         )
 
-    def setUp(self):
         get_user_model().objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+
+        time.sleep(1)
 
     def tearDown(self):
         self._cleanup_data()
@@ -443,7 +444,7 @@ class TopicAPITests(TestCase):
     def test_topic_rules(self):
         self._login()
 
-        # create rule
+        # create rule set 1 with rule 1
         data = {
             "name": "test rule 1",
             "tags": [
@@ -518,7 +519,7 @@ class TopicAPITests(TestCase):
             ]
         )
 
-        # create rule
+        # update rule set 1 with rule 2
         data = {
             "name": "test rule 2",
             "tags": [
@@ -622,4 +623,56 @@ class TopicAPITests(TestCase):
         # run rule set 1
         rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': '1'})
         response = self.client.post(rule_set_run_url)
-        print(json.loads(response.content))
+        self.assertEqual({'success': 1, 'updated': 2}, json.loads(response.content))
+
+        # check both updated topics
+        topics = Entity.objects.filter(topic__contains='foo')
+        for topic in topics:
+            self.assertNotIn('ac', topic.m_tags)
+            self.assertEqual(topic.kv_tags['appName'], 'set_foo')
+
+        # create rule set 2 with rule 3
+        data = {
+            "name": "test rule 3",
+            "tags": [
+                {
+                    "tag": "ac",
+                    "value": None,
+                    "remove": False,
+                    "kind": "Marker",
+                    "description": "AC"
+                },
+                {
+                    "tag": "appName",
+                    "value": None,
+                    "remove": True,
+                    "kind": "Str",
+                    "description": "Application Name"
+                }
+            ],
+            "filters": [
+                {
+                    "field": "Topic",
+                    "type": "c",
+                    "value": "foo"
+                },
+                {
+                    "field": "Topic",
+                    "type": "c",
+                    "value": "ac"
+                }
+            ],
+            "rule_set_id": "new",
+            "rule_set_name": "test rule set 2"
+        }
+        self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+
+        # run rule set 2
+        rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': '2'})
+        response = self.client.post(rule_set_run_url)
+        self.assertEqual({'success': 1, 'updated': 1}, json.loads(response.content))
+
+        # check topic updated correctly
+        topic = Entity.objects.filter(topic__contains='foo').filter(topic__contains='ac')
+        self.assertIn('ac', topic[0].m_tags)
+        self.assertNotIn(str(topic[0].kv_tags), 'appName')
