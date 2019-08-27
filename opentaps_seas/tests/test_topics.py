@@ -15,13 +15,15 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import json
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.db import connections
-from opentaps_seas.core.models import Entity
-from opentaps_seas.core.models import Tag
-from opentaps_seas.core.models import Topic
+from opentaps_seas.core.models import (
+    Entity, Tag, Topic, TopicTagRuleSet, TopicTagRule
+)
 
 
 class TopicAPITests(TestCase):
@@ -49,12 +51,41 @@ class TopicAPITests(TestCase):
                 'kind': 'Marker',
                 'description': 'This is a test Tag'
             })
-
         for tag in kv_tags:
             Tag.objects.get_or_create(tag=tag, defaults={
                 'kind': 'String',
                 'description': 'This is a test Tag'
             })
+
+        # create entities
+        Entity.objects.get_or_create(
+            entity_id="_test_filters/foo/an_ac",
+            topic="_test_filters/foo/an_ac",
+            m_tags=["his", "point", "ac"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_foo'
+            }
+        )
+        Entity.objects.get_or_create(
+            entity_id="_test_filters/bar/ahu",
+            topic="_test_filters/bar/ahu",
+            m_tags=["his", "point", "ahu", "rooftop"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_bar'
+            }
+        )
+        Entity.objects.get_or_create(
+            entity_id="_test_filters/bar/zone_temp",
+            topic="_test_filters/bar/zone_temp",
+            m_tags=["his", "point", "zone", "temp"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_bar',
+                'unit': 'celsius'
+            }
+        )
 
     def setUp(self):
         get_user_model().objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
@@ -66,6 +97,8 @@ class TopicAPITests(TestCase):
     def _cleanup_data():
         # delete test data from postgres
         Entity.objects.filter(entity_id__startswith='_test').delete()
+        TopicTagRule.objects.filter(name__contains='test').delete()
+        TopicTagRuleSet.objects.filter(name__contains='test').delete()
 
         # delete test data for CrateDB
         with connections['crate'].cursor() as c:
@@ -93,38 +126,6 @@ class TopicAPITests(TestCase):
 
     def test_topics_filter(self):
         self._login()
-
-        # create entities
-        Entity.objects.get_or_create(
-            entity_id="_test_filters/foo/an_ac",
-            topic="_test_filters/foo/an_ac",
-            m_tags=["his", "point", "ac"],
-            kv_tags={
-                'siteRef': 'test_filters_site',
-                'appName': 'test_foo'
-            }
-        )
-
-        Entity.objects.get_or_create(
-            entity_id="_test_filters/bar/ahu",
-            topic="_test_filters/bar/ahu",
-            m_tags=["his", "point", "ahu", "rooftop"],
-            kv_tags={
-                'siteRef': 'test_filters_site',
-                'appName': 'test_bar'
-            }
-        )
-
-        Entity.objects.get_or_create(
-            entity_id="_test_filters/bar/zone_temp",
-            topic="_test_filters/bar/zone_temp",
-            m_tags=["his", "point", "zone", "temp"],
-            kv_tags={
-                'siteRef': 'test_filters_site',
-                'appName': 'test_bar',
-                'unit': 'celsius'
-            }
-        )
 
         # ----------- start test n0="Topic" t0="c" f0="test" ----------- #
         c_list = [
@@ -438,3 +439,187 @@ class TopicAPITests(TestCase):
         }
         response = self._get_response(data, 'post')
         self._check_topic_list(response, c_list, nc_list)
+
+    def test_topic_rules(self):
+        self._login()
+
+        # create rule
+        data = {
+            "name": "test rule 1",
+            "tags": [
+                {
+                    "tag": "appName",
+                    "value": "set_foo"
+                }
+            ],
+            "filters": [
+                {
+                    "field": "Topic",
+                    "type": "c",
+                    "value": "foo"
+                }
+            ],
+            "rule_set_id": "new",
+            "rule_set_name": "test rule set 1"
+        }
+        create_topic_rule_url = reverse('core:topic_rules')
+        response = self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        self.assertEqual(
+            json.loads(response.content),
+            {
+                'success': 'created',
+                'rule': {
+                    'name': 'test rule 1',
+                    'id': 1,
+                    'filters': [
+                        {
+                            'field': 'Topic',
+                            'type': 'c',
+                            'value': 'foo'
+                        }
+                    ],
+                    'tags': [
+                        {
+                            'tag': 'appName',
+                            'value': 'set_foo'
+                        }
+                    ]
+                },
+                'rule_set': {
+                    'id': 1,
+                    'name': 'test rule set 1'
+                }
+            }
+        )
+
+        # check the rule set exists in the DB and has the rule as defined
+        rule_set = TopicTagRuleSet.objects.get(name='test rule set 1')
+        self.assertIsNotNone(rule_set)
+
+        rule = TopicTagRule.objects.get(rule_set=rule_set)
+        self.assertIsNotNone(rule)
+        self.assertEqual(
+            rule.tags,
+            [
+                {
+                    "tag": "appName",
+                    "value": "set_foo"
+                }
+            ]
+        )
+        self.assertEqual(
+            rule.filters,
+            [
+                {
+                    "field": "Topic",
+                    "type": "c",
+                    "value": "foo"
+                }
+            ]
+        )
+
+        # create rule
+        data = {
+            "name": "test rule 2",
+            "tags": [
+                {
+                    "tag": "ac",
+                    "value": None,
+                    "remove": True
+                }
+            ],
+            "filters": [
+                {
+                    "field": "Topic",
+                    "type": "c",
+                    "value": "foo"
+                }
+            ],
+            "rule_set_name": "test rule set 1"
+        }
+        response = self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        self.assertEqual(
+            json.loads(response.content),
+            {
+                'success': 'created',
+                'rule': {
+                    'name': 'test rule 2',
+                    'id': 2,
+                    'filters': [
+                        {
+                            'field': 'Topic',
+                            'type': 'c',
+                            'value': 'foo'
+                        }
+                    ],
+                    'tags': [
+                        {
+                            'tag': 'ac',
+                            'value': None,
+                            'remove': True
+                        }
+                    ]
+                },
+                'rule_set': {
+                    'id': 1,
+                    'name': 'test rule set 1'
+                }
+            }
+        )
+
+        # check the rule set exists in the DB and has the rule as defined
+        rule_set = TopicTagRuleSet.objects.get(name='test rule set 1')
+        self.assertIsNotNone(rule_set)
+
+        rules = TopicTagRule.objects.filter(rule_set=rule_set)
+        self.assertIsNotNone(rules)
+        self.assertEqual(2, len(rules))
+        for rule in rules:
+            if rule.name == 'test rule 1':
+                self.assertEqual(
+                    rule.tags,
+                    [
+                        {
+                            "tag": "appName",
+                            "value": "set_foo"
+                        }
+                    ]
+                )
+                self.assertEqual(
+                    rule.filters,
+                    [
+                        {
+                            "field": "Topic",
+                            "type": "c",
+                            "value": "foo"
+                        }
+                    ]
+                )
+            elif rule.name == 'test rule 2':
+                self.assertEqual(
+                    rule.tags,
+                    [
+                        {
+                            'remove': 'True',
+                            "tag": "ac",
+                            "value": None
+                        }
+                    ]
+                )
+                self.assertEqual(
+                    rule.filters,
+                    [
+                        {
+                            "field": "Topic",
+                            "type": "c",
+                            "value": "foo"
+                        }
+                    ]
+                )
+            else:
+                pass
+
+        # run rule set 1
+        rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': '1'})
+        response = self.client.post(rule_set_run_url)
+        print(json.loads(response.content))
