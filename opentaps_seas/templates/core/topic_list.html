@@ -242,6 +242,53 @@
 
     <div class="card mb-3" v-if="show_save_rule">
       <div class="card-body">
+        <h4 class="position-relative">Create New Equipment
+          <div class="a-rt">
+            <button v-if="!rule_action_edit" class="btn btn-secondary" style="top:-0.5em" v-on:click.stop.prevent="edit_rule_action()">Edit</button>
+          </div>
+        </h4>
+        <div v-if="!rule_action_edit">
+          <div>Site: ${rule_action_fields.site_object_id}</div>
+          <div>Equipment Name: ${rule_action_fields.equipment_name}</div>
+          <div>Model: ${rule_action_fields.model_object_id}</div>
+        </div>
+
+        <div v-if="rule_action_edit">
+          <div class="form-group">
+            <label for="siteObjectId">Site</label>
+            <select name="siteObjectId" class="select form-control" id="siteObjectId" v-model="rule_action_edit_fields.site_object_id">
+                {% for c in sites_list %}
+                    <option value="{{ c.id }}">{{ c.description }}</option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="equipmentName">Equipment Name</label>
+            <input type="text" class="form-control" id="equipmentName" placeholder="Equipment Name" v-model="rule_action_edit_fields.equipment_name" required />
+          </div>
+          <div class="form-group">
+            <label for="modelObjectId">Model</label>
+            <v-select select-on-tab :options="rule_action_models.models"
+                      label="description" :reduce="description => description.object_id"  id="modelObjectId" v-model="rule_action_edit_fields.model_object_id" class="mb-2" placeholder="Select a Model ...">
+              <template slot="option" slot-scope="option">
+                ${ option.object_id }&nbsp;<small>${ option.description }</small>
+              </template>
+              <template slot="selected-option" slot-scope="option">
+                ${ option.object_id }&nbsp;<small>${ option.description }</small>
+              </template>
+            </v-select>
+
+          </div>
+          <div class="form-group d-flex justify-content-around">
+            <button type="button" class="btn btn-secondary" v-on:click.stop.prevent="cancel_edit_rule_action()"><i class="fa fa-times mr-2"></i> Cancel</button>
+            <button type="button" class="btn btn-primary" v-on:click.stop.prevent="save_edit_rule_action()"><i class="fa fa-check mr-2"></i> Save</button>
+          </div>
+        </div>
+       </div>
+    </div>
+
+    <div class="card mb-3" v-if="show_save_rule">
+      <div class="card-body">
         <h4 ref="save_rule_title">Save as a Rule</h4>
         <div class="alert alert-danger mt-3" role="alert" v-if="rule_errors.error">
           ${ rule_errors.error }
@@ -347,6 +394,11 @@
         rule_errors: {},
         tag: '',
         value: '',
+        rule_action: {%if rule %}'{{ rule_action|safe}}'{%else%}''{%endif%},
+        rule_action_fields: {%if rule_action_fields %}{{ rule_action_fields|safe}}{%else%}{}{%endif%},
+        rule_action_edit: false,
+        rule_action_edit_fields: {},
+        rule_action_models: [],
         isAddingTag: false,
         isAddingModel: false,
         isAddingTagToRemove: false,
@@ -378,6 +430,7 @@
     },
     mounted() {
       this.get_valid_rulesets()
+      this.load_models(this.rule_action_models)
     },
     computed: {
       sorted_items() {
@@ -434,6 +487,19 @@
         if (this.show_save_rule) {
           this.$nextTick(() => this.$refs.save_rule_title.scrollIntoView())
         }
+      },
+      edit_rule_action() {
+          this.rule_action_edit = true;
+          this.rule_action_edit_fields = Object.assign({}, this.rule_action_fields);
+      },
+      cancel_edit_rule_action() {
+          this.rule_action_edit = false;
+          this.rule_action_edit_fields = {}
+      },
+      save_edit_rule_action() {
+          this.rule_action_edit = false;
+          this.rule_action_fields = Object.assign({}, this.rule_action_edit_fields);
+          this.rule_action = 'create equipment';
       },
       set_status(saving) {
         this.currentStatus = saving ? STATUS_SAVING : STATUS_INITIAL
@@ -777,8 +843,11 @@
             }
           }
         }
+
         if (!valid_filters.length || !tags.length) {
-          return this.rule_errors = {error: 'No filters or tags to save.'}
+          if (!this.rule_action || (this.rule_action && !this.rule_action.length)) {
+              return this.rule_errors = {error: 'No filters, actions or tags to save.'}
+          }
         }
 
         // Save it:
@@ -808,6 +877,12 @@
           }
         } else if ('current' == this.ruleset_type) {
               data.rule_set_id = this.ruleset_id
+        }
+        if (this.rule_action && this.rule_action.length) {
+            data.rule_action = this.rule_action;
+            if (this.rule_action_fields) {
+                data.rule_action_fields = this.rule_action_fields;
+            }
         }
         console.log('saving rule', data);
         axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})

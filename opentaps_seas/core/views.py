@@ -377,6 +377,7 @@ class TopicTagRuleTable(Table):
                       text=lambda record: record.name)
     filters = Column(accessor='filters.__len__', orderable=False)
     tags = Column(accessor='tags.__len__', orderable=False)
+    action = Column(orderable=False)
     buttons = Column(accessor='id', verbose_name='', default='', orderable=False)
 
     def render_buttons(self, record):
@@ -1015,8 +1016,13 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['used_filters'] = self.used_filters
+        context['sites_list'] = SiteView.get_site_obj_choices()
         if self.rule:
             context['rule'] = self.rule
+            if self.rule.action:
+                context['rule_action'] = self.rule.action
+            if self.rule.action_fields:
+                context['rule_action_fields'] = json.dumps(self.rule.action_fields)
 
         return context
 
@@ -1185,6 +1191,13 @@ def topic_rules(request):
         rule.filters = filters
         rule.tags = tags
         rule.rule_set = rule_set
+        rule_action = data.get('rule_action')
+        if rule_action:
+            rule.action = rule_action
+        rule_action_fields = data.get('rule_action_fields')
+        if rule_action_fields:
+            rule.action_fields = rule_action_fields
+
         rule.save()
         # return success
         return JsonResponse({'success': success,

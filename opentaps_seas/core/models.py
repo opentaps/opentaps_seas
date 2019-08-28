@@ -307,6 +307,12 @@ class SiteView(models.Model):
 
         return site_choices
 
+    def get_site_obj_choices():
+        site_choices = [{'id': c.object_id, 'description': c.description}
+                        for c in SiteView.objects.all().order_by('description')]
+
+        return site_choices
+
     def count():
         return SiteView.objects.all().count()
 
