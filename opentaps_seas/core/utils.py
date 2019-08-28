@@ -823,6 +823,8 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
                 qs = qs.filter(filter_Q(name, 'exact', filter_value, valid_tags))
             elif filter_type == 'neq':
                 qs = qs.exclude(filter_Q(name, 'exact', filter_value, valid_tags))
+            elif filter_type == 'matches':
+                qs = qs.filter(filter_Q(name, 'regex', filter_value, valid_tags))
     return qs
 
 

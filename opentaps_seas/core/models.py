@@ -642,6 +642,8 @@ class TopicTagRule(models.Model):
     rule_set = ForeignKey(TopicTagRuleSet, on_delete=models.CASCADE)
     filters = ArrayField(HStoreField(blank=True, null=True), default=list)
     tags = ArrayField(HStoreField(blank=True, null=True), default=list)
+    action = CharField(max_length=255, blank=True, null=True)
+    action_fields = HStoreField(blank=True, null=True)
 
     def __str__(self):
         return self.name
