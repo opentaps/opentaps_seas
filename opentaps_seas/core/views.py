@@ -1410,7 +1410,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format = form.save()
+            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_equipments = form.save()
             if preview_type:
                 if diff_format:
                     report_rows, report_header = utils.tag_rulesets_run_report_diff(
@@ -1505,7 +1505,12 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
 
                     return response
             else:
-                return JsonResponse({'success': 1, 'updated': len(updated_set)})
+                if len(updated_set) > 0 or len(new_equipments) > 0:
+                    response = JsonResponse({'success': 1, 'updated': len(updated_set),
+                                             'new_equipments': len(new_equipments)})
+                else:
+                    response = JsonResponse({'errors': 'Nothing applied'})
+                return response
 
         else:
             return self.form_invalid(form, **kwargs)

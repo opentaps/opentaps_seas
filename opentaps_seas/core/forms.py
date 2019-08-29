@@ -180,16 +180,17 @@ class TopicTagRuleSetRunForm(forms.Form):
         updated_entities = {}
         updated_tags = {}
         removed_tags = {}
+        new_equipments = []
         for rule in rule_set.topictagrule_set.all():
+            rule_filters = rule.filters
+            # Add the topic_filter to the rule filters if given
+            if topic_filter:
+                tf = {'type': 'c', 'value': topic_filter}
+                if rule_filters:
+                    rule_filters.append(tf)
+                else:
+                    rule_filters = [tf]
             if rule.tags:
-                rule_filters = rule.filters
-                # Add the topic_filter to the rule filters if given
-                if topic_filter:
-                    tf = {'type': 'c', 'value': topic_filter}
-                    if rule_filters:
-                        rule_filters.append(tf)
-                    else:
-                        rule_filters = [tf]
                 updated, updated_curr_entities, updated_curr_tags, removed_curr_tags = utils.tag_topics(
                     rule_filters, rule.tags, select_all=True, pretend=pretend)
                 for x in updated:
@@ -227,7 +228,11 @@ class TopicTagRuleSetRunForm(forms.Form):
                         removed_tag[tag] = value
                     removed_tags[key] = removed_tag
 
-        return updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format
+            if rule.action and rule.action_fields and not pretend:
+                if rule.action == 'create equipment':
+                    new_equipments = utils.create_equipment_action(rule_filters, rule.action_fields)
+
+        return updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_equipments
 
 
 class TopicTagRuleCreateForm(forms.ModelForm):
