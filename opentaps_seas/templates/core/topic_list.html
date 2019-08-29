@@ -242,12 +242,13 @@
 
     <div class="card mb-3" v-if="show_save_rule">
       <div class="card-body">
-        <h4 class="position-relative">Create New Equipment
+        <h4 class="position-relative">Rule Action : Create Equipment
           <div class="a-rt">
             <button v-if="!rule_action_edit" class="btn btn-secondary" style="top:-0.5em" v-on:click.stop.prevent="edit_rule_action()">Edit</button>
+            <button v-if="!rule_action_edit && rule_action" class="btn btn-danger" style="top:-0.5em" v-confirm:click.stop.prevent="delete_rule_action()"><i class="fa fa-trash mr-2"></i> Delete</button>
           </div>
         </h4>
-        <div v-if="!rule_action_edit">
+        <div v-if="!rule_action_edit && rule_action">
           <div>Site: ${rule_action_fields.site_object_id}</div>
           <div>Equipment Name: ${rule_action_fields.equipment_name}</div>
           <div>Model: ${rule_action_fields.model_object_id}</div>
@@ -399,6 +400,7 @@
         rule_action_edit: false,
         rule_action_edit_fields: {},
         rule_action_models: [],
+        rule_action_delete: false,
         isAddingTag: false,
         isAddingModel: false,
         isAddingTagToRemove: false,
@@ -500,6 +502,21 @@
           this.rule_action_edit = false;
           this.rule_action_fields = Object.assign({}, this.rule_action_edit_fields);
           this.rule_action = 'create equipment';
+          this.rule_action_delete = false;
+      },
+      delete_rule_action() {
+          return {
+            okText: 'Delete',
+            ok: dialog => this.delete_rule_action_cb(dialog),
+            message: 'Are you sure?'
+          }
+      },
+      delete_rule_action_cb(dialog) {
+          this.rule_action_fields = {};
+          this.rule_action = '';
+          this.rule_action_edit = false;
+          this.rule_action_delete = true;
+          dialog.close()
       },
       set_status(saving) {
         this.currentStatus = saving ? STATUS_SAVING : STATUS_INITIAL
@@ -845,8 +862,10 @@
         }
 
         if (!valid_filters.length || !tags.length) {
-          if (!this.rule_action || (this.rule_action && !this.rule_action.length)) {
-              return this.rule_errors = {error: 'No filters, actions or tags to save.'}
+          if (!this.rule_action_delete) {
+              if (!this.rule_action || (this.rule_action && !this.rule_action.length)) {
+                  return this.rule_errors = {error: 'No filters, actions or tags to save.'}
+              }
           }
         }
 
@@ -883,6 +902,8 @@
             if (this.rule_action_fields) {
                 data.rule_action_fields = this.rule_action_fields;
             }
+        } else if (this.rule_action_delete) {
+            data.rule_action_delete = this.rule_action_delete
         }
         console.log('saving rule', data);
         axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
