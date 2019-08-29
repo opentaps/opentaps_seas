@@ -575,8 +575,6 @@ class CrateEntity(models.Model):
         cratedb = True
 
 
-
-
 class TimeZone(models.Model):
     time_zone = CharField(_("Time Zone"), max_length=255)
     tzoffset = IntegerField(default=0)

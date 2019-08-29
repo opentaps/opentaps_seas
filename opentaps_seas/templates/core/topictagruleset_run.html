@@ -34,7 +34,8 @@
         ${ errors.error }
       </div>
       <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="run_success" v-cloak>
-        <div>Successfully ran on ${ run_success.updated } Topics.</div>
+        <div v-if="run_success.updated">Successfully ran on ${ run_success.updated } Topics.</div>
+        <div v-if="run_success.new_equipments">Successfully created ${ run_success.new_equipments } Equipments.</div>
         <button type="button" class="close" aria-label="Close" v-on:click="run_success = false">
           <span aria-hidden="true">&times;</span>
         </button>

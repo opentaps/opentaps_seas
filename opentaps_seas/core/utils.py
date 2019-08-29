@@ -20,11 +20,13 @@ import geocoder
 import hashlib
 import json
 import requests
+import re
 from .models import Entity
 from .models import EquipmentView
 from .models import PointView
 from .models import Tag
 from .models import Topic
+from .models import ModelView
 from crate.client import connect
 from datetime import datetime
 from datetime import timedelta
@@ -983,3 +985,86 @@ def get_bacnet_trending_data(rows):
         bacnet_data.append(data_row)
 
     return header, bacnet_data
+
+
+def create_equipment_action(filters, action_fields):
+    qs = Topic.objects.all()
+
+    logging.info('create_equipment_action: using filters %s', filters)
+    action_regexp_value = None
+    new_equipments = {}
+    if filters:
+        q_filters = []
+        for qfilter in filters:
+            filter_type = qfilter.get('t') or qfilter.get('type')
+            filter_field = qfilter.get('n') or qfilter.get('field')
+            if filter_type:
+                filter_value = qfilter.get('f') or qfilter.get('value')
+                if not action_regexp_value and filter_type == 'matches':
+                    if filter_value:
+                        action_regexp_value = filter_value
+
+                q_filters.append((filter_field, filter_type, filter_value))
+        qs = apply_filters_to_queryset(qs, q_filters)
+
+        if action_fields and action_fields.get('equipment_name'):
+            new_equipments_topics = {}
+            for etopic in qs:
+                equipment_name_add = ''
+                if action_regexp_value:
+                    m = re.match(action_regexp_value, etopic.topic)
+                    if m and m.group(0):
+                        equipment_name_add = etopic.topic.replace(m.group(0), '')
+
+                equipment_name = action_fields.get('equipment_name')
+                if equipment_name_add:
+                    equipment_name += ' ' + equipment_name_add
+
+                if equipment_name not in new_equipments.keys():
+                    current_equipment = create_equipment(equipment_name, action_fields)
+                    new_equipments[equipment_name] = current_equipment
+
+                equipment_topics = new_equipments_topics.get(equipment_name, [])
+                equipment_topics.append(etopic.topic)
+                new_equipments_topics[equipment_name] = equipment_topics
+
+            link_points_to_equipments(new_equipments, new_equipments_topics)
+
+        else:
+            logging.error("create_equipment_action: action equipment_name could not be empty")
+
+    return new_equipments.keys()
+
+
+def create_equipment(equipment_name, action_fields):
+    entity_id = make_random_id(equipment_name)
+    object_id = entity_id
+    entity_id = slugify(entity_id)
+    equipment = Entity(entity_id=entity_id)
+    equipment.add_tag('equip', commit=False)
+    equipment.add_tag('id', object_id, commit=False)
+    equipment.add_tag('dis', equipment_name, commit=False)
+
+    if action_fields.get('site_object_id'):
+        equipment.add_tag('siteRef', action_fields.get('site_object_id'), commit=False)
+
+    if action_fields.get('model_object_id'):
+        equipment.add_tag('modelRef', action_fields.get('model_object_id'), commit=False)
+        # add tags from model
+        model_obj = ModelView.objects.filter(
+            object_id=action_fields.get('model_object_id')).values().first()
+        equipment.add_tags_from_model(model_obj, commit=False)
+
+    equipment.save()
+
+    return equipment
+
+
+def link_points_to_equipments(new_equipments, new_equipments_topics):
+    for equipment_name, equipment in new_equipments.items():
+        topics = new_equipments_topics.get(equipment_name)
+        for topic in topics:
+            points = Entity.objects.filter(topic=topic)
+            if points:
+                for point in points:
+                    point.add_tag('equipRef',  equipment.kv_tags['id'], commit=True)
