@@ -1017,6 +1017,10 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         context = super().get_context_data(**kwargs)
         context['used_filters'] = self.used_filters
         context['sites_list'] = SiteView.get_site_obj_choices()
+        if context['sites_list']:
+            site_id = context['sites_list'][0]['id']
+            if site_id:
+                context['default_rule_action_site_id'] = site_id
         if self.rule:
             context['rule'] = self.rule
             if self.rule.action:

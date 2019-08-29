@@ -256,7 +256,7 @@
 
         <div v-if="rule_action_edit">
           <div class="form-group">
-            <label for="siteObjectId">Site</label>
+            <label for="siteObjectId">Site*</label>
             <select name="siteObjectId" class="select form-control" id="siteObjectId" v-model="rule_action_edit_fields.site_object_id">
                 {% for c in sites_list %}
                     <option value="{{ c.id }}">{{ c.description }}</option>
@@ -264,8 +264,11 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="equipmentName">Equipment Name</label>
-            <input type="text" class="form-control" id="equipmentName" placeholder="Equipment Name" v-model="rule_action_edit_fields.equipment_name" required />
+            <label for="equipmentName">Equipment Name*</label>
+            <b-form-input type="text" class="form-control" id="equipmentName" placeholder="Equipment Name" :state="equipmentNameState" v-model="rule_action_edit_fields.equipment_name" required></b-form-input>
+            <b-form-invalid-feedback id="equipmentName">
+                Equipment Name is required
+            </b-form-invalid-feedback>
           </div>
           <div class="form-group">
             <label for="modelObjectId">Model</label>
@@ -401,6 +404,8 @@
         rule_action_edit_fields: {},
         rule_action_models: [],
         rule_action_delete: false,
+        default_rule_action_site_id: {%if default_rule_action_site_id %}'{{ default_rule_action_site_id|safe}}'{%else%}''{%endif%},
+        equipmentNameState: null,
         isAddingTag: false,
         isAddingModel: false,
         isAddingTagToRemove: false,
@@ -493,16 +498,24 @@
       edit_rule_action() {
           this.rule_action_edit = true;
           this.rule_action_edit_fields = Object.assign({}, this.rule_action_fields);
+          if (!this.rule_action_edit_fields.site_object_id && this.default_rule_action_site_id) {
+              this.rule_action_edit_fields.site_object_id = this.default_rule_action_site_id;
+          }
       },
       cancel_edit_rule_action() {
           this.rule_action_edit = false;
           this.rule_action_edit_fields = {}
       },
       save_edit_rule_action() {
-          this.rule_action_edit = false;
-          this.rule_action_fields = Object.assign({}, this.rule_action_edit_fields);
-          this.rule_action = 'create equipment';
-          this.rule_action_delete = false;
+          if (this.rule_action_edit_fields.equipment_name) {
+              this.rule_action_edit = false;
+              this.rule_action_fields = Object.assign({}, this.rule_action_edit_fields);
+              this.rule_action = 'create equipment';
+              this.rule_action_delete = false;
+              this.equipmentNameState = null;
+          } else {
+              this.equipmentNameState = false;
+          }
       },
       delete_rule_action() {
           return {
