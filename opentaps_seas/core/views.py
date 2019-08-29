@@ -1192,11 +1192,15 @@ def topic_rules(request):
         rule.tags = tags
         rule.rule_set = rule_set
         rule_action = data.get('rule_action')
-        if rule_action:
-            rule.action = rule_action
+        rule_action_delete = data.get('rule_action_delete')
         rule_action_fields = data.get('rule_action_fields')
-        if rule_action_fields:
-            rule.action_fields = rule_action_fields
+        if rule_action_delete:
+            rule.action = None
+            rule.action_fields = None
+        elif rule_action:
+            rule.action = rule_action
+            if rule_action_fields:
+                rule.action_fields = rule_action_fields
 
         rule.save()
         # return success
