@@ -437,7 +437,7 @@
     },
     mounted() {
       this.get_valid_rulesets()
-      this.load_models(this.rule_action_models)
+      this.load_models(this.rule_action_models, false, true)
     },
     computed: {
       sorted_items() {
@@ -752,13 +752,16 @@
       get_model_label(model) {
         return model.object_id + ' ' + model.description
       },
-      load_models(model_select, scroll) {
+      load_models(model_select, scroll, all) {
         console.log('** load_models for =', model_select)
         parent = '_'
         if (model_select.parent && model_select.parent.object_id) {
           parent = model_select.parent.object_id
         }
         url = dutils.urls.resolve('model_list_json') + '?parent=' + parent
+        if (all) {
+            url = dutils.urls.resolve('model_list_json')
+        }
         axios.get(url)
           .then(x => {
             console.log('load_models', x.data.items)
