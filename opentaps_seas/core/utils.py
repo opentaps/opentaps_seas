@@ -1010,15 +1010,18 @@ def create_equipment_action(filters, action_fields):
         if action_fields and action_fields.get('equipment_name'):
             new_equipments_topics = {}
             for etopic in qs:
-                equipment_name_add = ''
+                equipment_name = action_fields.get('equipment_name')
                 if action_regexp_value:
                     m = re.match(action_regexp_value, etopic.topic)
-                    if m and m.group(0):
-                        equipment_name_add = etopic.topic.replace(m.group(0), '')
+                    if m and len(m.groups()):
+                        group = []
+                        for i in range(len(m.groups()) + 1):
+                            group.append(m.group(i))
 
-                equipment_name = action_fields.get('equipment_name')
-                if equipment_name_add:
-                    equipment_name += ' ' + equipment_name_add
+                        try:
+                            equipment_name = equipment_name.format(group=group)
+                        except IndexError:
+                            logging.error("cannot format equipment name string")
 
                 if equipment_name not in new_equipments.keys():
                     current_equipment = create_equipment(equipment_name, action_fields)
