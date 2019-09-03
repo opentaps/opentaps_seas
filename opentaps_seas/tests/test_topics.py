@@ -623,7 +623,7 @@ class TopicAPITests(TestCase):
         # run rule set 1
         rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': '1'})
         response = self.client.post(rule_set_run_url)
-        self.assertEqual({'success': 1, 'updated': 2}, json.loads(response.content))
+        self.assertEqual({'success': 1, 'updated': 2, 'new_equipments': 0}, json.loads(response.content))
 
         # check both updated topics
         topics = Entity.objects.filter(topic__contains='foo')
@@ -670,7 +670,7 @@ class TopicAPITests(TestCase):
         # run rule set 2
         rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': '2'})
         response = self.client.post(rule_set_run_url)
-        self.assertEqual({'success': 1, 'updated': 1}, json.loads(response.content))
+        self.assertEqual({'success': 1, 'updated': 1, 'new_equipments': 0}, json.loads(response.content))
 
         # check topic updated correctly
         topic = Entity.objects.filter(topic__contains='foo').filter(topic__contains='ac')
