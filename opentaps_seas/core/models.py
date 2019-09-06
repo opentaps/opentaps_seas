@@ -437,7 +437,7 @@ class Topic(models.Model):
     related_point = None
 
     def __str__(self):
-        return self.topic
+        return self.topic or '?? no topic ??'
 
     @property
     def point_description(self):
