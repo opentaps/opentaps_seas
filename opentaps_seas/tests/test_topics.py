@@ -15,6 +15,7 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import logging
 import json
 import time
 
@@ -25,6 +26,8 @@ from django.db import connections
 from opentaps_seas.core.models import (
     Entity, Tag, Topic, TopicTagRuleSet, TopicTagRule
 )
+
+logger = logging.getLogger(__name__)
 
 
 class TopicAPITests(TestCase):
@@ -117,10 +120,16 @@ class TopicAPITests(TestCase):
             return self.client.post(self.topic_list_post_url, params)
 
     def _check_topic_list(self, response, c_list, nc_list):
-        for entity in c_list:
-            self.assertContains(response, entity)
-        for entity in nc_list:
-            self.assertNotContains(response, entity)
+        try:
+            for entity in c_list:
+                self.assertContains(response, entity)
+            for entity in nc_list:
+                self.assertNotContains(response, entity)
+        except Exception:
+            logging.error('_check_topic_list ERROR: c_list %s', c_list)
+            logging.error('_check_topic_list ERROR: nc_list %s', nc_list)
+            logging.error('_check_topic_list ERROR: check response %s', response.content)
+            raise
 
     def _login(self):
         self.client.login(username='temporary', password='temporary')
