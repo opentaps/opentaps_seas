@@ -144,9 +144,11 @@ Then click "Apply Tags" to apply these tags to the topics.
 Rule can be used to create new equipment.
 In that case rule filter should contains Topic 'Matches' regex expression, for example '.*vav-(.*)'.
 And rule create equipment action fields should be set. For example:
+
  * equipment_name: "{group[1]} test equip name"
  * site_object_id: ref to a site
  * model_object_id: ref to a model
+
 Regex matches group[1] value used as part of the new equipmen name.
 As result after rule run we should have one or more new equipmen, models tags should be added to those equipment and data points should be linked to appropriate equipment.
 
