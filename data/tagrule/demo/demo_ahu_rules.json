@@ -322,75 +322,29 @@
                             "tag": "temp"
                         }
                     ]
-                },
+                }
+
+            ]
+        },
+        {
+            "name": "Demo AHU Equipment Set Rules",
+            "rules": [
                 {
+                    "action": "create equipment",
+                    "action_fields": {
+                        "equipment_name": "Demo-AHU{group[1]}",
+                        "model_object_id": "model-AHU",
+                        "site_object_id": "@Demo-Site-1"
+                    },
                     "filters": [
                         {
-                            "type": "c",
-                            "value": "Demo_ahu3"
+                            "field": "Topic",
+                            "type": "matches",
+                            "value": ".*_ahu([1-9]*)(.*)"
                         }
                     ],
-                    "name": "Demo AHU3",
-                    "tags": [
-                        {
-                            "description": "Equipment asset ID",
-                            "kind": "Ref",
-                            "tag": "equipRef",
-                            "value": "@Demo-AHU3"
-                        },
-                        {
-                            "description": "Air handler unit",
-                            "kind": "Marker",
-                            "tag": "ahu",
-                            "value": null
-                        }
-                    ]
-                },
-                {
-                    "filters": [
-                        {
-                            "type": "c",
-                            "value": "demo_ahu2"
-                        }
-                    ],
-                    "name": "Demo AHU2 Rules",
-                    "tags": [
-                        {
-                            "description": "Equipment asset ID",
-                            "kind": "Ref",
-                            "tag": "equipRef",
-                            "value": "@Demo-AHU2"
-                        },
-                        {
-                            "description": "Air handler unit",
-                            "kind": "Marker",
-                            "tag": "ahu",
-                            "value": null
-                        }
-                    ]
-                },
-                {
-                    "filters": [
-                        {
-                            "type": "c",
-                            "value": "Demo_ahu1"
-                        }
-                    ],
-                    "name": "Demo AHU1",
-                    "tags": [
-                        {
-                            "description": "Equipment asset ID",
-                            "kind": "Ref",
-                            "tag": "equipRef",
-                            "value": "@Demo-AHU1"
-                        },
-                        {
-                            "description": "Air handler unit",
-                            "kind": "Marker",
-                            "tag": "ahu",
-                            "value": null
-                        }
-                    ]
+                    "name": "Create Equipment",
+                    "tags": []
                 }
             ]
         }
