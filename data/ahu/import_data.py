@@ -54,6 +54,7 @@ def clean():
     print('Deleting data ...')
     cursor.execute("DELETE FROM volttron.data where topic like 'demo_%';")
     cursor.execute("DELETE FROM volttron.topic where topic like 'demo_%';")
+    cursor.execute("DELETE FROM volttron.entity where topic like 'demo_%';")
 
     cursor.close()
     conn.close()
@@ -128,7 +129,7 @@ def import_files(which):
         for f in os.listdir(mypath):
             filename = os.path.join(mypath, f)
             if os.path.isfile(filename):
-                if '.sql' in filename:
+                if filename.endswith('.sql'):
                     print('Running SQL {} [{}]'.format(which, filename))
                     import_sql(filename)
     else:

@@ -19,27 +19,46 @@
 import json
 import os
 import sys
-from psycopg2 import connect
+from crate.client import connect
+from crate.client.exceptions import ProgrammingError
+from psycopg2 import connect as pgconnect
 from psycopg2 import IntegrityError
 from psycopg2.extras import register_hstore
 from django.template.defaultfilters import slugify
 
+CRATE_HOST = 'localhost:4200'
+
 
 def get_connection():
-    connection = connect(dbname='opentaps_seas')
+    connection = connect(CRATE_HOST, error_trace=True)
+    return connection
+
+
+def get_pgconnection():
+    connection = pgconnect(dbname='opentaps_seas')
     register_hstore(connection)
     return connection
 
 
 def clean():
-    conn = get_connection()
-    cursor = conn.cursor()
+    pgconnection = get_pgconnection()
+    cursor = pgconnection.cursor()
 
-    print('Deleting data ...')
+    print('Deleting entity data ...')
     cursor.execute('DELETE FROM core_entity;')
 
     cursor.close()
-    conn.commit()
+    pgconnection.commit()
+    pgconnection.close()
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    print('Deleting volttron entity data ...')
+    cursor.execute("DELETE FROM volttron.topic;")
+    cursor.execute("DELETE FROM volttron.entity;")
+
+    cursor.close()
     conn.close()
 
 
@@ -69,7 +88,7 @@ def import_entities(source_file_name, filters):
     with open(source_file_name) as f:
         reader = json.loads(f.read())
 
-    conn = get_connection()
+    conn = get_pgconnection()
     cursor = conn.cursor()
 
     counter_insert = 0
