@@ -51,6 +51,8 @@ Verify the following -
 Crate
 ^^^^^
 
+Use the latest version of Crate as there are issues with earlier versions and Join queries, we recommend 3.3.5
+
 Note that the CrateDB postgres connection is by default done on port 5433 instead of 5432 to avoid conflict. This should be at the end of the ``crate/config/crate.yml``::
 
     psql.enabled: true
