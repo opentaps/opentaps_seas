@@ -254,8 +254,7 @@ def import_csv(source_file_name):
                         'id': csv_writer['topic'],
                         'dis': 'Demo point for ' + csv_writer['topic'],
                         'kind': 'Number',
-                        'siteRef': '@Demo-Site-1',
-                        'equipRef': '@Demo-' + name.upper(),
+                        'siteRef': '@Demo-Site-1'
                     }
                     mtags = ['point', 'his', 'sensor']
                     pgcursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
