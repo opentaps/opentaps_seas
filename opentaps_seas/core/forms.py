@@ -505,6 +505,14 @@ class TopicTagRuleSetImportForm(forms.Form):
                                     else:
                                         topic_tag_rule.tags = []
 
+                                    action = rule.get("action")
+                                    if action:
+                                        topic_tag_rule.action = action
+
+                                    action_fields = rule.get("action_fields")
+                                    if action_fields:
+                                        topic_tag_rule.action_fields = action_fields
+
                                     topic_tag_rule.save()
                         if run_rule:
                             # run the imported ruleset
