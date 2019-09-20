@@ -139,7 +139,18 @@ At any one time, you can only choose to add tags from one Model, and not its par
 You can also choose to remove tags, which means that the topics matching the conditions will have the tags removed.  If you do this, also remember that the rules are just run once in their
 specified sequence, so the tags would have to exist or been added by other rules before they could be removed. 
  
-Then click "Apply Tags" to apply these tags to the topics.   
+Then click "Apply Tags" to apply these tags to the topics.
+
+Rule can be used to create new equipment.
+In that case rule filter should contains Topic 'Matches' regex expression, for example '.*vav-(.*)'.
+And rule create equipment action fields should be set. For example:
+
+ * equipment_name: "{group[1]} test equip name"
+ * site_object_id: ref to a site
+ * model_object_id: ref to a model
+
+Regex matches group[1] value used as part of the new equipmen name.
+As result after rule run we should have one or more new equipmen, models tags should be added to those equipment and data points should be linked to appropriate equipment.
 
 From here you can also click on "Save as a Rule", and it will open a dialog box below.  Here you can choose to save to a new rule set or an existing one, then put a name for your rule, and save
 the filter/tags as a rule.  

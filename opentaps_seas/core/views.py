@@ -1274,7 +1274,8 @@ class TopicTagRuleSetExportView(LoginRequiredMixin, SingleTableMixin, WithBreadc
                     rules = TopicTagRule.objects.filter(rule_set=rule_set_id)
                     if rules:
                         for rule in rules:
-                            rule_item = {"name": rule.name, "filters": rule.filters, "tags": rule.tags}
+                            rule_item = {"name": rule.name, "filters": rule.filters,
+                                         "tags": rule.tags, "action": rule.action, "action_fields": rule.action_fields}
                             tag_rule_set["rules"].append(rule_item)
 
                     tag_rule_sets["tag_rule_sets"].append(tag_rule_set)

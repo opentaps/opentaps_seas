@@ -54,6 +54,7 @@ def clean():
     print('Deleting data ...')
     cursor.execute("DELETE FROM volttron.data where topic like 'demo_%';")
     cursor.execute("DELETE FROM volttron.topic where topic like 'demo_%';")
+    cursor.execute("DELETE FROM volttron.entity where topic like 'demo_%';")
 
     cursor.close()
     conn.close()
@@ -128,7 +129,7 @@ def import_files(which):
         for f in os.listdir(mypath):
             filename = os.path.join(mypath, f)
             if os.path.isfile(filename):
-                if '.sql' in filename:
+                if filename.endswith('.sql'):
                     print('Running SQL {} [{}]'.format(which, filename))
                     import_sql(filename)
     else:
@@ -253,8 +254,7 @@ def import_csv(source_file_name):
                         'id': csv_writer['topic'],
                         'dis': 'Demo point for ' + csv_writer['topic'],
                         'kind': 'Number',
-                        'siteRef': '@Demo-Site-1',
-                        'equipRef': '@Demo-' + name.upper(),
+                        'siteRef': '@Demo-Site-1'
                     }
                     mtags = ['point', 'his', 'sensor']
                     pgcursor.execute("""INSERT INTO core_entity (entity_id, topic, kv_tags, m_tags, dashboard_uid)
