@@ -46,6 +46,11 @@ class TopicAPITests(TestCase):
         Topic.ensure_topic_exists('_test_filters/bar/ahu')
         Topic.ensure_topic_exists('_test_filters/bar/zone_temp')
 
+        Topic.ensure_topic_exists('_test_Position_Command|vav-100')
+        Topic.ensure_topic_exists('_test_Position_Size|vav-100')
+        Topic.ensure_topic_exists('_test_Position_Command|vav-101')
+        Topic.ensure_topic_exists('_test_Position_Size|vav-101')
+
         # create tags
         m_tags = ['his', 'point', 'rooftop', 'ac', 'ahu', 'zone', 'temp']
         kv_tags = ['siteRef', 'appName', 'unit']
@@ -87,6 +92,57 @@ class TopicAPITests(TestCase):
                 'siteRef': 'test_filters_site',
                 'appName': 'test_bar',
                 'unit': 'celsius'
+            }
+        )
+
+        Entity.objects.get_or_create(
+            entity_id="_test_Position_Command|vav-100",
+            topic="_test_Position_Command|vav-100",
+            m_tags=["his", "point", "zone", "temp"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_bar',
+                'unit': 'celsius'
+            }
+        )
+        Entity.objects.get_or_create(
+            entity_id="_test_Position_Size|vav-100",
+            topic="_test_Position_Size|vav-100",
+            m_tags=["his", "point", "zone", "temp"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_bar',
+                'unit': 'celsius'
+            }
+        )
+        Entity.objects.get_or_create(
+            entity_id="_test_Position_Command|vav-101",
+            topic="_test_Position_Command|vav-100",
+            m_tags=["his", "point", "zone", "temp"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_bar',
+                'unit': 'celsius'
+            }
+        )
+        Entity.objects.get_or_create(
+            entity_id="_test_Position_Size|vav-101",
+            topic="_test_Position_Size|vav-100",
+            m_tags=["his", "point", "zone", "temp"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_bar',
+                'unit': 'celsius'
+            }
+        )
+
+        # create model
+        Entity.objects.create(
+            entity_id='_test_model',
+            m_tags=['model'],
+            kv_tags={
+                'id': '_test_model',
+                'dis': 'description'
             }
         )
 
@@ -685,3 +741,37 @@ class TopicAPITests(TestCase):
         topic = Entity.objects.filter(topic__contains='foo').filter(topic__contains='ac')
         self.assertIn('ac', topic[0].m_tags)
         self.assertNotIn(str(topic[0].kv_tags), 'appName')
+
+    def test_topic_regex_rules(self):
+        self._login()
+
+        # create rule set 1 with rule 1
+        data = {
+            "name": "test rule 1",
+            "tags": [],
+            "filters": [
+                {
+                    "field": "Topic",
+                    "type": "matches",
+                    "value": ".vav-(.)"
+                }
+            ],
+            "rule_action": "create equipment",
+            "rule_action_fields": {
+                "equipment_name": "{group[1]} test equip name",
+                "site_object_id": "test_filters_site",
+                "model_object_id": "_test_model"
+            },
+            "rule_set_id": "new",
+            "rule_set_name": "test regex rule set"
+        }
+        create_topic_rule_url = reverse('core:topic_rules')
+        self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+
+        # run rule set
+        rule_set = TopicTagRuleSet.objects.get(name='test regex rule set')
+        rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': rule_set.id})
+        response = self.client.post(rule_set_run_url)
+        self.assertEqual({'success': 1, 'updated': 2, 'new_equipments': 0}, json.loads(response.content))
+
+
