@@ -753,7 +753,7 @@ class TopicAPITests(TestCase):
                 {
                     "field": "Topic",
                     "type": "matches",
-                    "value": ".vav-(.)"
+                    "value": ".*vav-(.*)"
                 }
             ],
             "rule_action": "create equipment",
@@ -772,6 +772,17 @@ class TopicAPITests(TestCase):
         rule_set = TopicTagRuleSet.objects.get(name='test regex rule set')
         rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': rule_set.id})
         response = self.client.post(rule_set_run_url)
-        self.assertEqual({'success': 1, 'updated': 2, 'new_equipments': 0}, json.loads(response.content))
+        self.assertEqual({'success': 1, 'updated': 0, 'new_equipments': 2}, json.loads(response.content))
+
+        # check 2 equipments are created
+        self.assertEqual(1, Entity.objects.filter(entity_id__contains='100-test-equip-name').count())
+        self.assertEqual(1, Entity.objects.filter(entity_id__contains='101-test-equip-name').count())
+
+        # check equipment tags
+        equipments = Entity.objects.filter(entity_id__contains='100-test-equip-name')
+        for equipment in equipments:
+            self.assertEqual(equipment.kv_tags['siteRef'], 'test_filters_site')
+            self.assertEqual(equipment.kv_tags['modelRef'], '_test_model')
+
 
 
