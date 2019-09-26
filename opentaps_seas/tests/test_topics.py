@@ -530,13 +530,21 @@ class TopicAPITests(TestCase):
         }
         create_topic_rule_url = reverse('core:topic_rules')
         response = self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        # note we can't assert the rule or rule set ids
+        json_resp = json.loads(response.content)
+        self.assertIsNotNone(json_resp.get('rule'))
+        self.assertIsNotNone(json_resp.get('rule').get('id'))
+        rule_id = json_resp.get('rule').get('id')
+        self.assertIsNotNone(json_resp.get('rule_set'))
+        self.assertIsNotNone(json_resp.get('rule_set').get('id'))
+        rule_set_id = json_resp.get('rule_set').get('id')
         self.assertEqual(
-            json.loads(response.content),
+            json_resp,
             {
                 'success': 'created',
                 'rule': {
                     'name': 'test rule 1',
-                    'id': 1,
+                    'id': rule_id,
                     'filters': [
                         {
                             'field': 'Topic',
@@ -552,7 +560,7 @@ class TopicAPITests(TestCase):
                     ]
                 },
                 'rule_set': {
-                    'id': 1,
+                    'id': rule_set_id,
                     'name': 'test rule set 1'
                 }
             }
@@ -604,13 +612,24 @@ class TopicAPITests(TestCase):
             "rule_set_name": "test rule set 1"
         }
         response = self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        # note we can't assert the rule or rule set ids
+        json_resp = json.loads(response.content)
+        self.assertIsNotNone(json_resp.get('rule'))
+        self.assertIsNotNone(json_resp.get('rule').get('id'))
+        rule2_id = json_resp.get('rule').get('id')
+        # it's a new rule
+        self.assertNotEqual(rule2_id, rule_id)
+        self.assertIsNotNone(json_resp.get('rule_set'))
+        self.assertIsNotNone(json_resp.get('rule_set').get('id'))
+        # it's in the same rule set
+        self.assertEqual(rule_set_id, json_resp.get('rule_set').get('id'))
         self.assertEqual(
-            json.loads(response.content),
+            json_resp,
             {
                 'success': 'created',
                 'rule': {
                     'name': 'test rule 2',
-                    'id': 2,
+                    'id': rule2_id,
                     'filters': [
                         {
                             'field': 'Topic',
@@ -627,7 +646,7 @@ class TopicAPITests(TestCase):
                     ]
                 },
                 'rule_set': {
-                    'id': 1,
+                    'id': rule_set_id,
                     'name': 'test rule set 1'
                 }
             }
@@ -686,7 +705,7 @@ class TopicAPITests(TestCase):
                 pass
 
         # run rule set 1
-        rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': '1'})
+        rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': rule_set_id})
         response = self.client.post(rule_set_run_url)
         self.assertEqual({'success': 1, 'updated': 2, 'new_equipments': 0}, json.loads(response.content))
 
@@ -730,10 +749,23 @@ class TopicAPITests(TestCase):
             "rule_set_id": "new",
             "rule_set_name": "test rule set 2"
         }
-        self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        response = self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        # note we can't assert the rule or rule set ids
+        json_resp = json.loads(response.content)
+        self.assertIsNotNone(json_resp.get('rule'))
+        self.assertIsNotNone(json_resp.get('rule').get('id'))
+        rule3_id = json_resp.get('rule').get('id')
+        # it's a new rule
+        self.assertNotEqual(rule3_id, rule_id)
+        self.assertNotEqual(rule3_id, rule2_id)
+        self.assertIsNotNone(json_resp.get('rule_set'))
+        self.assertIsNotNone(json_resp.get('rule_set').get('id'))
+        # it's a new rule set
+        rule_set2_id = json_resp.get('rule_set').get('id')
+        self.assertNotEqual(rule_set2_id, rule_set_id)
 
         # run rule set 2
-        rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': '2'})
+        rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': rule_set2_id})
         response = self.client.post(rule_set_run_url)
         self.assertEqual({'success': 1, 'updated': 1, 'new_equipments': 0}, json.loads(response.content))
 
@@ -766,10 +798,17 @@ class TopicAPITests(TestCase):
             "rule_set_name": "test regex rule set"
         }
         create_topic_rule_url = reverse('core:topic_rules')
-        self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        response = self.client.post(create_topic_rule_url, json.dumps(data), content_type='application/json')
+        # note we can't assert the rule or rule set ids
+        json_resp = json.loads(response.content)
+        self.assertIsNotNone(json_resp.get('rule'))
+        self.assertIsNotNone(json_resp.get('rule').get('id'))
+        self.assertIsNotNone(json_resp.get('rule_set'))
+        self.assertIsNotNone(json_resp.get('rule_set').get('id'))
 
         # run rule set
         rule_set = TopicTagRuleSet.objects.get(name='test regex rule set')
+        logging.warning('test_topic_regex_rules rule_set: %s', rule_set)
         rule_set_run_url = reverse('core:topictagruleset_run', kwargs={'id': rule_set.id})
         response = self.client.post(rule_set_run_url)
         self.assertEqual({'success': 1, 'updated': 0, 'new_equipments': 2}, json.loads(response.content))
@@ -783,6 +822,3 @@ class TopicAPITests(TestCase):
         for equipment in equipments:
             self.assertEqual(equipment.kv_tags['siteRef'], 'test_filters_site')
             self.assertEqual(equipment.kv_tags['modelRef'], '_test_model')
-
-
-
