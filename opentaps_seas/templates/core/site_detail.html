@@ -30,7 +30,7 @@
   <div class="card mb-3">
     <div class="card-body">
       {% if tags_form %}
-        {% include "core/_tags.html" with form_title='Add Tag' nodecor=True section_tag='h2' section_title=object.description form=tags_form items=tags head_tags=head_tags %}
+        {% include "core/_tags.html" with form_title='Add Tag' nodecor=True section_tag='h2' section_title=object.description section_subtitle_name='Entity id:' section_subtitle=object.entity_id form=tags_form items=tags head_tags=head_tags %}
         {% if head_tags %}
           {% include "core/_head_tags.html" with form=tags_form items=head_tags %}
         {% endif %}
