@@ -23,6 +23,9 @@
     {% if not notitle %}
       <{{ section_tag|default:'h3' }} class="pr mb-3">
         {{ section_title|default:"Tags" }}
+        {% if section_subtitle %}
+            <span style="font-size: 1rem;">({{ section_subtitle_name|default:"" }} {{ section_subtitle }})</span>
+        {% endif %}
       <div class="a-rt" v-if="!editingTags">
         <button v-on:click="editingTags=true" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Tags</button>
       </div>
@@ -33,6 +36,9 @@
   {% if not notitle %}
     <{{ section_tag|default:'h3' }} class="pr mb-3">
       {{ section_title|default:"Tags" }}
+      {% if section_subtitle %}
+          <span style="font-size: 1rem;">({{ section_subtitle_name|default:"" }} {{ section_subtitle }})</span>
+      {% endif %}
       <div class="a-rt" v-if="!editingTags">
         <button v-on:click="editingTags=true" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Tags</button>
       </div>
@@ -41,7 +47,7 @@
 {% endif %}
 
     <div v-if="!editingTags">
-      <div class="container tags-list d-flex flex-wrap">
+      <div class="tags-list d-flex flex-wrap">
         <div v-for="(item, idx) in sorted_items" class="tag d-inline-flex" v-if="should_display_tag(item)" v-bind:id="item.tag + idx">
           <div class="tag-content d-inline-flex flex-wrap align-items-center text-wrap">
             <span v-if="!get_link(item)">${display_tag_short(item)}</span>
