@@ -93,6 +93,7 @@ server config from ``user=opentaps_seas group=opentaps_seas`` ::
 
         WSGIProcessGroup opentaps_seas.example.com
         WSGIApplicationGroup opentaps_seas
+        WSGIPassAuthorization On
         WSGIDaemonProcess opentaps_seas.example.com user=opentaps_seas group=opentaps_seas python-home=/path/to/opentaps_seas/venv python-path=/path/to/opentaps_seas
         WSGIScriptAlias / /path/to/opentaps_seas/config/wsgi.py process-group=opentaps_seas.example.com application-group=opentaps_seas
 
