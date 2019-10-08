@@ -71,6 +71,13 @@ Note, this is a basic template, change to match your server IP and server name a
 and paths to match your particular setup; and check the unix user running the wsgi process to match your
 server config from ``user=opentaps_seas group=opentaps_seas`` ::
 
+    <VirtualHost 1.2.3.4:80>
+        ServerName opentaps_seas.example.com
+        DocumentRoot /path/to/opentaps_seas
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+    </VirtualHost>
     <VirtualHost 1.2.3.4:443>
         ServerName opentaps_seas.example.com
         DocumentRoot /path/to/opentaps_seas
