@@ -23,7 +23,7 @@ such as Crate.  There are also many applications developed for VOLTTRON under a 
 We have made some enhancements to VOLTTRON for opentaps SEAS, which we are giving back to the VOLTTRON project.  Meanwhile you can get our enhanced versions from
 github at https://github.com/opentaps/VOLTTRON (use the develop branch) and https://github.com/opentaps/VOLTTRON-applications (use the master branch.) 
 
-Please follow https://VOLTTRON.readthedocs.io/en/develop/install.html to install VOLTTRON.  You may want to have one or more VOLTTRON instances collecting data from devices
+Please follow https://volttron.readthedocs.io/en/develop/setup/index.html to install VOLTTRON.  You may want to have one or more VOLTTRON instances collecting data from devices
 and forwarding them to a master instance.  opentaps SEAS should then connect to the master instance and the database it is using to store the data.  
 After installing and starting VOLTTRON, you will need to install the following agents::
 
