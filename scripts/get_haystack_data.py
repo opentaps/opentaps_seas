@@ -20,8 +20,11 @@ from datetime import timezone
 from opentaps_seas.core.models import Entity
 from hsclient.client import HSClient
 from crate.client.exceptions import ProgrammingError
-from opentaps_seas.core.utils import get_crate_connection
 from opentaps_seas.core.utils import cleanup_id
+
+
+def get_crate_connection():
+    return connect('localhost:4200', error_trace=True)
 
 
 def import_data(base_url, range_from):
