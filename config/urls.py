@@ -82,3 +82,17 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+
+if 'opentaps_seas.opentaps_seas_addons.apps.AddonsAppConfig' in settings.INSTALLED_APPS:
+    from django.conf.urls import url
+    from rest_framework_simplejwt import views as jwt_views
+
+    urlpatterns += [
+        path(
+            "api/v1/",
+            include("opentaps_seas.opentaps_seas_addons.urls", namespace="opentaps_seas_addons")
+        ),
+
+        url(r'^api/v1/token/?$', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+        url(r'^api/v1/token/refresh/?$', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    ]
