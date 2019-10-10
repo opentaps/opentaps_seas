@@ -28,6 +28,7 @@ from .models import Tag
 from .models import Topic
 from .models import ModelView
 from crate.client import connect
+from django.db import connections
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -53,24 +54,19 @@ def format_epoch(ts):
     return {'epoch': ts, 'fmttime': fmttime, 'time': time}
 
 
-def get_current_value_dict(point, connection=None):
-    connection_given = True
-    if not connection:
-        connection_given = False
-        connection = get_crate_connection()
-    cursor = connection.cursor()
-    logger.info('get_current_value_dict: for point = %s topic = %s', point.entity_id, point.topic)
-    cursor.execute("""SELECT ts, string_value FROM "volttron"."data"
-        WHERE topic = ? ORDER BY ts DESC LIMIT 1;""", (point.topic,))
-    result = cursor.fetchone()
-    cursor.close()
-    if not connection_given:
-        connection.close()
+def get_current_value_dict(point):
+    result = None
+    with connections['crate'].cursor() as c:
+        sql = """SELECT ts, string_value FROM "volttron"."data" WHERE topic = %s ORDER BY ts DESC LIMIT 1;"""
+        c.execute(sql, [point.topic])
+        for record in c:
+            result = record
+
     if not result:
         return None
     ts = result[0]
     string_value = result[1]
-    epoch = ts
+    epoch = int(ts.timestamp() * 1000)
     t = format_epoch(epoch)
     time = t['time']
     fmttime = t['fmttime']
@@ -90,8 +86,8 @@ def get_current_value_dict(point, connection=None):
             return {'value': string_value, 'epoch': epoch, 'fmttime': fmttime, 'time': time}
 
 
-def get_current_value(point, connection=None, raw=False):
-    d = get_current_value_dict(point, connection=connection)
+def get_current_value(point, raw=False):
+    d = get_current_value_dict(point)
     if not d:
         return None
 
@@ -115,16 +111,14 @@ def get_current_value(point, connection=None, raw=False):
 
 def add_current_values(data, raw=False):
     d2 = list(data)
-    conn = get_crate_connection()
     for d in d2:
-        cv = get_current_value(d, connection=conn, raw=raw)
+        cv = get_current_value(d, raw=raw)
         if not cv:
             if raw:
                 cv = {}
             else:
                 cv = 'N/A'
         d.current_value = cv
-    conn.close()
     return d2
 
 
@@ -832,16 +826,15 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
 
 def apply_filters_to_queryset(qs, filters):
     # first we do a schema check since trying to fetch unused tags will cause a DB error
-    conn = get_crate_connection()
-    cursor = conn.cursor()
-    sql = """SELECT column_name from information_schema.columns
-             WHERE table_schema = 'volttron' and table_name = 'entity' and column_name like 'kv_tags[%';"""
-    cursor.execute(sql)
-    rows = cursor.fetchall()
     valid_tags = []
-    for (cn, ) in rows:
-        # extract the tag name from "kv_tags['tag_name']"
-        valid_tags.append(cn[9:-2])
+
+    with connections['crate'].cursor() as c:
+        sql = """SELECT column_name from information_schema.columns
+                 WHERE table_schema = 'volttron' and table_name = 'entity' and column_name like 'kv_tags[%';"""
+        c.execute(sql)
+        for (cn, ) in c:
+            # extract the tag name from "kv_tags['tag_name']"
+            valid_tags.append(cn[9:-2])
 
     for (filter_field, filter_type, filter_value) in filters:
         qs = apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_tags)
