@@ -18,13 +18,10 @@
 from datetime import datetime
 from datetime import timezone
 from opentaps_seas.core.models import Entity
+from opentaps_seas.core.utils import cleanup_id
 from hsclient.client import HSClient
 from crate.client.exceptions import ProgrammingError
-from opentaps_seas.core.utils import cleanup_id
-
-
-def get_crate_connection():
-    return connect('localhost:4200', error_trace=True)
+from django.db import connections
 
 
 def import_data(base_url, range_from):
@@ -174,61 +171,59 @@ def import_data(base_url, range_from):
     # points data
     topics_counter = 0
     topics_list = []
-    crate_connection = get_crate_connection()
-    crate_cursor = crate_connection.cursor()
 
-    if len(all_points_ids) > 0:
-        for point_id in all_points_ids:
-            topic_data_counter = 0
+    with connections['crate'].cursor() as crate_cursor:
+        if len(all_points_ids) > 0:
+            for point_id in all_points_ids:
+                topic_data_counter = 0
 
-            sql = """INSERT INTO {0} (topic)
-            VALUES (%s)""".format("volttron.topic")
-            try:
-                crate_cursor.execute("""INSERT INTO volttron.topic (topic) VALUES (?)""", (point_id,))
-            except ProgrammingError:
-                # just make sure the topic exists
-                pass
+                sql = """INSERT INTO {0} (topic)
+                VALUES (%s)""".format("volttron.topic")
+                try:
+                    crate_cursor.execute("""INSERT INTO volttron.topic (topic) VALUES (%s)""", [point_id])
+                except ProgrammingError:
+                    # just make sure the topic exists
+                    pass
 
-            crate_cursor.execute("""SELECT ts, string_value FROM "volttron"."data"
-                WHERE topic = ? ORDER BY ts DESC LIMIT 1;""", (point_id,))
-            result = crate_cursor.fetchone()
-            his_range = None
-            if result:
-                ts = result[0]
-                t = datetime.utcfromtimestamp(ts // 1000).replace(microsecond=ts %
-                                                                  1000 * 1000).replace(tzinfo=timezone.utc)
-                his_range = t.strftime('%Y-%m-%d') + ',' + datetime.utcnow().strftime('%Y-%m-%d')
-            else:
-                if range_from:
-                    if range_from != "none":
-                        his_range = range_from
+                crate_cursor.execute("""SELECT ts, string_value FROM "volttron"."data"
+                    WHERE topic = %s ORDER BY ts DESC LIMIT 1;""", [point_id])
+                result = crate_cursor.fetchone()
+                his_range = None
+                if result:
+                    ts = result[0]
+                    t = datetime.utcfromtimestamp(ts // 1000).replace(microsecond=ts %
+                                                                      1000 * 1000).replace(tzinfo=timezone.utc)
+                    his_range = t.strftime('%Y-%m-%d') + ',' + datetime.utcnow().strftime('%Y-%m-%d')
                 else:
-                    his_range = 'today'
+                    if range_from:
+                        if range_from != "none":
+                            his_range = range_from
+                    else:
+                        his_range = 'today'
 
-            print("Processing :", point_id, ", range: ", his_range)
-            content = client.his_read(id=point_id, range=his_range)
-            header, data = client.parse_grid(content)
-            if header and 'ts' in header and 'val' in header:
-                ts_index = header.index('ts')
-                val_index = header.index('val')
-                for item in data:
-                    ts_str_arr = item[ts_index].split(" ")
-                    val = item[val_index]
-                    sql = """INSERT INTO volttron.data (double_value, source, string_value, topic, ts)
-                    VALUES (?, ?, ?, ?, ?)"""
-                    try:
-                        crate_cursor.execute(sql, (val, 'scrape', val, point_id, ts_str_arr[0],))
-                        topic_data_counter = topic_data_counter + 1
-                    except ProgrammingError:
-                        # that means it already exists
-                        pass
+                print("Processing :", point_id, ", range: ", his_range)
+                content = client.his_read(id=point_id, range=his_range)
+                header, data = client.parse_grid(content)
+                if header and 'ts' in header and 'val' in header:
+                    ts_index = header.index('ts')
+                    val_index = header.index('val')
+                    for item in data:
+                        ts_str_arr = item[ts_index].split(" ")
+                        val = item[val_index]
+                        sql = """INSERT INTO volttron.data (double_value, source, string_value, topic, ts)
+                        VALUES (%s, %s, %s, %s, %s)"""
+                        try:
+                            crate_cursor.execute(sql, [val, 'scrape', val, point_id, ts_str_arr[0]])
+                            topic_data_counter = topic_data_counter + 1
+                        except ProgrammingError:
+                            # that means it already exists
+                            pass
 
-            topics_list.append({point_id: topic_data_counter})
-            print("Point #{1}: Added {0} data rows.".format(topic_data_counter, topics_counter))
-            topics_counter = topics_counter + 1
+                topics_list.append({point_id: topic_data_counter})
+                print("Point #{1}: Added {0} data rows.".format(topic_data_counter, topics_counter))
+                topics_counter = topics_counter + 1
 
     crate_cursor.close()
-    crate_connection.close()
 
     print("Processed {0} topics.".format(topics_counter))
 
