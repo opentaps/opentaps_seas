@@ -27,12 +27,11 @@ from .models import PointView
 from .models import Tag
 from .models import Topic
 from .models import ModelView
-from crate.client import connect
-from django.db import connections
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from dateutil.parser import parse as parse_datetime
+from django.db import connections
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.html import format_html
@@ -43,11 +42,9 @@ from django.utils.text import slugify
 logger = logging.getLogger(__name__)
 
 
-def get_crate_connection():
-    return connect('localhost:4200', error_trace=True)
-
-
 def format_epoch(ts):
+    if hasattr(ts, 'timestamp'):
+        ts = round(ts.timestamp() * 1000)
     t = datetime.utcfromtimestamp(ts // 1000).replace(microsecond=ts % 1000 * 1000).replace(tzinfo=timezone.utc)
     time = t.isoformat()
     fmttime = t.strftime("%m/%d/%Y %H:%M:%S")
@@ -83,7 +80,17 @@ def get_current_value_dict(point):
         if point.unit:
             return {'value': string_value, 'epoch': epoch, 'fmttime': fmttime, 'time': time, 'unit': point.unit}
         else:
-            return {'value': string_value, 'epoch': epoch, 'fmttime': fmttime, 'time': time}
+            if point.kind == 'Number' and (point.unit == '°F' or point.unit == '°C'):
+                try:
+                    v = float(string_value)
+                    # use 1 after the dot for temperatures
+                    string_value = format(v, '.1f')
+                except Exception:
+                    pass
+            if point.unit:
+                return {'value': string_value, 'epoch': epoch, 'fmttime': fmttime, 'time': time, 'unit': point.unit}
+            else:
+                return {'value': string_value, 'epoch': epoch, 'fmttime': fmttime, 'time': time}
 
 
 def get_current_value(point, raw=False):
@@ -174,8 +181,6 @@ DEFAULT_RES = 'minute'
 
 
 def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT_RANGE, ts_as_datetime=False):
-    conn = get_crate_connection()
-    cursor = conn.cursor()
     # validate the date_trunc
     if date_trunc not in ['day', 'hour', 'minute', 'second']:
         date_trunc = DEFAULT_RES
@@ -213,36 +218,37 @@ def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT
 
     if is_number:
         sql = """SELECT DATE_TRUNC('{}', ts) as timest, {}(double_value) FROM "volttron"."data"
-                 WHERE topic = ? AND ts > ? AND ts <= ?
+                 WHERE topic = %s AND ts > %s AND ts <= %s
                  GROUP BY timest ORDER BY timest DESC;""".format(date_trunc, value_func)
     elif is_bool:
         # use MIN as function since we query string_value
         sql = """SELECT DATE_TRUNC('{}', ts) as timest, MIN(string_value), {}(double_value) FROM "volttron"."data"
-                 WHERE topic = ? AND ts > ? AND ts <= ?
+                 WHERE topic = %s AND ts > %s AND ts <= %s
                  GROUP BY timest ORDER BY timest DESC;""".format(date_trunc, value_func)
     else:
         sql = """SELECT ts, string_value FROM "volttron"."data"
-                 WHERE topic = ? AND ts > ? AND ts <= ? ORDER BY ts DESC;"""
-    cursor.execute(sql, (d.topic, start, end, ))
+                 WHERE topic = %s AND ts > %s AND ts <= %s ORDER BY ts DESC;"""
+
     data = []
-    while True:
-        result = cursor.fetchone()
-        if result is None:
-            break
-        ts = result[0]
-        value = result[1]
-        if is_bool:
-            if value and (value == 't' or value != '0'):
-                value = 1
-            else:
-                value = round(result[2])
-        if ts_as_datetime:
-            # convert from epoch to datetime directly
-            ts = datetime.utcfromtimestamp(ts // 1000).replace(microsecond=0).replace(tzinfo=timezone.utc)
-        data.append([ts, value])
-    logger.info("Got %s data points for %s", len(data), d.entity_id)
-    cursor.close()
-    conn.close()
+    with connections['crate'].cursor() as cursor:
+        cursor.execute(sql, [d.topic, start, end])
+        while True:
+            result = cursor.fetchone()
+            if result is None:
+                break
+            ts = result[0]
+            value = result[1]
+            if is_bool:
+                if value and (value == 't' or value != '0'):
+                    value = 1
+                else:
+                    value = round(result[2])
+            if ts_as_datetime:
+                # convert from epoch to datetime directly
+                ts = datetime.utcfromtimestamp(ts // 1000).replace(microsecond=0).replace(tzinfo=timezone.utc)
+            data.append([ts, value])
+        logger.info("Got %s data points for %s", len(data), d.entity_id)
+        cursor.close()
     return list(reversed(data))
 
 
