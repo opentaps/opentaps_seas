@@ -277,9 +277,12 @@ def print_help():
     print("  all|seed|demo: which data to import")
     print("  clean: optional, delete data first")
     print("  ahu_no_point: optional, do not create the data point")
+    print("If crate server is not localhost, set CRATE_HOST in environment variable")
 
 
 if __name__ == '__main__':
+    if 'CRATE_HOST' in os.environment:
+        CRATE_HOST = os.environmen['CRATE_HOST']
     if len(sys.argv) == 1:
         print_help()
     GLB_OPTIONS['ahu_no_point'] = 'ahu_no_point' in sys.argv

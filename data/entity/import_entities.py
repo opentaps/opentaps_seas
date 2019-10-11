@@ -145,9 +145,13 @@ def print_help():
     print("  entity_mtag=[m_tag]: optional, only import demo entities matching any of the given m_tag, eg: site")
     print("    can provide multiple filters, eg: site,equip")
     print("    can prefix a tag with ~ to negate eg: ~point matches all those that are not point")
+    print("If crate server is not localhost, set CRATE_HOST in environment variable")
 
 
 if __name__ == '__main__':
+    if 'CRATE_HOST' in os.environment:
+        CRATE_HOST = os.environmen['CRATE_HOST']
+
     if len(sys.argv) == 1:
         print_help()
     filters = []
