@@ -149,8 +149,8 @@ def print_help():
 
 
 if __name__ == '__main__':
-    if 'CRATE_HOST' in os.environment:
-        CRATE_HOST = os.environmen['CRATE_HOST']
+    if 'CRATE_HOST' in os.environ:
+        CRATE_HOST = os.environ['CRATE_HOST']
 
     if len(sys.argv) == 1:
         print_help()
