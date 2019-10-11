@@ -32,11 +32,11 @@ GLB_OPTIONS = {
 
 
 def clean():
-    print('Deleting volttron data ...')
+    print('Deleting crate database data ...')
     with connections['crate'].cursor() as c:
-        c.execute("DELETE FROM volttron.data where topic like 'demo_%';")
-        c.execute("DELETE FROM volttron.topic where topic like 'demo_%';")
-        c.execute("DELETE FROM volttron.entity where topic like 'demo_%';")
+        c.execute("DELETE FROM data where topic like 'demo_%';")
+        c.execute("DELETE FROM topic where topic like 'demo_%';")
+        c.execute("DELETE FROM entity where topic like 'demo_%';")
         c.close()
 
     print('Deleting entity data ...')
@@ -56,7 +56,7 @@ def seed():
 
 def ensure_topic(topic):
     with connections['crate'].cursor() as c:
-        sql = """INSERT INTO {0} (topic) VALUES (%s)""".format("volttron.topic")
+        sql = """INSERT INTO {0} (topic) VALUES (%s)""".format("topic")
         try:
             c.execute(sql, [topic])
             print('-- INSERT topic: ', topic)
@@ -204,7 +204,7 @@ def import_csv(source_file_name):
             with connections['crate'].cursor() as c:
                 try:
                     csv_writer['fp'].close()
-                    sql = "COPY volttron.data FROM '{}'".format(csv_writer['filename'])
+                    sql = "COPY data FROM '{}'".format(csv_writer['filename'])
                     print('-- INSERT: ', sql)
                     c.execute(sql)
                     print('-- Cleanup CSV file: {}'.format(csv_writer['filename']))

@@ -54,7 +54,7 @@ def format_epoch(ts):
 def get_current_value_dict(point):
     result = None
     with connections['crate'].cursor() as c:
-        sql = """SELECT ts, string_value FROM "volttron"."data" WHERE topic = %s ORDER BY ts DESC LIMIT 1;"""
+        sql = """SELECT ts, string_value FROM "data" WHERE topic = %s ORDER BY ts DESC LIMIT 1;"""
         c.execute(sql, [point.topic])
         for record in c:
             result = record
@@ -217,16 +217,16 @@ def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT
     logger.info("Getting data points for range %s -- %s", start, end)
 
     if is_number:
-        sql = """SELECT DATE_TRUNC('{}', ts) as timest, {}(double_value) FROM "volttron"."data"
+        sql = """SELECT DATE_TRUNC('{}', ts) as timest, {}(double_value) FROM "data"
                  WHERE topic = %s AND ts > %s AND ts <= %s
                  GROUP BY timest ORDER BY timest DESC;""".format(date_trunc, value_func)
     elif is_bool:
         # use MIN as function since we query string_value
-        sql = """SELECT DATE_TRUNC('{}', ts) as timest, MIN(string_value), {}(double_value) FROM "volttron"."data"
+        sql = """SELECT DATE_TRUNC('{}', ts) as timest, MIN(string_value), {}(double_value) FROM "data"
                  WHERE topic = %s AND ts > %s AND ts <= %s
                  GROUP BY timest ORDER BY timest DESC;""".format(date_trunc, value_func)
     else:
-        sql = """SELECT ts, string_value FROM "volttron"."data"
+        sql = """SELECT ts, string_value FROM "data"
                  WHERE topic = %s AND ts > %s AND ts <= %s ORDER BY ts DESC;"""
 
     data = []
@@ -836,7 +836,7 @@ def apply_filters_to_queryset(qs, filters):
 
     with connections['crate'].cursor() as c:
         sql = """SELECT column_name from information_schema.columns
-                 WHERE table_schema = 'volttron' and table_name = 'entity' and column_name like 'kv_tags[%';"""
+                 WHERE table_name = 'entity' and column_name like 'kv_tags[%';"""
         c.execute(sql)
         for (cn, ) in c:
             # extract the tag name from "kv_tags['tag_name']"

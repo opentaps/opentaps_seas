@@ -24,7 +24,7 @@ def sync_tags_to_crate():
     count = 0
     # first make sure the CrateDB Entity table already exists
     ensure_crate_entity_table()
-    print("Added CrateDB volttron.entity table")
+    print("Added CrateDB entity table")
 
     entities = Entity.objects.raw('''SELECT entity_id, topic, m_tags, kv_tags FROM {0}
         WHERE 'point' = ANY (m_tags)

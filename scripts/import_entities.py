@@ -29,10 +29,10 @@ def clean():
         c.execute(sql)
         c.close()
 
-    print('Deleting volttron entity data ...')
+    print('Deleting crate database entity data ...')
     with connections['crate'].cursor() as c:
-        c.execute("DELETE FROM volttron.topic;")
-        c.execute("DELETE FROM volttron.entity;")
+        c.execute("DELETE FROM topic;")
+        c.execute("DELETE FROM entity;")
         c.close()
 
 

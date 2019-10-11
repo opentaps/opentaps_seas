@@ -471,7 +471,7 @@ class Topic(models.Model):
     def ensure_topic_exists(cls, topic):
         with connections['crate'].cursor() as c:
             sql = """INSERT INTO {0} (topic)
-            VALUES (%s)""".format("volttron.topic")
+            VALUES (%s)""".format("topic")
             try:
                 c.execute(sql, [topic])
             except Exception:
@@ -494,7 +494,7 @@ class Topic(models.Model):
 
     class Meta:
         managed = False
-        db_table = '"volttron"."topic"'
+        db_table = 'topic'
 
     class Db:
         cratedb = True
@@ -546,7 +546,7 @@ class CrateEntity(models.Model):
     def ensure_topic_exists(cls, topic):
         with connections['crate'].cursor() as c:
             sql = """INSERT INTO {0} (topic)
-            VALUES (%s)""".format("volttron.topic")
+            VALUES (%s)""".format("topic")
             try:
                 c.execute(sql, [topic])
             except Exception:
@@ -569,7 +569,7 @@ class CrateEntity(models.Model):
 
     class Meta:
         managed = False
-        db_table = '"volttron"."entity"'
+        db_table = 'entity'
 
     class Db:
         cratedb = True
@@ -659,7 +659,7 @@ class TopicTagRule(models.Model):
 def ensure_crate_entity_table():
     with connections['crate'].cursor() as c:
         sql = """
-        CREATE TABLE IF NOT EXISTS "volttron"."entity" (
+        CREATE TABLE IF NOT EXISTS "entity" (
            "topic" STRING,
            "m_tags" ARRAY(STRING),
            "kv_tags" OBJECT (DYNAMIC) AS (
@@ -690,7 +690,7 @@ def delete_tags_from_crate_entity(row):
         return
     with connections['crate'].cursor() as c:
         # make sure the topic is in CrateDB
-        sql = """DELETE {0} WHERE topic = %s;""".format("volttron.entity")
+        sql = """DELETE {0} WHERE topic = %s;""".format("entity")
         try:
             c.execute(sql, [row.topic])
         except Exception:
@@ -705,7 +705,7 @@ def sync_tags_to_crate_entity(row, retried=False):
     with connections['crate'].cursor() as c:
         # make sure the topic is in CrateDB
         sql = """INSERT INTO {0} (topic)
-        VALUES (%s)""".format("volttron.entity")
+        VALUES (%s)""".format("entity")
         try:
             c.execute(sql, [row.topic])
         except DatabaseError as e:
@@ -721,7 +721,7 @@ def sync_tags_to_crate_entity(row, retried=False):
 
         if row.m_tags or row.kv_tags:
             params_list = []
-            sql = """ UPDATE "volttron"."entity" SET """
+            sql = """ UPDATE "entity" SET """
             if row.kv_tags:
                 sql += " kv_tags = {} ".format(kv_tags_update_crate_entity_string(row.kv_tags, params_list))
             if row.m_tags:

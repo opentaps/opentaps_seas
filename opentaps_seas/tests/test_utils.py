@@ -36,7 +36,7 @@ class UtilsTests(TestCase):
         cls._cleanup_data()
         with connections['crate'].cursor() as c:
             sql = """INSERT INTO {0} (topic)
-            VALUES (%s)""".format("volttron.topic")
+            VALUES (%s)""".format("topic")
             try:
                 c.execute(sql, [cls.topic])
             except Exception:
@@ -49,7 +49,7 @@ class UtilsTests(TestCase):
                 pass
 
             sql = """INSERT INTO {0} (double_value, source, string_value, topic, ts)
-            VALUES (%s, %s, %s, %s, %s)""".format("volttron.data")
+            VALUES (%s, %s, %s, %s, %s)""".format("data")
             c.execute(sql, [34.74, 'scrape', '34.74', cls.topic, datetime.utcnow()])
             c.execute(sql, [1, 'scrape', '1', cls.topic1, datetime.utcnow()])
         time.sleep(2)
@@ -62,9 +62,9 @@ class UtilsTests(TestCase):
     @classmethod
     def _cleanup_data(cls):
         with connections['crate'].cursor() as c:
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.topic")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("topic")
             c.execute(sql, ['_test%'])
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.data")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("data")
             c.execute(sql, ['_test%'])
 
     def test_get_current_value(self):

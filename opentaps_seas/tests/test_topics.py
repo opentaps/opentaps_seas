@@ -162,11 +162,11 @@ class TopicAPITests(TestCase):
 
         # delete test data for CrateDB
         with connections['crate'].cursor() as c:
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.topic")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("topic")
             c.execute(sql, ['_test%'])
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.data")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("data")
             c.execute(sql, ['_test%'])
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.entity")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("entity")
             c.execute(sql, ['_test%'])
 
     def _get_response(self, params, method):
