@@ -223,7 +223,7 @@ def import_data(base_url, range_from):
                 print("Point #{1}: Added {0} data rows.".format(topic_data_counter, topics_counter))
                 topics_counter = topics_counter + 1
 
-    crate_cursor.close()
+        crate_cursor.close()
 
     print("Processed {0} topics.".format(topics_counter))
 

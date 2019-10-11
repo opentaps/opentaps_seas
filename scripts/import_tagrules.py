@@ -62,7 +62,7 @@ def import_entities(source_file_name, run_rules):
 
 
 def print_help():
-    print("Usage: python manage.py runscript import_tagrules --script-args [all|seed|demo] [clean]")
+    print("Usage: python manage.py runscript import_tagrules --script-args [all|seed|demo] [clean] [run_rules]")
     print("  note: table managed by DJANGO, make sure the migrations are run so the table exists")
     print("  all|seed|demo: which data to import")
     print("  clean: optional, delete data first")
