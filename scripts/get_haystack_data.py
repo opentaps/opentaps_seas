@@ -178,14 +178,14 @@ def import_data(base_url, range_from):
                 topic_data_counter = 0
 
                 sql = """INSERT INTO {0} (topic)
-                VALUES (%s)""".format("volttron.topic")
+                VALUES (%s)""".format("topic")
                 try:
-                    crate_cursor.execute("""INSERT INTO volttron.topic (topic) VALUES (%s)""", [point_id])
+                    crate_cursor.execute("""INSERT INTO topic (topic) VALUES (%s)""", [point_id])
                 except ProgrammingError:
                     # just make sure the topic exists
                     pass
 
-                crate_cursor.execute("""SELECT ts, string_value FROM "volttron"."data"
+                crate_cursor.execute("""SELECT ts, string_value FROM "data"
                     WHERE topic = %s ORDER BY ts DESC LIMIT 1;""", [point_id])
                 result = crate_cursor.fetchone()
                 his_range = None
@@ -210,7 +210,7 @@ def import_data(base_url, range_from):
                     for item in data:
                         ts_str_arr = item[ts_index].split(" ")
                         val = item[val_index]
-                        sql = """INSERT INTO volttron.data (double_value, source, string_value, topic, ts)
+                        sql = """INSERT INTO data (double_value, source, string_value, topic, ts)
                         VALUES (%s, %s, %s, %s, %s)"""
                         try:
                             crate_cursor.execute(sql, [val, 'scrape', val, point_id, ts_str_arr[0]])

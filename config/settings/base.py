@@ -82,7 +82,7 @@ USE_TZ = True
 
 DATABASES = {
     'default': env.db('DATABASE_URL', default='postgres:///opentaps_seas'),
-    'crate': env.db('CRATE_DATABASE_URL', default='postgres://crate@127.0.0.1:5433/opentaps_seas'),
+    'crate': env.db('CRATE_DATABASE_URL', default='postgres://crate@127.0.0.1:5433/volttron'),
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 

@@ -77,11 +77,11 @@ class SyncAPITests(TestCase):
 
         # delete test data for CrateDB
         with connections['crate'].cursor() as c:
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.topic")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("topic")
             c.execute(sql, ['_test%'])
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.data")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("data")
             c.execute(sql, ['_test%'])
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("volttron.entity")
+            sql = """DELETE FROM {0} WHERE topic like %s""".format("entity")
             c.execute(sql, ['_test%'])
 
     def _login(self):
@@ -100,7 +100,7 @@ class SyncAPITests(TestCase):
         self.assertIn('_testtag2', postgres_tags)
 
         with connections['crate'].cursor() as c:
-            sql = """SELECT "m_tags" FROM {0} WHERE topic = %s""".format("volttron.entity")
+            sql = """SELECT "m_tags" FROM {0} WHERE topic = %s""".format("entity")
             c.execute(sql, ['_testTopic'])
             for record in c:
                 m_tags = record[0]
@@ -115,7 +115,7 @@ class SyncAPITests(TestCase):
         self.assertNotIn(['_testtag1'], postgres_tags)
 
         with connections['crate'].cursor() as c:
-            sql = """SELECT "m_tags" FROM {0} WHERE topic = %s""".format("volttron.entity")
+            sql = """SELECT "m_tags" FROM {0} WHERE topic = %s""".format("entity")
             c.execute(sql, ['_testTopic'])
             for record in c:
                 m_tags = record[0]
@@ -134,7 +134,7 @@ class SyncAPITests(TestCase):
         self.assertEqual({'_testdis': 'test', '_testkind': 'test'}, postgres_tags)
 
         with connections['crate'].cursor() as c:
-            sql = """SELECT "kv_tags" FROM {0} WHERE topic = %s""".format("volttron.entity")
+            sql = """SELECT "kv_tags" FROM {0} WHERE topic = %s""".format("entity")
             c.execute(sql, ['_testTopic'])
             for record in c:
                 kv_tags = record[0]
@@ -150,7 +150,7 @@ class SyncAPITests(TestCase):
         self.assertEqual({'_testdis': 'test update', '_testkind': 'test'}, postgres_tags)
 
         with connections['crate'].cursor() as c:
-            sql = """SELECT "kv_tags" FROM {0} WHERE topic = %s""".format("volttron.entity")
+            sql = """SELECT "kv_tags" FROM {0} WHERE topic = %s""".format("entity")
             c.execute(sql, ['_testTopic'])
             for record in c:
                 kv_tags = record[0]
@@ -165,7 +165,7 @@ class SyncAPITests(TestCase):
         self.assertNotIn(str(postgres_tags), '_testdis')
 
         with connections['crate'].cursor() as c:
-            sql = """SELECT "kv_tags" FROM {0} WHERE topic = %s""".format("volttron.entity")
+            sql = """SELECT "kv_tags" FROM {0} WHERE topic = %s""".format("entity")
             c.execute(sql, ['_testTopic'])
             for record in c:
                 kv_tags = record[0]
