@@ -30,6 +30,7 @@ from psycopg2.extras import register_hstore
 from django.template.defaultfilters import slugify
 
 CRATE_HOST = os.environ.get('CRATE_HOST', 'localhost:4200')
+CRATE_SCHEMA = os.environ.get('CRATE_ENVIRON', 'volttron')
 
 GLB_OPTIONS = {
     'ahu_no_point': False
@@ -52,9 +53,9 @@ def clean():
     cursor = conn.cursor()
 
     print('Deleting data ...')
-    cursor.execute("DELETE FROM volttron.data where topic like 'demo_%';")
-    cursor.execute("DELETE FROM volttron.topic where topic like 'demo_%';")
-    cursor.execute("DELETE FROM volttron.entity where topic like 'demo_%';")
+    cursor.execute(f"DELETE FROM {CRATE_SCHEMA}.data where topic like 'demo_%';")
+    cursor.execute(f"DELETE FROM {CRATE_SCHEMA}.topic where topic like 'demo_%';")
+    cursor.execute(f"DELETE FROM {CRATE_SCHEMA}.entity where topic like 'demo_%';")
 
     cursor.close()
     conn.close()
@@ -138,7 +139,7 @@ def import_files(which):
 
 def ensure_topic(cursor, topic):
     try:
-        cursor.execute("""INSERT INTO volttron.topic (topic) VALUES (?)""", (topic,))
+        cursor.execute("""INSERT INTO {CRATE_SCHEMA}.topic (topic) VALUES (?)""", (topic,))
         print('-- INSERT topic: ', topic)
     except ProgrammingError:
         print('-- Topic already exists: ', topic)
@@ -236,7 +237,7 @@ def import_csv(source_file_name):
             print('-- INSERT CSV data {} file: {}'.format(name, csv_writer['filename']))
             try:
                 csv_writer['fp'].close()
-                sql = "COPY volttron.data FROM '{}'".format(csv_writer['filename'])
+                sql = "COPY {CRATE_SCHEMA}.data FROM '{}'".format(csv_writer['filename'])
                 print('-- INSERT: ', sql)
                 cursor.execute(sql)
                 print('-- Cleanup CSV file: {}'.format(csv_writer['filename']))

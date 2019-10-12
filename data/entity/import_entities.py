@@ -55,8 +55,8 @@ def clean():
     cursor = conn.cursor()
 
     print('Deleting volttron entity data ...')
-    cursor.execute("DELETE FROM volttron.topic;")
-    cursor.execute("DELETE FROM volttron.entity;")
+    cursor.execute("DELETE FROM {CRATE_SCHEMA}.topic;")
+    cursor.execute("DELETE FROM {CRATE_SCHEMA}.entity;")
 
     cursor.close()
     conn.close()
