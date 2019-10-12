@@ -26,7 +26,7 @@ from psycopg2 import IntegrityError
 from psycopg2.extras import register_hstore
 from django.template.defaultfilters import slugify
 
-CRATE_HOST = 'localhost:4200'
+CRATE_HOST = os.environ.get('CRATE_HOST', 'localhost:4200')
 
 
 def get_connection():
@@ -149,9 +149,6 @@ def print_help():
 
 
 if __name__ == '__main__':
-    if 'CRATE_HOST' in os.environ:
-        CRATE_HOST = os.environ['CRATE_HOST']
-
     if len(sys.argv) == 1:
         print_help()
     filters = []

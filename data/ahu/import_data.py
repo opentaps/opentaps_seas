@@ -29,7 +29,7 @@ from psycopg2 import IntegrityError
 from psycopg2.extras import register_hstore
 from django.template.defaultfilters import slugify
 
-CRATE_HOST = 'localhost:4200'
+CRATE_HOST = os.environ.get('CRATE_HOST', 'localhost:4200')
 
 GLB_OPTIONS = {
     'ahu_no_point': False
@@ -283,7 +283,7 @@ def print_help():
 if __name__ == '__main__':
     if 'CRATE_HOST' in os.environ:
         CRATE_HOST = os.environ['CRATE_HOST']
-    if len(sys.argv) == 1:
+    if len(sys.argv) == 1G
         print_help()
     GLB_OPTIONS['ahu_no_point'] = 'ahu_no_point' in sys.argv
     if 'clean' in sys.argv:
