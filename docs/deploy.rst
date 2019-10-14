@@ -33,7 +33,7 @@ Get Python from https://www.python.org/downloads/ and install it with::
 
 Make sure python is working by calling::
 
-    /usr/locan/bin/python3.7 -v
+    /usr/local/bin/python3.7 -v
 
 If you have an issue with libraries not found make sure to add this to cat /etc/ld.so.conf ::
 
