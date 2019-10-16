@@ -56,8 +56,8 @@
             <input type="hidden" name="device_prefix" value="{{ current_prefix }}"/>
         {% else %}
             <div id="div_id_device_prefix" class="form-group">
-                <label for="id_device_prefix" class="col-form-label  requiredField">
-                    Device prefix<span class="asteriskField">*</span>
+                <label for="id_device_prefix" class="col-form-label" v-if="bacnetPrefixes.length">
+                    Device prefix
                 </label>
                 <div>
                     <select name="device_prefix" id="id_device_prefix" class="select form-control"  v-if="bacnetPrefixes.length">
@@ -74,7 +74,7 @@
 
         <div class="form-group d-flex justify-content-around mt-5">
             <a href="{{ back_url }}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
-            <button class="btn btn-primary col-5" type="submit"  v-if="bacnetPrefixes.length"><i class="fa fa-download mr-2"></i> Export Config Files</button>
+            <button class="btn btn-primary col-5" type="submit"><i class="fa fa-download mr-2"></i> Export Config Files</button>
         </div>
       </form>
       {% endif %}
@@ -107,9 +107,6 @@
           .then(
             x => {
               this.bacnetPrefixes = x.data.items
-              if (!this.bacnetPrefixes.length) {
-                this.error = 'There are no any Device prefixes found for this site';
-              }
             }
           )
           .catch(err => {
