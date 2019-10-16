@@ -1629,11 +1629,22 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
     def get_config_zip(self, context, **response_kwargs):
         device_prefix = context["form"].cleaned_data['device_prefix']
+        site = context["form"].cleaned_data['site']
         only_with_trending = context["form"].cleaned_data['only_with_trending']
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = "attachment; filename=bacnet_config.zip"
 
-        trendings = Entity.objects.filter(kv_tags__bacnet_prefix=device_prefix).values(
+        try:
+            s = SiteView.objects.get(entity_id=site)
+            site_id = s.object_id
+        except SiteView.DoesNotExist:
+            site_id = None
+
+        if device_prefix:
+            trendings = Entity.objects.filter(kv_tags__bacnet_prefix=device_prefix, kv_tags__siteRef=site_id).values(
+                    'kv_tags__interval').annotate(dcount=Count('kv_tags__interval'))
+        else:
+            trendings = Entity.objects.filter(kv_tags__siteRef=site_id).values(
                     'kv_tags__interval').annotate(dcount=Count('kv_tags__interval'))
 
         files_list = []
@@ -1654,10 +1665,18 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
                 file_item = {'csv_file_name': csv_file_name, 'config_file_name': config_file_name}
 
-                rows = Entity.objects.filter(
+                if device_prefix:
+                    rows = Entity.objects.filter(
+                       kv_tags__siteRef=site_id,
                        kv_tags__bacnet_prefix=device_prefix,
                        m_tags__contains=['point'],
                        kv_tags__interval=trending_interval)
+                else:
+                    rows = Entity.objects.filter(
+                       kv_tags__siteRef=site_id,
+                       m_tags__contains=['point'],
+                       kv_tags__interval=trending_interval)
+
                 if rows:
                     # get config file tags from first row
                     kv_tags = rows[0].kv_tags
