@@ -103,6 +103,12 @@
                   <span v-if="select_not_mapped_topics" class="light-btn">Show all topics.</span>
                 </label>
               </div>
+              <div class="col-xl-6 col-lg-4">
+                <input id="his_tagged_topics_only" type="checkbox" v-on:change="add_his_to_filter" class="invisible position-absolute"/>
+                <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 text-primary h-c" for="his_tagged_topics_only">
+                  <span class="light-btn">Show his tagged topics only.</span>
+                </label>
+              </div>
               <div class="col-xl-6 col-lg-8" v-if="all_checked || select_all_matching">
                 <input id="select_all_matching" type="checkbox" name="_ALL_" class="invisible position-absolute" v-model="select_all_matching" />
                 <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 h-c" for="select_all_matching">
@@ -1202,6 +1208,10 @@
             event.preventDefault()
             return false
         }
+      },
+      add_his_to_filter(event) {
+          this.filters.unshift({field: 'his', type: 'present', value: ''});
+          this.load_page()
       },
       read_page_number(href) {
         if (href) {
