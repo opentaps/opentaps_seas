@@ -1631,6 +1631,7 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         device_prefix = context["form"].cleaned_data['device_prefix']
         site = context["form"].cleaned_data['site']
         only_with_trending = context["form"].cleaned_data['only_with_trending']
+        his_tagged_topics_only = context["form"].cleaned_data['his_tagged_topics_only']
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = "attachment; filename=bacnet_config.zip"
 
@@ -1648,6 +1649,10 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                     'kv_tags__interval').annotate(dcount=Count('kv_tags__interval'))
 
         files_list = []
+
+        allow_tags = ['point']
+        if his_tagged_topics_only:
+            allow_tags.append('his')
 
         if trendings:
             for tr in trendings:
@@ -1669,14 +1674,16 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
                     rows = Entity.objects.filter(
                        kv_tags__siteRef=site_id,
                        kv_tags__bacnet_prefix=device_prefix,
-                       m_tags__contains=['point'],
+                       m_tags__contains=allow_tags,
                        kv_tags__interval=trending_interval)
                 else:
                     rows = Entity.objects.filter(
                        kv_tags__siteRef=site_id,
-                       m_tags__contains=['point'],
+                       m_tags__contains=allow_tags,
                        kv_tags__interval=trending_interval)
 
+                header = []
+                bacnet_data = []
                 if rows:
                     # get config file tags from first row
                     kv_tags = rows[0].kv_tags
@@ -2493,7 +2500,6 @@ def topic_assoc(request, topic):
             equipment.save()
         e = Entity(entity_id=entity_id, topic=topic)
         e.add_tag('point', commit=False)
-        e.add_tag('his', commit=False)
         e.add_tag('id', data_point_name, commit=False)
         e.add_tag('dis', data_point_name, commit=False)
         e.add_tag('siteRef', site_id, commit=False)

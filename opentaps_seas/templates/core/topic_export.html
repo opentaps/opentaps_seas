@@ -71,6 +71,7 @@
         {% endif %}
 
         {{ form.only_with_trending|as_crispy_field }}
+        {{ form.his_tagged_topics_only|as_crispy_field }}
 
         <div class="form-group d-flex justify-content-around mt-5">
             <a href="{{ back_url }}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Go Back</a>
