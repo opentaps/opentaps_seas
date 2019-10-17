@@ -438,6 +438,8 @@ class TopicExportForm(forms.Form):
     site = forms.ChoiceField(required=False)
     device_prefix = forms.CharField(required=False)
     only_with_trending = forms.BooleanField(label="Only export topics with Interval set", required=False, initial=True)
+    his_tagged_topics_only = forms.BooleanField(label="Only export data points with his tag set",
+                                                required=False, initial=False)
 
     def __init__(self, *args, **kwargs):
         site_id = kwargs.pop('site_id')
@@ -446,7 +448,7 @@ class TopicExportForm(forms.Form):
             self.fields['site'] = forms.ChoiceField(choices=SiteView.get_choices())
 
     class Meta:
-        fields = ["site_id", "device_prefix", "only_with_trending"]
+        fields = ["site_id", "device_prefix", "only_with_trending", "his_tagged_topics_only"]
 
 
 class TopicTagRuleSetImportForm(forms.Form):
@@ -585,7 +587,6 @@ class TopicImportForm(forms.Form):
                         e = Entity(entity_id=entity_id, topic=topic)
                         e.add_tag('id', entity_id, commit=False)
                     e.add_tag('point', commit=False)
-                    e.add_tag('his', commit=False)
                     e.add_tag('dis', name, commit=False)
                     if site.kv_tags.get('id'):
                         e.add_tag('siteRef', site.kv_tags.get('id'), commit=False)
