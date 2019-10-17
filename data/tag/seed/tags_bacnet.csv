@@ -15,3 +15,9 @@ bacnet_device_id,Number,device_id,BACNet device id from VOLTTRON devices JSON fi
 bacnet_driver_type,Str,driver_type,BACNet driver type from VOLTTRON devices JSON file
 bacnet_registry_config,Uri,registry_config,BACNet registry config from VOLTTRON devices JSON file
 bacnet_timezone,Str,timezone,BACNet timezone from VOLTTRON devices JSON file
+bacnet_device_description,Str,Device Description, BACNet Device Description from rest API JSON file
+bacnet_description,Str,Description,BACNet Description from rest API JSON file
+bacnet_device_name,Str,Device Name,BACNet Device Name from rest API JSON file
+bacnet_objectName,Str,Object Name,BACNet Object Name from rest API JSON file
+bacnet_presentValue,Str,Present Value,BACNet Present Value from rest API JSON file
+bacnet_stateText,Str,State Text,BACNet State Text from rest API JSON file
