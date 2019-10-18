@@ -43,27 +43,45 @@ create a new one if you do not have one, and put in the following::
   
 Now edit your ``secrets.json`` file and put in the username, password, and ip address of your VOLTTRON Central instance.
 
-Verify the following - 
+Verify the following: 
  * Your VOLTTRON instance is there with at http://VOLTTRON.central.ip.address:8080/vc/jsonrpc  You should see a response
  * Go to the VOLTTRON tab of opentaps SEAS web interface.  It should show you the agents that are running in VOLTTRON.  You should see a VOLTTRON central agent and a VOLTTRON central platform agent running.
  
+Databases
+^^^^^^^^^
+
+We use two databases: a relational database to store application data and a time series database to store IOT data trended by VOLTTRON. 
+We use PostgreSQL as the relational database and Crate as the time series database.  The names of the databases and their connections setup are configured in ``config/settings/base.py``: 
+
+ DATABASES = {
+     'default': env.db('DATABASE_URL', default='postgres:///opentaps_seas'),
+     'crate': env.db('CRATE_DATABASE_URL', default='postgres://crate@127.0.0.1:5433/volttron'),
+ }  
+
 
 Crate
 ^^^^^
 
-Use the latest version of Crate as there are issues with earlier versions and Join queries, we recommend 3.3.5
+
+As of Crate 4.0, the open source edition of Crate must be installed following directions in https://crate.io/docs/crate/reference/en/latest/editions.html#community-edition
+
+You will also need `crash`, the CrateDB shell,  See directions from https://crate.io/docs/clients/crash/en/latest/index.html
 
 Note that the CrateDB postgres connection is by default done on port 5433 instead of 5432 to avoid conflict. This should be at the end of the ``crate/config/crate.yml``::
 
     psql.enabled: true
     psql.port: 5433
 
-All the tables in the Crate DB are created by VOLTTRON CrateDBHistorian.  We use the default names, ``volttron.data`` and ``volttron.topic``
+You should then initialize your Crate database with::
+
+ $ cat cratedb/init_schema.sql | crash
+
+This creates a couple of other tables in addition to the ones created by VOLTTRON CrateDBHistorian, ``volttron.data`` and ``volttron.topic``, which we use as well.
 
 Postgres
 ^^^^^^^^
 
-Django specific data is currently storted in a Postgres DB
+Django specific data is currently storted in a Postgres DB:
  * use <unixuser> as the user that would run the server so it authenticates in postgres using ident.
  * you may need to switch to postgres user to run those commands (eg: sudo su - postgres)
 
@@ -91,6 +109,7 @@ Also the HSTORE extension must be setup for test database before running tests::
 Then run the migrations::
 
     $ python manage.py migrate
+
 
 Syncing PostgreSQL and Crate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
