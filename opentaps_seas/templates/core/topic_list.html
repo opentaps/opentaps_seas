@@ -103,7 +103,7 @@
                   <span v-if="select_not_mapped_topics" class="light-btn">Show all topics.</span>
                 </label>
               </div>
-              <div class="col-xl-6 col-lg-4">
+              <div class="col-xl-6 col-lg-4" v-if="!select_not_mapped_topics">
                 <input id="his_tagged_topics_only" type="checkbox" v-on:change="add_his_to_filter" class="invisible position-absolute"/>
                 <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 text-primary h-c" for="his_tagged_topics_only">
                   <span class="light-btn">Show his tagged topics only.</span>
