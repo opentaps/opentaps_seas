@@ -85,24 +85,21 @@ Django specific data is currently storted in a Postgres DB:
  * use <unixuser> as the user that would run the server so it authenticates in postgres using ident.
  * you may need to switch to postgres user to run those commands (eg: sudo su - postgres)
 
-Create the DB and needed data::
-
-    $ createuser <unixuser>
-    $ createdb -O <unixuser> opentaps_seas
-
 Postgres Extensions must be installed, eg: in some distributions install the postgresql-contrib package.
 The HSTORE extension must be setup which requires running this in postgres as the superuser::
 
-    CREATE EXTENSION IF NOT EXISTS hstore;
+    $ psql -d template1 -c 'create extension hstore;'
 
-For example::
+Then create your databases::
+
+    $ createuser <unixuser>
+    $ createdb -O <unixuser> opentaps_seas
+    $ createdb -O <unixuser> test_opentaps_seas
+
+If you find you're still missing the HSTORE extension, it must be setup for each database, again as the postgres superuser::
 
     $ psql opentaps_seas -U postgres
     opentaps_seas=# CREATE EXTENSION IF NOT EXISTS hstore
-
-Also the HSTORE extension must be setup for test database before running tests::
-
-    $ createdb -O <unixuser> test_opentaps_seas
     $ psql test_opentaps_seas -U postgres
     test_opentaps_seas=# CREATE EXTENSION IF NOT EXISTS hstore
 
