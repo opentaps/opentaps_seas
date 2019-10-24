@@ -16,6 +16,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 
+Unidecode<1.1,>=0.04
 pytz==2018.9  # https://github.com/stub42/pytz
 python-slugify==2.0.1  # https://github.com/un33k/python-slugify
 Pillow==5.4.1  # https://github.com/python-pillow/Pillow
