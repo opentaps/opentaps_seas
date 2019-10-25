@@ -118,6 +118,9 @@
                 </label>
               </div>
             </div>
+            <div class="text-center" v-if="show_load_data_spinner">
+                <b-spinner label="Loading..." variant="secondary"></b-spinner>
+            </div>
             <div id="table_container" ref="table_container">
                 {% render_table table %}
             </div>
@@ -989,7 +992,8 @@
         selected_topics: {},
         select_not_mapped_topics: false,
         all_checked: false,
-        select_all_matching: false
+        select_all_matching: false,
+        show_load_data_spinner: false,
       }
     },
     mounted: function () {
@@ -1227,6 +1231,7 @@
         }
       },
       load_page(href) {
+        this.show_load_data_spinner = true;
         this.read_page_number(href)
         url = dutils.urls.resolve('topic_list_table')
         container = this.$refs['table_container']
@@ -1234,6 +1239,7 @@
         this.build_filter_data(formData)
         formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
         axios.post(url + '?page=' + this.page, formData).then(response => {
+            this.show_load_data_spinner = false;
             container.innerHTML = response.data
             this.setup_table()
         });
