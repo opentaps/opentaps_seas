@@ -943,7 +943,7 @@ equipment_create_view = EquipmentCreateView.as_view()
 class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):
     model = Topic
     table_class = TopicTable
-    table_pagination = {'per_page': 15}
+    table_pagination = {'per_page': 10}
     template_name = 'core/topic_list.html'
 
     def get_queryset(self, **kwargs):
