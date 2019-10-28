@@ -1231,10 +1231,14 @@
         }
       },
       load_page(href) {
-        this.show_load_data_spinner = true;
         this.read_page_number(href)
         url = dutils.urls.resolve('topic_list_table')
         container = this.$refs['table_container']
+        if (!href) {
+            this.show_load_data_spinner = true;
+            container.innerHTML = '';
+        }
+
         const formData = new FormData()
         this.build_filter_data(formData)
         formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
