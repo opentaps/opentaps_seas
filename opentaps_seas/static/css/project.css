@@ -285,3 +285,8 @@ input.vs__search:-moz-placeholder {
 .v-select.opt_w_auto .vs__dropdown-menu {
   width:auto;
 }
+
+.filter-spiner-placeholder {
+  min-height:150px;
+  margin-top:150px;
+}

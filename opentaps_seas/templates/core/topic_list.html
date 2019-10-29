@@ -110,7 +110,7 @@
                 </label>
               </div>
               <div class="col-xl-4 col-lg-4">
-                 <b-form-group label-cols="6" label-align-sm="left" label-align-lg="right" label="View" label-for="per_page">
+                 <b-form-group label-cols="8" label-cols-lg="8" label-cols-xl="9" label-align-sm="left" label-align-lg="right" label="View" label-for="per_page">
                    <select name="per_page" id="per_page" class="form-control" v-model="per_page" v-on:change="select_per_page">
                       <option value="10">10</option>
                       <option value="25">25</option>
@@ -129,7 +129,7 @@
                 </label>
               </div>
             </div>
-            <div class="text-center" v-if="show_load_data_spinner">
+            <div class="text-center filter-spiner-placeholder" v-if="show_load_data_spinner">
                 <b-spinner label="Loading..." variant="secondary"></b-spinner>
             </div>
             <div id="table_container" ref="table_container">
