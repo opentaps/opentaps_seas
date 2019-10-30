@@ -71,8 +71,10 @@ Below are the files and notes for this data point.
 Topics
 ^^^^^^
 
-This page shows a list of the topics that are in the time series database.  If the topic has been mapped to a data point, the data point will be shown next to it.
-Otherwise, click on Add to add this topic as a new data point.
+This page shows a list of the topics that are in the time series database.  If available, it will show the object name, present value, and units from BACNet to help you determine what
+the topics are.  If the topic has been mapped to a data point, you can click on the View button to see it.
+Otherwise, click on Add to add this topic as a new data point.  At the top, you can filter the list of topics to show only those which have not been mapped to a data point, or show
+those which have the Haystack ``his`` tag, which means that the topics is being trended from the BAS. 
 
 You can also use the Import Topics button import to import your topics.  Here you can choose to import from either a CSV file or from the BACNet scans from VOLTTRON.  
 
@@ -195,6 +197,8 @@ the Topics page, you will have to choose the Site and the BACNet Config prefix.
 
 Then you can
 choose to only export the topics with Interval set, which means only the topics with ``interval`` set will be exported, or uncheck this to export all the topics with this prefix.  
+You can also choose to export only the topics with the Haystack ``his`` tag set, which is used to denote that the topic is being trended from the BAS system.
+
 You will get a zip file with CSV and JSON for each distinct ``interval`` tag value for this BACNet Config prefix.  For example, if you set some topics to trend at 5 minutes, some at
 15 minutes, and some at 60 minutes, you will get CSV and JSON files for 5, 15, and 60 minutes with _5, _15, and _60 in their file names.  If you unchecked "Only export the topics with
 Interval set", then you will get a CSV and JSON file combination for all the other topics that do not have interval set as well.  These config files can then be loaded into your 
