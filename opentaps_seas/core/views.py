@@ -334,7 +334,7 @@ class TopicTable(Table):
         if p:
             return format_html('''
                 <a class="btn btn-secondary btn-sm" href="{}">
-                  View
+                <i class="fa fa-external-link-alt"></i>  View
                 </a>'''.format(reverse(
                     "core:point_detail",
                     kwargs={"entity_id": p.entity_id}),))
