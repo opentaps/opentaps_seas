@@ -302,15 +302,42 @@ class SiteFilter(FilterSet):
 class TopicTable(Table):
     cb = CheckBoxColumn(accessor='topic')
     topic = Column()
-    point_description = LinkColumn('core:point_detail',
-                                   args=[A('entity_id')],
-                                   verbose_name='Data Point', orderable=False)
+    bacnet_objectName = Column(accessor='topic', verbose_name='Object Name', default='')
+    bacnet_presentValue = Column(accessor='topic', verbose_name='Present Value', default='')
+    bacnet_units = Column(accessor='topic', verbose_name='Units', default='')
+
     button = Column(accessor='topic', verbose_name='', default='', orderable=False)
+
+    def render_bacnet_units(self, record):
+        p = record.get_related_point()
+        if p and p.kv_tags.get('bacnet_units'):
+            return p.kv_tags.get('bacnet_units')
+        else:
+            return ''
+
+    def render_bacnet_presentValue(self, record):
+        p = record.get_related_point()
+        if p and p.kv_tags.get('bacnet_presentValue'):
+            return p.kv_tags.get('bacnet_presentValue')
+        else:
+            return ''
+
+    def render_bacnet_objectName(self, record):
+        p = record.get_related_point()
+        if p and p.kv_tags.get('bacnet_objectName'):
+            return p.kv_tags.get('bacnet_objectName')
+        else:
+            return ''
 
     def render_button(self, record):
         p = record.get_related_point()
         if p:
-            return ''
+            return format_html('''
+                <a class="btn btn-secondary btn-sm" href="{}">
+                  View
+                </a>'''.format(reverse(
+                    "core:point_detail",
+                    kwargs={"entity_id": p.entity_id}),))
         else:
             return format_html('''
                 <a class="btn btn-secondary btn-sm" href="{}">
