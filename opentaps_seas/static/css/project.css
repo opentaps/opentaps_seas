@@ -287,6 +287,6 @@ input.vs__search:-moz-placeholder {
 }
 
 .filter-spiner-placeholder {
-  min-height:150px;
-  margin-top:150px;
+  height:400px;
+  padding-top:190px;
 }
