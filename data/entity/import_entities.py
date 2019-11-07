@@ -26,7 +26,7 @@ from psycopg2 import IntegrityError
 from psycopg2.extras import register_hstore
 from django.template.defaultfilters import slugify
 
-CRATE_HOST = 'localhost:4200'
+CRATE_HOST = os.environ.get('CRATE_HOST', 'localhost:4200')
 
 
 def get_connection():
@@ -55,8 +55,8 @@ def clean():
     cursor = conn.cursor()
 
     print('Deleting volttron entity data ...')
-    cursor.execute("DELETE FROM volttron.topic;")
-    cursor.execute("DELETE FROM volttron.entity;")
+    cursor.execute("DELETE FROM {CRATE_SCHEMA}.topic;")
+    cursor.execute("DELETE FROM {CRATE_SCHEMA}.entity;")
 
     cursor.close()
     conn.close()
@@ -145,6 +145,7 @@ def print_help():
     print("  entity_mtag=[m_tag]: optional, only import demo entities matching any of the given m_tag, eg: site")
     print("    can provide multiple filters, eg: site,equip")
     print("    can prefix a tag with ~ to negate eg: ~point matches all those that are not point")
+    print("If crate server is not localhost, set CRATE_HOST in environment variable")
 
 
 if __name__ == '__main__':
