@@ -24,6 +24,7 @@ from .models import EntityFile
 from .models import EntityNote
 from .models import Entity
 from .models import ModelView
+from .models import Meter
 from .models import SiteView
 from .models import Tag
 from .models import TopicTagRule
@@ -720,3 +721,24 @@ class TagImportForm(forms.Form):
             result['import_success'] = import_success
 
         return result
+
+
+class MeterCreateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(MeterCreateForm, self).__init__(*args, **kwargs)
+        self.fields['meter_id'].required = True
+        self.fields['site'].widget = forms.HiddenInput()
+
+    class Meta:
+        model = Meter
+        fields = ["site", "meter_id", "description"]
+
+
+class MeterUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(MeterUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['meter_id'].widget = forms.HiddenInput()
+
+    class Meta:
+        model = Meter
+        fields = ["meter_id", "description"]
