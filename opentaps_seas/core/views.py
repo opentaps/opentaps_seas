@@ -2695,10 +2695,23 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     slug_url_kwarg = "meter_id"
 
     def get_breadcrumbs(self, context):
-        return [
-            {'url': reverse("core:site_detail", kwargs={"site": context['object'].site_id}), 'label': 'Site'},
-            {'label': 'Meter {}'.format(self.kwargs['meter_id'])}
-        ]
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+
+        site = None
+        if context['object'] and context['object'].site_id:
+            try:
+                site = SiteView.objects.get(entity_id=context['object'].site_id)
+                label = 'Site'
+                if site.description:
+                    label = site.description
+                url = reverse("core:site_detail", kwargs={'site': context['object'].site_id})
+                b.append({'url': url, 'label': label})
+            except Entity.DoesNotExist:
+                pass
+
+        b.append({'label': 'Meter {}'.format(self.kwargs['meter_id'])})
+        return b
 
 
 meter_detail_view = MeterDetailView.as_view()
