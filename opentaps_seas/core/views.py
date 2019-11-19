@@ -2694,6 +2694,12 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
 
+    def get_breadcrumbs(self, context):
+        return [
+            {'url': reverse("core:site_detail", kwargs={"site": context['object'].site_id}), 'label': 'Site'},
+            {'label': 'Meter {}'.format(self.kwargs['meter_id'])}
+        ]
+
 
 meter_detail_view = MeterDetailView.as_view()
 
@@ -2727,12 +2733,6 @@ class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
     slug_url_kwarg = "meter_id"
     template_name = 'core/meter_edit.html'
     form_class = MeterUpdateForm
-
-    def get_breadcrumbs(self, context):
-        return [
-            {'url': reverse("core:site_detail", kwargs={"site": self.kwargs['site']}), 'label': 'Site'},
-            {'label': 'Meter {}'.format(self.kwargs['meter_id'])}
-        ]
 
     def get_success_url(self):
         obj = self.get_object()
