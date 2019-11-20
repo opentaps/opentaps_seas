@@ -747,3 +747,4 @@ class Weather(models.Model):
     longitude = FloatField(null=True)
     elevation = FloatField(null=True)
     elevation_uom = CharField(max_length=6, blank=True, null=True)
+    meta_data = HStoreField(null=True, blank=True)
