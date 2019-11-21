@@ -131,24 +131,24 @@ To init the Django related seed data::
 
 To init the data::
 
- $ data/import_all all
+ $ ./import_data.sh all_data all
 
 To init just the seed data::
 
- $ data/import_all seed
+ $ ./import_data.sh all_data seed
 
 To init just the demo data::
 
- $ data/import_all demo
+ $ ./import_data.sh all_data demo
 
 To reset the data and **delete all previous data** add **clean**::
 
- $ data/import_all all clean
+ $ ./import_data.sh all_data all clean
 
 These are equivalent::
 
- $ data/import_all clean
- $ data/import_all seed clean
+ $ ./import_data.sh all_data clean
+ $ ./import_data.sh all_data seed clean
 
 Notes about the seed data:
  * Time zones are linked to country in the ``data/timezone/seed/timezone.csv`` file.  They are currently pre-defined for USA and Canada.
