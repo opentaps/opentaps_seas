@@ -36,6 +36,8 @@ from .forms import EntityNoteUpdateForm
 from .forms import FileDeleteForm
 from .forms import FileUpdateForm
 from .forms import FileUploadForm
+from .forms import MeterCreateForm
+from .forms import MeterUpdateForm
 from .forms import ModelCreateForm
 from .forms import ModelUpdateForm
 from .forms import SiteCreateForm
@@ -64,6 +66,7 @@ from .models import TimeZone
 from .models import Topic
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
+from .models import Meter
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -873,6 +876,9 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
                         item["bc_equipment_description"] = bc_equipment.description
                 bacnet_cfg.append(item)
             context['bacnet_configs'] = bacnet_cfg
+
+        meters = Meter.objects.filter(site_id=site.entity_id, thru_datetime__isnull=True).order_by('meter_id')
+        context['meters'] = meters
 
         return context
 
@@ -2681,3 +2687,89 @@ class ReportPreviewCsvView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateVie
 
 
 report_preview_csv_view = ReportPreviewCsvView.as_view()
+
+
+class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+    model = Meter
+    slug_field = "meter_id"
+    slug_url_kwarg = "meter_id"
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+
+        site = None
+        if context['object'] and context['object'].site_id:
+            try:
+                site = SiteView.objects.get(entity_id=context['object'].site_id)
+                label = 'Site'
+                if site.description:
+                    label = site.description
+                url = reverse("core:site_detail", kwargs={'site': context['object'].site_id})
+                b.append({'url': url, 'label': label})
+            except Entity.DoesNotExist:
+                pass
+
+        b.append({'label': 'Meter {}'.format(self.kwargs['meter_id'])})
+        return b
+
+
+meter_detail_view = MeterDetailView.as_view()
+
+
+class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
+    model = Meter
+    slug_field = "meter_id"
+    slug_url_kwarg = "meter_id"
+    template_name = 'core/meter_edit.html'
+    form_class = MeterCreateForm
+
+    def get_context_data(self, **kwargs):
+        context = super(MeterCreateView, self).get_context_data(**kwargs)
+        # add the parent Site Id
+        context['site_id'] = self.kwargs['site_id']
+
+        return context
+
+    def get_initial(self):
+        initials = {}
+        initials['site'] = self.kwargs['site_id']
+        return initials
+
+
+meter_create_view = MeterCreateView.as_view()
+
+
+class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
+    model = Meter
+    slug_field = "meter_id"
+    slug_url_kwarg = "meter_id"
+    template_name = 'core/meter_edit.html'
+    form_class = MeterUpdateForm
+
+    def get_success_url(self):
+        obj = self.get_object()
+        logging.info('MeterEditView::get_success_url = %s', obj.get_absolute_url())
+        return obj.get_absolute_url()
+
+
+meter_edit_view = MeterEditView.as_view()
+
+
+class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
+    model = Meter
+    slug_field = "meter_id"
+    slug_url_kwarg = "meter_id"
+    template_name = 'core/meter_deactivate.html'
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = reverse("core:site_detail", kwargs={"site": self.object.site})
+
+        self.object.thru_datetime = datetime.now()
+        self.object.save()
+
+        return HttpResponseRedirect(success_url)
+
+
+meter_deactivate_view = MeterDeactivateView.as_view()
