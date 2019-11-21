@@ -751,7 +751,6 @@ class WeatherStation(models.Model):
     meta_data = HStoreField(null=True, blank=True)
 
     class Meta:
-        managed = False
         db_table = 'core_weather_station'
 
 
