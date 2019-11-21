@@ -737,7 +737,7 @@ def sync_tags_to_crate_entity(row, retried=False):
             c.execute(sql, params_list)
 
 
-class Weather(models.Model):
+class WeatherStation(models.Model):
     weather_station_id = CharField(max_length=12, primary_key=True)
     weather_station_code = CharField(max_length=12)
     station_name = CharField(max_length=255, blank=True, null=True)
@@ -749,6 +749,10 @@ class Weather(models.Model):
     elevation = FloatField(null=True)
     elevation_uom = CharField(max_length=6, blank=True, null=True)
     meta_data = HStoreField(null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'core_weather_station'
 
 
 class Meter(models.Model):
