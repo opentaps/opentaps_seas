@@ -24,7 +24,7 @@ from django.db.utils import IntegrityError
 def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
-        sql = """DELETE FROM core_weather;"""
+        sql = """DELETE FROM core_weather_station;"""
         c.execute(sql)
         c.close()
 
@@ -40,7 +40,7 @@ def seed():
 def import_files(which):
     print('Importing {} data...'.format(which))
     dirname = os.path.dirname(os.path.realpath(__file__))
-    dirname = dirname.replace('scripts', 'data/weather')
+    dirname = dirname.replace('scripts', 'data/weather_station')
     mypath = os.path.join(dirname, which)
     print(mypath)
     if os.path.isdir(mypath):
@@ -86,16 +86,16 @@ def import_entities(source_file_name):
                 weather_station_code = 'USAF' + usaf_id
 
                 try:
-                    c.execute("""INSERT INTO core_weather (weather_station_id, weather_station_code,
+                    c.execute("""INSERT INTO core_weather_station (weather_station_id, weather_station_code,
                         station_name, country, state, call, latitude, longitude, elevation, elevation_uom)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                         [weather_station_id, weather_station_code, station_name, country, state,
                         icao, latitude, longitude, elevation, elevation_uom])
                     counter_insert += 1
-                    print('-- INSERT weather: ', usaf_id)
+                    print('-- INSERT weather station: ', usaf_id)
                 except IntegrityError as e:
                     if 'duplicate key value violates' in e.args[0]:
-                        print('-- IGNORE duplicated weather: ', usaf_id)
+                        print('-- IGNORE duplicated weather station: ', usaf_id)
                     else:
                         print(e)
 
@@ -104,7 +104,7 @@ def import_entities(source_file_name):
 
 
 def print_help():
-    print("Usage: python manage.py runscript import_weathers --script-args [all|seed|demo] [clean]")
+    print("Usage: python manage.py runscript import_weather_stations --script-args [all|seed|demo] [clean]")
     print("  note: table managed by DJANGO, make sure the migrations are run so the table exists")
     print("  all|seed|demo: which data to import")
     print("  clean: optional, delete data first")
