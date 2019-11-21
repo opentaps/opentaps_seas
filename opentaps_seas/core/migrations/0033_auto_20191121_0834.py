@@ -34,7 +34,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'core_weather_station',
-                'managed': False,
             },
         ),
         migrations.DeleteModel(
