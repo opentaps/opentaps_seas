@@ -27,6 +27,7 @@ from django.db import models
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
+from django.db.models import FloatField
 from django.db.models import ForeignKey
 from django.db.models import IntegerField
 from django.db.models import OneToOneField
@@ -734,3 +735,28 @@ def sync_tags_to_crate_entity(row, retried=False):
             logger.info('sync_tags_to_crate_entity SQL: %s', sql)
             logger.info('sync_tags_to_crate_entity Params: %s', params_list)
             c.execute(sql, params_list)
+
+
+class Weather(models.Model):
+    weather_station_id = CharField(max_length=12, primary_key=True)
+    weather_station_code = CharField(max_length=12)
+    station_name = CharField(max_length=255, blank=True, null=True)
+    country = CharField(max_length=2, blank=True, null=True)
+    state = CharField(max_length=2, blank=True, null=True)
+    call = CharField(max_length=6, blank=True, null=True)
+    latitude = FloatField(null=True)
+    longitude = FloatField(null=True)
+    elevation = FloatField(null=True)
+    elevation_uom = CharField(max_length=6, blank=True, null=True)
+    meta_data = HStoreField(null=True, blank=True)
+
+
+class Meter(models.Model):
+    meter_id = CharField(_("Meter ID"), max_length=255, primary_key=True)
+    description = CharField(_("Description"), max_length=255, blank=True, null=True)
+    site = ForeignKey(Entity, on_delete=models.CASCADE)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), null=True)
+
+    def get_absolute_url(self):
+        return reverse("core:meter_detail", kwargs={"meter_id": self.meter_id})
