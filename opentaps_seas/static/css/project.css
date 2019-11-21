@@ -107,6 +107,7 @@ padding:0;
   margin-bottom: 1em;
 }
 
+.meter-row,
 .bacnet-row {
   margin-top: 0.5em;
 }
