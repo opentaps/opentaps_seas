@@ -30,6 +30,7 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_timezones --script-args $ARGS
     python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_tagrules --script-args $ARGS
+    python manage.py runscript import_weathers --script-args $ARGS
 else
     if [ "$1" == "ahu" ]; then
         python manage.py runscript import_data --script-args $ARGS
@@ -48,6 +49,9 @@ else
     fi
     if [ "$1" == "timezone" ]; then
         python manage.py runscript import_timezones --script-args $ARGS
+    fi
+    if [ "$1" == "weather" ]; then
+        python manage.py runscript import_weathers --script-args $ARGS
     fi
 fi
 
