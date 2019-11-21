@@ -34,7 +34,7 @@ def clean():
     cursor = conn.cursor()
 
     print('Deleting data ...')
-    cursor.execute('DELETE FROM core_weather;')
+    cursor.execute('DELETE FROM core_weather_station;')
     conn.commit()
 
     cursor.close()
@@ -95,18 +95,18 @@ def import_entities(source_file_name):
             weather_station_code = 'USAF' + usaf_id
 
             try:
-                cursor.execute("""INSERT INTO core_weather (weather_station_id, weather_station_code,
+                cursor.execute("""INSERT INTO core_weather_station (weather_station_id, weather_station_code,
                     station_name, country, state, call, latitude, longitude, elevation, elevation_uom)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                     [weather_station_id, weather_station_code, station_name, country, state,
                     icao, latitude, longitude, elevation, elevation_uom])
                 counter_insert += 1
-                print('-- INSERT weather: ', usaf_id)
+                print('-- INSERT weather station: ', usaf_id)
                 conn.commit()
             except IntegrityError as e:
                 conn.rollback()
                 if e.pgcode == '23505': # Duplicate primary key value
-                    print('-- IGNORE duplicated weather: ', usaf_id)
+                    print('-- IGNORE duplicated weather station: ', usaf_id)
                 conn.commit()
 
     print('{0} rows have been successfully processed {1} '
@@ -118,7 +118,7 @@ def import_entities(source_file_name):
 
 
 def print_help():
-    print("Usage: python import_weathers.py [all|seed|demo] [clean]")
+    print("Usage: python import_weather_stations.py [all|seed|demo] [clean]")
     print("  note: table managed by DJANGO, make sure the migrations are run so the table exists")
     print("  all|seed|demo: which data to import")
     print("  clean: optional, delete data first")
