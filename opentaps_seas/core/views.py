@@ -2724,6 +2724,19 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
     template_name = 'core/meter_edit.html'
     form_class = MeterCreateForm
 
+    def get_form_kwargs(self, *args, **kwargs):
+        initial_values = {}
+        try:
+            site = Entity.objects.get(entity_id=self.kwargs['site_id'])
+            initial_values['weather_station'] = utils.get_default_weather_station_for_site(site)
+        except:
+            pass
+
+        form_data = super(MeterCreateView, self).get_form_kwargs(*args, **kwargs)
+        form_data['initial'] = initial_values
+
+        return form_data
+
     def get_context_data(self, **kwargs):
         context = super(MeterCreateView, self).get_context_data(**kwargs)
         # add the parent Site Id
@@ -2746,22 +2759,6 @@ class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
     slug_url_kwarg = "meter_id"
     template_name = 'core/meter_edit.html'
     form_class = MeterUpdateForm
-
-    def get_form_kwargs(self, *args, **kwargs):
-        initial_values = {}
-        if not self.object.weather_station_id:
-            initial_values['weather_station'] = self.get_default_weather_station()
-
-        form_data = super(MeterEditView, self).get_form_kwargs(*args, **kwargs)
-        form_data['initial'] = initial_values
-
-        return form_data
-
-    def get_default_weather_station(self):
-        site_tags =  self.object.site.kv_tags
-        location = utils.get_site_addr_loc(self.object.site.kv_tags, self.object.site_id, {})
-        if location:
-            return utils.get_weather_station_for_loc(location)
 
     def get_success_url(self):
         obj = self.get_object()

@@ -1074,11 +1074,14 @@ def link_points_to_equipments(new_equipments, new_equipments_topics):
                     point.add_tag('equipRef',  equipment.kv_tags['id'], commit=True)
 
 
-def get_weather_station_for_loc(location):
-    '''Get weather station located at location
+def get_default_weather_station_for_site(site):
+    if not site:
+        return
 
-    :param dict location: The dict value with latitude and longitude value
-    '''
+    location = get_site_addr_loc(site.kv_tags, site.entity_id, {})
+    if not location:
+        return
+
     latitude = location.get('latitude')
     longitude = location.get('longitude')
 
