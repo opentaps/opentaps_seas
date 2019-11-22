@@ -57,7 +57,7 @@ def import_files(which):
 
 
 def import_entities(source_file_name):
-    f = open(source_file_name, 'r')
+    f = open(source_file_name, 'r', encoding='utf8')
     reader = csv.reader(f)
 
     first_row = True
