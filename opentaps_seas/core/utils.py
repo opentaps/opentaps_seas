@@ -16,6 +16,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import eeweather
 import geocoder
 import hashlib
 import json
@@ -27,6 +28,7 @@ from .models import PointView
 from .models import Tag
 from .models import Topic
 from .models import ModelView
+from .models import WeatherStation
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -1070,3 +1072,20 @@ def link_points_to_equipments(new_equipments, new_equipments_topics):
             if points:
                 for point in points:
                     point.add_tag('equipRef',  equipment.kv_tags['id'], commit=True)
+
+
+def get_weather_station_for_loc(location):
+    '''Get weather station located at location
+
+    :param dict location: The dict value with latitude and longitude value
+    '''
+    latitude = location.get('latitude')
+    longitude = location.get('longitude')
+
+    ranked_stations = eeweather.rank_stations(latitude, longitude)
+    for i in range(len(ranked_stations)):
+        try:
+            ranked_station = ranked_stations.iloc[i]
+            return WeatherStation.objects.get(weather_station_code=ranked_station.name)
+        except:
+            pass
