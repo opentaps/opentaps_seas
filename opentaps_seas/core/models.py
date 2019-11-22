@@ -737,6 +737,16 @@ def sync_tags_to_crate_entity(row, retried=False):
             c.execute(sql, params_list)
 
 
+class UnitOfMeasure(models.Model):
+    uom_id = CharField(max_length=255, primary_key=True)
+    code = CharField(max_length=255)
+    type = CharField(max_length=255)
+    description = CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'core_unit_of_measure'
+
+
 class WeatherStation(models.Model):
     weather_station_id = CharField(max_length=12, primary_key=True)
     weather_station_code = CharField(max_length=12)
@@ -747,7 +757,7 @@ class WeatherStation(models.Model):
     latitude = FloatField(null=True)
     longitude = FloatField(null=True)
     elevation = FloatField(null=True)
-    elevation_uom = CharField(max_length=6, blank=True, null=True)
+    elevation_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING)
     meta_data = HStoreField(null=True, blank=True)
 
     class Meta:
