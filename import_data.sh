@@ -16,7 +16,8 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-# script first argument should be one of ahu|entity|geo|tag|tagrule|timezone or all_data
+# script first argument should be one of
+# ahu|entity|geo|tag|tagrule|timezone|unit_of_measure|weather_station or all_data
 # other arguments are what python script expected, i.e.
 # [all|seed|demo] [clean] [run_rules] [ahu_no_point]
 
@@ -30,6 +31,7 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_timezones --script-args $ARGS
     python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_tagrules --script-args $ARGS
+    python manage.py runscript import_unit_of_measure --script-args $ARGS
     python manage.py runscript import_weather_stations --script-args $ARGS
 else
     if [ "$1" == "ahu" ]; then
@@ -49,6 +51,9 @@ else
     fi
     if [ "$1" == "timezone" ]; then
         python manage.py runscript import_timezones --script-args $ARGS
+    fi
+    if [ "$1" == "unit_of_measure" ]; then
+        python manage.py runscript import_unit_of_measure --script-args $ARGS
     fi
     if [ "$1" == "weather_station" ]; then
         python manage.py runscript import_weather_stations --script-args $ARGS
