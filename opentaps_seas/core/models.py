@@ -764,6 +764,9 @@ class WeatherStation(models.Model):
     class Meta:
         db_table = 'core_weather_station'
 
+    def __str__(self):
+        return self.station_name
+
 
 class WeatherHistory(models.Model):
     weather_history_id = CharField(_("Weather History ID"), max_length=255, primary_key=True)
@@ -782,10 +785,10 @@ class WeatherHistory(models.Model):
 class Meter(models.Model):
     meter_id = CharField(_("Meter ID"), max_length=255, primary_key=True)
     description = CharField(_("Description"), max_length=255, blank=True, null=True)
-    weather_station = ForeignKey(WeatherStation, null=True, blank=True, on_delete=models.CASCADE)
+    weather_station = ForeignKey(WeatherStation, null=True, blank=True, on_delete=models.SET_NULL)
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     from_datetime = DateTimeField(_("From Date"), default=now)
-    thru_datetime = DateTimeField(_("Thru Date"), null=True)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("core:meter_detail", kwargs={"meter_id": self.meter_id})
