@@ -83,7 +83,7 @@ def import_entities(source_file_name):
                 elevation_uom_id = 'length_m'
 
                 weather_station_id = 'USAF_' + usaf_id
-                weather_station_code = 'USAF' + usaf_id
+                weather_station_code = usaf_id
 
                 try:
                     c.execute("""INSERT INTO core_weather_station (weather_station_id, weather_station_code,
