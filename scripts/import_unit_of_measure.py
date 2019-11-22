@@ -19,13 +19,16 @@ import csv
 import os
 from django.db import connections
 from django.db.utils import IntegrityError
+from opentaps_seas.core.utils import cleanup_id
 
 
 def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
-        sql = """DELETE FROM core_weather_station;"""
-        c.execute(sql)
+        # delete all related tables first_row
+        c.execute("DELETE FROM core_weather_station;")
+
+        c.execute("DELETE FROM core_unit_of_measure;")
         c.close()
 
 
@@ -40,7 +43,7 @@ def seed():
 def import_files(which):
     print('Importing {} data...'.format(which))
     dirname = os.path.dirname(os.path.realpath(__file__))
-    dirname = dirname.replace('scripts', 'data/weather_station')
+    dirname = dirname.replace('scripts', 'data/unit_of_measure')
     mypath = os.path.join(dirname, which)
     print(mypath)
     if os.path.isdir(mypath):
@@ -51,13 +54,6 @@ def import_files(which):
                 import_entities(filename)
     else:
         print('No {} data to import.'.format(which))
-
-
-def parse_float(value):
-    try:
-        return float(value)
-    except ValueError:
-        return None
 
 
 def import_entities(source_file_name):
@@ -72,40 +68,28 @@ def import_entities(source_file_name):
             if first_row:
                 first_row = False
             else:
-                usaf_id = row[0]
-                station_name = row[2]
-                country = row[3]
-                state = row[4]
-                icao = row[5]
-                latitude = parse_float(row[6])
-                longitude = parse_float(row[7])
-                elevation = parse_float(row[8])
-                elevation_uom_id = 'length_m'
-
-                weather_station_id = 'USAF_' + usaf_id
-                weather_station_code = 'USAF' + usaf_id
+                type = row[0]
+                description = row[1]
+                code = row[2]
+                uom_id = cleanup_id(type + "_" + code)
 
                 try:
-                    c.execute("""INSERT INTO core_weather_station (weather_station_id, weather_station_code,
-                        station_name, country, state, call, latitude, longitude, elevation, elevation_uom_id)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                              [weather_station_id, weather_station_code,
-                               station_name, country, state, icao, latitude, longitude, elevation, elevation_uom_id]
-                              )
+                    c.execute("""INSERT INTO core_unit_of_measure (uom_id, code, type, description)
+                        VALUES (%s, %s, %s, %s)""", [uom_id, code, type, description])
                     counter_insert += 1
-                    print('-- INSERT weather station: ', usaf_id)
-                except IntegrityError as e:
-                    if 'duplicate key value violates' in e.args[0]:
-                        print('-- IGNORE duplicated weather station: ', usaf_id)
-                    else:
-                        print(e)
+                    print('-- INSERT unit of measure: ', uom_id)
+                except IntegrityError:
+                    c.execute("""UPDATE core_unit_of_measure SET code = %s, type = %s, description = %s
+                        WHERE uom_id = %s""", [code, type, description, uom_id])
+                    counter_update += 1
+                    print('-- UPDATE unit of measure: ', uom_id)
 
     print('{0} rows have been successfully processed {1} '
           'inserted {2} updated.'.format(counter_insert+counter_update, counter_insert, counter_update))
 
 
 def print_help():
-    print("Usage: python manage.py runscript import_weather_stations --script-args [all|seed|demo] [clean]")
+    print("Usage: python manage.py runscript import_unit_of_measure --script-args [all|seed|demo] [clean]")
     print("  note: table managed by DJANGO, make sure the migrations are run so the table exists")
     print("  all|seed|demo: which data to import")
     print("  clean: optional, delete data first")
