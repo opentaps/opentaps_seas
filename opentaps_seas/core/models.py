@@ -749,6 +749,7 @@ class WeatherStation(models.Model):
     elevation = FloatField(null=True)
     elevation_uom = CharField(max_length=6, blank=True, null=True)
     meta_data = HStoreField(null=True, blank=True)
+    source = CharField(max_length=30, blank=True, null=True)
 
     class Meta:
         db_table = 'core_weather_station'
