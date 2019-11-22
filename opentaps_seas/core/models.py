@@ -749,10 +749,24 @@ class WeatherStation(models.Model):
     elevation = FloatField(null=True)
     elevation_uom = CharField(max_length=6, blank=True, null=True)
     meta_data = HStoreField(null=True, blank=True)
-    source = CharField(max_length=30, blank=True, null=True)
+    source = CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'core_weather_station'
+
+
+class WeatherHistory(models.Model):
+    Weather_history_id = CharField(_("Weather History ID"), max_length=255, primary_key=True)
+    Weather_station_id = ForeignKey(WeatherStation, on_delete=models.CASCADE)
+    as_of_datetime = DateTimeField(_("History Date"), default=now)
+    temp_c = FloatField(null=True)
+    temp_f = FloatField(null=True)
+    source = CharField(max_length=255, blank=True, null=True)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+
+    class Meta:
+        db_table = 'core_weather_history'
 
 
 class Meter(models.Model):
