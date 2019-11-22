@@ -757,7 +757,7 @@ class WeatherStation(models.Model):
 
 class WeatherHistory(models.Model):
     weather_history_id = CharField(_("Weather History ID"), max_length=255, primary_key=True)
-    weather_station_id = ForeignKey(WeatherStation, on_delete=models.CASCADE)
+    weather_station = ForeignKey(WeatherStation, on_delete=models.CASCADE)
     as_of_datetime = DateTimeField(_("History Date"), default=now)
     temp_c = FloatField(null=True)
     temp_f = FloatField(null=True)
@@ -772,6 +772,7 @@ class WeatherHistory(models.Model):
 class Meter(models.Model):
     meter_id = CharField(_("Meter ID"), max_length=255, primary_key=True)
     description = CharField(_("Description"), max_length=255, blank=True, null=True)
+    weather_station = ForeignKey(WeatherStation, null=True, blank=True, on_delete=models.CASCADE)
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), null=True)
@@ -781,8 +782,8 @@ class Meter(models.Model):
 
 
 class SiteWeatherStations(models.Model):
-    site_id = ForeignKey(Entity, on_delete=models.CASCADE)
-    weather_station_id = ForeignKey(WeatherStation, on_delete=models.CASCADE)
+    site = ForeignKey(Entity, on_delete=models.CASCADE)
+    weather_station = ForeignKey(WeatherStation, on_delete=models.CASCADE)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), null=True)
     source = CharField(max_length=255, blank=True, null=True)
