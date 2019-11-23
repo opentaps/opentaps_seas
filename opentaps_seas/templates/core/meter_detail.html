@@ -38,6 +38,10 @@
       <br/>
       {% block inner_content %}
       <p><b>Description:</b> {{ object.description|default:'n/a' }}</p>
+      <p><b>Weather Station:</b> {{ object.weather_station|default:'n/a' }}</p>
+      <p><b>Site:</b> {{ object.site|default:'n/a' }}</p>
+      <p><b>From Datetime:</b> {{ object.from_datetime|default:'n/a' }}</p>
+      <p><b>Thru Datetime:</b> {{ object.thru_datetime|default:'n/a' }}</p>
 
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
