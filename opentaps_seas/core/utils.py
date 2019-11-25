@@ -814,19 +814,22 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
         elif filter_value:
             # all of those test either topic OR a kv_tags
             # so fail if trying to match a kv_tag
+            prefix = ''
+            if name == 'topic':
+                prefix = 'i'
             if not name == 'topic' and name not in valid_tags and (filter_type == 'c' or filter_type == 'eq'):
                 logger.warning('topic filter found an unused tag: %s', name)
                 return qs.none()
             if filter_type == 'c':
-                qs = qs.filter(filter_Q(name, 'contains', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, prefix + 'contains', filter_value, valid_tags))
             elif filter_type == 'nc':
-                qs = qs.exclude(filter_Q(name, 'contains', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, prefix + 'contains', filter_value, valid_tags))
             elif filter_type == 'eq':
-                qs = qs.filter(filter_Q(name, 'exact', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, prefix + 'exact', filter_value, valid_tags))
             elif filter_type == 'neq':
-                qs = qs.exclude(filter_Q(name, 'exact', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, prefix + 'exact', filter_value, valid_tags))
             elif filter_type == 'matches':
-                qs = qs.filter(filter_Q(name, 'regex', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, prefix + 'regex', filter_value, valid_tags))
     return qs
 
 
