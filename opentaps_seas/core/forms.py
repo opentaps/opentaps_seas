@@ -261,6 +261,95 @@ class TopicTagRuleCreateForm(forms.ModelForm):
         fields = ["rule_set", "name"]
 
 
+class TopicTagRuleRunForm(forms.Form):
+    rule_id = ModelField(label='Rule', max_length=255, required=True)
+    topic_filter = ModelField(label='Topic Filter', max_length=255, required=False)
+    preview_type = forms.CharField(required=False)
+    diff_format = forms.BooleanField(label="Preview in a diff format", required=False, initial=False)
+
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        rule_id = self.cleaned_data['rule_id']
+        if not TopicTagRule.objects.filter(id=rule_id).exists():
+            logger.error('TopicTagRuleRunForm: rule %s not found.', rule_id)
+            self.add_error('rule_id', 'Rule not found.')
+            return False
+        return True
+
+    def save(self, commit=True):
+        # run the topic tag ruleset
+        topic_filter = self.cleaned_data['topic_filter']
+        rule_id = self.cleaned_data['rule_id']
+        preview_type = self.cleaned_data['preview_type']
+        diff_format = self.cleaned_data['diff_format']
+
+        pretend = False
+        if preview_type:
+            pretend = True
+
+        logger.info('TopicTagRuleRunForm: for set %s and additional filter: %s, pretend: %s',
+                    rule_id, topic_filter, pretend)
+        rule = TopicTagRule.objects.get(id=rule_id)
+        # collect count of topics we ran for
+        updated_set = set()
+        updated_entities = {}
+        updated_tags = {}
+        removed_tags = {}
+        new_equipments = []
+        rule_filters = rule.filters
+        # Add the topic_filter to the rule filters if given
+        if topic_filter:
+            tf = {'type': 'c', 'value': topic_filter}
+            if rule_filters:
+                rule_filters.append(tf)
+            else:
+                rule_filters = [tf]
+        if rule.tags:
+            updated, updated_curr_entities, updated_curr_tags, removed_curr_tags = utils.tag_topics(
+                rule_filters, rule.tags, select_all=True, pretend=pretend)
+            for x in updated:
+                updated_set.add(x.get('topic'))
+
+            for key in updated_curr_entities.keys():
+                updated_curr_entity = updated_curr_entities.get(key, {})
+                topic = updated_curr_entity.topic
+                kv_tags = updated_curr_entity.kv_tags
+                m_tags = updated_curr_entity.m_tags
+                updated_entity = updated_entities.get(key, {})
+                updated_entity['topic'] = topic
+                updated_kv_tags = updated_entity.get('kv_tags', {})
+                updated_m_tags = updated_entity.get('m_tags', [])
+                for tag, value in kv_tags.items():
+                    updated_kv_tags[tag] = value
+                for tag in m_tags:
+                    if tag not in updated_m_tags:
+                        updated_m_tags.append(tag)
+
+                updated_entity['kv_tags'] = updated_kv_tags
+                updated_entity['m_tags'] = updated_m_tags
+
+                updated_entities[key] = updated_entity
+
+            for key, updated_curr_tag in updated_curr_tags.items():
+                updated_tag = updated_tags.get(key, {})
+                for tag, value in updated_curr_tag.items():
+                    updated_tag[tag] = value
+                updated_tags[key] = updated_tag
+
+            for key, removed_curr_tag in removed_curr_tags.items():
+                removed_tag = removed_tags.get(key, {})
+                for tag, value in removed_curr_tag.items():
+                    removed_tag[tag] = value
+                removed_tags[key] = removed_tag
+
+        if rule.action and rule.action_fields and not pretend:
+            if rule.action == 'create equipment':
+                new_equipments = utils.create_equipment_action(rule_filters, rule.action_fields)
+
+        return updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_equipments
+
+
 class SiteCreateForm(forms.ModelForm):
     entity_id = forms.CharField(label='Site ID', max_length=255, required=False)
     description = forms.CharField(max_length=255, required=True)

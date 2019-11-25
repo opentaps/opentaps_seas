@@ -50,6 +50,7 @@ from .forms import TopicTagRuleCreateForm
 from .forms import TopicTagRuleSetCreateForm
 from .forms import TopicTagRuleSetImportForm
 from .forms import TopicTagRuleSetRunForm
+from .forms import TopicTagRuleRunForm
 from .forms import EquipmentCreateForm
 from .forms import TagImportForm
 from .models import Entity
@@ -412,9 +413,12 @@ class TopicTagRuleTable(Table):
 
     def render_buttons(self, record):
         return format_html('''
+            <a class="btn btn-secondary btn-sm" href="{}">
+            <i class="fa fa-cog"></i> Run
+            </a>
             <a class="btn btn-danger btn-sm" href="#" v-confirm="delete_tag_rule({})">
             <i class="fa fa-trash"></i> Delete
-            </a>'''.format(record.id, record.id),)
+            </a>'''.format(reverse('core:topictagrule_run', kwargs={'id': record.id}), record.id,),)
 
     class Meta:
         order_by = 'name'
@@ -1272,6 +1276,16 @@ class TopicTagRuleSetBCMixin(WithBreadcrumbsMixin):
         return b
 
 
+class TopicTagRuleBCMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:topictagruleset_list'), 'label': 'Topic Tag Rule Sets'})
+        if context.get('object'):
+            b.append({'label': 'Rule {}'.format(context['object'].name or context['object'].id)})
+        return b
+
+
 class TopicTagRuleSetListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
     model = TopicTagRuleSet
     table_class = TopicTagRuleSetTable
@@ -1399,7 +1413,7 @@ class TopicTagRuleCreateView(LoginRequiredMixin, TopicTagRuleSetBCMixin, CreateV
 topictagrule_create_view = TopicTagRuleCreateView.as_view()
 
 
-class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
+class TopicTagRuleSetRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     form_class = TopicTagRuleSetRunForm
     template_name = 'core/topictagruleset_run.html'
 
@@ -1444,7 +1458,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_equipments = form.save()
+            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_eqm = form.save()
             if preview_type:
                 if diff_format:
                     report_rows, report_header = utils.tag_rulesets_run_report_diff(
@@ -1539,13 +1553,167 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
 
                     return response
             else:
-                if len(updated_set) > 0 or len(new_equipments) > 0:
+                if len(updated_set) > 0 or len(new_eqm) > 0:
                     response = JsonResponse({'success': 1, 'updated': len(updated_set),
-                                             'new_equipments': len(new_equipments)})
+                                             'new_equipments': len(new_eqm)})
                 else:
                     response = JsonResponse({'errors': 'Nothing applied'})
                 return response
 
+        else:
+            return self.form_invalid(form, **kwargs)
+
+
+topictagruleset_run_view = TopicTagRuleSetRunView.as_view()
+
+
+class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleBCMixin, FormView):
+    form_class = TopicTagRuleRunForm
+    template_name = 'core/topictagrule_run.html'
+
+    def get_initial(self):
+        logging.info('get_initial: %s', self.kwargs)
+        initials = {'rule_id': self.kwargs.get('id')}
+        if self.request.GET and 'topic_filter' in self.request.GET:
+            initials['topic_filter'] = self.request.GET['topic_filter']
+        return initials
+
+    def get_form_kwargs(self):
+        args = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            # first change the data to be a copy of POST
+            args.update({
+                'data': self.request.POST.copy(),
+            })
+            # add the URL given ID to the params for the Form
+            if 'id' in self.kwargs and 'rule_id' not in args['data']:
+                args['data'].update({'rule_id': self.kwargs.get('id')})
+        return args
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'id' in self.kwargs:
+            rule = get_object_or_404(TopicTagRule, id=self.kwargs['id'])
+            context['rule'] = rule
+            context['object'] = rule
+        return context
+
+    def form_invalid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        errors = {}
+        for field in form:
+            for error in field.errors:
+                errors[field.name] = error
+
+        if errors:
+            context['errors'] = errors
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_eqm = form.save()
+            if preview_type:
+                if diff_format:
+                    report_rows, report_header = utils.tag_rulesets_run_report_diff(
+                                                       updated_entities, updated_tags, removed_tags)
+                    if not report_rows:
+                        messages.error(self.request, "Preview diff is empty")
+                        context = self.get_context_data(**kwargs)
+                        return self.render_to_response(context)
+                    else:
+                        if preview_type == 'preview_csv':
+                            response = HttpResponse(content_type='text/csv')
+                            response['Content-Disposition'] = 'attachment; filename="TagRulePreviewDiffReport.csv"'
+
+                            writer = csv.writer(response)
+                            if report_header:
+                                writer.writerow(report_header)
+                                if report_rows:
+                                    for row in report_rows:
+                                        writer.writerow(row)
+                            else:
+                                writer.writerow([''])
+
+                        else:
+                            temp = tempfile.NamedTemporaryFile(delete=False)
+                            temp.close()
+                            with open(temp.name, 'w') as file_csv:
+                                writer = csv.writer(file_csv)
+                                if report_header:
+                                    writer.writerow(report_header)
+                                    if report_rows:
+                                        for row in report_rows:
+                                            writer.writerow(row)
+
+                                    response = HttpResponseRedirect(
+                                        reverse("core:report_preview_csv") + '?file=' + temp.name
+                                        + '&name=Tag Rule Preview Diff Report')
+                                else:
+                                    writer.writerow([''])
+
+                        return response
+                else:
+                    report_rows, report_header = utils.tag_rulesets_run_report(updated_entities)
+                    if preview_type == 'preview_csv':
+                        response = HttpResponse(content_type='text/csv')
+                        response['Content-Disposition'] = 'attachment; filename="TagRulePreviewReport.csv"'
+
+                        writer = csv.writer(response)
+                        if report_header:
+                            writer.writerow(report_header)
+                            if report_rows:
+                                for row in report_rows:
+                                    writer.writerow(row)
+                        else:
+                            writer.writerow([''])
+
+                    else:
+                        temp = tempfile.NamedTemporaryFile(delete=False)
+                        temp.close()
+                        with open(temp.name, 'w') as file_csv:
+                            writer = csv.writer(file_csv)
+                            if report_header:
+                                writer.writerow(report_header)
+                                if report_rows:
+                                    for row in report_rows:
+                                        updated_tag = updated_tags.get(row[0])
+                                        removed_tag = removed_tags.get(row[0])
+                                        if updated_tag or removed_tag:
+                                            if not updated_tag:
+                                                updated_tag = {}
+                                            if not removed_tag:
+                                                removed_tag = {}
+                                            row_new = []
+                                            for i, value in enumerate(row):
+                                                header = report_header[i]
+                                                value_updated = updated_tag.get(header)
+                                                value_removed = removed_tag.get(header)
+                                                if value_updated:
+                                                    value += "::$$updated$$"
+                                                elif value_removed:
+                                                    value = value_removed + "::$$removed$$"
+                                                row_new.append(value)
+
+                                            writer.writerow(row_new)
+                                        else:
+                                            writer.writerow(row)
+                            else:
+                                writer.writerow([''])
+
+                        response = HttpResponseRedirect(
+                            reverse("core:report_preview_csv") + '?file=' + temp.name
+                            + '&name=Tag Rule Preview Report')
+
+                    return response
+            else:
+                if len(updated_set) > 0 or len(new_eqm) > 0:
+                    response = JsonResponse({'success': 1, 'updated': len(updated_set),
+                                             'new_equipments': len(new_eqm)})
+                else:
+                    response = JsonResponse({'errors': 'Nothing applied'})
+                return response
         else:
             return self.form_invalid(form, **kwargs)
 
