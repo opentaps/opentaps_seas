@@ -57,7 +57,7 @@ def import_files(which):
 
 
 def import_entities(source_file_name):
-    f = open(source_file_name, 'r')
+    f = open(source_file_name, 'r', encoding='utf8')
     reader = csv.reader(f)
 
     first_row = True
@@ -72,6 +72,7 @@ def import_entities(source_file_name):
                 description = row[1]
                 code = row[2]
                 uom_id = cleanup_id(type + "_" + code)
+                uom_id = uom_id.replace("%", "percent")
 
                 try:
                     c.execute("""INSERT INTO core_unit_of_measure (uom_id, code, type, description)
