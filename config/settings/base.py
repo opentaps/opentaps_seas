@@ -130,6 +130,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'opentaps_seas.users.apps.UsersAppConfig',
     'opentaps_seas.core.apps.CoreAppConfig',
+    'opentaps_seas.api.apps.ApiAppConfig',
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -362,3 +363,19 @@ LOGGING = {
 
 # For forms templates
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+from datetime import timedelta
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24)
+}

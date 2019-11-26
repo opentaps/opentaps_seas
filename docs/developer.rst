@@ -290,3 +290,27 @@ The configurations you get here will match what you see for the economizer agent
 
 Once everything is set up, you can start the VOLTTRON application agent, either from the VOLTTRON tab of opentaps SEAS, or from VOLTTRON.  The output data will be stored
 as topics in Crate.  opentaps SEAS will automatically create data points for all your configured output as data points associated with the equipment.
+
+Api guide instruction
+^^^^^^^^^^^^^^^^^^^^^
+
+Get auth token for authenticate apis::
+
+ $ curl -X POST http://<HOST_URL>:<PORT>/api/v1/token -F username=<username> -F password=<password>
+
+Use access token for further api requests::
+
+    {
+        "refresh": "xxx",
+        "access": "xxx"
+    }
+
+Import topics from json::
+
+ $ curl -x POST http://<HOST_URL>:<PORT>/api/v1/topic/import/<str:site_entity_id> -H 'Authorization: Bearer <ACCESS_TOKEN>' -H 'Content-Type: application/json' -d '<json_string>'
+
+Export topics::
+
+ $ curl http://<HOST_URL>:<PORT>/api/v1/topic/export/<str:site_entity_id> -H 'Authorization: Bearer <ACCESS_TOKEN>'
+
+Example json file for import is located in /examples/data.json
