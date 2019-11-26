@@ -336,11 +336,12 @@ class TopicAPITests(TestCase):
         response = self._get_response(data, 'post')
         self._check_topic_list(response, c_list, nc_list)
 
-        # ----------- start test n0="Topic" t0="c" f0="FOO" n1="ac" t1="absent" (Case Sensitive)----------- #
-        c_list = []
-        nc_list = [
+        # ----------- start test n0="Topic" t0="c" f0="FOO" n1="ac" t1="absent" (Case Insensitive)----------- #
+        c_list = [
             '_test_filters/foo/some_topic',
-            '_test_filters/foo/an_ac',
+        ]
+        nc_list = [
+            '_test_filters/foo/an_ac'
             '_test_filters/bar/another_topic',
             '_test_filters/bar/ahu',
             '_test_filters/bar/zone_temp'
