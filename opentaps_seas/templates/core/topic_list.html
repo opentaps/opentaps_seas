@@ -58,6 +58,14 @@
 
               <div class="row m-0" v-for="(filter, index) in filters">
                 <div class="row p-0 m-0 mb-2 col-12">
+                  <div class="mr-2 p-0 col-auto" style="min-width:4.5em">
+                    <div v-if="index">
+                      <select class="form-control" v-model="filter.op" v-on:change="changed_filter_type(filter, index)">
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                      </select>
+                    </div>
+                  </div>
                   <div class="mr-2 p-0 col-auto" style="min-width:7em">
                     <v-select select-on-tab :options="filter_fields" v-model="filter.field" placeholder="Field" :clearable="false" class="opt_w_auto">
                       <template slot="option" slot-scope="option">
@@ -839,6 +847,7 @@
             valid_filters.push({
               field: field,
               type: f.type,
+              op: f.op,
               value: f.value
             })
             if (field != 'topic' && field != 'Topic') {
@@ -995,6 +1004,7 @@
             {
               field: '{{f.field|default:"Topic"}}',
               type: '{{f.type|default:"c"}}',
+              op: '{{f.op|default:"AND"}}',
               value: '{{f.value}}'
             },
           {% endfor %}
@@ -1184,7 +1194,7 @@
         this.submit_filters()
       },
       append_blank_filter() {
-        this.filters.push({field: 'Topic', type: 'c', value: ''})
+        this.filters.push({field: 'Topic', type: 'c', value: '', op: 'AND'})
       },
       check_add_blank_filter() {
         f = this.filters[this.filters.length-1]
@@ -1207,6 +1217,7 @@
                 formData.set('n'+n, field)
                 formData.set('t'+n, f.type)
                 formData.set('f'+n, f.value)
+                formData.set('o'+n, f.op)
                 n++
             }
         }
@@ -1226,7 +1237,7 @@
         }
       },
       add_his_to_filter(event) {
-          this.filters.unshift({field: 'his', type: 'present', value: ''});
+          this.filters.unshift({field: 'his', type: 'present', value: '', op: 'AND'});
           this.load_page()
       },
       select_per_page(event) {
@@ -1285,6 +1296,7 @@
             filters.push({
               n: field,
               t: f.type,
+              o: f.op,
               f: f.value
             })
           }

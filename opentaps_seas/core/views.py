@@ -1013,9 +1013,10 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
                 self.used_filters.append({
                     'field': f.get('field'),
                     'type': f.get('type'),
+                    'op': f.get('op'),
                     'value': f.get('value')
                 })
-                q_filters.append((f.get('field'), f.get('type'), f.get('value')))
+                q_filters.append((f.get('field'), f.get('type'), f.get('value'), f.get('op')))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
         elif topic_filter:
@@ -1033,16 +1034,18 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
             for i in range(n):
                 filter_type = self.request.GET.get('t' + str(i))
                 filter_field = self.request.GET.get('n' + str(i))
+                filter_op = self.request.GET.get('o' + str(i))
                 if filter_type:
                     filter_value = self.request.GET.get('f' + str(i))
-                    logging.info('TopicListView get_queryset got filter [%s - %s : %s]',
-                                 filter_field, filter_type, filter_value)
+                    logging.info('TopicListView get_queryset got filter [ (%s) %s - %s : %s]',
+                                 filter_op, filter_field, filter_type, filter_value)
                     self.used_filters.append({
                         'field': filter_field,
                         'type': filter_type,
+                        'op': filter_op,
                         'value': filter_value
                     })
-                    q_filters.append((filter_field, filter_type, filter_value))
+                    q_filters.append((filter_field, filter_type, filter_value, filter_op))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
         # add empty filter at the end
@@ -1110,9 +1113,12 @@ def topic_list_table(request):
     for i in range(n):
         filter_field = request.POST.get('n' + str(i))
         filter_type = request.POST.get('t' + str(i))
+        filter_op = request.POST.get('o' + str(i))
         if filter_type:
             filter_value = request.POST.get('f' + str(i))
-            q_filters.append((filter_field, filter_type, filter_value))
+            logging.info('topic_list_table got filter [ (%s) %s - %s : %s]',
+                         filter_op, filter_field, filter_type, filter_value)
+            q_filters.append((filter_field, filter_type, filter_value, filter_op))
     qs = utils.apply_filters_to_queryset(qs, q_filters)
 
     rc = RequestConfig(request, paginate={'per_page': 15})
