@@ -127,6 +127,68 @@ class ModelUpdateForm(ModelCreateForm):
         self.fields['entity_id'].widget = forms.HiddenInput()
 
 
+class ModelDuplicateForm(forms.ModelForm):
+    source_id = ModelField(label='Parent Model ID', max_length=255, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ModelDuplicateForm, self).__init__(*args, **kwargs)
+        self.fields['source_id'].widget = forms.HiddenInput()
+
+    def is_valid(self):
+        if not super().is_valid():
+            logger.error('ModelDuplicateForm: super not valid')
+            return False
+        logger.info('ModelDuplicateForm: check is_valid')
+        obj_id = self.cleaned_data['entity_id']
+
+        if Entity.objects.filter(kv_tags__id=obj_id).exists():
+            logger.error('ModelDuplicateForm: got model with id = %s', obj_id)
+            self.add_error('entity_id', 'Model with this Model ID already exists.')
+            return False
+
+        return True
+
+    def save(self, commit=True):
+        obj_id = self.cleaned_data['entity_id']
+        source_id = self.cleaned_data['source_id']
+        description = self.cleaned_data['description']
+        entity_id = slugify(obj_id)
+        logger.info('ModelDuplicateForm: for source model %s', source_id)
+        skip_tags = ['id', 'dis']
+
+        new_model = Entity(entity_id=entity_id)
+        new_model.add_tag('id', obj_id, commit=False)
+        new_model.add_tag('model', commit=False)
+
+        try:
+            source_model = Entity.objects.get(entity_id=source_id)
+            logger.info('ModelDuplicateForm: got model %s', source_model)
+
+            for tag, value in source_model.kv_tags.items():
+                if tag not in skip_tags:
+                    new_model.add_tag(tag, value, commit=False)
+
+            for tag in source_model.m_tags:
+                new_model.add_tag(tag, None, commit=False)
+
+        except Entity.DoesNotExist:
+            logger.info('ModelDuplicateForm: source model %s not found', source_id)
+
+        if description:
+            new_model.add_tag('dis', description, commit=False)
+
+        if commit:
+            new_model.save()
+            self.instance = ModelView.objects.get(entity_id=entity_id)
+            self.cleaned_data['entity_id'] = entity_id
+        self._post_clean()  # reset the form as updating the just created instance
+        return self.instance
+
+    class Meta:
+        model = ModelView
+        fields = ["entity_id", "description"]
+
+
 class TopicTagRuleSetCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):

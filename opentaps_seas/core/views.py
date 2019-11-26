@@ -39,6 +39,7 @@ from .forms import FileUploadForm
 from .forms import MeterCreateForm
 from .forms import MeterUpdateForm
 from .forms import ModelCreateForm
+from .forms import ModelDuplicateForm
 from .forms import ModelUpdateForm
 from .forms import SiteCreateForm
 from .forms import TagChangeForm
@@ -707,6 +708,30 @@ class ModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
 
 
 model_create_view = ModelCreateView.as_view()
+
+
+class ModelDuplicateView(LoginRequiredMixin, ModelBCMixin, CreateView):
+    model = ModelView
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/model_edit.html'
+    form_class = ModelDuplicateForm
+
+    def get_initial(self):
+        if 'entity_id' in self.kwargs:
+            try:
+                pm = Entity.objects.get(entity_id=self.kwargs['entity_id'], m_tags__contains=['model'])
+                return {
+                    'source_id': pm.entity_id,
+                    'entity_id': utils.make_random_id(pm.kv_tags['id']),
+                    'description':  pm.kv_tags.get('dis', '') + ' Copy'
+                    }
+            except Entity.DoesNotExist:
+                pass
+        return {}
+
+
+model_duplicate_view = ModelDuplicateView.as_view()
 
 
 class ModelEditView(LoginRequiredMixin, ModelBCMixin, UpdateView):
