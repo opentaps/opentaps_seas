@@ -24,6 +24,7 @@ from django.contrib.postgres.fields import HStoreField
 from django.core.exceptions import ValidationError
 from django.db import connections
 from django.db import models
+from django.db.models import AutoField
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
@@ -769,7 +770,7 @@ class WeatherStation(models.Model):
 
 
 class WeatherHistory(models.Model):
-    weather_history_id = CharField(_("Weather History ID"), max_length=255, primary_key=True)
+    weather_history_id = AutoField(_("Weather History ID"), primary_key=True, auto_created=True)
     weather_station = ForeignKey(WeatherStation, on_delete=models.CASCADE)
     as_of_datetime = DateTimeField(_("History Date"), default=now)
     temp_c = FloatField(null=True)
