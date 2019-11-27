@@ -307,7 +307,7 @@ You will get back a refresh and an access token::
         "access": "xxx"
     }
 
-Use the `access` token for further API requests.  
+Use the `access` token for further API requests.  The lifetime of the token is configured in `config/settings/base.py`. 
 
 To import topics from json::
 
