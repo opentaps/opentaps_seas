@@ -50,7 +50,7 @@
           <tr>
             <td>Name:</td>
             <td>
-              <a target="_blank" href=''>
+              <a target="_blank" href="{% url 'core:weather_station_geoview' object.weather_station.weather_station_code %}">
                 {{ object.weather_station.station_name | default:'n/a' }}
               </a>
             </td>
