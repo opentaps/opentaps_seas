@@ -74,23 +74,14 @@ def import_entities(source_file_name):
                 uom_id = cleanup_id(type + "_" + code)
                 uom_id = uom_id.replace("%", "percent")
 
-                new_description = description
-                if description:
-                    d_arr = description.split('_')
-                    new_description = ''
-                    for d in d_arr:
-                        new_description += d.strip().capitalize() + ' '
-
-                    new_description = new_description.strip()
-
                 try:
                     c.execute("""INSERT INTO core_unit_of_measure (uom_id, code, type, description)
-                        VALUES (%s, %s, %s, %s)""", [uom_id, code, type, new_description])
+                        VALUES (%s, %s, %s, %s)""", [uom_id, code, type, description])
                     counter_insert += 1
                     print('-- INSERT unit of measure: ', uom_id)
                 except IntegrityError:
                     c.execute("""UPDATE core_unit_of_measure SET code = %s, type = %s, description = %s
-                        WHERE uom_id = %s""", [code, type, new_description, uom_id])
+                        WHERE uom_id = %s""", [code, type, description, uom_id])
                     counter_update += 1
                     print('-- UPDATE unit of measure: ', uom_id)
 
