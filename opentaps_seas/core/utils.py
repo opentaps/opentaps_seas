@@ -1031,13 +1031,14 @@ def create_equipment_action(filters, action_fields):
         for qfilter in filters:
             filter_type = qfilter.get('t') or qfilter.get('type')
             filter_field = qfilter.get('n') or qfilter.get('field')
+            filter_op = qfilter.get('o') or qfilter.get('op')
             if filter_type:
                 filter_value = qfilter.get('f') or qfilter.get('value')
                 if not action_regexp_value and filter_type == 'matches':
                     if filter_value:
                         action_regexp_value = filter_value
 
-                q_filters.append((filter_field, filter_type, filter_value))
+                q_filters.append((filter_field, filter_type, filter_value, filter_op))
         qs = apply_filters_to_queryset(qs, q_filters)
 
         if action_fields and action_fields.get('equipment_name'):
