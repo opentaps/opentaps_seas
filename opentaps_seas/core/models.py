@@ -580,7 +580,7 @@ class TimeZone(models.Model):
     time_zone = CharField(_("Time Zone"), max_length=255)
     tzoffset = IntegerField(default=0)
     tzoffset_dst = IntegerField(default=0)
-    geo_ids = ArrayField(CharField(max_length=255, blank=True, null=True))
+    geo_ids = ArrayField(CharField(max_length=255, blank=True, null=True), null=True)
 
     def get_choices(geo_id=None):
         timezones = TimeZone.objects.all().order_by('tzoffset', 'time_zone')
