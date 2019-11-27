@@ -889,15 +889,19 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
 
         bacnet_configs = PointView.objects.filter(site_id=site.object_id).exclude(
             kv_tags__bacnet_prefix__isnull=True).exclude(
-            kv_tags__bacnet_prefix__exact='').values('kv_tags__bacnet_prefix', 'kv_tags__bacnet_device_id').annotate(
+            kv_tags__bacnet_prefix__exact='').values(
+            'site_id', 'kv_tags__bacnet_prefix', 'kv_tags__bacnet_device_id').annotate(
             dcount=Count('kv_tags__bacnet_prefix'))
+
         if bacnet_configs:
             bacnet_cfg = []
             for bacnet_config in bacnet_configs:
                 item = {'prefix': bacnet_config['kv_tags__bacnet_prefix'],
                         'device_id': bacnet_config['kv_tags__bacnet_device_id']}
                 bc_equipments = EquipmentView.objects.filter(
-                    kv_tags__bacnet_prefix=bacnet_config['kv_tags__bacnet_prefix'])
+                    kv_tags__bacnet_prefix=bacnet_config['kv_tags__bacnet_prefix'],
+                    site_id=bacnet_config['site_id']
+                    )
                 if bc_equipments:
                     bc_equipment = bc_equipments[0]
                     if bc_equipment:
