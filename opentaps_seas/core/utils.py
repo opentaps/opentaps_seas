@@ -20,6 +20,7 @@ import eeweather
 import geocoder
 import hashlib
 import json
+import pytz
 import requests
 import re
 from .models import Entity
@@ -1092,3 +1093,37 @@ def get_default_weather_station_for_site(site):
             return WeatherStation.objects.get(weather_station_code=ranked_station.name)
         except:
             pass
+
+def get_weather_history_for_station(weather_station):
+    start_date = datetime(1900, 1, 1, tzinfo=pytz.UTC)
+    end_date = datetime.now(pytz.UTC)
+
+    # Get last update datetime
+    try:
+        last_record = WeatherStation.objects.filter(weather_station=weather_station).order_by('-as_of_datetime').first()
+        if last_record:
+            start_date = last_record.as_of_datetime + timedelta(minutes=1)
+    except:
+        pass
+
+    # Get weather station
+    station = None
+    try:
+        station = eeweather.ISDStation(weather_station.weather_station_code)
+    except Exception as e:
+        print(e)
+        return
+
+    try:
+        temp_degC, warnings = station.load_isd_hourly_temp_data(start_date, end_date)
+        for dt, row in temp_degC.iterrows():
+            if dt < start_date:
+                continue
+            deg_c = row[0]
+            deg_f = deg_c * 9 / 5 + 32
+
+            new_data = WeatherStation(weather_station=weather_station, as_of_datetime=dt,
+                                    temp_c=deg_c, temp_f=deg_f, source='EEWeather')
+            new_data.save()
+    except Exception as e:
+        print(e)
