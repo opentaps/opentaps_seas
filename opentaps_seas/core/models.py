@@ -765,7 +765,7 @@ class WeatherStation(models.Model):
         db_table = 'core_weather_station'
 
     def __str__(self):
-        return self.station_name
+        return self.weather_station_code + (" ({name})".format(name=self.station_name) if self.station_name else '')
 
 
 class WeatherHistory(models.Model):
