@@ -67,6 +67,7 @@ from .models import Topic
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
 from .models import Meter
+from .models import WeatherStation
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -2786,3 +2787,20 @@ class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
 
 
 meter_deactivate_view = MeterDeactivateView.as_view()
+
+
+class WeatherStationGeoView(LoginRequiredMixin, DetailView):
+    model = WeatherStation
+    slug_field = "weather_station_code"
+    slug_url_kwarg = "weather_station_code"
+    template_name = 'core/weather_station_geoview.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(WeatherStationGeoView, self).get_context_data(**kwargs)
+
+        if settings.GOOGLE_API_KEY:
+            context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
+
+        return context
+
+weather_station_geoview = WeatherStationGeoView.as_view()
