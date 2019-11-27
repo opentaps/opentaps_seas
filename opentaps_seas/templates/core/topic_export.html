@@ -37,6 +37,7 @@
 
         {% if current_site %}
             <h4>Site {{ current_site.description }}</h4>
+            <input type="hidden" name="site_id" value="{{ current_site }}"/>
         {% else %}
             <div id="div_id_site" class="form-group">
                 <label for="id_site" class="col-form-label requiredField">
@@ -61,6 +62,7 @@
                 </label>
                 <div>
                     <select name="device_prefix" id="id_device_prefix" class="select form-control"  v-if="bacnetPrefixes.length">
+                        <option value="">All</option>
                         <option v-for="item in bacnetPrefixes" v-bind:value="item.id">${ item.prefix }</option>
                     </select>
                 </div>
