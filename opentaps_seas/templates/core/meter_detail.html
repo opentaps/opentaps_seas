@@ -38,10 +38,42 @@
       <br/>
       {% block inner_content %}
       <p><b>Description:</b> {{ object.description|default:'n/a' }}</p>
-      <p><b>Weather Station:</b> {{ object.weather_station|default:'n/a' }}</p>
-      <p><b>Site:</b> {{ object.site|default:'n/a' }}</p>
-      <p><b>From Datetime:</b> {{ object.from_datetime|default:'n/a' }}</p>
-      <p><b>Thru Datetime:</b> {{ object.thru_datetime|default:'n/a' }}</p>
+      <p><b>Weather Station:</b> 
+        {% if not object.weather_station %}
+          n/a
+        {% else %}
+        <table style="margin-left: 4em;">
+          <tr>
+            <td>USAF ID:</td>
+            <td>{{ object.weather_station.weather_station_code }}</td>
+          </tr>
+          <tr>
+            <td>Name:</td>
+            <td>
+              <a target="_blank" href=''>
+                {{ object.weather_station.station_name | default:'n/a' }}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>Country:</td>
+            <td>{{ object.weather_station.country | default:'n/a' }}</td>
+          </tr>
+          <tr>
+            <td>Latitude:</td>
+            <td>{{ object.weather_station.latitude | default:'n/a' }}</td>
+          </tr>
+          <tr>
+            <td>Longitude:</td>
+            <td>{{ object.weather_station.longitude | default:'n/a' }}</td>
+          </tr>
+          <tr>
+            <td>Elevation:</td>
+            <td>{{ object.weather_station.elevation }}</td>
+          </tr>
+        </table>
+        {% endif %}
+      </p>
 
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
