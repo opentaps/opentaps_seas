@@ -33,6 +33,7 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_tagrules --script-args $ARGS
     python manage.py runscript import_unit_of_measure --script-args $ARGS
     python manage.py runscript import_weather_stations --script-args $ARGS
+    python manage.py runscript import_weather_histories --script-args $ARGS
 else
     if [ "$1" == "ahu" ]; then
         python manage.py runscript import_data --script-args $ARGS
@@ -57,6 +58,9 @@ else
     fi
     if [ "$1" == "weather_station" ]; then
         python manage.py runscript import_weather_stations --script-args $ARGS
+    fi
+    if [ "$1" == "weather_history" ]; then
+        python manage.py runscript import_weather_histories --script-args $ARGS
     fi
 fi
 
