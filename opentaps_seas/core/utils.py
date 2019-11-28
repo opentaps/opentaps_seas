@@ -20,6 +20,7 @@ import eeweather
 import geocoder
 import hashlib
 import json
+import numpy
 import pytz
 import requests
 import re
@@ -29,6 +30,7 @@ from .models import PointView
 from .models import Tag
 from .models import Topic
 from .models import ModelView
+from .models import WeatherHistory
 from .models import WeatherStation
 from datetime import datetime
 from datetime import timedelta
@@ -1100,8 +1102,9 @@ def get_default_weather_station_for_site(site):
     return get_weather_station_for_location(latitude, longitude)
 
 def get_weather_history_for_station(weather_station):
-    start_date = datetime(1900, 1, 1, tzinfo=pytz.UTC)
+    # Get last 7 days from today
     end_date = datetime.now(pytz.UTC)
+    start_date = end_date - timedelta(hours=7*24)
 
     # Get last update datetime
     try:
@@ -1121,13 +1124,14 @@ def get_weather_history_for_station(weather_station):
 
     try:
         temp_degC, warnings = station.load_isd_hourly_temp_data(start_date, end_date)
-        for dt, row in temp_degC.iterrows():
+        for dt, deg_c in temp_degC.iteritems():
             if dt < start_date:
                 continue
-            deg_c = row[0]
+            elif numpy.isnan(deg_c):
+                continue
             deg_f = deg_c * 9 / 5 + 32
 
-            new_data = WeatherStation(weather_station=weather_station, as_of_datetime=dt,
+            new_data = WeatherHistory(weather_station=weather_station, as_of_datetime=dt,
                                     temp_c=deg_c, temp_f=deg_f, source='EEWeather')
             new_data.save()
     except Exception as e:
