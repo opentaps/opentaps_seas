@@ -2729,6 +2729,7 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
         initial_values = {}
         try:
             site = Entity.objects.get(entity_id=self.kwargs['site_id'])
+            initial_values['site'] = site
             initial_values['weather_station'] = utils.get_default_weather_station_for_site(site)
         except:
             pass
