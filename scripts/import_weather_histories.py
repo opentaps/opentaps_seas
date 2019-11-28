@@ -19,8 +19,8 @@ import csv
 import os
 from django.db import connections
 from django.db.utils import IntegrityError
-# from core.models import WeatherStation, WeatherHistory
-from core.utils import get_weather_history_for_station
+from opentaps_seas.core.models import WeatherStation
+from opentaps_seas.core.utils import get_weather_history_for_station
 
 def clean():
     print('Deleting data ...')
@@ -44,7 +44,7 @@ def import_data(which):
 
     for weather_station in WeatherStation.objects.all():
         print('Importing data for {}'.format(weather_station.station_name))
-        get_weather_history_for_station(weawther_station)
+        get_weather_history_for_station(weather_station)
 
 def print_help():
     print("Usage: python manage.py runscript import_weather_histories --script-args [all|seed|demo] [clean]")
