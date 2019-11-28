@@ -1111,7 +1111,7 @@ def get_weather_history_for_station(weather_station):
     try:
         station = eeweather.ISDStation(weather_station.weather_station_code)
     except Exception as e:
-        print(e)
+        print(e.message)
         return
 
     try:
