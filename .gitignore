@@ -287,4 +287,6 @@ opentaps_seas/media/
 
 .pytest_cache/
 
-
+# IDE settings
+/.vscode
+/.idea
