@@ -148,7 +148,6 @@
               {% endfor %}
               <button class="btn btn-secondary " type="submit">Topics</button>
               <a class="btn btn-secondary" href="{% url 'core:topic_export' object.entity_id %}"><i class="fa fa-download"></i> Export</a>
-              <a class="btn btn-secondary" href="{% url 'core:topictagruleset_runform' %}?topic_filter={{ bc.prefix }}"><i class="fa fa-cog mr-2"></i>Run Rules</a>
             </form>
           </div>
           {% endif %}
