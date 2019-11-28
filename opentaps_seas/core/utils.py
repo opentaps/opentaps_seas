@@ -1075,6 +1075,18 @@ def link_points_to_equipments(new_equipments, new_equipments_topics):
                     point.add_tag('equipRef',  equipment.kv_tags['id'], commit=True)
 
 
+def get_weather_station_for_location(latitude, longitude, as_object=True):
+    ranked_stations = eeweather.rank_stations(latitude, longitude)
+    for i in range(len(ranked_stations)):
+        try:
+            ranked_station = ranked_stations.iloc[i]
+            if as_object:
+                return WeatherStation.objects.get(weather_station_code=ranked_station.name)
+            else:
+                return ranked_station.name
+        except:
+            pass
+
 def get_default_weather_station_for_site(site):
     if not site:
         return
@@ -1085,14 +1097,7 @@ def get_default_weather_station_for_site(site):
 
     latitude = location.get('latitude')
     longitude = location.get('longitude')
-
-    ranked_stations = eeweather.rank_stations(latitude, longitude)
-    for i in range(len(ranked_stations)):
-        try:
-            ranked_station = ranked_stations.iloc[i]
-            return WeatherStation.objects.get(weather_station_code=ranked_station.name)
-        except:
-            pass
+    return get_weather_station_for_location(latitude, longitude)
 
 def get_weather_history_for_station(weather_station):
     start_date = datetime(1900, 1, 1, tzinfo=pytz.UTC)
