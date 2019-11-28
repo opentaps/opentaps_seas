@@ -31,7 +31,7 @@ def clean():
 
 
 def demo():
-    import_data('demo')
+    return
 
 
 def seed():
