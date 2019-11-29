@@ -885,8 +885,9 @@ class MeterCreateForm(forms.ModelForm):
         if 'weather_station' not in self.data:
             self.fields['weather_station'].queryset = WeatherStation.objects.none()
         # Show error message if failed to get default weather station
-        if not hasattr(self, 'cleaned_data') and not self.initial.get('weather_station'):
-            self.cleaned_data = {}
+        if not self.data and not self.initial.get('weather_station'):
+            if not hasattr(self, 'cleaned_data'):
+                self.cleaned_data = {}
             error_msg = u"No weather station found for this Site. Please check that your site is set up correctly."
             self.add_error('weather_station', error_msg)
 
