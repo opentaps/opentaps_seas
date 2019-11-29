@@ -1,0 +1,127 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+<div id="weatherhistorychart" class="container" v-cloak>
+  <div class="card mb-3">
+    <div class="card-body p-sm-3 p-2">
+      <div class="row">
+        <div class="col-12">
+          <div class="row d-inline m-0 justify-content-center align-items-stretch">
+            <apexchart
+              ref="weather_history_line_chart"
+              id="weather_history_line_chart"
+              height=240
+              type="line"
+              :options="options"
+              :series="series"></apexchart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  // The global window.Apex variable below can be used to set common options for all charts on the page
+  Apex = {
+    dataLabels: {
+      enabled: false
+    },
+    toolbar: {
+      tools: {
+        selection: false
+      }
+    },
+    tooltip: {
+      followCursor: false,
+      theme: 'dark',
+      x: {
+        show: false
+      },
+      marker: {
+        show: false
+      },
+    },
+    grid: {
+      clipMarkers: false
+    },
+  }
+  new Vue({
+    el: '#weatherhistorychart',
+    components: {
+      apexchart: VueApexCharts,
+    },
+    data: function() {
+      return {
+        options: {
+          chart: {
+            id: 'weather-history-chart',
+            width: '400px'
+          },
+          xaxis: {
+            type: 'datetime',
+            labels: {
+              format: 'HH:mm'
+            },
+          },
+          tooltip: {
+            x: {
+              format: 'dd MMM yyyy HH:mm'
+            }
+          }
+        },
+        series: [{
+          name: "Temperature",
+          data: [
+            {% for item in historical_data %}
+            {
+              x: new Date("{{item.datetime}}").getTime(),
+              y: {{item.temperature}}
+            },
+            {% endfor %}
+          ]
+        }],
+      }
+    },
+    mounted() {
+      this.init();
+    },
+    methods: {
+      init() {
+        this.refresh();
+      },
+      clear() {
+        console.log('Clear charts.');
+        // this.series.data.splice(0);
+      },
+      refresh() {
+        {% for datetime in historical_data.datetime %}
+          console.log(new Date("{{datetime}}"))
+        {% endfor %}
+        {% for temperature in historical_data.temperature %}
+          console.log("{{temperature}}")
+        {% endfor %}
+      },
+    }
+  })
+
+</script>
