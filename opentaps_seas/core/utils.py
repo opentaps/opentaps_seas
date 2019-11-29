@@ -1101,10 +1101,11 @@ def get_default_weather_station_for_site(site):
     longitude = location.get('longitude')
     return get_weather_station_for_location(latitude, longitude)
 
-def get_weather_history_for_station(weather_station):
-    # Get last 7 days from today
+def get_weather_history_for_station(weather_station, days_from_today=7):
+    if days_from_today <= 0:
+        days_from_today = 1     # 1 day as minimum
     end_date = datetime.now(pytz.UTC)
-    start_date = end_date - timedelta(hours=7*24)
+    start_date = end_date - timedelta(hours=days_from_today*24)
 
     # Get last update datetime
     try:
@@ -1134,5 +1135,7 @@ def get_weather_history_for_station(weather_station):
             new_data = WeatherHistory(weather_station=weather_station, as_of_datetime=dt,
                                     temp_c=deg_c, temp_f=deg_f, source='EEWeather')
             new_data.save()
+
+        return temp_degC
     except Exception as e:
         print(e)
