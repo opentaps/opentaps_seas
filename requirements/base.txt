@@ -50,3 +50,4 @@ django-storages==1.7.1
 django-filer==1.4.4
 
 geocoder==1.38.1
+eeweather==0.3.22

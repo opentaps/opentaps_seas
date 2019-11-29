@@ -24,9 +24,17 @@ from django.db.utils import IntegrityError
 def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
+        # Delete all meters
+        sql = """DELETE FROM core_meter;"""
+        c.execute(sql)
+
+        # Delete all weather histories
+        sql = """DELETE FROM core_weather_history;"""
+        c.execute(sql)
+
+        # Delete all weather stations
         sql = """DELETE FROM core_weather_station;"""
         c.execute(sql)
-        c.close()
 
 
 def demo():
@@ -83,7 +91,7 @@ def import_entities(source_file_name):
                 elevation_uom_id = 'length_m'
 
                 weather_station_id = 'USAF_' + usaf_id
-                weather_station_code = 'USAF' + usaf_id
+                weather_station_code = usaf_id
 
                 try:
                     c.execute("""INSERT INTO core_weather_station (weather_station_id, weather_station_code,

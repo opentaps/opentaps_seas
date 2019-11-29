@@ -1,0 +1,218 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+<div id="weatherhistorychart" class="container" v-cloak>
+  <div class="card mb-3">
+    <div class="card-body p-sm-3 p-2">
+      <div class="row">
+        <div class="col-12">
+          <div class="row d-inline m-0 justify-content-center align-items-stretch">
+            <apexchart
+              ref="weather_history_line_chart"
+              id="weather_history_line_chart"
+              height=240
+              type="line"
+              :options="options"
+              :series="series"></apexchart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.apexcharts-toolbar-custom-icon {
+  height: 24px;
+  width: 30px;
+}
+</style>
+
+<script>
+  function saveTextAsCsvFile(filename, data) {
+    let blob = new Blob([
+                          new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
+                          data
+                        ],
+                        {type: 'text/csv;charset=utf-8;'});
+    if (window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveBlob(blob, filename);
+    }
+    else{
+      var elem = window.document.createElement('a');
+      elem.href = window.URL.createObjectURL(blob);
+      elem.download = filename;
+      document.body.appendChild(elem);
+      elem.click();
+      document.body.removeChild(elem);
+    }
+  }
+
+  // The global window.Apex variable below can be used to set common options for all charts on the page
+  Apex = {
+    dataLabels: {
+      enabled: false
+    },
+    tooltip: {
+      followCursor: false,
+      theme: 'dark',
+      x: {
+        show: false
+      },
+      marker: {
+        show: false
+      },
+    },
+    grid: {
+      clipMarkers: false
+    },
+  }
+  chartDegreeUnit = '°C'
+  myChart = new Vue({
+    el: '#weatherhistorychart',
+    components: {
+      apexchart: VueApexCharts,
+    },
+    data: function() {
+      return {
+        options: {
+          chart: {
+            id: 'weather-history-chart',
+            toolbar: {
+              tools: {
+                download: false,
+                selection: false,
+                zoom: false,
+                zoomin: false,
+                zoomout: false,
+                reset: false,
+                pan: false,
+                customIcons: [
+                  {
+                    icon: '<i>&#8451;</i>',
+                    title: 'Display as Celcius',
+                    class: '',
+                    click: function(e) {
+                      chartDegreeUnit = '°C';
+                      let chartData = myChart.series[0].data;
+                      const values = myChart.series[0].rawData;
+                      for (let i = 0; i < values.length; i++) {
+                        chartData[i].y = values[i];
+                      }
+                    },
+                    appendTo: 'left'
+                  },
+                  {
+                    icon: '<i>&#8457;</i>',
+                    title: 'Display as Fahrenheit',
+                    class: '',
+                    click: function(e) {
+                      chartDegreeUnit = '°F';
+                      let chartData = myChart.series[0].data;
+                      const values = myChart.series[0].rawData;
+                      for (let i = 0; i < values.length; i++) {
+                        chartData[i].y = values[i] * 9 / 5 + 32;
+                      }
+                    },
+                    appendTo: 'left'
+                  },
+                  {
+                    icon: '<i class="fa fa-download"></i>',
+                    title: 'Download as csv',
+                    class: '',
+                    click: function(e) {
+                      // Genereate CSV data first
+                      let lines = [];
+                      lines.push('Date/Time,Temperature (' + chartDegreeUnit + ')');
+                      const chartData = myChart.series[0].data;
+                      for (let i = 0; i < chartData.length; i++) {
+                        let date = new Date(chartData[i].x).toLocaleString()
+                        lines.push(['"', date, '"', ',', chartData[i].y].join(''));
+                      }
+
+                      // Save data as csv file
+                      saveTextAsCsvFile('Weather History.csv', lines.join('\n'));
+                    }
+                  },
+                ]
+              },
+            },
+          },
+          xaxis: {
+            type: 'datetime',
+            labels: {
+              format: 'HH:mm'
+            },
+          },
+          yaxis: {
+            labels: {
+              formatter: function(value) {
+                return value.toFixed(1) + chartDegreeUnit
+              }
+            },
+          },
+          tooltip: {
+            x: {
+              format: 'dd MMM yyyy HH:mm'
+            }
+          }
+        },
+        series: [{
+          name: "Temperature",
+          data: [
+            {% for item in historical_data %}
+            {
+              x: new Date("{{item.datetime}}").getTime(),
+              y: {{item.temperature}}
+            },
+            {% endfor %}
+          ],
+          rawData: [
+            {% for item in historical_data %}
+              {{item.temperature}},
+            {% endfor %}
+          ]
+        }],
+      }
+    },
+    mounted() {
+      this.init();
+    },
+    methods: {
+      init() {
+        this.refresh();
+      },
+      clear() {
+        console.log('Clear charts.');
+        // this.series.data.splice(0);
+      },
+      refresh() {
+        {% for datetime in historical_data.datetime %}
+          console.log(new Date("{{datetime}}"))
+        {% endfor %}
+        {% for temperature in historical_data.temperature %}
+          console.log("{{temperature}}")
+        {% endfor %}
+      },
+    }
+  })
+
+</script>

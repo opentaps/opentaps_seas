@@ -16,9 +16,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import eeweather
 import geocoder
 import hashlib
 import json
+import numpy
+import pytz
 import requests
 import re
 from .models import Entity
@@ -27,6 +30,8 @@ from .models import PointView
 from .models import Tag
 from .models import Topic
 from .models import ModelView
+from .models import WeatherHistory
+from .models import WeatherStation
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -748,7 +753,7 @@ def get_site_addr_loc(tags, site_id, session):
             if site_address:
                 site_address = site_address + ", "
             site_address = site_address + geo_addr
-            show_google_map = True
+        show_google_map = True
 
         if site_address and show_google_map:
             hash_object = hashlib.md5(site_address.encode('utf-8'))
@@ -1105,3 +1110,67 @@ def link_points_to_equipments(new_equipments, new_equipments_topics):
             if points:
                 for point in points:
                     point.add_tag('equipRef',  equipment.kv_tags['id'], commit=True)
+
+
+def get_weather_station_for_location(latitude, longitude, as_object=True):
+    ranked_stations = eeweather.rank_stations(latitude, longitude)
+    for i in range(len(ranked_stations)):
+        try:
+            ranked_station = ranked_stations.iloc[i]
+            if as_object:
+                return WeatherStation.objects.get(weather_station_code=ranked_station.name)
+            else:
+                return ranked_station.name
+        except:
+            pass
+
+def get_default_weather_station_for_site(site):
+    if not site:
+        return
+
+    location = get_site_addr_loc(site.kv_tags, site.entity_id, {})
+    if not location:
+        return
+
+    latitude = location.get('latitude')
+    longitude = location.get('longitude')
+    return get_weather_station_for_location(latitude, longitude)
+
+def get_weather_history_for_station(weather_station, days_from_today=7):
+    if days_from_today <= 0:
+        days_from_today = 1     # 1 day as minimum
+    end_date = datetime.now(pytz.UTC)
+    start_date = end_date - timedelta(hours=days_from_today*24)
+
+    # Get last update datetime
+    try:
+        last_record = WeatherStation.objects.filter(weather_station=weather_station).order_by('-as_of_datetime').first()
+        if last_record:
+            start_date = last_record.as_of_datetime + timedelta(minutes=1)
+    except:
+        pass
+
+    # Get weather station
+    station = None
+    try:
+        station = eeweather.ISDStation(weather_station.weather_station_code)
+    except Exception as e:
+        print(e.message)
+        return
+
+    try:
+        temp_degC, warnings = station.load_isd_hourly_temp_data(start_date, end_date)
+        for dt, deg_c in temp_degC.iteritems():
+            if dt < start_date:
+                continue
+            elif numpy.isnan(deg_c):
+                continue
+            deg_f = deg_c * 9 / 5 + 32
+
+            new_data = WeatherHistory(weather_station=weather_station, as_of_datetime=dt,
+                                    temp_c=deg_c, temp_f=deg_f, source='EEWeather')
+            new_data.save()
+
+        return temp_degC
+    except Exception as e:
+        print(e)

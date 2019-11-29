@@ -24,6 +24,7 @@ from django.contrib.postgres.fields import HStoreField
 from django.core.exceptions import ValidationError
 from django.db import connections
 from django.db import models
+from django.db.models import AutoField
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
@@ -759,17 +760,36 @@ class WeatherStation(models.Model):
     elevation = FloatField(null=True)
     elevation_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING)
     meta_data = HStoreField(null=True, blank=True)
+    source = CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'core_weather_station'
+
+    def __str__(self):
+        return self.weather_station_code + (" ({name})".format(name=self.station_name) if self.station_name else '')
+
+
+class WeatherHistory(models.Model):
+    weather_history_id = AutoField(_("Weather History ID"), primary_key=True, auto_created=True)
+    weather_station = ForeignKey(WeatherStation, on_delete=models.CASCADE)
+    as_of_datetime = DateTimeField(_("History Date"), default=now)
+    temp_c = FloatField(null=True)
+    temp_f = FloatField(null=True)
+    source = CharField(max_length=255, blank=True, null=True)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+
+    class Meta:
+        db_table = 'core_weather_history'
 
 
 class Meter(models.Model):
     meter_id = CharField(_("Meter ID"), max_length=255, primary_key=True)
     description = CharField(_("Description"), max_length=255, blank=True, null=True)
+    weather_station = ForeignKey(WeatherStation, null=True, blank=True, on_delete=models.SET_NULL)
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     from_datetime = DateTimeField(_("From Date"), default=now)
-    thru_datetime = DateTimeField(_("Thru Date"), null=True)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("core:meter_detail", kwargs={"meter_id": self.meter_id})
@@ -782,4 +802,18 @@ class Meter_history(models.Model):
     uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING)
     source = CharField(max_length=255)
     created = DateTimeField(_("Created Date"), default=now)
-    created_by_user = CharField(max_length=255)
+    created_by_user = CharField(max_length=255)      
+      
+class SiteWeatherStations(models.Model):
+    site = ForeignKey(Entity, on_delete=models.CASCADE)
+    weather_station = ForeignKey(WeatherStation, on_delete=models.CASCADE)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), null=True)
+    source = CharField(max_length=255, blank=True, null=True)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+
+    class Meta:
+        db_table = 'core_site_weather_stations'
+
+

@@ -31,6 +31,7 @@ from .models import TopicTagRule
 from .models import TopicTagRuleSet
 from .models import Topic
 from .models import TimeZone
+from .models import WeatherStation
 from django import forms
 from django.template.defaultfilters import slugify
 
@@ -880,9 +881,19 @@ class MeterCreateForm(forms.ModelForm):
         self.fields['meter_id'].required = True
         self.fields['site'].widget = forms.HiddenInput()
 
+        # Dynamic load weather station list
+        if 'weather_station' not in self.data:
+            self.fields['weather_station'].queryset = WeatherStation.objects.none()
+        # Show error message if failed to get default weather station
+        if not self.data and not self.initial.get('weather_station'):
+            if not hasattr(self, 'cleaned_data'):
+                self.cleaned_data = {}
+            error_msg = u"No weather station found for this Site. Please check that your site is set up correctly."
+            self.add_error('weather_station', error_msg)
+
     class Meta:
         model = Meter
-        fields = ["site", "meter_id", "description"]
+        fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
 
 
 class MeterUpdateForm(forms.ModelForm):
@@ -890,6 +901,10 @@ class MeterUpdateForm(forms.ModelForm):
         super(MeterUpdateForm, self).__init__(*args, **kwargs)
         self.fields['meter_id'].widget = forms.HiddenInput()
 
+        # Dynamic load weather station list
+        if 'weather_station' not in self.data:
+            self.fields['weather_station'].queryset = WeatherStation.objects.none()
+
     class Meta:
         model = Meter
-        fields = ["meter_id", "description"]
+        fields = ["meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]

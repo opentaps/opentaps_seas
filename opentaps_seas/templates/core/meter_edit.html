@@ -25,7 +25,7 @@
 {% endblock add_button %}
 
 {% block inner_content %}
-<form method="post">
+<form method="post" id="meterForm" data-weather-stations-url="{% url 'core:weather_stations_json' %}" novalidate>
   {% csrf_token %}
   {{ form|crispy }}
 
@@ -34,4 +34,50 @@
     <button class="btn btn-primary col-5" type="submit"><i class="fa fa-edit mr-2"></i> Save</button>
   </div>
 </form>
+
+<script>
+  {% if object %}
+  selectedWeatherStation = "{{object.weather_station.weather_station_id}}";
+  {% elif form.initial %}
+  selectedWeatherStation = "{{form.initial.weather_station.weather_station_id}}";
+  {% else %}
+  selectedWeatherStation = null
+  {% endif %}
+
+  window.onload = function() {
+    const elem = document.getElementById('id_weather_station');
+    // Make Weather History dropdown disabled and show loading spinner
+    elem.disabled = true;
+    const spinnerElem = document.createElement('i');
+    spinnerElem.className += ' fas fa-spinner fa-spin';
+    spinnerElem.style = 'position: absolute; margin-top: 0.6em; right: 2.5em;';
+    elem.parentElement.insertBefore(spinnerElem, elem);
+
+    // Send ajax
+    var url = document.getElementById('meterForm').getAttribute('data-weather-stations-url');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        const items = JSON.parse(xhr.response).items;
+        for (let item of items) {
+          const option = document.createElement('option');
+          option.value = item.id;
+          option.text = item.value;
+          elem.add(option);
+        }
+
+        // Remove loading spin
+        elem.parentElement.removeChild(spinnerElem);
+
+        // Choose default
+        if (selectedWeatherStation) {
+          elem.value = selectedWeatherStation;
+        }
+        elem.disabled = false;
+      }
+    }
+    xhr.open('GET', url);
+    xhr.send();
+  }
+</script>
 {% endblock inner_content %}

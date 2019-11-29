@@ -80,6 +80,8 @@ from .views import (
     bacnet_prefix_list_json_view,
     tag_import_view,
     report_preview_csv_view,
+    weather_station_geoview,
+    weather_stations_json
 )
 
 app_name = "core"
@@ -157,4 +159,6 @@ urlpatterns = [
     path("timezone.json/<str:geo_id>", view=timezone_list_json_view, name="timezone_list_json"),
     path("bacnet_prefix.json/<str:site>", view=bacnet_prefix_list_json_view, name="bacnet_prefix_list_json"),
     path("report/preview/csv", view=report_preview_csv_view, name="report_preview_csv"),
+    path("weather_station/geoview/<path:weather_station_code>", view=weather_station_geoview, name="weather_station_geoview"),
+    path("weather_station.json", view=weather_stations_json, name="weather_stations_json")
 ]

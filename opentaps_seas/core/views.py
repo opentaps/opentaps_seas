@@ -69,6 +69,8 @@ from .models import Topic
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
 from .models import Meter
+from .models import WeatherStation
+from .models import WeatherHistory
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -2913,6 +2915,28 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
 
+
+    def get_context_data(self, **kwargs):
+        context = super(MeterDetailView, self).get_context_data(**kwargs)
+        if context['object'] and context['object'].weather_station:
+            # Select last 24 records
+            historical_data = []
+            for data in WeatherHistory.objects.filter(weather_station=context['object'].weather_station).order_by("-as_of_datetime")[:24]:
+                # Prevent adding duplicates
+                datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
+                if historical_data and datetime == historical_data[-1]['datetime']:
+                    continue
+                historical_data.append({
+                    'datetime': datetime,
+                    'temperature': data.temp_c
+                })
+
+            context['historical_data'] = list(reversed(historical_data))
+        else:
+            context['historical_data'] = None
+
+        return context
+
     def get_breadcrumbs(self, context):
         b = []
         b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
@@ -2943,17 +2967,28 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
     template_name = 'core/meter_edit.html'
     form_class = MeterCreateForm
 
+    def get_form_kwargs(self, *args, **kwargs):
+        form_data = super(MeterCreateView, self).get_form_kwargs(*args, **kwargs)
+
+        try:
+            if not self.request.POST:
+                initial_values = {}
+                site = Entity.objects.get(entity_id=self.kwargs['site_id'])
+                initial_values['site'] = site
+                initial_values['weather_station'] = utils.get_default_weather_station_for_site(site)
+
+                form_data['initial'] = initial_values
+        except:
+            pass
+
+        return form_data
+
     def get_context_data(self, **kwargs):
         context = super(MeterCreateView, self).get_context_data(**kwargs)
         # add the parent Site Id
         context['site_id'] = self.kwargs['site_id']
 
         return context
-
-    def get_initial(self):
-        initials = {}
-        initials['site'] = self.kwargs['site_id']
-        return initials
 
 
 meter_create_view = MeterCreateView.as_view()
@@ -2975,6 +3010,20 @@ class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
 meter_edit_view = MeterEditView.as_view()
 
 
+@login_required()
+def weather_stations_json(request):
+    data = []
+    for weather_station in WeatherStation.objects.all():
+        data.append({
+            'id': weather_station.weather_station_id,
+            'value': '{code} ({name})'.format(code=weather_station.weather_station_code, name=weather_station.station_name)
+        })
+
+    return JsonResponse({'items': data})
+
+
+
+
 class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
     model = Meter
     slug_field = "meter_id"
@@ -2992,3 +3041,20 @@ class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
 
 
 meter_deactivate_view = MeterDeactivateView.as_view()
+
+
+class WeatherStationGeoView(LoginRequiredMixin, DetailView):
+    model = WeatherStation
+    slug_field = "weather_station_code"
+    slug_url_kwarg = "weather_station_code"
+    template_name = 'core/weather_station_geoview.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(WeatherStationGeoView, self).get_context_data(**kwargs)
+
+        if settings.GOOGLE_API_KEY:
+            context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
+
+        return context
+
+weather_station_geoview = WeatherStationGeoView.as_view()
