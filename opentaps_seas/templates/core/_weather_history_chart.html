@@ -39,6 +39,13 @@
   </div>
 </div>
 
+<style>
+.apexcharts-toolbar-custom-icon {
+  height: 24px;
+  width: 30px;
+}
+</style>
+
 <script>
 
   // The global window.Apex variable below can be used to set common options for all charts on the page
@@ -73,6 +80,7 @@
             id: 'weather-history-chart',
             toolbar: {
               tools: {
+                download: false,
                 selection: false,
                 zoom: false,
                 zoomin: false,
@@ -81,9 +89,10 @@
                 pan: false,
                 customIcons: [
                   {
-                    icon: '°C',
+                    icon: '<i>&#8451;</i>',
                     title: 'Display as Celcius',
-                    click: function(chart, options, e) {
+                    class: '',
+                    click: function(e) {
                       chartDegreeUnit = '°C';
                       data = myChart.series[0].data;
                       rawData = myChart.series[0].rawData;
@@ -94,9 +103,10 @@
                     appendTo: 'left'
                   },
                   {
-                    icon: '°F',
+                    icon: '<i>&#8457;</i>',
                     title: 'Display as Fahrenheit',
-                    click: function(chart, options, e) {
+                    class: '',
+                    click: function(e) {
                       chartDegreeUnit = '°F';
                       data = myChart.series[0].data;
                       rawData = myChart.series[0].rawData;
@@ -105,7 +115,15 @@
                       }
                     },
                     appendTo: 'left'
-                  }
+                  },
+                  {
+                    icon: '<i class="fa fa-download"></i>',
+                    title: 'Download as csv',
+                    class: '',
+                    click: function(e) {
+                      console.log('Download')
+                    }
+                  },
                 ]
               },
             },
