@@ -24,9 +24,17 @@ from django.db.utils import IntegrityError
 def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
+        # Delete all meters
+        sql = """DELETE FROM core_meter;"""
+        c.execute(sql)
+
+        # Delete all weather histories
+        sql = """DELETE FROM core_weather_history;"""
+        c.execute(sql)
+
+        # Delete all weather stations
         sql = """DELETE FROM core_weather_station;"""
         c.execute(sql)
-        c.close()
 
 
 def demo():
