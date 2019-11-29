@@ -68,6 +68,7 @@ from .models import TopicTagRule
 from .models import TopicTagRuleSet
 from .models import Meter
 from .models import WeatherStation
+from .models import WeatherHistory
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -2694,6 +2695,28 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     model = Meter
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
+
+
+    def get_context_data(self, **kwargs):
+        context = super(MeterDetailView, self).get_context_data(**kwargs)
+        if context['object'] and context['object'].weather_station:
+            # Select last 24 records
+            historical_data = []
+            for data in WeatherHistory.objects.filter(weather_station=context['object'].weather_station).order_by("-as_of_datetime")[:24]:
+                # Prevent adding duplicates
+                datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
+                if historical_data and datetime == historical_data[-1]['datetime']:
+                    continue
+                historical_data.append({
+                    'datetime': datetime,
+                    'temperature': data.temp_c
+                })
+
+            context['historical_data'] = historical_data
+        else:
+            context['historical_data'] = None
+
+        return context
 
     def get_breadcrumbs(self, context):
         b = []
