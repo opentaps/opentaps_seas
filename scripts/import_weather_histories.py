@@ -43,7 +43,8 @@ def import_data(which):
     print('Importing {} data...'.format(which))
     is_demo = which == 'demo'
 
-    for weather_station in Meter.objects.values('weather_station').distinct():
+    for meter in Meter.objects.values('weather_station').distinct():
+        weather_station = WeatherStation.objects.get(weather_station_id=meter['weather_station'])
         print('Importing data for {}'.format(weather_station.station_name))
         get_weather_history_for_station(weather_station)
 
