@@ -19,6 +19,7 @@ import csv
 import os
 from django.db import connections
 from django.db.utils import IntegrityError
+from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import WeatherStation
 from opentaps_seas.core.utils import get_weather_history_for_station
 
@@ -42,7 +43,7 @@ def import_data(which):
     print('Importing {} data...'.format(which))
     is_demo = which == 'demo'
 
-    for weather_station in WeatherStation.objects.all():
+    for weather_station in Meter.objects.values('weather_station').distinct():
         print('Importing data for {}'.format(weather_station.station_name))
         get_weather_history_for_station(weather_station)
 
