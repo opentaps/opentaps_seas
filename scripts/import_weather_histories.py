@@ -25,7 +25,7 @@ from opentaps_seas.core.utils import get_weather_history_for_station
 def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
-        sql = """DELETE FROM core_weather_station;"""
+        sql = """DELETE FROM core_weather_history;"""
         c.execute(sql)
         c.close()
 
