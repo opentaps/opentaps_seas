@@ -39,6 +39,7 @@ from .forms import FileUploadForm
 from .forms import MeterCreateForm
 from .forms import MeterUpdateForm
 from .forms import ModelCreateForm
+from .forms import ModelDuplicateForm
 from .forms import ModelUpdateForm
 from .forms import SiteCreateForm
 from .forms import TagChangeForm
@@ -50,6 +51,7 @@ from .forms import TopicTagRuleCreateForm
 from .forms import TopicTagRuleSetCreateForm
 from .forms import TopicTagRuleSetImportForm
 from .forms import TopicTagRuleSetRunForm
+from .forms import TopicTagRuleRunForm
 from .forms import EquipmentCreateForm
 from .forms import TagImportForm
 from .models import Entity
@@ -414,9 +416,12 @@ class TopicTagRuleTable(Table):
 
     def render_buttons(self, record):
         return format_html('''
+            <a class="btn btn-secondary btn-sm" href="{}">
+            <i class="fa fa-cog"></i> Run
+            </a>
             <a class="btn btn-danger btn-sm" href="#" v-confirm="delete_tag_rule({})">
             <i class="fa fa-trash"></i> Delete
-            </a>'''.format(record.id, record.id),)
+            </a>'''.format(reverse('core:topictagrule_run', kwargs={'id': record.id}), record.id,),)
 
     class Meta:
         order_by = 'name'
@@ -707,6 +712,30 @@ class ModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
 model_create_view = ModelCreateView.as_view()
 
 
+class ModelDuplicateView(LoginRequiredMixin, ModelBCMixin, CreateView):
+    model = ModelView
+    slug_field = "entity_id"
+    slug_url_kwarg = "entity_id"
+    template_name = 'core/model_edit.html'
+    form_class = ModelDuplicateForm
+
+    def get_initial(self):
+        if 'entity_id' in self.kwargs:
+            try:
+                pm = Entity.objects.get(entity_id=self.kwargs['entity_id'], m_tags__contains=['model'])
+                return {
+                    'source_id': pm.entity_id,
+                    'entity_id': utils.make_random_id(pm.kv_tags['id']),
+                    'description':  pm.kv_tags.get('dis', '') + ' Copy'
+                    }
+            except Entity.DoesNotExist:
+                pass
+        return {}
+
+
+model_duplicate_view = ModelDuplicateView.as_view()
+
+
 class ModelEditView(LoginRequiredMixin, ModelBCMixin, UpdateView):
     model = ModelView
     slug_field = "entity_id"
@@ -862,15 +891,19 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
 
         bacnet_configs = PointView.objects.filter(site_id=site.object_id).exclude(
             kv_tags__bacnet_prefix__isnull=True).exclude(
-            kv_tags__bacnet_prefix__exact='').values('kv_tags__bacnet_prefix', 'kv_tags__bacnet_device_id').annotate(
+            kv_tags__bacnet_prefix__exact='').values(
+            'site_id', 'kv_tags__bacnet_prefix', 'kv_tags__bacnet_device_id').annotate(
             dcount=Count('kv_tags__bacnet_prefix'))
+
         if bacnet_configs:
             bacnet_cfg = []
             for bacnet_config in bacnet_configs:
                 item = {'prefix': bacnet_config['kv_tags__bacnet_prefix'],
                         'device_id': bacnet_config['kv_tags__bacnet_device_id']}
                 bc_equipments = EquipmentView.objects.filter(
-                    kv_tags__bacnet_prefix=bacnet_config['kv_tags__bacnet_prefix'])
+                    kv_tags__bacnet_prefix=bacnet_config['kv_tags__bacnet_prefix'],
+                    site_id=bacnet_config['site_id']
+                    )
                 if bc_equipments:
                     bc_equipment = bc_equipments[0]
                     if bc_equipment:
@@ -987,11 +1020,16 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         self.rule = None
 
         topic_filter = None
+        topic_filters = None
         if "topic_filter" in self.request.session:
             topic_filter = self.request.session["topic_filter"]
+        if "topic_filters" in self.request.session:
+            topic_filters = self.request.session["topic_filters"]
 
         if topic_filter:
             self.request.session["topic_filter"] = None
+        if topic_filters:
+            self.request.session["topic_filters"] = None
 
         self.select_not_mapped_topics = self.request.GET.get('select_not_mapped_topics')
         if self.select_not_mapped_topics:
@@ -1011,11 +1049,23 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
                 self.used_filters.append({
                     'field': f.get('field'),
                     'type': f.get('type'),
+                    'op': f.get('op'),
                     'value': f.get('value')
                 })
-                q_filters.append((f.get('field'), f.get('type'), f.get('value')))
+                q_filters.append((f.get('field'), f.get('type'), f.get('value'), f.get('op')))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
+        elif topic_filters:
+            condition = None
+            for tf in topic_filters:
+                filter_elem = {'type': 'c', 'value': tf, 'op': 'OR'}
+                self.used_filters.append(filter_elem)
+                if condition:
+                    condition = condition | Q(topic__icontains=tf)
+                else:
+                    condition = Q(topic__icontains=tf)
+            if condition:
+                qs = qs.filter(condition)
         elif topic_filter:
             filter_elem = {'type': 'c', 'value': topic_filter}
             self.used_filters.append(filter_elem)
@@ -1031,16 +1081,18 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
             for i in range(n):
                 filter_type = self.request.GET.get('t' + str(i))
                 filter_field = self.request.GET.get('n' + str(i))
+                filter_op = self.request.GET.get('o' + str(i))
                 if filter_type:
                     filter_value = self.request.GET.get('f' + str(i))
-                    logging.info('TopicListView get_queryset got filter [%s - %s : %s]',
-                                 filter_field, filter_type, filter_value)
+                    logging.info('TopicListView get_queryset got filter [ (%s) %s - %s : %s]',
+                                 filter_op, filter_field, filter_type, filter_value)
                     self.used_filters.append({
                         'field': filter_field,
                         'type': filter_type,
+                        'op': filter_op,
                         'value': filter_value
                     })
-                    q_filters.append((filter_field, filter_type, filter_value))
+                    q_filters.append((filter_field, filter_type, filter_value, filter_op))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
         # add empty filter at the end
@@ -1078,7 +1130,21 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
     def post(self, request, *args, **kwargs):
         bacnet_prefix = request.POST.get('bacnet_prefix')
         if bacnet_prefix:
+            logging.info('TopicListView POST got bacnet_prefix %s', bacnet_prefix)
             self.request.session["topic_filter"] = bacnet_prefix
+        else:
+            c = request.POST.get('bacnet_prefix_count')
+            logging.info('TopicListView POST got %s bacnet_prefix(es)', c)
+            if c:
+                n = int(c)
+                prefixes = []
+                for i in range(n):
+                    p = request.POST.get('bacnet_prefix_' + str(i))
+                    if p:
+                        prefixes.append(p)
+                logging.info('TopicListView POST topic_filters %s', str(prefixes))
+                self.request.session["topic_filters"] = prefixes
+
         return HttpResponseRedirect(reverse('core:topic_list'))
 
 
@@ -1108,9 +1174,12 @@ def topic_list_table(request):
     for i in range(n):
         filter_field = request.POST.get('n' + str(i))
         filter_type = request.POST.get('t' + str(i))
+        filter_op = request.POST.get('o' + str(i))
         if filter_type:
             filter_value = request.POST.get('f' + str(i))
-            q_filters.append((filter_field, filter_type, filter_value))
+            logging.info('topic_list_table got filter [ (%s) %s - %s : %s]',
+                         filter_op, filter_field, filter_type, filter_value)
+            q_filters.append((filter_field, filter_type, filter_value, filter_op))
     qs = utils.apply_filters_to_queryset(qs, q_filters)
 
     rc = RequestConfig(request, paginate={'per_page': 15})
@@ -1274,6 +1343,16 @@ class TopicTagRuleSetBCMixin(WithBreadcrumbsMixin):
         return b
 
 
+class TopicTagRuleBCMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:topictagruleset_list'), 'label': 'Topic Tag Rule Sets'})
+        if context.get('object'):
+            b.append({'label': 'Rule {}'.format(context['object'].name or context['object'].id)})
+        return b
+
+
 class TopicTagRuleSetListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
     model = TopicTagRuleSet
     table_class = TopicTagRuleSetTable
@@ -1401,7 +1480,7 @@ class TopicTagRuleCreateView(LoginRequiredMixin, TopicTagRuleSetBCMixin, CreateV
 topictagrule_create_view = TopicTagRuleCreateView.as_view()
 
 
-class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
+class TopicTagRuleSetRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     form_class = TopicTagRuleSetRunForm
     template_name = 'core/topictagruleset_run.html'
 
@@ -1446,7 +1525,7 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_equipments = form.save()
+            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_eqm = form.save()
             if preview_type:
                 if diff_format:
                     report_rows, report_header = utils.tag_rulesets_run_report_diff(
@@ -1541,13 +1620,167 @@ class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleSetBCMixin, FormView):
 
                     return response
             else:
-                if len(updated_set) > 0 or len(new_equipments) > 0:
+                if len(updated_set) > 0 or len(new_eqm) > 0:
                     response = JsonResponse({'success': 1, 'updated': len(updated_set),
-                                             'new_equipments': len(new_equipments)})
+                                             'new_equipments': len(new_eqm)})
                 else:
                     response = JsonResponse({'errors': 'Nothing applied'})
                 return response
 
+        else:
+            return self.form_invalid(form, **kwargs)
+
+
+topictagruleset_run_view = TopicTagRuleSetRunView.as_view()
+
+
+class TopicTagRuleRunView(LoginRequiredMixin, TopicTagRuleBCMixin, FormView):
+    form_class = TopicTagRuleRunForm
+    template_name = 'core/topictagrule_run.html'
+
+    def get_initial(self):
+        logging.info('get_initial: %s', self.kwargs)
+        initials = {'rule_id': self.kwargs.get('id')}
+        if self.request.GET and 'topic_filter' in self.request.GET:
+            initials['topic_filter'] = self.request.GET['topic_filter']
+        return initials
+
+    def get_form_kwargs(self):
+        args = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            # first change the data to be a copy of POST
+            args.update({
+                'data': self.request.POST.copy(),
+            })
+            # add the URL given ID to the params for the Form
+            if 'id' in self.kwargs and 'rule_id' not in args['data']:
+                args['data'].update({'rule_id': self.kwargs.get('id')})
+        return args
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'id' in self.kwargs:
+            rule = get_object_or_404(TopicTagRule, id=self.kwargs['id'])
+            context['rule'] = rule
+            context['object'] = rule
+        return context
+
+    def form_invalid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        errors = {}
+        for field in form:
+            for error in field.errors:
+                errors[field.name] = error
+
+        if errors:
+            context['errors'] = errors
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_eqm = form.save()
+            if preview_type:
+                if diff_format:
+                    report_rows, report_header = utils.tag_rulesets_run_report_diff(
+                                                       updated_entities, updated_tags, removed_tags)
+                    if not report_rows:
+                        messages.error(self.request, "Preview diff is empty")
+                        context = self.get_context_data(**kwargs)
+                        return self.render_to_response(context)
+                    else:
+                        if preview_type == 'preview_csv':
+                            response = HttpResponse(content_type='text/csv')
+                            response['Content-Disposition'] = 'attachment; filename="TagRulePreviewDiffReport.csv"'
+
+                            writer = csv.writer(response)
+                            if report_header:
+                                writer.writerow(report_header)
+                                if report_rows:
+                                    for row in report_rows:
+                                        writer.writerow(row)
+                            else:
+                                writer.writerow([''])
+
+                        else:
+                            temp = tempfile.NamedTemporaryFile(delete=False)
+                            temp.close()
+                            with open(temp.name, 'w') as file_csv:
+                                writer = csv.writer(file_csv)
+                                if report_header:
+                                    writer.writerow(report_header)
+                                    if report_rows:
+                                        for row in report_rows:
+                                            writer.writerow(row)
+
+                                    response = HttpResponseRedirect(
+                                        reverse("core:report_preview_csv") + '?file=' + temp.name
+                                        + '&name=Tag Rule Preview Diff Report')
+                                else:
+                                    writer.writerow([''])
+
+                        return response
+                else:
+                    report_rows, report_header = utils.tag_rulesets_run_report(updated_entities)
+                    if preview_type == 'preview_csv':
+                        response = HttpResponse(content_type='text/csv')
+                        response['Content-Disposition'] = 'attachment; filename="TagRulePreviewReport.csv"'
+
+                        writer = csv.writer(response)
+                        if report_header:
+                            writer.writerow(report_header)
+                            if report_rows:
+                                for row in report_rows:
+                                    writer.writerow(row)
+                        else:
+                            writer.writerow([''])
+
+                    else:
+                        temp = tempfile.NamedTemporaryFile(delete=False)
+                        temp.close()
+                        with open(temp.name, 'w') as file_csv:
+                            writer = csv.writer(file_csv)
+                            if report_header:
+                                writer.writerow(report_header)
+                                if report_rows:
+                                    for row in report_rows:
+                                        updated_tag = updated_tags.get(row[0])
+                                        removed_tag = removed_tags.get(row[0])
+                                        if updated_tag or removed_tag:
+                                            if not updated_tag:
+                                                updated_tag = {}
+                                            if not removed_tag:
+                                                removed_tag = {}
+                                            row_new = []
+                                            for i, value in enumerate(row):
+                                                header = report_header[i]
+                                                value_updated = updated_tag.get(header)
+                                                value_removed = removed_tag.get(header)
+                                                if value_updated:
+                                                    value += "::$$updated$$"
+                                                elif value_removed:
+                                                    value = value_removed + "::$$removed$$"
+                                                row_new.append(value)
+
+                                            writer.writerow(row_new)
+                                        else:
+                                            writer.writerow(row)
+                            else:
+                                writer.writerow([''])
+
+                        response = HttpResponseRedirect(
+                            reverse("core:report_preview_csv") + '?file=' + temp.name
+                            + '&name=Tag Rule Preview Report')
+
+                    return response
+            else:
+                if len(updated_set) > 0 or len(new_eqm) > 0:
+                    response = JsonResponse({'success': 1, 'updated': len(updated_set),
+                                             'new_equipments': len(new_eqm)})
+                else:
+                    response = JsonResponse({'errors': 'Nothing applied'})
+                return response
         else:
             return self.form_invalid(form, **kwargs)
 
@@ -1634,6 +1867,7 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
         context['site_id'] = None
         if 'site' in self.kwargs:
             context['site_id'] = self.kwargs['site']
+            logging.info('TopicExportView get_context_data site_id %s', context['site_id'])
             context['back_url'] = reverse('core:site_detail', kwargs={'site': self.kwargs['site']})
             try:
                 context['current_site'] = SiteView.objects.get(entity_id=self.kwargs['site'])
@@ -1664,7 +1898,7 @@ class TopicExportView(LoginRequiredMixin, WithBreadcrumbsMixin, FormView):
 
     def get_config_zip(self, context, **response_kwargs):
         device_prefix = context["form"].cleaned_data['device_prefix']
-        site = context["form"].cleaned_data['site']
+        site = context["form"].cleaned_data['site'] or context['site_id']
         only_with_trending = context["form"].cleaned_data['only_with_trending']
         his_tagged_topics_only = context["form"].cleaned_data['his_tagged_topics_only']
         response = HttpResponse(content_type="application/zip")

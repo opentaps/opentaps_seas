@@ -819,19 +819,22 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
         elif filter_value:
             # all of those test either topic OR a kv_tags
             # so fail if trying to match a kv_tag
+            prefix = ''
+            if name == 'topic':
+                prefix = 'i'
             if not name == 'topic' and name not in valid_tags and (filter_type == 'c' or filter_type == 'eq'):
                 logger.warning('topic filter found an unused tag: %s', name)
                 return qs.none()
             if filter_type == 'c':
-                qs = qs.filter(filter_Q(name, 'contains', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, prefix + 'contains', filter_value, valid_tags))
             elif filter_type == 'nc':
-                qs = qs.exclude(filter_Q(name, 'contains', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, prefix + 'contains', filter_value, valid_tags))
             elif filter_type == 'eq':
-                qs = qs.filter(filter_Q(name, 'exact', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, prefix + 'exact', filter_value, valid_tags))
             elif filter_type == 'neq':
-                qs = qs.exclude(filter_Q(name, 'exact', filter_value, valid_tags))
+                qs = qs.exclude(filter_Q(name, prefix + 'exact', filter_value, valid_tags))
             elif filter_type == 'matches':
-                qs = qs.filter(filter_Q(name, 'regex', filter_value, valid_tags))
+                qs = qs.filter(filter_Q(name, prefix + 'regex', filter_value, valid_tags))
     return qs
 
 
@@ -847,8 +850,38 @@ def apply_filters_to_queryset(qs, filters):
             # extract the tag name from "kv_tags['tag_name']"
             valid_tags.append(cn[9:-2])
 
-    for (filter_field, filter_type, filter_value) in filters:
-        qs = apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_tags)
+    # ordering or AND and OR filters
+    # A or B and C -> (A(qs) | B(qs)) & C(qs)
+    # A or B and C or D -> (A(qs) | B(qs)) & (C(qs) | D(qs))
+    # so we first resolve the ORs from the list:
+    #  (A, *), (B, or), (C, and), (D, or)
+    # The ORs apply to oqs (original qs)
+    # then we AND each resulting qs
+    oqs = qs
+    first = True
+    rqs = []
+    for (filter_field, filter_type, filter_value, filter_op) in filters:
+        logging.info('apply_filters_to_queryset: add filter %s', (filter_field, filter_type, filter_value, filter_op))
+        if first:
+            qs = apply_filter_to_queryset(oqs, filter_field, filter_type, filter_value, valid_tags)
+        elif filter_op and filter_op.lower() == 'or':
+            qs = qs | apply_filter_to_queryset(oqs, filter_field, filter_type, filter_value, valid_tags)
+        else:
+            # skip for now store the current qs
+            rqs.append(qs)
+            # reset working qs
+            qs = oqs
+            qs = apply_filter_to_queryset(oqs, filter_field, filter_type, filter_value, valid_tags)
+        first = False
+
+    # add the last qs
+    rqs.append(qs)
+
+    # now AND resulting qs
+    qs = oqs
+    for q in rqs:
+        qs = qs & q
+
     return qs
 
 
@@ -867,11 +900,12 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
     if filters:
         q_filters = []
         for qfilter in filters:
+            filter_op = qfilter.get('o') or qfilter.get('op') or 'AND'
             filter_type = qfilter.get('t') or qfilter.get('type')
             filter_field = qfilter.get('n') or qfilter.get('field')
             if filter_type:
                 filter_value = qfilter.get('f') or qfilter.get('value')
-                q_filters.append((filter_field, filter_type, filter_value))
+                q_filters.append((filter_field, filter_type, filter_value, filter_op))
         qs = apply_filters_to_queryset(qs, q_filters)
 
     # store a dict of topic -> data_point.entity_id
@@ -1002,13 +1036,14 @@ def create_equipment_action(filters, action_fields):
         for qfilter in filters:
             filter_type = qfilter.get('t') or qfilter.get('type')
             filter_field = qfilter.get('n') or qfilter.get('field')
+            filter_op = qfilter.get('o') or qfilter.get('op')
             if filter_type:
                 filter_value = qfilter.get('f') or qfilter.get('value')
                 if not action_regexp_value and filter_type == 'matches':
                     if filter_value:
                         action_regexp_value = filter_value
 
-                q_filters.append((filter_field, filter_type, filter_value))
+                q_filters.append((filter_field, filter_type, filter_value, filter_op))
         qs = apply_filters_to_queryset(qs, q_filters)
 
         if action_fields and action_fields.get('equipment_name'):

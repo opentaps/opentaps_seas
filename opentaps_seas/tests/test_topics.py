@@ -185,6 +185,7 @@ class TopicAPITests(TestCase):
             logging.error('_check_topic_list ERROR: c_list %s', c_list)
             logging.error('_check_topic_list ERROR: nc_list %s', nc_list)
             logging.error('_check_topic_list ERROR: check response %s', response.content)
+            logger.exception('_check_topic_list error')
             raise
 
     def _login(self):
@@ -336,11 +337,12 @@ class TopicAPITests(TestCase):
         response = self._get_response(data, 'post')
         self._check_topic_list(response, c_list, nc_list)
 
-        # ----------- start test n0="Topic" t0="c" f0="FOO" n1="ac" t1="absent" (Case Sensitive)----------- #
-        c_list = []
-        nc_list = [
+        # ----------- start test n0="Topic" t0="c" f0="FOO" n1="ac" t1="absent" (Case Insensitive)----------- #
+        c_list = [
             '_test_filters/foo/some_topic',
-            '_test_filters/foo/an_ac',
+        ]
+        nc_list = [
+            '_test_filters/foo/an_ac'
             '_test_filters/bar/another_topic',
             '_test_filters/bar/ahu',
             '_test_filters/bar/zone_temp'
@@ -502,6 +504,182 @@ class TopicAPITests(TestCase):
             't4': 'eq',
             'f4': 'celsius',
             'filters_count': 5
+        }
+        response = self._get_response(data, 'post')
+        self._check_topic_list(response, c_list, nc_list)
+
+        # ----------- start test for OR queries ----------- #
+        c_list = []
+        nc_list = [
+            '_test_filters/foo/some_topic',
+            '_test_filters/bar/another_topic',
+            '_test_filters/foo/an_ac',
+            '_test_filters/bar/zone_temp'
+            '_test_filters/bar/ahu'
+        ]
+
+        # post method, first using ANDs which returns nothing
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'test_filters',
+            'n1': 'Topic',
+            't1': 'c',
+            'f1': 'topic',
+            'n2': 'Topic',
+            't2': 'c',
+            'f2': 'foo',
+            'n3': 'Topic',
+            't3': 'c',
+            'f3': 'bar',
+            'filters_count': 4
+        }
+        response = self._get_response(data, 'post')
+        self._check_topic_list(response, c_list, nc_list)
+
+        c_list = [
+            '_test_filters/foo/some_topic',
+            '_test_filters/bar/another_topic',
+        ]
+        nc_list = [
+            '_test_filters/foo/an_ac',
+            '_test_filters/bar/zone_temp'
+            '_test_filters/bar/ahu'
+        ]
+
+        # post method, now using foo OR bar which returns 2 (A and B and (C or D))
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'test_filters',
+            'n1': 'Topic',
+            't1': 'c',
+            'f1': 'topic',
+            'n2': 'Topic',
+            't2': 'c',
+            'f2': 'foo',
+            'n3': 'Topic',
+            't3': 'c',
+            'f3': 'bar',
+            'filters_count': 4,
+            'o3': 'OR'
+        }
+        response = self._get_response(data, 'post')
+        self._check_topic_list(response, c_list, nc_list)
+
+        # post method, change the order (A and (B or C) and D)
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'test_filters',
+            'o0': 'AND',
+            'n1': 'Topic',
+            't1': 'c',
+            'f1': 'foo',
+            'o1': 'OR',
+            'n2': 'Topic',
+            't2': 'c',
+            'f2': 'bar',
+            'o2': 'OR',
+            'n3': 'Topic',
+            't3': 'c',
+            'f3': 'topic',
+            'o3': 'AND',
+            'filters_count': 4
+        }
+        response = self._get_response(data, 'post')
+        self._check_topic_list(response, c_list, nc_list)
+
+        # post method, change the order (A or B and C and D)
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'foo',
+            'n1': 'Topic',
+            't1': 'c',
+            'f1': 'bar',
+            'o1': 'OR',
+            'n2': 'Topic',
+            't2': 'c',
+            'f2': 'test_filters',
+            'o2': 'AND',
+            'n3': 'Topic',
+            't3': 'c',
+            'f3': 'topic',
+            'o3': 'AND',
+            'filters_count': 4
+        }
+        response = self._get_response(data, 'post')
+        self._check_topic_list(response, c_list, nc_list)
+
+        # mix up 2 ORs (A or B and C or D)
+        # ("foo" or "vav") AND ("test_filters" or "test_position_command")
+        c_list = [
+            '_test_filters/foo/an_ac',
+            '_test_filters/foo/some_topic',
+            '_test_Position_Command|vav-100',
+            '_test_Position_Command|vav-101',
+        ]
+        nc_list = [
+            '_test_filters/bar/another_topic',
+            '_test_filters/bar/zone_temp',
+            '_test_filters/bar/ahu',
+            '_test_Position_Size|vav-100',
+            '_test_Position_Size|vav-101',
+        ]
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'foo',
+            'n1': 'Topic',
+            't1': 'c',
+            'f1': 'vav',
+            'o1': 'OR',
+            'n2': 'Topic',
+            't2': 'c',
+            'f2': 'test_filters',
+            'o2': 'AND',
+            'n3': 'Topic',
+            't3': 'c',
+            'f3': 'test_position_command',
+            'o3': 'OR',
+            'filters_count': 4
+        }
+        response = self._get_response(data, 'post')
+        self._check_topic_list(response, c_list, nc_list)
+
+        # mix up 3 ORs (A or B or C and D)
+        # ("ahu" or "zone" or "vav") AND ("test_filters")
+        c_list = [
+            '_test_filters/bar/ahu',
+            '_test_filters/bar/zone_temp',
+        ]
+        nc_list = [
+            '_test_filters/foo/an_ac',
+            '_test_filters/foo/some_topic',
+            '_test_filters/bar/another_topic',
+            '_test_Position_Size|vav-100',
+            '_test_Position_Size|vav-101',
+            '_test_Position_Command|vav-100',
+            '_test_Position_Command|vav-101',
+        ]
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'ahu',
+            'n1': 'Topic',
+            't1': 'c',
+            'f1': 'zone',
+            'o1': 'OR',
+            'n2': 'Topic',
+            't2': 'c',
+            'f2': 'vav',
+            'o2': 'OR',
+            'n3': 'Topic',
+            't3': 'c',
+            'f3': 'test_filters',
+            'o3': 'AND',
+            'filters_count': 4
         }
         response = self._get_response(data, 'post')
         self._check_topic_list(response, c_list, nc_list)

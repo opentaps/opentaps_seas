@@ -128,6 +128,68 @@ class ModelUpdateForm(ModelCreateForm):
         self.fields['entity_id'].widget = forms.HiddenInput()
 
 
+class ModelDuplicateForm(forms.ModelForm):
+    source_id = ModelField(label='Parent Model ID', max_length=255, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ModelDuplicateForm, self).__init__(*args, **kwargs)
+        self.fields['source_id'].widget = forms.HiddenInput()
+
+    def is_valid(self):
+        if not super().is_valid():
+            logger.error('ModelDuplicateForm: super not valid')
+            return False
+        logger.info('ModelDuplicateForm: check is_valid')
+        obj_id = self.cleaned_data['entity_id']
+
+        if Entity.objects.filter(kv_tags__id=obj_id).exists():
+            logger.error('ModelDuplicateForm: got model with id = %s', obj_id)
+            self.add_error('entity_id', 'Model with this Model ID already exists.')
+            return False
+
+        return True
+
+    def save(self, commit=True):
+        obj_id = self.cleaned_data['entity_id']
+        source_id = self.cleaned_data['source_id']
+        description = self.cleaned_data['description']
+        entity_id = slugify(obj_id)
+        logger.info('ModelDuplicateForm: for source model %s', source_id)
+        skip_tags = ['id', 'dis']
+
+        new_model = Entity(entity_id=entity_id)
+        new_model.add_tag('id', obj_id, commit=False)
+        new_model.add_tag('model', commit=False)
+
+        try:
+            source_model = Entity.objects.get(entity_id=source_id)
+            logger.info('ModelDuplicateForm: got model %s', source_model)
+
+            for tag, value in source_model.kv_tags.items():
+                if tag not in skip_tags:
+                    new_model.add_tag(tag, value, commit=False)
+
+            for tag in source_model.m_tags:
+                new_model.add_tag(tag, None, commit=False)
+
+        except Entity.DoesNotExist:
+            logger.info('ModelDuplicateForm: source model %s not found', source_id)
+
+        if description:
+            new_model.add_tag('dis', description, commit=False)
+
+        if commit:
+            new_model.save()
+            self.instance = ModelView.objects.get(entity_id=entity_id)
+            self.cleaned_data['entity_id'] = entity_id
+        self._post_clean()  # reset the form as updating the just created instance
+        return self.instance
+
+    class Meta:
+        model = ModelView
+        fields = ["entity_id", "description"]
+
+
 class TopicTagRuleSetCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -260,6 +322,95 @@ class TopicTagRuleCreateForm(forms.ModelForm):
     class Meta:
         model = TopicTagRule
         fields = ["rule_set", "name"]
+
+
+class TopicTagRuleRunForm(forms.Form):
+    rule_id = ModelField(label='Rule', max_length=255, required=True)
+    topic_filter = ModelField(label='Topic Filter', max_length=255, required=False)
+    preview_type = forms.CharField(required=False)
+    diff_format = forms.BooleanField(label="Preview in a diff format", required=False, initial=False)
+
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        rule_id = self.cleaned_data['rule_id']
+        if not TopicTagRule.objects.filter(id=rule_id).exists():
+            logger.error('TopicTagRuleRunForm: rule %s not found.', rule_id)
+            self.add_error('rule_id', 'Rule not found.')
+            return False
+        return True
+
+    def save(self, commit=True):
+        # run the topic tag ruleset
+        topic_filter = self.cleaned_data['topic_filter']
+        rule_id = self.cleaned_data['rule_id']
+        preview_type = self.cleaned_data['preview_type']
+        diff_format = self.cleaned_data['diff_format']
+
+        pretend = False
+        if preview_type:
+            pretend = True
+
+        logger.info('TopicTagRuleRunForm: for set %s and additional filter: %s, pretend: %s',
+                    rule_id, topic_filter, pretend)
+        rule = TopicTagRule.objects.get(id=rule_id)
+        # collect count of topics we ran for
+        updated_set = set()
+        updated_entities = {}
+        updated_tags = {}
+        removed_tags = {}
+        new_equipments = []
+        rule_filters = rule.filters
+        # Add the topic_filter to the rule filters if given
+        if topic_filter:
+            tf = {'type': 'c', 'value': topic_filter}
+            if rule_filters:
+                rule_filters.append(tf)
+            else:
+                rule_filters = [tf]
+        if rule.tags:
+            updated, updated_curr_entities, updated_curr_tags, removed_curr_tags = utils.tag_topics(
+                rule_filters, rule.tags, select_all=True, pretend=pretend)
+            for x in updated:
+                updated_set.add(x.get('topic'))
+
+            for key in updated_curr_entities.keys():
+                updated_curr_entity = updated_curr_entities.get(key, {})
+                topic = updated_curr_entity.topic
+                kv_tags = updated_curr_entity.kv_tags
+                m_tags = updated_curr_entity.m_tags
+                updated_entity = updated_entities.get(key, {})
+                updated_entity['topic'] = topic
+                updated_kv_tags = updated_entity.get('kv_tags', {})
+                updated_m_tags = updated_entity.get('m_tags', [])
+                for tag, value in kv_tags.items():
+                    updated_kv_tags[tag] = value
+                for tag in m_tags:
+                    if tag not in updated_m_tags:
+                        updated_m_tags.append(tag)
+
+                updated_entity['kv_tags'] = updated_kv_tags
+                updated_entity['m_tags'] = updated_m_tags
+
+                updated_entities[key] = updated_entity
+
+            for key, updated_curr_tag in updated_curr_tags.items():
+                updated_tag = updated_tags.get(key, {})
+                for tag, value in updated_curr_tag.items():
+                    updated_tag[tag] = value
+                updated_tags[key] = updated_tag
+
+            for key, removed_curr_tag in removed_curr_tags.items():
+                removed_tag = removed_tags.get(key, {})
+                for tag, value in removed_curr_tag.items():
+                    removed_tag[tag] = value
+                removed_tags[key] = removed_tag
+
+        if rule.action and rule.action_fields and not pretend:
+            if rule.action == 'create equipment':
+                new_equipments = utils.create_equipment_action(rule_filters, rule.action_fields)
+
+        return updated_set, updated_entities, preview_type, updated_tags, removed_tags, diff_format, new_equipments
 
 
 class SiteCreateForm(forms.ModelForm):

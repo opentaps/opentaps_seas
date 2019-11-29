@@ -138,33 +138,45 @@
           <div class="">
             BACNet Configs
           </div>
-
+          {% if bacnet_configs %}
+          <div class="text-right flex-grow-1">
+            <form method="POST" action="{% url 'core:topic_list' %}">
+              {% csrf_token %}
+              <input type="hidden" name="bacnet_prefix_count" value="{{ bacnet_configs|length }}"/>
+              {% for bc in bacnet_configs %}
+                <input type="hidden" name="bacnet_prefix_{{ forloop.counter0 }}" value="{{ bc.prefix }}"/>
+              {% endfor %}
+              <button class="btn btn-secondary " type="submit">Topics</button>
+              <a class="btn btn-secondary" href="{% url 'core:topic_export' object.entity_id %}"><i class="fa fa-download"></i> Export</a>
+            </form>
+          </div>
+          {% endif %}
         </div>
       </h3>
       <div class="header-top">
           {% for bc in bacnet_configs %}
             <h6 class="bacnet-row" >
-                <div class="row">
-                  <div class="col-3">
-                    <div>{{ bc.prefix }}</div>
-                  </div>
-                  <div class="col-3">
-                  {% if bc.bc_equipment_entity_id %}
-                      <a href="{% url 'core:site_equipment_detail' object.entity_id bc.bc_equipment_entity_id  %}">{{ bc.bc_equipment_description }}</a>
-                  {% else %}
-                    <a class="btn btn-primary" href="{{ link_add_url }}?bacnet_prefix={{ bc.prefix }}&device_id={{ bc.device_id }}"><i class="fa fa-plus"></i> Add Equipment</a>
-                  {% endif %}
-                  </div>
-                    <div class="col-6 text-right">
-                      <form method="POST" action="{% url 'core:topic_list' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="bacnet_prefix" value="{{ bc.prefix }}"/>
-                        <button class="btn btn-primary " type="submit">Topics</button>
-                        <a class="btn btn-primary" href="{% url 'core:topic_export' object.entity_id %}?bacnet_prefix={{ bc.prefix }}"><i class="fa fa-download"></i> Export</a>
-                        <a class="btn btn-primary" href="{% url 'core:topictagruleset_runform' %}?topic_filter={{ bc.prefix }}"><i class="fa fa-cog mr-2"></i>Run Rules</a>
-                      </form>
-                    </div>
+              <div class="row">
+                <div class="col-3">
+                  <div>{{ bc.prefix }}</div>
                 </div>
+                <div class="col-3">
+                {% if bc.bc_equipment_entity_id %}
+                    <a href="{% url 'core:site_equipment_detail' object.entity_id bc.bc_equipment_entity_id  %}">{{ bc.bc_equipment_description }}</a>
+                {% else %}
+                  <a class="btn btn-primary" href="{{ link_add_url }}?bacnet_prefix={{ bc.prefix }}&device_id={{ bc.device_id }}"><i class="fa fa-plus"></i> Add Equipment</a>
+                {% endif %}
+                </div>
+                <div class="col-6 text-right">
+                  <form method="POST" action="{% url 'core:topic_list' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="bacnet_prefix" value="{{ bc.prefix }}"/>
+                    <button class="btn btn-primary " type="submit">Topics</button>
+                    <a class="btn btn-primary" href="{% url 'core:topic_export' object.entity_id %}?bacnet_prefix={{ bc.prefix }}"><i class="fa fa-download"></i> Export</a>
+                    <a class="btn btn-primary" href="{% url 'core:topictagruleset_runform' %}?topic_filter={{ bc.prefix }}"><i class="fa fa-cog mr-2"></i>Run Rules</a>
+                  </form>
+                </div>
+              </div>
             </h6>
           {% endfor %}
       </div>

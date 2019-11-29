@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load bootstrap4 %}
+{% load static i18n %}
+{% block title %}Run Topic Tagging Rule {{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+  {% load crispy_forms_tags %}
+
+  <div class="card mb-3">
+    <div class="card-body" id="rule-list">
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error" v-cloak>
+        ${ errors.error }
+      </div>
+      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="run_success" v-cloak>
+        <div v-if="run_success.updated">Successfully ran on ${ run_success.updated } Topics.</div>
+        <div v-if="run_success.new_equipments">Successfully created ${ run_success.new_equipments } Equipments.</div>
+        <button type="button" class="close" aria-label="Close" v-on:click="run_success = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form ref="form" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="rule_id" value="{{ object.id }}"/>
+
+        <div id="div_rule_id" class="form-group">
+          <div>Rule {{ object.name }}</div>
+        </div>
+
+        <div id="div_topic_filter" class="form-group">
+          <label for="topic_filter" class="col-form-label" style="width:200px;">
+            Run for Topics Containing
+          </label>
+          <span>
+            <div class="input-group">
+              <input type="text" name="topic_filter" id="topic_filter" ref="topic_filter" value="{{ form.topic_filter.initial|default:'' }}" class="form-control"/>
+            </div>
+            <span v-for="err in errors.topic_filter" class="text-danger" v-cloak>${ err }</span>
+          </span>
+        </div>
+
+        {{ form.diff_format|as_crispy_field }}
+
+        <div class="form-group d-flex justify-content-around mt-5">
+          {% if rule %}
+          <a href="{% url 'core:topictagruleset_detail' rule.rule_set_id %}" class="btn btn-secondary col-4" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+          {% else %}
+          <a href="{% url 'core:topictagruleset_list' %}" class="btn btn-secondary col-4" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+          {% endif %}
+
+          <b-input-group :disabled="isSaving" class="col-4" v-cloak>
+            <b-input-group-prepend style="width:62%">
+              <b-button variant="primary" type="submit" style="width:100%">Preview</b-button>
+            </b-input-group-prepend>
+            <select id="preview_type" name="preview_type" v-model="selectedType" class="form-control">
+              <option value="preview_csv">CSV</option>
+              <option value="preview_screen">Screen</option>
+            </select>
+          </b-input-group>
+
+          <b-button :disabled="isSaving" class="col-4" variant="primary" v-on:click="submitForm($event, null)">
+            <b-spinner v-if="isSaving" small type="grow" class="mr-2"></b-spinner>
+            <i v-if="!isSaving" class="fa fa-cog mr-2"></i>
+            <span v-if="isSaving">Running ...</span>
+            <span v-if="!isSaving">Run Rule</span>
+          </b-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#rule-list',
+    name: 'rule-list',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        isSaving: false,
+        run_success: false,
+        errors: {% if errors %} {{ errors|safe }}{% else %} false {% endif %},
+        preview_type: false,
+        selectedType: 'preview_csv',
+        valid_rulesets: [],
+        rule_name: {% if rule %}'{{ rule.name }}'{% else %}null{% endif %},
+        rule_id: {% if rule %}'{{ rule.id }}'{% else %}null{% endif %},
+      }
+    },
+    mounted() {
+    },
+    methods: {
+      run_tag_rule(event, preview_type) {
+        console.log('run_tag_rule', event, preview_type)
+        const formData = new FormData()
+        if (this.$refs.topic_filter && this.$refs.topic_filter.value) {
+          formData.set('topic_filter', this.$refs.topic_filter.value)
+        }
+        if (preview_type) {
+            formData.set('preview_type', preview_type)
+        }
+        if (!this.rule_id || !this.rule_id.length) {
+          console.log('run_tag_rule missing rule_id', this.rule_id)
+          this.errors = {'rule_id': 'This field is required.'}
+          return
+        }
+        url = dutils.urls.resolve('topictagrule_run', {id: this.rule_id})
+        this.run_success = false
+        this.errors = false
+        this.isSaving = true
+        return axios.post(url, formData, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              this.isSaving = false
+              console.log('run_tag_rule Done', x)
+              if (x.success) {
+                this.run_success = x
+                return x
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              this.isSaving = false
+              e = getResponseError(err)
+              console.error(e, err)
+              this.errors = e
+            });
+      },
+      submitForm(event, preview_type) {
+          console.log('submitForm :', event, preview_type)
+          this.run_tag_rule(event, preview_type)
+      },
+    }
+  })
+})();
+</script>
+{% endblock content %}

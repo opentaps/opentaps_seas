@@ -115,10 +115,13 @@ like this:
 The rules and filters can be run for either the topic name (Topic) or any tag associated with the topic, including all the ``bacnet_`` tags acquired when the topic was originally imported.  
 The options for the rules and filters are:
 
- * ``Equals``, ``Not Equals`` - value must be strictly equal or not equal condition.  This is case sensitive.
- * ``Contains``, ``Not Contains`` - value must contain or not contain condition.  The condition could be in beginning, middle, or end of the value.  This is also case sensitive.
+ * ``Equals``, ``Not Equals`` - value must be strictly equal or not equal condition.  This is not case sensitive.
+ * ``Contains``, ``Not Contains`` - value must contain or not contain condition.  The condition could be in beginning, middle, or end of the value.  This is also not case sensitive.
  * ``Is Present``, ``Is Absent`` - used to check if the tag is present or absent on the topic.  
  * ``Matches`` - used to specify a regular expression matching
+
+The filters can be joined by AND or OR conditions.  If there is an OR between two filter conditions, then it is strictly an OR between those conditions.  So A OR B AND C means (A OR B) AND C, not
+A OR (B AND C); A OR B AND C OR D OR E AND F means (A OR B) AND (C OR D OR E) AND F.
 
 **IMPORTANT!** The rules are just run once in the sequence given, so if you rely on tags to apply other tags, the sequence of the rules will affect the final output.
 
@@ -136,7 +139,7 @@ Next, go below to the "Tag Selected Topics" section to specify what to do for th
 from a Model, it will ask you to choose from top level Models first.  Then, it will show you the tags from the top level Model, and then ask you to select from any child Models of your Model.
 You can choose to add either the current Model's tags or choose a child Model.  Click on "Add these Tags"
 to add the tags of the Model you've chosen.  This adds the tags of the currently selected model to the list of tags that could be applied.  
-At any one time, you can only choose to add tags from one Model, and not its parents at the same time. 
+At any one time, you can only choose to add tags from one Model.  Tags from parent models are not added at the same time.  
 
 You can also choose to remove tags, which means that the topics matching the conditions will have the tags removed.  If you do this, also remember that the rules are just run once in their
 specified sequence, so the tags would have to exist or been added by other rules before they could be removed. 
@@ -219,7 +222,8 @@ time: The tags are added to your topics when you apply them or add them to the r
 
 On the Models page, you will see the "top level" Models that do not have any child models.  Click on a top level Model, and you will see a list of its children.  Models can be nested as 
 deeply as you want.  When you create a new Model, you can choose any other Model to be its parent.
-  
+
+You can duplicate a Model, which creates a copy of the original Model with all the same tags.  
 
 Tags
 ^^^^
