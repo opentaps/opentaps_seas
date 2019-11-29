@@ -40,6 +40,8 @@
   selectedWeatherStation = "{{object.weather_station.weather_station_id}}";
   {% elif form.initial %}
   selectedWeatherStation = "{{form.initial.weather_station.weather_station_id}}";
+  {% else %}
+  selectedWeatherStation = null
   {% endif %}
 
   window.onload = function() {
