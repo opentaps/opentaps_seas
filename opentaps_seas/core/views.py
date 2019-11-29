@@ -2799,8 +2799,8 @@ def weather_stations_json(request):
     data = []
     for weather_station in WeatherStation.objects.all():
         data.append({
-            'id': weather_station.weather_station_code,
-            'name': weather_station.station_name
+            'id': weather_station.weather_station_id,
+            'value': '{code} ({name})'.format(code=weather_station.weather_station_code, name=weather_station.station_name)
         })
 
     return JsonResponse({'items': data})
