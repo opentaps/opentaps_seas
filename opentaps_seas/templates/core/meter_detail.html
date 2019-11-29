@@ -75,6 +75,12 @@
         {% endif %}
       </p>
 
+      {% if historical_data %}
+      <p>
+        {% include "core/_weather_history_chart.html" %}
+      </p>
+      {% endif %}
+
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
         <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
