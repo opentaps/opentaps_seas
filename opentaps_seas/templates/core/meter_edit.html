@@ -25,7 +25,7 @@
 {% endblock add_button %}
 
 {% block inner_content %}
-<form method="post">
+<form method="post" id="meterForm" data-weather-stations-url="{% url 'core:weather_stations_json' %}" novalidate>
   {% csrf_token %}
   {{ form|crispy }}
 
@@ -34,4 +34,35 @@
     <button class="btn btn-primary col-5" type="submit"><i class="fa fa-edit mr-2"></i> Save</button>
   </div>
 </form>
+
+<script>
+  selectedWeatherStation = "{{object.weather_station.weather_station_id}}";
+
+  window.onload = function() {
+    const elem = document.getElementById('id_weather_station');
+    elem.disabled = true;
+
+    var url = document.getElementById('meterForm').getAttribute('data-weather-stations-url');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        const items = JSON.parse(xhr.response).items;
+        for (let item of items) {
+          const option = document.createElement('option');
+          option.value = item.id;
+          option.text = item.value;
+          elem.add(option);
+        }
+
+        // Choose default
+        if (selectedWeatherStation) {
+          elem.value = selectedWeatherStation;
+        }
+        elem.disabled = false;
+      }
+    }
+    xhr.open('GET', url);
+    xhr.send();
+  }
+</script>
 {% endblock inner_content %}

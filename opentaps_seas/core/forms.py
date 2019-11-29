@@ -31,6 +31,7 @@ from .models import TopicTagRule
 from .models import TopicTagRuleSet
 from .models import Topic
 from .models import TimeZone
+from .models import WeatherStation
 from django import forms
 from django.template.defaultfilters import slugify
 
@@ -729,6 +730,10 @@ class MeterCreateForm(forms.ModelForm):
         self.fields['meter_id'].required = True
         self.fields['site'].widget = forms.HiddenInput()
 
+        # Dynamic load weather station list
+        if 'weather_station' not in self.data:
+            self.fields['weather_station'].queryset = WeatherStation.objects.none()
+
     class Meta:
         model = Meter
         fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
@@ -738,6 +743,10 @@ class MeterUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MeterUpdateForm, self).__init__(*args, **kwargs)
         self.fields['meter_id'].widget = forms.HiddenInput()
+
+        # Dynamic load weather station list
+        if 'weather_station' not in self.data:
+            self.fields['weather_station'].queryset = WeatherStation.objects.none()
 
     class Meta:
         model = Meter
