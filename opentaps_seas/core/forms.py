@@ -731,8 +731,8 @@ class MeterCreateForm(forms.ModelForm):
         self.fields['site'].widget = forms.HiddenInput()
 
         # Dynamic load weather station list
-        # if 'weather_station' not in self.data:
-        self.fields['weather_station'].queryset = WeatherStation.objects.none()
+        if 'weather_station' not in self.data:
+            self.fields['weather_station'].queryset = WeatherStation.objects.none()
         # Show error message if failed to get default weather station
         if not hasattr(self, 'cleaned_data') and not self.initial.get('weather_station'):
             self.cleaned_data = {}
@@ -750,8 +750,8 @@ class MeterUpdateForm(forms.ModelForm):
         self.fields['meter_id'].widget = forms.HiddenInput()
 
         # Dynamic load weather station list
-        # if 'weather_station' not in self.data:
-        self.fields['weather_station'].queryset = WeatherStation.objects.none()
+        if 'weather_station' not in self.data:
+            self.fields['weather_station'].queryset = WeatherStation.objects.none()
 
     class Meta:
         model = Meter

@@ -2769,11 +2769,6 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
 
         return context
 
-    def get_initial(self):
-        initials = {}
-        initials['site'] = self.kwargs['site_id']
-        return initials
-
 
 meter_create_view = MeterCreateView.as_view()
 
