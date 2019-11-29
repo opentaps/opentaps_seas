@@ -46,11 +46,6 @@
     dataLabels: {
       enabled: false
     },
-    toolbar: {
-      tools: {
-        selection: false
-      }
-    },
     tooltip: {
       followCursor: false,
       theme: 'dark',
@@ -65,7 +60,8 @@
       clipMarkers: false
     },
   }
-  new Vue({
+  chartDegreeUnit = '°C'
+  myChart = new Vue({
     el: '#weatherhistorychart',
     components: {
       apexchart: VueApexCharts,
@@ -75,12 +71,56 @@
         options: {
           chart: {
             id: 'weather-history-chart',
-            width: '400px'
+            toolbar: {
+              tools: {
+                selection: false,
+                zoom: false,
+                zoomin: false,
+                zoomout: false,
+                reset: false,
+                pan: false,
+                customIcons: [
+                  {
+                    icon: '°C',
+                    title: 'Display as Celcius',
+                    click: function(chart, options, e) {
+                      chartDegreeUnit = '°C';
+                      data = myChart.series[0].data;
+                      rawData = myChart.series[0].rawData;
+                      for (let i = 0; i < rawData.length; i++) {
+                        data[i].y = rawData[i];
+                      }
+                    },
+                    appendTo: 'left'
+                  },
+                  {
+                    icon: '°F',
+                    title: 'Display as Fahrenheit',
+                    click: function(chart, options, e) {
+                      chartDegreeUnit = '°F';
+                      data = myChart.series[0].data;
+                      rawData = myChart.series[0].rawData;
+                      for (let i = 0; i < rawData.length; i++) {
+                        data[i].y = rawData[i] * 9 / 5 + 32;
+                      }
+                    },
+                    appendTo: 'left'
+                  }
+                ]
+              },
+            },
           },
           xaxis: {
             type: 'datetime',
             labels: {
               format: 'HH:mm'
+            },
+          },
+          yaxis: {
+            labels: {
+              formatter: function(value) {
+                return value.toFixed(1) + chartDegreeUnit
+              }
             },
           },
           tooltip: {
@@ -97,6 +137,11 @@
               x: new Date("{{item.datetime}}").getTime(),
               y: {{item.temperature}}
             },
+            {% endfor %}
+          ],
+          rawData: [
+            {% for item in historical_data %}
+              {{item.temperature}},
             {% endfor %}
           ]
         }],
