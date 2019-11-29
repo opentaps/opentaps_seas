@@ -753,7 +753,7 @@ def get_site_addr_loc(tags, site_id, session):
             if site_address:
                 site_address = site_address + ", "
             site_address = site_address + geo_addr
-            show_google_map = True
+        show_google_map = True
 
         if site_address and show_google_map:
             hash_object = hashlib.md5(site_address.encode('utf-8'))
