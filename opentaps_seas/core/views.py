@@ -2794,6 +2794,20 @@ class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
 meter_edit_view = MeterEditView.as_view()
 
 
+@login_required()
+def weather_stations_json(request):
+    data = []
+    for weather_station in WeatherStation.objects.all():
+        data.append({
+            'id': weather_station.weather_station_code,
+            'name': weather_station.station_name
+        })
+
+    return JsonResponse({'items': data})
+
+
+
+
 class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
     model = Meter
     slug_field = "meter_id"
