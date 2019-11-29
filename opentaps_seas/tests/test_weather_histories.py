@@ -18,6 +18,7 @@
 import json
 import os
 import eeweather
+import numpy as np
 
 from django.test import TestCase
 from django.urls import reverse
@@ -31,15 +32,32 @@ class WeatherHistoryAPITests(TestCase):
 
     def setUp(self):
         self.model_id = '_test/myweatherhistory'
+        self.weather_station_id="NYC_STATION"
+
+        # Create weather station temporary with usaf id for Central Park, NYC
+        weather_station = WeatherStation(weather_station_id=self.weather_station_id,
+                                         weather_station_code='725053',
+                                         station_name='CENTRAL PARK',
+                                         country='US',
+                                         state='NY',
+                                         latitude=40.799,
+                                         longitude=-73.969,
+                                         elevation=42.7,
+                                         elevation_uom_id='length_m',
+                                         source='TestCase'
+                                         )
+        weather_station.save()
+
+    def tearDown(self):
+        self._cleanup_data()
+
+    def _cleanup_data(self):
+        WeatherStation.objects.filter(weather_station_id=self.weather_station_id).delete()
 
     def test_get_station(self):
-        # Not all of the weather station doesn't supported by eeweather
-        # So we use sample id here
-        usaf_id = '724010'
-
         # Get weather station
-        weather_station = WeatherStation.objects.filter(weather_station_code=usaf_id).first()
-        self.assertIsNotNone(weather_station, "Cannot get weather station with USAF ID {id}".format(id=usaf_id))
+        weather_station = WeatherStation.objects.filter(weather_station_id=self.weather_station_id).first()
+        self.assertIsNotNone(weather_station, "Cannot get weather station")
 
         # Get historical data and see 
         historical_data = get_weather_history_for_station(weather_station)
@@ -47,4 +65,5 @@ class WeatherHistoryAPITests(TestCase):
 
         # Check values within a wide but realistic range
         for dt, deg_c in historical_data.iteritems():
-            self.assertTrue(-20 < deg_c and deg_c < 50, "Temperature is out of range (-20, 50), {temperature}".format(temperature=deg_c))
+            if not np.isnan(deg_c):
+                self.assertTrue(-20 < deg_c and deg_c < 50, "Temperature is out of range (-20, 50), {temperature}".format(temperature=deg_c))
