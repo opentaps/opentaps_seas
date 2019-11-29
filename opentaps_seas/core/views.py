@@ -1018,16 +1018,16 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         self.rule = None
 
         topic_filter = None
-        topic_filters = None
+        site_filter = None
         if "topic_filter" in self.request.session:
             topic_filter = self.request.session["topic_filter"]
-        if "topic_filters" in self.request.session:
-            topic_filters = self.request.session["topic_filters"]
+        if "site_filter" in self.request.session:
+            site_filter = self.request.session["site_filter"]
 
         if topic_filter:
             self.request.session["topic_filter"] = None
-        if topic_filters:
-            self.request.session["topic_filters"] = None
+        if site_filter:
+            self.request.session["site_filter"] = None
 
         self.select_not_mapped_topics = self.request.GET.get('select_not_mapped_topics')
         if self.select_not_mapped_topics:
@@ -1053,17 +1053,10 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
                 q_filters.append((f.get('field'), f.get('type'), f.get('value'), f.get('op')))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
-        elif topic_filters:
-            condition = None
-            for tf in topic_filters:
-                filter_elem = {'type': 'c', 'value': tf, 'op': 'OR'}
-                self.used_filters.append(filter_elem)
-                if condition:
-                    condition = condition | Q(topic__icontains=tf)
-                else:
-                    condition = Q(topic__icontains=tf)
-            if condition:
-                qs = qs.filter(condition)
+        elif site_filter:
+            filter_elem = {'field': 'siteRef', 'type': 'c', 'value': site_filter}
+            self.used_filters.append(filter_elem)
+            qs = qs.filter(Q(crateentity__kv_tags__siteRef__icontains=site_filter))
         elif topic_filter:
             filter_elem = {'type': 'c', 'value': topic_filter}
             self.used_filters.append(filter_elem)
@@ -1127,21 +1120,13 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
 
     def post(self, request, *args, **kwargs):
         bacnet_prefix = request.POST.get('bacnet_prefix')
+        site = request.POST.get('site')
         if bacnet_prefix:
             logging.info('TopicListView POST got bacnet_prefix %s', bacnet_prefix)
             self.request.session["topic_filter"] = bacnet_prefix
-        else:
-            c = request.POST.get('bacnet_prefix_count')
-            logging.info('TopicListView POST got %s bacnet_prefix(es)', c)
-            if c:
-                n = int(c)
-                prefixes = []
-                for i in range(n):
-                    p = request.POST.get('bacnet_prefix_' + str(i))
-                    if p:
-                        prefixes.append(p)
-                logging.info('TopicListView POST topic_filters %s', str(prefixes))
-                self.request.session["topic_filters"] = prefixes
+        elif site:
+            logging.info('TopicListView POST got site %s', site)
+            self.request.session["site_filter"] = site
 
         return HttpResponseRedirect(reverse('core:topic_list'))
 
