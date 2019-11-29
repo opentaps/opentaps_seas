@@ -2712,7 +2712,7 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                     'temperature': data.temp_c
                 })
 
-            context['historical_data'] = historical_data
+            context['historical_data'] = list(reversed(historical_data))
         else:
             context['historical_data'] = None
 
