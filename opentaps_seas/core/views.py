@@ -2983,16 +2983,18 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
     form_class = MeterCreateForm
 
     def get_form_kwargs(self, *args, **kwargs):
-        initial_values = {}
+        form_data = super(MeterCreateView, self).get_form_kwargs(*args, **kwargs)
+
         try:
-            site = Entity.objects.get(entity_id=self.kwargs['site_id'])
-            initial_values['site'] = site
-            initial_values['weather_station'] = utils.get_default_weather_station_for_site(site)
+            if not self.request.POST:
+                initial_values = {}
+                site = Entity.objects.get(entity_id=self.kwargs['site_id'])
+                initial_values['site'] = site
+                initial_values['weather_station'] = utils.get_default_weather_station_for_site(site)
+
+                form_data['initial'] = initial_values
         except:
             pass
-
-        form_data = super(MeterCreateView, self).get_form_kwargs(*args, **kwargs)
-        form_data['initial'] = initial_values
 
         return form_data
 
