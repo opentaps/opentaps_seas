@@ -172,6 +172,8 @@ class TagExportView(APIView):
             logger.error(err)
             return Response({'error': err}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        logger.info('TagExportView: for Site {}'.format(site.object_id))
+
         data = dict()
         topics = Entity.objects.filter(
             kv_tags__siteRef=site.object_id,
@@ -200,12 +202,14 @@ class TagExportView(APIView):
             device_id = topic.kv_tags['bacnet_device_id']
             interval = topic.kv_tags['interval']
             if device_id not in data:
-                data[device_id] = {}
+                d_addr = topic.kv_tags['bacnet_device_address']
+                d_name = topic.kv_tags['bacnet_device_name']
+                data[device_id] = {'intervals': {}, 'metadata': {'device_addr': d_addr, 'device_name': d_name}}
 
-            if interval not in data[device_id]:
-                data[device_id][interval] = []
+            if interval not in data[device_id]['intervals']:
+                data[device_id]['intervals'][interval] = []
 
-            data[device_id][interval].append(
+            data[device_id]['intervals'][interval].append(
                 tag_object
             )
         return Response(data, status=status.HTTP_200_OK)
