@@ -203,8 +203,9 @@ class TopicRestAPITests(TestCase):
         json_resp = json.loads(response.content)
 
         self.assertIsNotNone(json_resp.get('922001'))
-        self.assertIsNotNone(json_resp.get('922001').get('300'))
-        arr = json_resp.get('922001').get('300')
+        self.assertIsNotNone(json_resp.get('922001').get('intervals'))
+        self.assertIsNotNone(json_resp.get('922001').get('intervals').get('300'))
+        arr = json_resp.get('922001').get('intervals').get('300')
         self.assertEqual(len(arr), 2)
 
         self.assertEqual(arr[0].get('topic', None), '_test_site/922001/binaryOutput/8')
@@ -229,8 +230,9 @@ class TopicRestAPITests(TestCase):
         self.assertEqual(arr[1].get('siteRef', None), '_test_site')
 
         self.assertIsNotNone(json_resp.get('922002'))
-        self.assertIsNotNone(json_resp.get('922002').get('300'))
-        arr = json_resp.get('922002').get('300')
+        self.assertIsNotNone(json_resp.get('922002').get('intervals'))
+        self.assertIsNotNone(json_resp.get('922002').get('intervals').get('300'))
+        arr = json_resp.get('922002').get('intervals').get('300')
         self.assertEqual(len(arr), 2)
 
         self.assertEqual(arr[0].get('topic', None), '_test_site/922002/binaryOutput/8')
