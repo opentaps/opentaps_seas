@@ -130,6 +130,7 @@ class TagImportView(APIView):
                         kv_tags['bacnet_device_name'] = device_name
                         kv_tags['bacnet_device_description'] = device_description
                         kv_tags['bacnet_bacnet_object_type'] = o_type
+                        kv_tags['bacnet_object_index'] = o_id
                         kv_tags['bacnet_prefix'] = device_id
                         kv_tags['interval'] = self.interval  # default 300 for now
                         kv_tags['dis'] = topic_name
