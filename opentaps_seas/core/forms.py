@@ -909,6 +909,7 @@ class MeterDataUploadForm(forms.Form):
                     for row in records:
                         logger.info('MeterDataUploadForm: importing row {}'.format(row))
                         v = MeterHistory(meter_id=meter, uom_id=uom_id)
+                        v.source = 'CSV Upload'
                         v.value = row['value']
                         v.as_of_datetime = row['dt']
                         v.created_by_user = self.user
