@@ -116,6 +116,8 @@ class TagImportView(APIView):
                             o_id=o_id
                         )
 
+                        entity_id = topic_name.replace('/', '-')
+
                         logger.info('Start: Create topic - {}'.format(topic_name))
 
                         # check topic exists
@@ -123,6 +125,7 @@ class TagImportView(APIView):
 
                         # get all available tags
                         kv_tags = dict()
+                        kv_tags['id'] = topic_name
                         kv_tags['siteRef'] = site.object_id
                         kv_tags['bacnet_volttron_point_name'] = topic_name
                         kv_tags['bacnet_device_address'] = d_address
@@ -142,15 +145,23 @@ class TagImportView(APIView):
                                 kv_tags[tag_name] = t_v.encode('ascii', 'ignore').decode('utf-8')
                                 self.ensure_tag_exists(tag_name)
 
-                        topic = Entity(
-                            entity_id=topic_name,
-                            topic=topic_name,
-                            m_tags=['point'],
-                            kv_tags=kv_tags
-                        )
+                        try:
+                            topic = Entity.objects.get(topic=topic_name)
+                            for tag, value in topic.kv_tags.items():
+                                topic.add_tag(tag, value)
+
+                            logger.info('End: Update topic - {}'.format(topic_name))
+                        except Entity.DoesNotExist:
+                            topic = Entity(
+                                entity_id=entity_id,
+                                topic=topic_name,
+                                m_tags=['point'],
+                                kv_tags=kv_tags
+                            )
+                            logger.info('End: Create topic - {}'.format(topic_name))
 
                         topic.save()
-                        logger.info('End: Create topic - {}'.format(topic_name))
+
         return Response({'success': 'success'})
 
     def ensure_tag_exists(self, tag_name):
@@ -196,7 +207,8 @@ class TagExportView(APIView):
                     'bacnet_device_name',
                     'bacnet_device_description',
                     'bacnet_prefix',
-                    'interval'
+                    'interval',
+                    'id'
                 ]:
                     tag_object[tag.replace('bacnet_', '')] = value
 
