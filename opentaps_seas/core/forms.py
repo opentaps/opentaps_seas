@@ -25,6 +25,7 @@ from .models import EntityNote
 from .models import Entity
 from .models import ModelView
 from .models import Meter
+from .models import MeterHistory
 from .models import SiteView
 from .models import Tag
 from .models import TopicTagRule
@@ -873,6 +874,52 @@ class TagImportForm(forms.Form):
             result['import_success'] = import_success
 
         return result
+
+
+class MeterDataUploadForm(forms.Form):
+    meter = forms.CharField(max_length=255)
+    meter_data = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True, run_rule=False):
+        meter = self.cleaned_data['meter']
+        meter_data = self.cleaned_data['meter_data']
+        fcsv = TextIOWrapper(meter_data.file, encoding=meter_data.charset if meter_data.charset else 'utf-8')
+
+        # an error message
+        import_errors = False
+        count = 0
+
+        m = Meter.objects.get(meter_id=meter)
+        if not m:
+            import_errors = "Meter not found: {}".format(meter)
+        else:
+            try:
+                records = csv.DictReader(fcsv, fieldnames=['dt', 'value'])
+            except json.decoder.JSONDecodeError:
+                import_errors = "Cannot parse CSV file."
+            else:
+                logger.info('MeterDataUploadForm: importing Meter CSV Data ...')
+                # assume all data is in kwh for now
+                uom_id = 'energy_kWh'
+                if records:
+                    for row in records:
+                        logger.info('MeterDataUploadForm: importing row {}'.format(row))
+                        v = MeterHistory(meter_id=meter, uom_id=uom_id)
+                        v.value = row['value']
+                        v.as_of_datetime = row['dt']
+                        v.created_by_user = self.user
+                        v.save()
+                else:
+                    import_errors = "CSV file is empty."
+
+        if import_errors:
+            return {'import_errors': import_errors}
+        else:
+            return {'imported': count}
 
 
 class MeterCreateForm(forms.ModelForm):

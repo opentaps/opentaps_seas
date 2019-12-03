@@ -1,0 +1,264 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+<div id="meterhistorychart" class="container" v-cloak>
+  <div class="card mb-3">
+    <div class="card-body p-sm-3 p-2">
+      <div class="row">
+        <div class="col-12">
+          <div class="row d-inline m-0 justify-content-center align-items-stretch">
+            <apexchart
+              ref="meter_history_line_chart"
+              id="meter_history_line_chart"
+              height=240
+              type="line"
+              :options="options"
+              :series="series"></apexchart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="upload_modal">
+  <upload-form-modal
+    title="Upload Meter CSV Data"
+    :url="url"
+    :csrfmiddlewaretoken="csrfmiddlewaretoken"></upload-form-modal>
+</div>
+
+<style>
+.apexcharts-toolbar-custom-icon {
+  height: 24px;
+  width: 30px;
+}
+</style>
+
+<script>
+(function() {
+  function saveTextAsCsvFile(filename, data) {
+    let blob = new Blob([
+                          new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
+                          data
+                        ],
+                        {type: 'text/csv;charset=utf-8;'});
+    if (window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveBlob(blob, filename);
+    }
+    else{
+      var elem = window.document.createElement('a');
+      elem.href = window.URL.createObjectURL(blob);
+      elem.download = filename;
+      document.body.appendChild(elem);
+      elem.click();
+      document.body.removeChild(elem);
+    }
+  }
+
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+  Vue.component('upload-form-modal', {
+    delimiters: ['$[', ']'],
+    extends: Vue.component('form-modal'),
+    data() {
+      return {
+        fields: [
+          { key: 'meter_data', value: '', type: 'file' },
+        ]
+      }
+    },
+    created: function () {
+      console.log('Created upload modal ...');
+      eventHub.$on('showModal_upload', this.showModal)
+    },
+    methods:{
+      pre_save: function(formData, item) {
+        formData.set('meter', '{{ meter_id }}')
+        if (this.fields[0].value) {
+          formData.append('meter_data', this.fields[0].value, this.fields[0].value.name);
+        }
+      },
+      save_label: function(item) {
+        return 'Upload'
+      },
+      post_save: function(response) {
+        console.log('upload-form-modal: post_save', response)
+        eventHub.$emit('meter_data_changed', {type: 'uploaded'})
+      }
+    }
+  });
+  new Vue({
+    name: 'upload_modal',
+    el: '#upload_modal',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        url: '{% url 'core:meter_data_csv' meter_id %}',
+      }
+    }
+  });
+
+  // The global window.Apex variable below can be used to set common options for all charts on the page
+  Apex = {
+    dataLabels: {
+      enabled: false
+    },
+    tooltip: {
+      followCursor: false,
+      theme: 'dark',
+      x: {
+        show: false
+      },
+      marker: {
+        show: false
+      },
+    },
+    grid: {
+      clipMarkers: false
+    },
+  }
+  chartDegreeUnit = 'kWh'
+  myChart = new Vue({
+    el: '#meterhistorychart',
+    components: {
+      apexchart: VueApexCharts,
+    },
+    data: function() {
+      return {
+        options: {
+          chart: {
+            id: 'meter-history-chart',
+            toolbar: {
+              tools: {
+                download: false,
+                selection: false,
+                zoom: false,
+                zoomin: false,
+                zoomout: false,
+                reset: false,
+                pan: false,
+                customIcons: [
+                  {
+                    icon: '<i class="fa fa-upload"></i>',
+                    title: 'Upload',
+                    class: '',
+                    click: function(e) {
+                      // Show form with upload options
+                      console.log('Show upload...');
+                      eventHub.$emit('showModal_upload', {})
+                    }
+                  },
+                  {
+                    icon: '<i class="fa fa-download"></i>',
+                    title: 'Download',
+                    class: '',
+                    click: function(e) {
+                      // Genereate CSV data first
+                      let lines = [];
+                      lines.push('Date/Time,Value (kWh)');
+                      const chartData = myChart.series[0].data;
+                      for (let i = 0; i < chartData.length; i++) {
+                        let date = new Date(chartData[i].x).toLocaleString()
+                        lines.push(['"', date, '"', ',', chartData[i].y].join(''));
+                      }
+
+                      // Save data as csv file
+                      saveTextAsCsvFile('Meter History.csv', lines.join('\n'));
+                    }
+                  },
+                ]
+              },
+            },
+          },
+          xaxis: {
+            type: 'datetime',
+            labels: {
+              format: 'HH:mm'
+            },
+          },
+          yaxis: {
+            labels: {
+              formatter: function(value) {
+                return value.toFixed(1) + ' ' + chartDegreeUnit
+              }
+            },
+          },
+          tooltip: {
+            x: {
+              format: 'dd MMM yyyy HH:mm'
+            }
+          }
+        },
+        series: [{
+          name: "Value",
+          data: [
+            {
+              x: new Date().getTime(),
+              y: 0
+            },
+          ],
+          rawData: [
+            0,
+          ]
+        }],
+      }
+    },
+    mounted() {
+      this.init();
+    },
+    methods: {
+      init() {
+        this.refresh();
+        eventHub.$on('meter_data_changed', this.refresh)
+      },
+      clear() {
+        console.log('Clear charts.');
+        // this.series.data.splice(0);
+      },
+      refresh() {
+        this.fetchData();
+      },
+      getUrlArgs() {
+        // placeholder to add custom parameters
+        return '';
+      },
+      fetchData() {
+        url = '{% url 'core:meter_data_json' meter_id %}' + this.getUrlArgs();
+        console.log('Fetching meter chart from ', url);
+        axios.get(url).then(response => {
+          console.log('Fetching meter chart got ', response.data.values);
+          if (response.data.values.length < 20) {
+            this.$refs['meter_history_line_chart'].updateOptions({markers: {size: 5}});
+          } else {
+            this.$refs['meter_history_line_chart'].updateOptions({markers: {size: 0}});
+          }
+          if (response.data.values.length == 0) {
+            this.series[0].data = [{y:0, x:new Date().getTime()}]
+          } else {
+            this.series[0].data = response.data.values.map(x => { return { y: x.value, x: new Date(x.datetime).getTime() } } );
+          }
+          });
+      },
+    }
+  })
+})();
+</script>

@@ -295,6 +295,7 @@ Vue.component('form-modal', {
               <label v-if="!item.__nolabels && field.label" :for="field.key">$[ field.label ]</label>
               <textarea v-if="field.type == 'textarea'" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" rows="3" v-model="field.value" :placeholder="field.placeholder"></textarea>
               <input v-if="field.type == 'input'" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" v-model="field.value" :placeholder="field.placeholder"></input>
+              <input v-if="field.type == 'file'" type="file" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" :placeholder="field.placeholder" @change="filesChange(field, $event.target.name, $event.target.files)"></input>
               <div v-if="!item.__nolabels && field.type == 'display'">$[ field.value ]</div>
               <div v-if="field.type == 'tag'">
               <tag-value-input
@@ -351,6 +352,11 @@ Vue.component('form-modal', {
       this.visible = false
       this.item = null
       this.errors = {}
+    },
+    filesChange(field, fieldName, fileList) {
+      console.log('filesChange', field, fieldName, fileList)
+      if (!fileList.length) return;
+      field.value = fileList[0]
     },
     pre_save: function(formData) {
       /* placeholder */

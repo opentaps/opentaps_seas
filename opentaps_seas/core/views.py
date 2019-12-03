@@ -37,6 +37,7 @@ from .forms import FileDeleteForm
 from .forms import FileUpdateForm
 from .forms import FileUploadForm
 from .forms import MeterCreateForm
+from .forms import MeterDataUploadForm
 from .forms import MeterUpdateForm
 from .forms import ModelCreateForm
 from .forms import ModelDuplicateForm
@@ -2910,6 +2911,67 @@ class ReportPreviewCsvView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateVie
 report_preview_csv_view = ReportPreviewCsvView.as_view()
 
 
+def meter_data_json(request, meter):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+
+    m = Meter.objects.get(meter_id=meter)
+    if not m:
+        logger.warning('No Meter found with meter_id = %s', meter)
+        return JsonResponse({'error': 'Meter data not found : {}'.format(meter)}, status=404)
+
+    trange = 24
+    srange = request.GET.get('range')
+    if srange:
+        try:
+            trange = int(srange)
+            if trange < 0:
+                trange = -trange
+        except Exception:
+            trange = 24
+
+    # Select last <trange> records
+    meter_data = []
+    qs = m.meterhistory_set
+    for data in qs.order_by("-as_of_datetime")[:trange]:
+        # Prevent adding duplicates
+        datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        if meter_data and datetime == meter_data[-1]['datetime']:
+            continue
+        meter_data.append({
+            'datetime': datetime,
+            'value': data.value
+        })
+
+    return JsonResponse({'values': list(reversed(meter_data))})
+
+
+@login_required()
+def meter_data_csv(request, meter):
+
+    m = Meter.objects.get(meter_id=meter)
+    if not m:
+        logger.warning('No Meter found with meter_id = %s', meter)
+        return JsonResponse({'error': 'Meter data not found : {}'.format(meter)}, status=404)
+
+    if request.method == 'POST':
+        form = MeterDataUploadForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            form_results = form.save()
+
+            # an error message
+            import_errors = form_results.get('import_errors')
+
+            if import_errors:
+                return JsonResponse({'errors': import_errors})
+
+            return JsonResponse({'success': 1})
+        else:
+            return JsonResponse({'errors': form.errors})
+    else:
+        return JsonResponse({'error': 'Only POST methods are supported'})
+
+
 class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     model = Meter
     slug_field = "meter_id"
@@ -2932,8 +2994,6 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                 })
 
             context['historical_data'] = list(reversed(historical_data))
-        else:
-            context['historical_data'] = None
 
         return context
 

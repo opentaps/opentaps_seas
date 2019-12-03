@@ -75,11 +75,17 @@
         {% endif %}
       </p>
 
-      {% if historical_data %}
       <p>
+      {% if historical_data %}
         {% include "core/_weather_history_chart.html" %}
-      </p>
+      {% else %}
+        No weather data.
       {% endif %}
+      </p>
+
+      <p>
+        {% include "core/_meter_history_chart.html" with meter_id=object.meter_id %}
+      </p>
 
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>

@@ -796,7 +796,7 @@ class Meter(models.Model):
 
 
 class MeterHistory(models.Model):
-    meter_history_id = CharField(max_length=12, primary_key=True)
+    meter_history_id = AutoField(_("Meter History ID"), primary_key=True, auto_created=True)
     meter = ForeignKey(Meter, on_delete=models.CASCADE)
     as_of_datetime = DateTimeField(_("As Of Datetime"), default=now)
     value = FloatField(null=True)
