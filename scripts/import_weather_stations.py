@@ -25,16 +25,14 @@ def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
         # Delete all meters
-        sql = """DELETE FROM core_meter;"""
-        c.execute(sql)
+        c.execute("DELETE FROM core_meter_history;")
+        c.execute("DELETE FROM core_meter;")
 
         # Delete all weather histories
-        sql = """DELETE FROM core_weather_history;"""
-        c.execute(sql)
+        c.execute("DELETE FROM core_weather_history;")
 
         # Delete all weather stations
-        sql = """DELETE FROM core_weather_station;"""
-        c.execute(sql)
+        c.execute("DELETE FROM core_weather_station;")
 
 
 def demo():

@@ -26,12 +26,12 @@ ARGS=$*
 if [ "$1" == "all_data" ]; then
     echo "Import all data"
     python manage.py runscript import_tags --script-args $ARGS
-    python manage.py runscript import_timezones --script-args $ARGS
-    python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_unit_of_measure --script-args $ARGS
     python manage.py runscript import_weather_stations --script-args $ARGS
     python manage.py runscript import_entities --script-args $ARGS
     python manage.py runscript import_data --script-args $ARGS
+    python manage.py runscript import_timezones --script-args $ARGS
+    python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_tagrules --script-args $ARGS
     python manage.py runscript import_weather_histories --script-args $ARGS
 else
