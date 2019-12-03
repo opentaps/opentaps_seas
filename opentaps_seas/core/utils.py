@@ -1121,8 +1121,8 @@ def get_weather_station_for_location(latitude, longitude, as_object=True):
                 return WeatherStation.objects.get(weather_station_code=ranked_station.name)
             else:
                 return ranked_station.name
-        except:
-            pass
+        except Exception as e:
+            logging.error(e)
 
 
 def get_default_weather_station_for_site(site):
@@ -1146,18 +1146,18 @@ def get_weather_history_for_station(weather_station, days_from_today=7):
 
     # Get last update datetime
     try:
-        last_record = WeatherStation.objects.filter(weather_station=weather_station).order_by('-as_of_datetime').first()
+        last_record = WeatherHistory.objects.filter(weather_station=weather_station).order_by('-as_of_datetime').first()
         if last_record:
             start_date = last_record.as_of_datetime + timedelta(minutes=1)
-    except:
-        pass
+    except Exception as e:
+        logging.warning(e)
 
     # Get weather station
     station = None
     try:
         station = eeweather.ISDStation(weather_station.weather_station_code)
     except Exception as e:
-        print(e.message)
+        logging.error(e)
         return
 
     try:
@@ -1175,4 +1175,4 @@ def get_weather_history_for_station(weather_station, days_from_today=7):
 
         return temp_degC
     except Exception as e:
-        print(e)
+        logging.error(e)

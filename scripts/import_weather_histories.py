@@ -15,13 +15,11 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-import csv
-import os
 from django.db import connections
-from django.db.utils import IntegrityError
 from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import WeatherStation
 from opentaps_seas.core.utils import get_weather_history_for_station
+
 
 def clean():
     print('Deleting data ...')
@@ -46,7 +44,8 @@ def import_data(which):
     for meter in Meter.objects.values('weather_station').distinct():
         weather_station = WeatherStation.objects.get(weather_station_id=meter['weather_station'])
         print('Importing data for {}'.format(weather_station.station_name))
-        get_weather_history_for_station(weather_station)
+        get_weather_history_for_station(weather_station, 30)
+
 
 def print_help():
     print("Usage: python manage.py runscript import_weather_histories --script-args [all|seed|demo] [clean]")
