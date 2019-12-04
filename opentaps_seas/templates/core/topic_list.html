@@ -1004,6 +1004,11 @@
         page: 1,
         filter_fields: [
           { label: 'Topic', value: 'topic' },
+          { label: 'bacnet_objectName', value: 'bacnet_objectName' },
+          { label: 'bacnet_bacnet_object_type', value: 'bacnet_bacnet_object_type' },
+          { label: 'bacnet_device_name', value: 'bacnet_device_name' },
+          { label: 'bacnet_device_id', value: 'bacnet_device_id' },
+          { label: 'bacnet_units', value: 'bacnet_units' },
           { label: 'ID', value: 'id' }
         ],
         filters: [
@@ -1276,11 +1281,12 @@
         const formData = new FormData()
         this.build_filter_data(formData)
         formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
-        this.topics_counter = null
         axios.post(url + '?page=' + this.page +'&per_page=' + this.per_page, formData).then(response => {
             var cn = parseInt(response.headers.topics_counter)
             if (cn > 0 && this.filters.length > 1 && cn > this.per_page) {
                 this.topics_counter = response.headers.topics_counter
+            } else {
+                this.topics_counter = null
             }
             this.show_load_data_spinner = false;
             container.innerHTML = response.data
