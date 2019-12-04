@@ -1171,7 +1171,9 @@ def topic_list_table(request):
     rc = RequestConfig(request, paginate={'per_page': 15})
     table = TopicTable(qs, orderable=True, order_by='topic')
     table = rc.configure(table)
-    return HttpResponse(table.as_html(request))
+    resp = HttpResponse(table.as_html(request))
+    resp['topics_counter'] = str(len(qs))
+    return resp
 
 
 @login_required()

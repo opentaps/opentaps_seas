@@ -103,6 +103,7 @@
               </div>
               <input type="hidden" name="filters_count" value="{{ used_filters|length }}" />
             </div>
+
             <div class="rounded-lg bg-light mb-2 row">
               <div class="col-xl-4 col-lg-4">
                 <input id="select_not_mapped_topics" type="checkbox" v-model="select_not_mapped_topics" v-on:change="submit_filters" class="invisible position-absolute"/>
@@ -117,8 +118,8 @@
                   <span class="light-btn">Show his tagged topics only.</span>
                 </label>
               </div>
-              <div class="col-xl-4 col-lg-4">
-                 <b-form-group label-cols="8" label-cols-lg="8" label-cols-xl="9" label-align-sm="left" label-align-lg="right" label="View" label-for="per_page">
+              <div :class="[topics_counter ? 'col-xl-3' : 'col-xl-4', topics_counter ? 'col-lg-3' : 'col-lg-4']">
+                 <b-form-group label-cols-sm="5" label-cols="7" label-cols-lg="7" label-cols-xl="8" label-align-sm="left" label-align-lg="right" label="View" label-for="per_page">
                    <select name="per_page" id="per_page" class="form-control" v-model="per_page" v-on:change="select_per_page">
                       <option value="10">10</option>
                       <option value="25">25</option>
@@ -128,6 +129,11 @@
                     </select>
                   </b-form-group>
               </div>
+
+              <div class="col-xl-1 col-lg-1" v-if="topics_counter" style="padding-left:0px;padding-top:8px;">
+                <div class="text-sm-center text-lg-left text-xl-left">of ${ topics_counter }</div>
+              </div>
+
               <div class="col-xl-6 col-lg-8" v-if="all_checked || select_all_matching">
                 <input id="select_all_matching" type="checkbox" name="_ALL_" class="invisible position-absolute" v-model="select_all_matching" />
                 <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 h-c" for="select_all_matching">
@@ -137,6 +143,7 @@
                 </label>
               </div>
             </div>
+
             <div class="text-center filter-spiner-placeholder" v-if="show_load_data_spinner">
                 <b-spinner label="Loading..." variant="secondary"></b-spinner>
             </div>
@@ -1016,6 +1023,7 @@
         select_all_matching: false,
         show_load_data_spinner: false,
         per_page: 10,
+        topics_counter: null,
       }
     },
     mounted: function () {
@@ -1268,7 +1276,12 @@
         const formData = new FormData()
         this.build_filter_data(formData)
         formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
+        this.topics_counter = null
         axios.post(url + '?page=' + this.page +'&per_page=' + this.per_page, formData).then(response => {
+            var cn = parseInt(response.headers.topics_counter)
+            if (cn > 0 && this.filters.length > 1 && cn > this.per_page) {
+                this.topics_counter = response.headers.topics_counter
+            }
             this.show_load_data_spinner = false;
             container.innerHTML = response.data
             this.setup_table()
