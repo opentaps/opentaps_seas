@@ -196,7 +196,7 @@ class TagExportView(APIView):
         for topic in topics:
             tag_object = dict()
             tag_object['topic'] = topic.topic
-            tag_object['point_name'] = topic.entity_id
+            tag_object['point_name'] = topic.topic
             tag_object['writable'] = False
             tag_object['write_priority'] = ''
 
@@ -208,7 +208,8 @@ class TagExportView(APIView):
                     'bacnet_device_description',
                     'bacnet_prefix',
                     'interval',
-                    'id'
+                    'id',
+                    'volttron_point_name'
                 ]:
                     tag_object[tag.replace('bacnet_', '')] = value
 
