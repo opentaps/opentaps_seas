@@ -167,6 +167,25 @@
         <!--Add Tag-->
         <form novalidate v-if="isInitial || isSaving" class="main-form">
           <div class="container p-0" v-if="isAddingModel">
+            <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+                ${ errors.error }
+              </div>
+              <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="tag_topics_success">
+                <div style="max-height:15em;overflow:auto">
+                  Added the tags:
+                  <ul>
+                    <li v-for="tag in tag_topics_success.tags">
+                      ${ display_tag(tag) }
+                    </li>
+                  </ul>
+
+                  <div v-if="tag_topics_success.updated">to ${ tag_topics_success.updated } topics/data points</div>
+
+                </div>
+                <button type="button" class="close" aria-label="Close">
+                  <span aria-hidden="true" v-on:click="tag_topics_success = false">&times;</span>
+                </button>
+            </div>
             <div class="form-group">
               <h5>Select Model</h5>
               <div v-for="item in model_selects" v-bind:key="item.level">
@@ -204,12 +223,8 @@
                     </li>
                   </ul>
 
-                  To the following topics / data points:
-                  <ul>
-                    <li v-for="updated in tag_topics_success.updated">
-                      ${ updated.topic } : <a :href="get_point_link(updated)">${ display_point(updated) }</a>
-                    </li>
-                  </ul>
+                  <div v-if="tag_topics_success.updated">to ${ tag_topics_success.updated } topics/data points</div>
+
                 </div>
                 <button type="button" class="close" aria-label="Close">
                   <span aria-hidden="true" v-on:click="tag_topics_success = false">&times;</span>

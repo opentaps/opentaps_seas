@@ -1194,10 +1194,11 @@ def tag_topics(request):
         return JsonResponse({'errors': 'No Topics selected'})
 
     # store a dict of topic -> data_point.entity_id
-    updated = utils.tag_topics(filters, tags, select_all=select_all, topics=topics, select_not_mapped_topics=snmt)
+    updated, _, _, _ = utils.tag_topics(filters, tags, select_all=select_all,
+                                        topics=topics, select_not_mapped_topics=snmt)
     if not updated:
         return JsonResponse({'errors': 'No Topic matched the given filters.'})
-    return JsonResponse({'success': 1, 'updated': updated, 'tags': tags})
+    return JsonResponse({'success': 1, 'updated': len(updated), 'tags': tags})
 
 
 @login_required()
