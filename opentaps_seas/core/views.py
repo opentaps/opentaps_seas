@@ -686,7 +686,7 @@ class ModelDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, ModelBC
     slug_field = "entity_id"
     slug_url_kwarg = "entity_id"
     entity_id_field = 'entity_id'
-    head_tags = ['dis', 'model', 'modelRef']
+    head_tags = ['dis', 'modelRef', 'model']
     template_name = 'core/model_detail.html'
 
 
