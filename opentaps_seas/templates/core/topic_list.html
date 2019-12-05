@@ -119,8 +119,8 @@
                 </label>
               </div>
               <div :class="[topics_counter ? 'col-xl-3' : 'col-xl-4', topics_counter ? 'col-lg-3' : 'col-lg-4']">
-                 <b-form-group label-cols-sm="5" label-cols="7" label-cols-lg="7" label-cols-xl="8" label-align-sm="left" label-align-lg="right" label="View" label-for="per_page">
-                   <select name="per_page" id="per_page" class="form-control" v-model="per_page" v-on:change="select_per_page">
+                 <b-form-group style="margin-bottom: 0px;" label-cols-sm="5" label-cols="7" label-cols-lg="7" label-cols-xl="8" label-align-sm="left" label-align-lg="right" label="View" label-for="per_page">
+                   <select name="per_page" id="per_page" class="form-control page-length" v-model="per_page" v-on:change="select_per_page">
                       <option value="10">10</option>
                       <option value="25">25</option>
                       <option value="50">50</option>
