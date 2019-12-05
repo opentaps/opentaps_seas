@@ -148,7 +148,7 @@ class TagImportView(APIView):
                         try:
                             topic = Entity.objects.get(topic=topic_name)
                             for tag, value in topic.kv_tags.items():
-                                topic.add_tag(tag, value)
+                                topic.add_tag(tag, value, commit=False)
 
                             logger.info('End: Update topic - {}'.format(topic_name))
                         except Entity.DoesNotExist:
