@@ -52,3 +52,6 @@ django-filer==1.4.4
 geocoder==1.38.1
 eeweather==0.3.22
 sqlalchemy==1.3.11
+
+# Our eemeter fork
+git+https://github.com/jwickers/eemeter.git#egg=eemeter
