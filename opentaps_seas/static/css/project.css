@@ -291,3 +291,10 @@ input.vs__search:-moz-placeholder {
   height:400px;
   padding-top:190px;
 }
+
+.form-control.page-length {
+  padding-top:0.175rem;
+  padding-bottom:0.175rem;
+  height:90%;
+  margin-top:0.175rem;
+}
