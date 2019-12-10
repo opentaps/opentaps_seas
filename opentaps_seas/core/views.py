@@ -55,6 +55,7 @@ from .forms import TopicTagRuleSetRunForm
 from .forms import TopicTagRuleRunForm
 from .forms import EquipmentCreateForm
 from .forms import TagImportForm
+from .models import CrateEntity
 from .models import Entity
 from .models import EntityFile
 from .models import EntityNote
@@ -81,6 +82,7 @@ from django.core.files import File
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.db.models import Count
+from django.db.models import Subquery
 from django.db.models.functions import Lower
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -1010,13 +1012,15 @@ equipment_create_view = EquipmentCreateView.as_view()
 
 
 class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):
-    model = Topic
+    model = CrateEntity
     table_class = TopicTable
     table_pagination = {'per_page': 10}
     template_name = 'core/topic_list.html'
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
+        topics = Topic.objects.all()
+        qs = qs.filter(topic__in=Subquery(topics.values('topic')))
         self.used_filters = []
         self.rule = None
 
@@ -1059,7 +1063,7 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         elif site_filter:
             filter_elem = {'field': 'siteRef', 'type': 'c', 'value': site_filter}
             self.used_filters.append(filter_elem)
-            qs = qs.filter(Q(crateentity__kv_tags__siteRef__icontains=site_filter))
+            qs = qs.filter(Q(kv_tags__siteRef__icontains=site_filter))
         elif topic_filter:
             filter_elem = {'type': 'c', 'value': topic_filter}
             self.used_filters.append(filter_elem)
@@ -1140,7 +1144,9 @@ topic_list_view = TopicListView.as_view()
 @login_required()
 @require_POST
 def topic_list_table(request):
-    qs = Topic.objects.all()
+    qs = CrateEntity.objects.all()
+    topics = Topic.objects.all()
+    qs = qs.filter(topic__in=Subquery(topics.values('topic')))
 
     select_not_mapped_topics = request.POST.get('select_not_mapped_topics')
     if select_not_mapped_topics:
