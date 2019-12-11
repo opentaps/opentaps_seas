@@ -39,6 +39,15 @@ The Site page shows
  * notes associated with the site.  Here you can enter notes about the site.
  * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on Topics to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix.  From here you can also create an Equipment for this config.  This is helpful if each BACNet config points to a particular machine, rather than a supervisory controller. 
  
+Meters
+^^^^^^
+
+Each site could be associated with one or more meters, which could be a utility meter or a measuring device to record solar generation, battery charge or discharge, or any other technology’s 
+use or production of energy.  Each Meter is associated with a Weather Station.  We currently use the NOAA ISD weather stations and weather data based on OpenEE Weather.
+When you add a Meter, the UI uses the location of the Site to get the nearest Weather Station, so all Meters at the same Site will have the same Weather Stations.  
+A meter could be removed from a site, but it is not deleted.  The meter and weather histories are permanently stored in opentaps for you.
+
+When you click through to a meter, you will see its temperature and metered value history.  
 
 Equipment
 ^^^^^^^^^
