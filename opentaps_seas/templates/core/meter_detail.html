@@ -38,6 +38,10 @@
       <br/>
       {% block inner_content %}
       <p><b>Description:</b> {{ object.description|default:'n/a' }}</p>
+      <p>
+        {% include "core/_meter_history_chart.html" with meter_id=object.meter_id %}
+      </p>
+
       <p><b>Weather Station:</b> 
         {% if not object.weather_station %}
           n/a
@@ -80,10 +84,6 @@
         {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id %}
       </p>
       {% endif %}
-
-      <p>
-        {% include "core/_meter_history_chart.html" with meter_id=object.meter_id %}
-      </p>
 
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
