@@ -76,8 +76,8 @@
       </p>
 
       <p>
-      {% if historical_data %}
-        {% include "core/_weather_history_chart.html" %}
+      {% if has_weather_data %}
+        {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id %}
       {% else %}
         No weather data.
       {% endif %}

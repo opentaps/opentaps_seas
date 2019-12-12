@@ -36,6 +36,23 @@ function saveTextAsCsvFile(filename, data) {
   }
 }
 
+/* use This method to parse dates from the server, this also removes the local timezone offset
+so that if the date was 2011-06-21 10:00:00 it displays the exact same time in the browser */
+function parse_date(s) {
+  // eg: s = '2011-06-21T14:27:28.593Z';
+  var a = s.split(/[^0-9]/);
+  if (a.length < 3) throw ("Invalid date");
+  var h = 0, m = 0, s = 0;
+  if (a.length >= 4) h = a[3];
+  if (a.length >= 5) m = a[4];
+  if (a.length >= 6) s = a[5];
+
+  d = new Date (a[0],a[1]-1,a[2],a[3],a[4],a[5] );
+  // if we need to remove the offset?
+  //d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+  return d;
+}
+
 function getResponseError(err) {
   console.log('getResponseError: ', err);
   if (!err) return {};

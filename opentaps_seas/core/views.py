@@ -2990,19 +2990,8 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
         context = super(MeterDetailView, self).get_context_data(**kwargs)
         if context['object'] and context['object'].weather_station:
             # Select last 24 records
-            historical_data = []
             qs = WeatherHistory.objects.filter(weather_station=context['object'].weather_station)
-            for data in qs.order_by("-as_of_datetime")[:24]:
-                # Prevent adding duplicates
-                datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
-                if historical_data and datetime == historical_data[-1]['datetime']:
-                    continue
-                historical_data.append({
-                    'datetime': datetime,
-                    'temperature': data.temp_c
-                })
-
-            context['historical_data'] = list(reversed(historical_data))
+            context['has_weather_data'] = qs.count()
 
         return context
 
@@ -3078,6 +3067,40 @@ class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
 
 meter_edit_view = MeterEditView.as_view()
 
+
+def weather_data_json(request, weather_station_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+
+    m = WeatherStation.objects.get(weather_station_id=weather_station_id)
+    if not m:
+        logger.warning('No Weather Station found with weather_station_id = %s', weather_station_id)
+        return JsonResponse({'error': 'Weather data not found : {}'.format(weather_station_id)}, status=404)
+
+    trange = 24
+    srange = request.GET.get('range')
+    if srange:
+        try:
+            trange = int(srange)
+            if trange < 0:
+                trange = -trange
+        except Exception:
+            trange = 24
+
+    # Select last <trange> records
+    weater_data = []
+    qs = m.weatherhistory_set
+    for data in qs.order_by("-as_of_datetime")[:trange]:
+        # Prevent adding duplicates
+        datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        if weater_data and datetime == weater_data[-1]['datetime']:
+            continue
+        weater_data.append({
+            'datetime': datetime,
+            'temperature': data.temp_c
+        })
+
+    return JsonResponse({'values': list(reversed(weater_data))})
 
 @login_required()
 def weather_stations_json(request):

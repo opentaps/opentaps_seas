@@ -140,9 +140,7 @@
           },
           xaxis: {
             type: 'datetime',
-            labels: {
-              format: 'HH:mm'
-            },
+            labels: {},
           },
           yaxis: {
             labels: {
@@ -159,19 +157,8 @@
         },
         series: [{
           name: "Temperature",
-          data: [
-            {% for item in historical_data %}
-            {
-              x: new Date("{{item.datetime}}").getTime(),
-              y: {{item.temperature}}
-            },
-            {% endfor %}
-          ],
-          rawData: [
-            {% for item in historical_data %}
-              {{item.temperature}},
-            {% endfor %}
-          ]
+          data: [],
+          rawData: []
         }],
       }
     },
@@ -187,12 +174,29 @@
         // this.series.data.splice(0);
       },
       refresh() {
-        {% for datetime in historical_data.datetime %}
-          console.log(new Date("{{datetime}}"))
-        {% endfor %}
-        {% for temperature in historical_data.temperature %}
-          console.log("{{temperature}}")
-        {% endfor %}
+        this.fetchData();
+      },
+      getUrlArgs() {
+        // placeholder to add custom parameters
+        return '';
+      },
+      fetchData() {
+        url = '{% url 'core:weather_data_json' weather_station_id %}' + this.getUrlArgs();
+        console.log('Fetching weather chart from ', url);
+        axios.get(url).then(response => {
+          console.log('Fetching weather chart got ', response.data.values);
+          if (response.data.values.length < 20) {
+            this.$refs['weather_history_line_chart'].updateOptions({markers: {size: 5}});
+          } else {
+            this.$refs['weather_history_line_chart'].updateOptions({markers: {size: 2}});
+          }
+          if (response.data.values.length == 0) {
+            this.series[0].data = [{y:0, x:new Date().getTime()}]
+          } else {
+        console.log('Test first line: ', response.data.values[0], response.data.values[0].temperature, response.data.values[0].datetime, parse_date(response.data.values[0].datetime));
+            this.series[0].data = response.data.values.map(x => { return { y: x.temperature, x: parse_date(x.datetime).getTime() } } );
+          }
+          });
       },
     }
   })

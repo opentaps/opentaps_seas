@@ -172,9 +172,7 @@
           },
           xaxis: {
             type: 'datetime',
-            labels: {
-              format: 'HH:mm'
-            },
+            labels: {},
           },
           yaxis: {
             labels: {
@@ -235,7 +233,7 @@
           if (response.data.values.length == 0) {
             this.series[0].data = [{y:0, x:new Date().getTime()}]
           } else {
-            this.series[0].data = response.data.values.map(x => { return { y: x.value, x: new Date(x.datetime).getTime() } } );
+            this.series[0].data = response.data.values.map(x => { return { y: x.value, x: parse_date(x.datetime).getTime() } } );
           }
           });
       },
