@@ -2126,8 +2126,9 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
                     site_desc = site.description or context['object'].site_id
                     b.append({'url': reverse('core:site_detail', kwargs={'site': site.entity_id}),
                               'label': 'Site {}'.format(site_desc)})
-            except Exception:
-                pass
+            except Exception as e:
+                logging.error(e)
+
         b.append({'label': 'Equipment {}'.format(context['object'].description)})
         return b
 
@@ -3036,8 +3037,8 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
                 initial_values['weather_station'] = utils.get_default_weather_station_for_site(site)
 
                 form_data['initial'] = initial_values
-        except Exception:
-            pass
+        except Exception as e:
+            logging.error(e)
 
         return form_data
 
