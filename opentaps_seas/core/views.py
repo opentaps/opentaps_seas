@@ -3036,7 +3036,7 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
                 initial_values['weather_station'] = utils.get_default_weather_station_for_site(site)
 
                 form_data['initial'] = initial_values
-        except:
+        except Exception:
             pass
 
         return form_data
@@ -3102,13 +3102,15 @@ def weather_data_json(request, weather_station_id):
 
     return JsonResponse({'values': list(reversed(weater_data))})
 
+
 @login_required()
 def weather_stations_json(request):
     data = []
     for weather_station in WeatherStation.objects.all():
         data.append({
             'id': weather_station.weather_station_id,
-            'value': '{code} ({name})'.format(code=weather_station.weather_station_code, name=weather_station.station_name)
+            'value': '{code} ({name})'.format(code=weather_station.weather_station_code,
+                                              name=weather_station.station_name)
         })
 
     return JsonResponse({'items': data})
