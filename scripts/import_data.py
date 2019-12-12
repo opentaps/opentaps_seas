@@ -24,7 +24,7 @@ from django.db.utils import IntegrityError
 from datetime import datetime
 from datetime import timedelta
 from django.template.defaultfilters import slugify
-
+from .sync_tags_to_crate import sync_tags_to_crate
 
 GLB_OPTIONS = {
     'ahu_no_point': False
@@ -86,6 +86,8 @@ def import_files(which):
                 if filename.endswith('.sql'):
                     print('Running SQL {} [{}]'.format(which, filename))
                     import_sql(filename)
+
+        sync_tags_to_crate()
     else:
         print('No {} data to import.'.format(which))
 
