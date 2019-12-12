@@ -48,8 +48,6 @@ function parse_date(s) {
   if (a.length >= 6) s = a[5];
 
   d = new Date (a[0],a[1]-1,a[2],a[3],a[4],a[5] );
-  // if we need to remove the offset?
-  //d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
   return d;
 }
 
