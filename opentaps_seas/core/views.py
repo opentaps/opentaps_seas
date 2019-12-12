@@ -3098,7 +3098,8 @@ def weather_data_json(request, weather_station_id):
             continue
         weater_data.append({
             'datetime': datetime,
-            'temperature': data.temp_c
+            'temp_c': data.temp_c,
+            'temp_f': data.temp_f
         })
 
     return JsonResponse({'values': list(reversed(weater_data))})

@@ -90,15 +90,12 @@
                 customIcons: [
                   {
                     icon: '<i>&#8451;</i>',
-                    title: 'Display as Celcius',
+                    title: 'Display as Celsius',
                     class: '',
                     click: function(e) {
+                      console.log('Display as Celsius', myChart.series[0].data);
                       chartDegreeUnit = '°C';
-                      let chartData = myChart.series[0].data;
-                      const values = myChart.series[0].rawData;
-                      for (let i = 0; i < values.length; i++) {
-                        chartData[i].y = values[i];
-                      }
+                      myChart.series[0].data = myChart.series[0].data_c;
                     },
                     appendTo: 'left'
                   },
@@ -107,12 +104,9 @@
                     title: 'Display as Fahrenheit',
                     class: '',
                     click: function(e) {
+                      console.log('Display as Fahrenheit', myChart.series[0].data);
                       chartDegreeUnit = '°F';
-                      let chartData = myChart.series[0].data;
-                      const values = myChart.series[0].rawData;
-                      for (let i = 0; i < values.length; i++) {
-                        chartData[i].y = values[i] * 9 / 5 + 32;
-                      }
+                      myChart.series[0].data = myChart.series[0].data_f;
                     },
                     appendTo: 'left'
                   },
@@ -158,7 +152,8 @@
         series: [{
           name: "Temperature",
           data: [],
-          rawData: []
+          data_c: [],
+          data_f: []
         }],
       }
     },
@@ -193,7 +188,9 @@
           if (response.data.values.length == 0) {
             this.series[0].data = [{y:0, x:new Date().getTime()}]
           } else {
-            this.series[0].data = response.data.values.map(x => { return { y: x.temperature, x: parse_date(x.datetime).getTime() } } );
+            this.series[0].data = response.data.values.map(x => { return { y: x.temp_c, x: parse_date(x.datetime).getTime() } } );
+            this.series[0].data_c = response.data.values.map(x => { return { y: x.temp_c, x: parse_date(x.datetime).getTime() } } );
+            this.series[0].data_f = response.data.values.map(x => { return { y: x.temp_f, x: parse_date(x.datetime).getTime() } } );
           }
           });
       },
