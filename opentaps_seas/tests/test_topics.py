@@ -67,6 +67,24 @@ class TopicAPITests(TestCase):
 
         # create entities
         Entity.objects.get_or_create(
+            entity_id="_test_filters/foo/some_topic",
+            topic="_test_filters/foo/some_topic",
+            m_tags=["his", "point"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_foo_1'
+            }
+        )
+        Entity.objects.get_or_create(
+            entity_id="_test_filters/bar/another_topic",
+            topic="_test_filters/bar/another_topic",
+            m_tags=["his", "point", "ac"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_bar_1'
+            }
+        )
+        Entity.objects.get_or_create(
             entity_id="_test_filters/foo/an_ac",
             topic="_test_filters/foo/an_ac",
             m_tags=["his", "point", "ac"],
@@ -117,7 +135,7 @@ class TopicAPITests(TestCase):
         )
         Entity.objects.get_or_create(
             entity_id="_test_Position_Command|vav-101",
-            topic="_test_Position_Command|vav-100",
+            topic="_test_Position_Command|vav-101",
             m_tags=["his", "point", "zone", "temp"],
             kv_tags={
                 'siteRef': 'test_filters_site',
@@ -127,7 +145,7 @@ class TopicAPITests(TestCase):
         )
         Entity.objects.get_or_create(
             entity_id="_test_Position_Size|vav-101",
-            topic="_test_Position_Size|vav-100",
+            topic="_test_Position_Size|vav-101",
             m_tags=["his", "point", "zone", "temp"],
             kv_tags={
                 'siteRef': 'test_filters_site',

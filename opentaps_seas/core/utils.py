@@ -32,12 +32,14 @@ from .models import Topic
 from .models import ModelView
 from .models import WeatherHistory
 from .models import WeatherStation
+from .models import CrateEntity
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from dateutil.parser import parse as parse_datetime
 from django.db import connections
 from django.db.models import Q
+from django.db.models import Subquery
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
@@ -886,7 +888,9 @@ def apply_filters_to_queryset(qs, filters):
 
 
 def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_topics=None, pretend=False):
-    qs = Topic.objects.all()
+    qs = CrateEntity.objects.all()
+    topics = Topic.objects.all()
+    qs = qs.filter(topic__in=Subquery(topics.values('topic')))
 
     if select_not_mapped_topics:
         # only list topics where there is no related data point
@@ -914,7 +918,7 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
     updated_tags = {}
     removed_tags = {}
     for etopic in qs:
-        topic = etopic.topic
+        topic = str(etopic.topic)
         if select_all or topic in topics:
             logging.info('tag_topics: apply to topic %s', topic)
             # update or create the Data Point
@@ -1026,7 +1030,9 @@ def get_bacnet_trending_data(rows):
 
 
 def create_equipment_action(filters, action_fields):
-    qs = Topic.objects.all()
+    qs = CrateEntity.objects.all()
+    topics = Topic.objects.all()
+    qs = qs.filter(topic__in=Subquery(topics.values('topic')))
 
     logging.info('create_equipment_action: using filters %s', filters)
     action_regexp_value = None
@@ -1049,9 +1055,10 @@ def create_equipment_action(filters, action_fields):
         if action_fields and action_fields.get('equipment_name'):
             new_equipments_topics = {}
             for etopic in qs:
+                stopic = str(etopic.topic)
                 equipment_name = action_fields.get('equipment_name')
                 if action_regexp_value:
-                    m = re.match(action_regexp_value, etopic.topic)
+                    m = re.match(action_regexp_value, stopic)
                     if m and len(m.groups()):
                         group = []
                         for i in range(len(m.groups()) + 1):
@@ -1067,7 +1074,7 @@ def create_equipment_action(filters, action_fields):
                     new_equipments[equipment_name] = current_equipment
 
                 equipment_topics = new_equipments_topics.get(equipment_name, [])
-                equipment_topics.append(etopic.topic)
+                equipment_topics.append(stopic)
                 new_equipments_topics[equipment_name] = equipment_topics
 
             link_points_to_equipments(new_equipments, new_equipments_topics)
