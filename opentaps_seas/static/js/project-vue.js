@@ -17,6 +17,24 @@
 # If not, see <https://www.gnu.org/licenses/>.
 */
 /* Project specific Vue Components and code goes here. */
+function saveTextAsCsvFile(filename, data) {
+  var blob = new Blob([
+                        new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
+                        data
+                      ],
+                      {type: 'text/csv;charset=utf-8;'});
+  if (window.navigator.msSaveOrOpenBlob) {
+    window.navigator.msSaveBlob(blob, filename);
+  }
+  else{
+    var elem = window.document.createElement('a');
+    elem.href = window.URL.createObjectURL(blob);
+    elem.download = filename;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  }
+}
 
 function getResponseError(err) {
   console.log('getResponseError: ', err);

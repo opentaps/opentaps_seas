@@ -47,25 +47,7 @@
 </style>
 
 <script>
-  function saveTextAsCsvFile(filename, data) {
-    let blob = new Blob([
-                          new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-                          data
-                        ],
-                        {type: 'text/csv;charset=utf-8;'});
-    if (window.navigator.msSaveOrOpenBlob) {
-      window.navigator.msSaveBlob(blob, filename);
-    }
-    else{
-      var elem = window.document.createElement('a');
-      elem.href = window.URL.createObjectURL(blob);
-      elem.download = filename;
-      document.body.appendChild(elem);
-      elem.click();
-      document.body.removeChild(elem);
-    }
-  }
-
+(function() {
   // The global window.Apex variable below can be used to set common options for all charts on the page
   Apex = {
     dataLabels: {
@@ -85,8 +67,8 @@
       clipMarkers: false
     },
   }
-  chartDegreeUnit = '°C'
-  myChart = new Vue({
+  var chartDegreeUnit = '°C'
+  var myChart = new Vue({
     el: '#weatherhistorychart',
     components: {
       apexchart: VueApexCharts,
@@ -214,5 +196,6 @@
       },
     }
   })
+})();
 
 </script>
