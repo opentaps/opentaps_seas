@@ -75,11 +75,11 @@
         {% endif %}
       </p>
 
-      <p>
       {% if has_weather_data %}
+      <p>
         {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id %}
-      {% endif %}
       </p>
+      {% endif %}
 
       <p>
         {% include "core/_meter_history_chart.html" with meter_id=object.meter_id %}
