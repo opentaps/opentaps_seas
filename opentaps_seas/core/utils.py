@@ -837,6 +837,14 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
                 qs = qs.exclude(filter_Q(name, prefix + 'exact', filter_value, valid_tags))
             elif filter_type == 'matches':
                 qs = qs.filter(filter_Q(name, prefix + 'regex', filter_value, valid_tags))
+            elif filter_type == 'gt':
+                qs = qs.filter(filter_Q(name, 'gt', filter_value, valid_tags))
+            elif filter_type == 'gte':
+                qs = qs.filter(filter_Q(name, 'gte', filter_value, valid_tags))
+            elif filter_type == 'lt':
+                qs = qs.filter(filter_Q(name, 'lt', filter_value, valid_tags))
+            elif filter_type == 'lte':
+                qs = qs.filter(filter_Q(name, 'lte', filter_value, valid_tags))
     return qs
 
 
