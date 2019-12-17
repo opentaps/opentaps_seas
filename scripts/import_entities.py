@@ -20,7 +20,6 @@ import os
 from django.db import connections
 from django.db.utils import IntegrityError
 from django.template.defaultfilters import slugify
-from .sync_tags_to_crate import sync_tags_to_crate
 
 def clean():
     print('Deleting entity data ...')
@@ -33,7 +32,6 @@ def clean():
     print('Deleting crate database entity data ...')
     with connections['crate'].cursor() as c:
         c.execute("DELETE FROM topic;")
-        c.execute("DELETE FROM entity;")
         c.close()
 
 
@@ -58,7 +56,6 @@ def import_files(which, filters=[]):
                 print('Importing {} data [{}]'.format(which, filename))
                 import_entities(filename, filters)
 
-        sync_tags_to_crate()
     else:
         print('No {} data to import.'.format(which))
 

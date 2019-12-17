@@ -24,7 +24,6 @@ from django.db.utils import IntegrityError
 from datetime import datetime
 from datetime import timedelta
 from django.template.defaultfilters import slugify
-from .sync_tags_to_crate import sync_tags_to_crate
 
 GLB_OPTIONS = {
     'ahu_no_point': False
@@ -36,7 +35,6 @@ def clean():
     with connections['crate'].cursor() as c:
         c.execute("DELETE FROM data where topic like 'demo_%';")
         c.execute("DELETE FROM topic where topic like 'demo_%';")
-        c.execute("DELETE FROM entity where topic like 'demo_%';")
         c.close()
 
     print('Deleting entity data ...')
@@ -87,7 +85,6 @@ def import_files(which):
                     print('Running SQL {} [{}]'.format(which, filename))
                     import_sql(filename)
 
-        sync_tags_to_crate()
     else:
         print('No {} data to import.'.format(which))
 
