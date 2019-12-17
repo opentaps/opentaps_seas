@@ -211,8 +211,6 @@ class TopicAPITests(TestCase):
             c.execute(sql, ['_test%'])
             sql = """DELETE FROM {0} WHERE topic like %s""".format("data")
             c.execute(sql, ['_test%'])
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("entity")
-            c.execute(sql, ['_test%'])
 
     def _get_response(self, params, method):
         if method == 'get':

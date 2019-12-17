@@ -66,8 +66,6 @@ class TopicRestAPITests(TestCase):
             c.execute(sql, ['_test%'])
             sql = """DELETE FROM {0} WHERE topic like %s""".format("data")
             c.execute(sql, ['_test%'])
-            sql = """DELETE FROM {0} WHERE topic like %s""".format("entity")
-            c.execute(sql, ['_test%'])
 
             c.close()
 

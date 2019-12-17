@@ -853,7 +853,7 @@ def apply_filters_to_queryset(qs, filters):
 
     with connections['crate'].cursor() as c:
         sql = """SELECT column_name from information_schema.columns
-                 WHERE table_name = 'entity' and column_name like 'kv_tags[%';"""
+                 WHERE table_name = 'topic' and column_name like 'kv_tags[%';"""
         c.execute(sql)
         for (cn, ) in c:
             # extract the tag name from "kv_tags['tag_name']"
