@@ -17,7 +17,6 @@
 
 -- Run this if Volttron did not init the Schema already
 -- this can be used for example on test instances
-CREATE TABLE IF NOT EXISTS "volttron"."topic" (topic string PRIMARY KEY) CLUSTERED INTO 3 SHARDS;
 
 CREATE ANALYZER "tree" (
    TOKENIZER tree
@@ -26,28 +25,15 @@ CREATE ANALYZER "tree" (
       delimiter = '/'
    ));
 
-CREATE TABLE IF NOT EXISTS "volttron"."data" (
-   "double_value" DOUBLE GENERATED ALWAYS AS TRY_CAST("string_value" AS double),
-   "meta" OBJECT (DYNAMIC) AS (
-      "type" STRING,
-      "tz" STRING,
-      "units" STRING
+CREATE TABLE IF NOT EXISTS "volttron"."topic" (
+   "kv_tags" OBJECT (DYNAMIC) AS (
+      "dis" STRING,
+      "id" STRING
    ),
-   "source" STRING,
-   "string_value" STRING,
+   "m_tags" ARRAY(STRING),
    "topic" STRING,
-   "ts" TIMESTAMP,
-   "week_generated" TIMESTAMP GENERATED ALWAYS AS date_trunc('week', "ts"),
-   PRIMARY KEY ("topic", "ts", "week_generated"),
-   INDEX "topic_ft" USING FULLTEXT ("topic") WITH (
-      analyzer = 'standard'
-   ),
-   INDEX "taxonomy" USING FULLTEXT ("topic") WITH (
-      analyzer = 'tree'
-   )
-)
-CLUSTERED BY ("topic") INTO 6 SHARDS
-PARTITIONED BY ("week_generated")
+   PRIMARY KEY ("topic")
+) CLUSTERED INTO 4 SHARDS
 WITH (
    "allocation.max_retries" = 5,
    "blocks.metadata" = false,
@@ -71,16 +57,28 @@ WITH (
    "write.wait_for_active_shards" = 'ALL'
 );
 
-CREATE TABLE IF NOT EXISTS "volttron"."entity" (
-   "kv_tags" OBJECT (DYNAMIC) AS (
-      "dis" STRING,
-      "id" STRING
+CREATE TABLE IF NOT EXISTS "volttron"."data" (
+   "double_value" DOUBLE GENERATED ALWAYS AS TRY_CAST("string_value" AS double),
+   "meta" OBJECT (DYNAMIC) AS (
+      "type" STRING,
+      "tz" STRING,
+      "units" STRING
    ),
-   "m_tags" ARRAY(STRING),
+   "source" STRING,
+   "string_value" STRING,
    "topic" STRING,
-   PRIMARY KEY ("topic")
+   "ts" TIMESTAMP,
+   "week_generated" TIMESTAMP GENERATED ALWAYS AS date_trunc('week', "ts"),
+   PRIMARY KEY ("topic", "ts", "week_generated"),
+   INDEX "topic_ft" USING FULLTEXT ("topic") WITH (
+      analyzer = 'standard'
+   ),
+   INDEX "taxonomy" USING FULLTEXT ("topic") WITH (
+      analyzer = 'tree'
+   )
 )
-CLUSTERED BY ("topic") INTO 4 SHARDS
+CLUSTERED BY ("topic") INTO 6 SHARDS
+PARTITIONED BY ("week_generated")
 WITH (
    "allocation.max_retries" = 5,
    "blocks.metadata" = false,

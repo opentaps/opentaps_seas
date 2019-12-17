@@ -39,6 +39,15 @@ class TopicAPITests(TestCase):
         # create site
         Entity.objects.get_or_create(entity_id='_test_filters_site', defaults={'m_tags': ['site'], 'kv_tags': {}})
 
+        # create unmapped topics (without a related Entity)
+        Topic.ensure_topic_exists('_test_unmapped/um1/some_topic')
+        Topic.ensure_topic_exists('_test_unmapped/um1/another_topic')
+        Topic.ensure_topic_exists('_test_unmapped/um2/ahu')
+        Topic.ensure_topic_exists('_test_unmapped/um2/zone_temp')
+        # add a couple of mapped ones that will match the same filters
+        Topic.ensure_topic_exists('_test_mapped/um1/some_topic')
+        Topic.ensure_topic_exists('_test_mapped/um1/another_topic')
+
         # ensure topic exists
         Topic.ensure_topic_exists('_test_filters/foo/some_topic')
         Topic.ensure_topic_exists('_test_filters/bar/another_topic')
@@ -66,6 +75,24 @@ class TopicAPITests(TestCase):
             })
 
         # create entities
+        Entity.objects.get_or_create(
+            entity_id="_test_mapped/um1/some_topic",
+            topic="_test_mapped/um1/some_topic",
+            m_tags=["his", "point"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_mapped'
+            }
+        )
+        Entity.objects.get_or_create(
+            entity_id="_test_mapped/um1/another_topic",
+            topic="_test_mapped/um1/another_topic",
+            m_tags=["his", "point"],
+            kv_tags={
+                'siteRef': 'test_filters_site',
+                'appName': 'test_mapped'
+            }
+        )
         Entity.objects.get_or_create(
             entity_id="_test_filters/foo/some_topic",
             topic="_test_filters/foo/some_topic",
@@ -208,6 +235,56 @@ class TopicAPITests(TestCase):
 
     def _login(self):
         self.client.login(username='temporary', password='temporary')
+
+    def test_topics_filter_unmapped(self):
+        self._login()
+
+        # ----------- start test n0="Topic" t0="c" f0="mapped" ----------- #
+        c_list = [
+            '_test_unmapped/um1/some_topic',
+            '_test_unmapped/um1/another_topic',
+            '_test_unmapped/um2/ahu',
+            '_test_unmapped/um2/zone_temp',
+            '_test_mapped/um1/some_topic',
+            '_test_mapped/um1/another_topic'
+        ]
+        nc_list = [
+            '_test_filters/foo/some_topic',
+            '_test_filters/foo/an_ac',
+            '_test_filters/bar/another_topic',
+            '_test_filters/bar/ahu',
+            '_test_filters/bar/zone_temp'
+        ]
+
+        # get method
+        query_params = '&'.join(
+            [param for param in ['n0=Topic', 't0=c', 'f0=mapped', 'filters_count=1']]
+        )
+        response = self._get_response(query_params, 'get')
+        self._check_topic_list(response, c_list, nc_list)
+
+        c_list = [
+            '_test_unmapped/um1/some_topic',
+            '_test_unmapped/um1/another_topic',
+            '_test_unmapped/um2/ahu',
+            '_test_unmapped/um2/zone_temp'
+        ]
+        nc_list = [
+            '_test_mapped/um1/some_topic',
+            '_test_mapped/um1/another_topic'
+            '_test_filters/foo/some_topic',
+            '_test_filters/foo/an_ac',
+            '_test_filters/bar/another_topic',
+            '_test_filters/bar/ahu',
+            '_test_filters/bar/zone_temp'
+        ]
+
+        # get method
+        query_params = '&'.join(
+            [param for param in ['n0=Topic', 't0=c', 'f0=mapped', 'filters_count=1', 'select_not_mapped_topics=1']]
+        )
+        response = self._get_response(query_params, 'get')
+        self._check_topic_list(response, c_list, nc_list)
 
     def test_topics_filter(self):
         self._login()

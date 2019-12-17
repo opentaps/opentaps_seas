@@ -32,7 +32,6 @@ from .models import Topic
 from .models import ModelView
 from .models import WeatherHistory
 from .models import WeatherStation
-from .models import CrateEntity
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -789,7 +788,7 @@ def filter_Q(name, operator, value, valid_tags):
     # for present and absent we also check in m_tags (using the operator isnull)
     #
     if 'topic' == name:
-        return Q(**{'topic__topic__{0}'.format(operator): value})
+        return Q(**{'topic__{0}'.format(operator): value})
     else:
         condition = Q()
         if name in valid_tags:
@@ -896,9 +895,7 @@ def apply_filters_to_queryset(qs, filters):
 
 
 def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_topics=None, pretend=False):
-    qs = CrateEntity.objects.all()
-    topics = Topic.objects.all()
-    qs = qs.filter(topic__in=Subquery(topics.values('topic')))
+    qs = Topic.objects.all()
 
     if select_not_mapped_topics:
         # only list topics where there is no related data point
@@ -1038,9 +1035,7 @@ def get_bacnet_trending_data(rows):
 
 
 def create_equipment_action(filters, action_fields):
-    qs = CrateEntity.objects.all()
-    topics = Topic.objects.all()
-    qs = qs.filter(topic__in=Subquery(topics.values('topic')))
+    qs = Topic.objects.all()
 
     logging.info('create_equipment_action: using filters %s', filters)
     action_regexp_value = None

@@ -55,7 +55,6 @@ from .forms import TopicTagRuleSetRunForm
 from .forms import TopicTagRuleRunForm
 from .forms import EquipmentCreateForm
 from .forms import TagImportForm
-from .models import CrateEntity
 from .models import Entity
 from .models import EntityFile
 from .models import EntityNote
@@ -1012,15 +1011,13 @@ equipment_create_view = EquipmentCreateView.as_view()
 
 
 class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):
-    model = CrateEntity
+    model = Topic
     table_class = TopicTable
     table_pagination = {'per_page': 10}
     template_name = 'core/topic_list.html'
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
-        topics = Topic.objects.all()
-        qs = qs.filter(topic__in=Subquery(topics.values('topic')))
         self.used_filters = []
         self.rule = None
 
@@ -1043,7 +1040,7 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
             # where topic is non null and remove those topics
             # note: cast topic into entity_id as raw query must have the model PK
             r = PointView.objects.raw("SELECT DISTINCT(topic) as entity_id FROM {}".format(PointView._meta.db_table))
-            qs = qs.filter(topic__in=[p.entity_id for p in r])
+            qs = qs.exclude(topic__in=[p.entity_id for p in r])
 
         if self.kwargs.get('id'):
             rule_id = self.kwargs['id']
@@ -1144,9 +1141,7 @@ topic_list_view = TopicListView.as_view()
 @login_required()
 @require_POST
 def topic_list_table(request):
-    qs = CrateEntity.objects.all()
-    topics = Topic.objects.all()
-    qs = qs.filter(topic__in=Subquery(topics.values('topic')))
+    qs = Topic.objects.all()
 
     select_not_mapped_topics = request.POST.get('select_not_mapped_topics')
     if select_not_mapped_topics:
