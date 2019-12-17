@@ -1064,7 +1064,7 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         elif topic_filter:
             filter_elem = {'type': 'c', 'value': topic_filter}
             self.used_filters.append(filter_elem)
-            qs = qs.filter(Q(topic__topic__icontains=topic_filter))
+            qs = qs.filter(Q(topic__icontains=topic_filter))
         else:
 
             n = 0
