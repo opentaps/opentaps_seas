@@ -78,10 +78,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.core.paginator import Paginator
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.db.models import Count
-from django.db.models import Subquery
 from django.db.models.functions import Lower
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -1173,6 +1173,52 @@ def topic_list_table(request):
     resp = HttpResponse(table.as_html(request))
     resp['topics_counter'] = str(len(qs))
     return resp
+
+
+class TopicListJsonView(LoginRequiredMixin, ListView):
+    model = Topic
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.order_by(Lower('topic'))
+
+    def render_to_response(self, context, **response_kwargs):
+        logging.info('TopicListJsonView render_to_response ...')
+        qs = context['object_list']
+        select_not_mapped_topics = self.request.GET.get('select_not_mapped_topics')
+        if select_not_mapped_topics:
+            # only list topics where there is no related data point
+            # because those are 2 different DB need to get all the data points
+            # where topic is non null and remove those topics
+            # note: cast topic into entity_id as raw query must have the model PK
+            qs = qs.exclude(m_tags__contains=['point'])
+
+        n = 0
+        filters_count = self.request.GET.get('filters_count')
+        if filters_count:
+            n = int(filters_count)
+
+        q_filters = []
+        for i in range(n):
+            filter_field = self.request.GET.get('n' + str(i))
+            filter_type = self.request.GET.get('t' + str(i))
+            filter_op = self.request.GET.get('o' + str(i))
+            if filter_type:
+                filter_value = self.request.GET.get('f' + str(i))
+                logging.info('topic_list_table got filter [ (%s) %s - %s : %s]',
+                             filter_op, filter_field, filter_type, filter_value)
+                q_filters.append((filter_field, filter_type, filter_value, filter_op))
+        qs = utils.apply_filters_to_queryset(qs, q_filters)
+
+        per_page = self.request.GET.get('limit') or 10
+        page = self.request.GET.get('page') or 1
+        paginator = Paginator(qs, per_page)
+
+        logging.info('TopicListJsonView render_to_response DONE')
+        return JsonResponse({'data': list(paginator.get_page(page).object_list.values()), 'count': paginator.count})
+
+
+topic_list_json = TopicListJsonView.as_view()
 
 
 @login_required()
