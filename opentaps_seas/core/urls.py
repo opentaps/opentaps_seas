@@ -83,7 +83,7 @@ from .views import (
     report_preview_csv_view,
     weather_data_json,
     meter_data_json,
-    meter_data_csv,
+    meter_data_import,
     weather_station_geoview,
     weather_stations_json
 )
@@ -165,7 +165,7 @@ urlpatterns = [
     path("bacnet_prefix.json/<str:site>", view=bacnet_prefix_list_json_view, name="bacnet_prefix_list_json"),
     path("report/preview/csv", view=report_preview_csv_view, name="report_preview_csv"),
     path("meter/json/<path:meter>", view=meter_data_json, name="meter_data_json"),
-    path("meter/csv/<path:meter>", view=meter_data_csv, name="meter_data_csv"),
+    path("meter/import/<path:meter>", view=meter_data_import, name="meter_data_import"),
     path("weather_station/json/<path:weather_station_id>", view=weather_data_json, name="weather_data_json"),
     path("weather_station/geoview/<path:weather_station_code>",
          view=weather_station_geoview, name="weather_station_geoview"),

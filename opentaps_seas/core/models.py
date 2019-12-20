@@ -728,6 +728,9 @@ class MeterHistory(models.Model):
     value = FloatField(null=True)
     uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING)
     source = CharField(max_length=255)
+    duration = IntegerField(default=0)
+    cost = FloatField(null=True)
+    cost_uom = ForeignKey(UnitOfMeasure, related_name="cost_uom", null=True, blank=True, on_delete=models.DO_NOTHING)
     created_datetime = DateTimeField(_("Created Date"), default=now)
     created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
 

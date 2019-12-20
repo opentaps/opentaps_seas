@@ -2987,16 +2987,20 @@ def meter_data_json(request, meter):
         datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
         if meter_data and datetime == meter_data[-1]['datetime']:
             continue
+        value = data.value
+        if value and data.uom_id == 'energy_Wh':
+            value = value/1000
+
         meter_data.append({
             'datetime': datetime,
-            'value': data.value
+            'value': value
         })
 
     return JsonResponse({'values': list(reversed(meter_data))})
 
 
 @login_required()
-def meter_data_csv(request, meter):
+def meter_data_import(request, meter):
 
     m = Meter.objects.get(meter_id=meter)
     if not m:
