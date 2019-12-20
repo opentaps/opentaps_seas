@@ -344,7 +344,8 @@ Vue.component('form-modal', {
 
           <div class="modal-footer">
             <button class="modal-default-button btn btn-outline-danger" @click="closeModal">Cancel</button>
-            <button class="modal-default-button btn btn-outline-primary" @click="save">$[ save_label(item) ]</button>
+            <button v-if="!show_spinner" class="modal-default-button btn btn-outline-primary" @click="save">$[ save_label(item) ]</button>
+            <b-spinner v-if="show_spinner" label="Loading..." variant="secondary"></b-spinner>
           </div>
         </div>
       </div>
@@ -360,6 +361,10 @@ Vue.component('form-modal', {
       type: String,
       default: 'Edit'
     },
+    usespinner: {
+      type: String,
+      default: 'N'
+    },
     csrfmiddlewaretoken: String
   },
   data() {
@@ -368,6 +373,7 @@ Vue.component('form-modal', {
       item: null,
       errors: {},
       visible: false,
+      show_spinner: false
     }
   },
   methods:{
@@ -382,6 +388,7 @@ Vue.component('form-modal', {
       /* placeholder */
     },
     closeModal: function(){
+      this.show_spinner = false
       this.visible = false
       this.item = null
       this.errors = {}
@@ -402,16 +409,20 @@ Vue.component('form-modal', {
       return 'Save'
     },
     save: function(){
-      console.log('save', this.item)
+      console.log('save', this.item, this.usespinner)
       const formData = new FormData()
       formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
       formData.set('id', this.item.id)
       formData.set('update', 1)
       this.pre_save(formData, this.item)
+      if (this.usespinner == 'Y') {
+          this.show_spinner = true
+      }
       axios.post(this.url, formData, {validateStatus: status => status < 500})
           // get data
           .then(x => x.data)
           .then(x => {
+            this.show_spinner = false
             if (x.success) {
               this.post_save(x)
               this.closeModal()
@@ -421,6 +432,7 @@ Vue.component('form-modal', {
             }
           })
           .catch(err => {
+            this.show_spinner = false
             e = getResponseError(err)
             console.error(e, err)
             this.errors = e
