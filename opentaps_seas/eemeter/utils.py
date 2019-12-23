@@ -17,6 +17,8 @@
 
 import logging
 import eemeter
+from io import StringIO
+from eemeter import io as eeio
 from .models import BaselineModel
 
 logger = logging.getLogger(__name__)
@@ -54,6 +56,44 @@ def read_sample_data(meter_data, temperature_data, sample_metadata):
         'blackout_end_date': blackout_end_date,
         'baseline_meter_data': baseline_meter_data
     }
+
+
+def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, freq=None):
+    # get the meter data from the meter history
+    out = StringIO()
+    meter.write_meter_data_csv(out, columns=[{'as_of_datetime': 'start'}, {'value': 'value'}])
+    out.seek(0)
+    if freq not in ("hourly", "daily"):
+        freq = None
+    meter_data = eeio.meter_data_from_csv(out, freq=freq)
+
+    # get the temperature data from the meter linked weather stations
+    out = StringIO()
+    meter.write_weather_data_csv(out, columns=[{'as_of_datetime': 'dt'}, {'temp_f': 'tempF'}])
+    out.seek(0)
+    temperature_data = eeio.temperature_data_from_csv(out, freq="hourly")
+
+    # get meter data suitable for fitting a baseline model
+    baseline_meter_data, warnings = eemeter.get_baseline_data(
+        meter_data, end=blackout_start_date, max_days=365
+    )
+
+    return {
+        'meter_data': meter_data,
+        'temperature_data': temperature_data,
+        'blackout_start_date': blackout_start_date,
+        'blackout_end_date': blackout_end_date,
+        'baseline_meter_data': baseline_meter_data
+    }
+
+
+def get_model_for_freq(data, freq):
+    if freq == 'hourly':
+        return get_hourly_model(data)
+    elif freq == 'daily':
+        return get_daily_model(data)
+    else:
+        raise Exception("Model frequency must be hourly or daily")
 
 
 def get_daily_model(data):

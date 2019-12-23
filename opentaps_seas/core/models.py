@@ -15,6 +15,7 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import csv
 import logging
 import re
 
@@ -709,6 +710,22 @@ class WeatherHistory(models.Model):
         db_table = 'core_weather_history'
 
 
+def write_csv_data(qs, output, columns, with_header=True):
+    writer = csv.writer(output)
+    header = []
+    fields = []
+    for c in columns:
+        header.append(list(c.values())[0])
+        fields.append(list(c.keys())[0])
+    if with_header:
+        writer.writerow(header)
+    for d in qs:
+        row = []
+        for f in fields:
+            row.append(d.__dict__.get(f))
+        writer.writerow(row)
+
+
 class Meter(models.Model):
     meter_id = CharField(_("Meter ID"), max_length=255, primary_key=True)
     description = CharField(_("Description"), max_length=255, blank=True, null=True)
@@ -719,6 +736,16 @@ class Meter(models.Model):
 
     def get_absolute_url(self):
         return reverse("core:meter_detail", kwargs={"meter_id": self.meter_id})
+
+    def write_meter_data_csv(self, output, columns, with_header=True):
+        write_csv_data(self.meterhistory_set.order_by('as_of_datetime'), output, columns, with_header)
+
+    def write_weather_data_csv(self, output, columns, with_header=True):
+        write_csv_data(self.weather_station.weatherhistory_set.order_by('as_of_datetime'), output, columns, with_header)
+
+    def get_data_panda(self):
+        # return a pandas.core.frame.DataFrame of the meter data as date .. value
+        pass
 
 
 class MeterHistory(models.Model):

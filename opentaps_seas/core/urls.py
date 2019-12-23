@@ -82,10 +82,17 @@ from .views import (
     tag_import_view,
     report_preview_csv_view,
     weather_data_json,
+    meter_list_json_view,
     meter_data_json,
     meter_data_csv,
     weather_station_geoview,
     weather_stations_json
+)
+
+from ..eemeter.views import (
+    meter_model_detail_view,
+    meter_model_create_view,
+    meter_model_delete_view
 )
 
 app_name = "core"
@@ -127,10 +134,16 @@ urlpatterns = [
     path("tag/import", view=tag_import_view, name="tag_import"),
     path("model/", view=model_list_view, name="model_list"),
     path("model.json", view=model_list_json_view, name="model_list_json"),
+    path("meter.json", view=meter_list_json_view, name="meter_list_json"),
     path("newmeter/<str:site_id>", view=meter_create_view, name="meter_create"),
     path("meter/edit/<path:meter_id>", view=meter_edit_view, name="meter_edit"),
     path("meter/deactivate/<path:meter_id>", view=meter_deactivate_view, name="meter_deactivate"),
     path("meter/view/<path:meter_id>", view=meter_detail_view, name="meter_detail"),
+    path("meter/json/<str:meter>", view=meter_data_json, name="meter_data_json"),
+    path("meter/csv/<str:meter>", view=meter_data_csv, name="meter_data_csv"),
+    path("meter/<str:meter_id>/model/<str:id>", view=meter_model_detail_view, name="meter_model_detail"),
+    path("meter/<str:meter_id>/create/model", view=meter_model_create_view, name="meter_model_create"),
+    path("meter/<str:meter_id>/model/<str:id>/delete", view=meter_model_delete_view, name="meter_model_delete"),
     path("newmodel/", view=model_create_view, name="model_create"),
     path("newmodel/<path:entity_id>", view=model_create_view, name="model_create_for"),
     path("dupmodel/<path:entity_id>", view=model_duplicate_view, name="model_duplicate"),
@@ -164,8 +177,6 @@ urlpatterns = [
     path("timezone.json/<str:geo_id>", view=timezone_list_json_view, name="timezone_list_json"),
     path("bacnet_prefix.json/<str:site>", view=bacnet_prefix_list_json_view, name="bacnet_prefix_list_json"),
     path("report/preview/csv", view=report_preview_csv_view, name="report_preview_csv"),
-    path("meter/json/<path:meter>", view=meter_data_json, name="meter_data_json"),
-    path("meter/csv/<path:meter>", view=meter_data_csv, name="meter_data_csv"),
     path("weather_station/json/<path:weather_station_id>", view=weather_data_json, name="weather_data_json"),
     path("weather_station/geoview/<path:weather_station_code>",
          view=weather_station_geoview, name="weather_station_geoview"),

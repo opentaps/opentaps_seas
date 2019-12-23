@@ -2960,6 +2960,22 @@ class ReportPreviewCsvView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateVie
 report_preview_csv_view = ReportPreviewCsvView.as_view()
 
 
+class MeterListJsonView(LoginRequiredMixin, ListView):
+    model = Meter
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        qs = qs.order_by(Lower('description'), Lower('meter_id'))
+        return qs
+
+    def render_to_response(self, context, **response_kwargs):
+        data = list(context['object_list'].values('meter_id', 'description'))
+        return JsonResponse({'items': data})
+
+
+meter_list_json_view = MeterListJsonView.as_view()
+
+
 def meter_data_json(request, meter):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Authentication required'}, status=401)

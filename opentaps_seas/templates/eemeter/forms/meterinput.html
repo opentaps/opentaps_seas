@@ -1,0 +1,69 @@
+{# <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}> #}
+
+<div id="{{ widget.name }}_container" class="{{widget.attrs.class}}" style="border:none;background-image:none;padding:0">
+    <input ref="hiddenInput" type="hidden" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %} v-model="internal_value"/>
+    <vue-bootstrap-typeahead
+      :input-class="'form-control {{widget.attrs.class}} ' + (errors ? ' is-invalid' : '')"
+      :serializer="s => s.meter_id"
+      id="{{ widget.name }}"
+      ref="valueInput"
+      :min-matching-chars="0"
+      name="{{ widget.name }}"
+      v-model="internal_value"
+      v-on:input="$emit('input', $event)"
+      :max-matches="50"
+      :data="valid_meters"
+      @hit="selected_meter = $event"
+      placeholder="Meter...">
+      <template slot="suggestion" slot-scope="{ data, htmlText }">
+        <span v-html="htmlText"></span>&nbsp;<small>$[ display_suggestion(data) ]</small>
+      </template>
+    </vue-bootstrap-typeahead>
+    <span v-for="err in errors" class="text-danger">$[ err ]</span>
+</div>
+
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+  new Vue({
+    delimiters: ['$[', ']'],
+    el: '#{{ widget.name }}_container',
+    data() {
+      return {
+        selected_meter: {},
+        errors: null,
+        valid_meters: [],
+        internal_value: '{% if widget.value != None %}{{ widget.value|stringformat:'s' }}{% endif %}'
+      }
+    },
+    created: function() {
+      axios.get('{% url 'core:meter_list_json' %}')
+        .then(x => this.valid_meters = x.data.items)
+        .then(x => {
+            if (!this.internal_value || !this.internal_value.length) return;
+            if (this.$refs.valueInput) {
+              this.$refs.valueInput.inputValue = this.internal_value
+            }
+            for (var i=0; i<x.length; i++) {
+                var m = x[i]
+                console.log('try meter', this.internal_value, m)
+                if (this.internal_value == m.meter_id) {
+                    this.selected_meter = m
+                    return
+                }
+            }
+        })
+        .catch(err => {
+          console.error('loading meters error :', err)
+        })
+    },
+    methods:{
+        display_suggestion(item) {
+            if (item) return item.description
+            return null
+        }
+    }
+  })
+}())
+</script>

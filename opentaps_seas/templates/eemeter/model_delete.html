@@ -1,0 +1,35 @@
+{% extends "core/model_detail.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block add_button %}
+{% endblock add_button %}
+
+{% block inner_content %}
+<form method="post">
+  {% csrf_token %}
+  <div class="alert alert-danger" role="alert">Are you sure you want to delete this Model?</div>
+  <div class="form-group d-flex justify-content-around mt-5">
+    <a href="{% if object %}{% url 'core:meter_model_detail' object.meter_id object.id %}{% else %}{% url 'core:site_list' %}{% endif %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+    <button class="btn btn-danger col-5" type="submit"><i class="fa fa-trash mr-2"></i> Delete</button>
+  </div>
+</form>
+{% endblock inner_content %}

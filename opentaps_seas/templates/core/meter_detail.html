@@ -93,5 +93,33 @@
     </div>
   </div>
 
+  <div class="card mb-3">
+    <div class="card-body">
+      <h3>
+        <div class="row m-0">
+          <div class="">
+            Models
+          </div>
+          <div class="text-right flex-grow-1">
+            <a class="btn btn-primary" href="{% url 'core:meter_model_create' object.meter_id %}"><i class="fa fa-plus"></i> Add Model</a>
+          </div>
+        </div>
+      </h3>
+      <div class="container header-top">
+          {% for model in object.baselinemodel_set.all %}
+            <h6 class="meter-row" >
+                <div class="container">
+                    <div class="row">
+                      <div class="col-auto">
+                        <div><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}: {{ model.model_class }}</a></div>
+                      </div>
+                    </div>
+                </div>
+            </h6>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock content %}
