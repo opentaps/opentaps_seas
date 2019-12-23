@@ -93,6 +93,7 @@
     </div>
   </div>
 
+  {% if object and object.meter_id %}
   <div class="card mb-3">
     <div class="card-body">
       <h3>
@@ -120,6 +121,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
 </div>
 {% endblock content %}
