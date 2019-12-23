@@ -18,6 +18,7 @@
 import logging
 import json
 import csv
+import xml.etree.ElementTree as ET
 from io import TextIOWrapper
 from . import utils
 from .models import EntityFile
@@ -35,6 +36,7 @@ from .models import TimeZone
 from .models import WeatherStation
 from django import forms
 from django.template.defaultfilters import slugify
+from greenbutton import parse
 
 logger = logging.getLogger(__name__)
 
@@ -878,21 +880,73 @@ class TagImportForm(forms.Form):
 
 class MeterDataUploadForm(forms.Form):
     meter = forms.CharField(max_length=255)
-    meter_data = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))
+    meter_data = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv,.xml'}))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-    def save(self, commit=True, run_rule=False):
+    def save(self, commit=True):
         meter = self.cleaned_data['meter']
         meter_data = self.cleaned_data['meter_data']
-        fcsv = TextIOWrapper(meter_data.file, encoding=meter_data.charset if meter_data.charset else 'utf-8')
+        file_name = str(meter_data)
 
-        # an error message
         import_errors = False
         count = 0
 
+        if file_name.endswith('.csv'):
+            import_errors, count = self.import_csv(meter, meter_data)
+        elif file_name.endswith('.xml'):
+            import_errors, count = self.import_xml(meter, meter_data)
+        else:
+            import_errors = "Wrong file format."
+
+        if import_errors:
+            return {'import_errors': import_errors}
+        else:
+            return {'imported': count}
+
+    def import_xml(self, meter, meter_data):
+        fxml = TextIOWrapper(meter_data.file, encoding=meter_data.charset if meter_data.charset else 'utf-8')
+
+        import_errors = False
+        count = 0
+        m = Meter.objects.get(meter_id=meter)
+        if not m:
+            import_errors = "Meter not found: {}".format(meter)
+        else:
+            try:
+                ups = parse.parse_feed(fxml)
+            except Exception:
+                import_errors = "Cannot parse XML file."
+            else:
+                if ups and len(ups) > 0:
+                    for up in ups:
+                        for mr in up.meterReadings:
+                            for ir in mr.intervalReadings:
+                                count += 1
+                                v = MeterHistory(meter_id=meter, uom_id=ir.value_uom_id)
+                                v.source = 'XML Upload'
+                                v.value = ir.value
+                                v.duration = int(ir.timePeriod.duration.total_seconds())
+                                v.as_of_datetime = ir.timePeriod.start
+                                v.created_by_user = self.user
+
+                                if ir.cost is not None:
+                                    v.cost = ir.cost
+                                    v.cost_uom_id = ir.cost_uom_id
+
+                                v.save()
+                else:
+                    import_errors = "Nothing to parse."
+
+        return import_errors, count
+
+    def import_csv(self, meter, meter_data):
+        fcsv = TextIOWrapper(meter_data.file, encoding=meter_data.charset if meter_data.charset else 'utf-8')
+
+        import_errors = False
+        count = 0
         m = Meter.objects.get(meter_id=meter)
         if not m:
             import_errors = "Meter not found: {}".format(meter)
@@ -905,10 +959,12 @@ class MeterDataUploadForm(forms.Form):
                 logger.info('MeterDataUploadForm: importing Meter CSV Data ...')
                 # assume all data is in kwh for now
                 uom_id = 'energy_kWh'
+                # assume all data duration 1 hour for now
+                duration = 3600
                 if records:
                     for row in records:
-                        logger.info('MeterDataUploadForm: importing row {}'.format(row))
-                        v = MeterHistory(meter_id=meter, uom_id=uom_id)
+                        # logger.info('MeterDataUploadForm: importing row {}'.format(row))
+                        v = MeterHistory(meter_id=meter, uom_id=uom_id, duration=duration)
                         v.source = 'CSV Upload'
                         v.value = row['value']
                         v.as_of_datetime = row['dt']
@@ -917,10 +973,7 @@ class MeterDataUploadForm(forms.Form):
                 else:
                     import_errors = "CSV file is empty."
 
-        if import_errors:
-            return {'import_errors': import_errors}
-        else:
-            return {'imported': count}
+        return import_errors, count
 
 
 class MeterCreateForm(forms.ModelForm):

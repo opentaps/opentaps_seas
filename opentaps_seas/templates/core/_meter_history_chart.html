@@ -41,7 +41,8 @@
 
 <div id="upload_modal">
   <upload-form-modal
-    title="Upload Meter CSV Data"
+    title="Upload Meter CSV/XML Data"
+    usespinner="Y"
     :url="url"
     :csrfmiddlewaretoken="csrfmiddlewaretoken"></upload-form-modal>
 </div>
@@ -63,7 +64,7 @@
     data() {
       return {
         fields: [
-          { key: 'meter_data', value: '', type: 'file' },
+          { key: 'meter_data', value: '', type: 'file', accept: '.csv,.xml' },
         ]
       }
     },
@@ -93,7 +94,7 @@
     data() {
       return {
         csrfmiddlewaretoken: CSRF_TOKEN,
-        url: '{% url 'core:meter_data_csv' meter_id %}',
+        url: '{% url 'core:meter_data_import' meter_id %}',
       }
     }
   });
