@@ -165,11 +165,11 @@ def save_model(model):
 
 def load_model(model):
     # load a model from a persisted instance
-    # check that the model class exists and supports fromJson
+    # check that the model class exists and supports from_json
     # this throws an exeption if the class does not exist
     clazz = getattr(eemeter, model.model_class)
-    # this throws an exeption if the class does not have a fromJson method
-    m = clazz.fromJson(model.data)
+    # this throws an exeption if the class does not have a from_json method
+    m = clazz.from_json(model.data)
     return m
 
 
