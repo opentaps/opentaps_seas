@@ -1023,15 +1023,16 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
 
         topic_filter = None
         site_filter = None
+        bacnet_prefix = None
         if "topic_filter" in self.request.session:
             topic_filter = self.request.session["topic_filter"]
+            self.request.session["topic_filter"] = None
         if "site_filter" in self.request.session:
             site_filter = self.request.session["site_filter"]
-
-        if topic_filter:
-            self.request.session["topic_filter"] = None
-        if site_filter:
             self.request.session["site_filter"] = None
+        if "bacnet_prefix" in self.request.session:
+            bacnet_prefix = self.request.session["bacnet_prefix"]
+            self.request.session["bacnet_prefix"] = None
 
         self.select_not_mapped_topics = self.request.GET.get('select_not_mapped_topics')
         if self.select_not_mapped_topics:
@@ -1056,14 +1057,21 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
                 q_filters.append((f.get('field'), f.get('type'), f.get('value'), f.get('op')))
             qs = utils.apply_filters_to_queryset(qs, q_filters)
 
-        elif site_filter:
-            filter_elem = {'field': 'siteRef', 'type': 'c', 'value': site_filter}
-            self.used_filters.append(filter_elem)
-            qs = qs.filter(Q(kv_tags__siteRef__icontains=site_filter))
-        elif topic_filter:
-            filter_elem = {'type': 'c', 'value': topic_filter}
-            self.used_filters.append(filter_elem)
-            qs = qs.filter(Q(topic__icontains=topic_filter))
+        elif site_filter or topic_filter or bacnet_prefix:
+            if bacnet_prefix:
+                filter_elem = {'field': 'bacnet_device_id', 'type': 'eq', 'value': bacnet_prefix}
+                self.used_filters.append(filter_elem)
+                qs = qs.filter(Q(kv_tags__bacnet_device_id__iexact=bacnet_prefix))
+
+            if site_filter:
+                filter_elem = {'field': 'siteRef', 'type': 'eq', 'value': site_filter}
+                self.used_filters.append(filter_elem)
+                qs = qs.filter(Q(kv_tags__siteRef__iexact=site_filter))
+
+            if topic_filter:
+                filter_elem = {'type': 'c', 'value': topic_filter}
+                self.used_filters.append(filter_elem)
+                qs = qs.filter(Q(topic__icontains=topic_filter))
         else:
 
             n = 0
@@ -1126,8 +1134,8 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         site = request.POST.get('site')
         if bacnet_prefix:
             logging.info('TopicListView POST got bacnet_prefix %s', bacnet_prefix)
-            self.request.session["topic_filter"] = bacnet_prefix
-        elif site:
+            self.request.session["bacnet_prefix"] = bacnet_prefix
+        if site:
             logging.info('TopicListView POST got site %s', site)
             self.request.session["site_filter"] = site
 

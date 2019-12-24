@@ -168,6 +168,7 @@
                   <form method="POST" action="{% url 'core:topic_list' %}">
                     {% csrf_token %}
                     <input type="hidden" name="bacnet_prefix" value="{{ bc.prefix }}"/>
+                    <input type="hidden" name="site" value="{{ object.object_id }}"/>
                     <button class="btn btn-info" type="submit">Topics</button>
                     <a class="btn btn-info" href="{% url 'core:topic_export' object.entity_id %}?bacnet_prefix={{ bc.prefix }}"><i class="fa fa-download"></i> Export</a>
                     <a class="btn btn-info" href="{% url 'core:topictagruleset_runform' %}?topic_filter={{ bc.prefix }}"><i class="fa fa-cog mr-2"></i>Run Rules</a>
