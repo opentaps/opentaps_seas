@@ -820,9 +820,7 @@ def apply_filter_to_queryset(qs, filter_field, filter_type, filter_value, valid_
         elif filter_value:
             # all of those test either topic OR a kv_tags
             # so fail if trying to match a kv_tag
-            prefix = ''
-            if name == 'topic':
-                prefix = 'i'
+            prefix = 'i'
             if not name == 'topic' and name not in valid_tags and (filter_type == 'c' or filter_type == 'eq'):
                 logger.warning('topic filter found an unused tag: %s', name)
                 return qs.none()
