@@ -38,7 +38,6 @@ from datetime import timezone
 from dateutil.parser import parse as parse_datetime
 from django.db import connections
 from django.db.models import Q
-from django.db.models import Subquery
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
@@ -1183,3 +1182,13 @@ def get_weather_history_for_station(weather_station, days_from_today=7):
         return temp_degC
     except Exception as e:
         logging.error(e)
+
+
+def get_topic_point(topic):
+    point = None
+    try:
+        point = PointView.objects.filter(topic=topic)[0]
+    except IndexError:
+        point = None
+
+    return point
