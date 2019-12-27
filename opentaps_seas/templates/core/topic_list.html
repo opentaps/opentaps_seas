@@ -170,19 +170,20 @@
                 <b-spinner label="Loading..." variant="secondary"></b-spinner>
               </div>
             </template>
-            <template slot="HEAD_actions" scope="head">
+
+            <template v-slot:head(actions)="data">
               <input type="checkbox" @click.stop="toggle_selected" v-model="all_selected" :disabled="select_all_matching">
             </template>
 
-            <template slot="HEAD_view" scope="head">
+            <template v-slot:head(view)="data">
               <b-btn variant="light" size="sm" @click.stop="edit_topic_fields()"><i class="fa fa-cog"></i></b-btn>
             </template>
 
-            <template slot="actions" scope="item">
+            <template v-slot:cell(actions)="item">
               <input type="checkbox" name="checked" :key="item.index" :value="item.item" @click.stop v-model="checked_items" :disabled="select_all_matching">
             </template>
 
-            <template slot="view" scope="item">
+            <template v-slot:cell(view)="item">
               <a v-if="item.item.point" class="btn btn-secondary btn-sm" :href="get_point_link(item.item)"><i class="fa fa-external-link-alt"></i>  View</a>
               <a v-if="!item.item.point" class="btn btn-secondary btn-sm" :href="get_add_point_link(item.item)"><i class="fa fa-plus"></i>  Add</a>
             </template>
@@ -1132,7 +1133,6 @@
       }
     },
     mounted: function () {
-        this.setup_table()
         this.read_page_number(window.location.href)
     },
     created: function () {
@@ -1161,15 +1161,6 @@
       eventHub.$on('apply_topicFields', this.apply_topic_fields)
     },
     watch: {
-      select_all_matching: function (val) {
-        console.log('watch select_all_matching:', val)
-        if (val) {
-          //this.select_all(true, true)
-        } else {
-          //this.sync_select()
-        }
-        //this.disable_checkboxes(val)
-      },
     },
     methods: {
       noop() {
@@ -1188,91 +1179,6 @@
         }
         eventHub.$emit('apply_rule', rule)
       },
-      setup_table() {
-        //this.setup_checkboxes()
-      },
-      disable_checkboxes(val) {
-        console.log('disable_checkboxes', val)
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        for (var i=0; i<cbs.length; i++) {
-          cb = cbs[i]
-          if (!cb.id) {
-            cbs[i].disabled = val
-          }
-        }
-      },
-      setup_checkboxes() {
-        el = this.$refs['table_container']
-        select_all = el.querySelector('thead input[type="checkbox"]')
-        console.log('add select_all handler for', select_all)
-        _this = this
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        all_checked = cbs.length > 1
-        has_checkboxes = false
-        console.log('initial select_all checked', all_checked, cbs.length)
-        for (var i=0; i<cbs.length; i++) {
-            cb = cbs[i]
-            if (cb.value && cb.name && cb.name.length) {
-                if (cb.name != '_ALL_') has_checkboxes = true
-                if (_this.select_all_matching || _this.selected_topics[cb.value]) {
-                    cb.checked = true
-                } else {
-                    all_checked = false
-                }
-                cb.addEventListener('change', function(event) {
-                    _this.selected_topics[this.value] = this.checked
-                });
-            } else {
-                cb.checked = false
-            }
-        }
-        if (!has_checkboxes) {
-          all_checked = false
-        }
-        console.log('set select_all checked', all_checked)
-        select_all.checked = all_checked
-        this.all_checked = all_checked
-        select_all.addEventListener('change', function(event) {
-            console.log('* change select_all', this.checked)
-            _this.select_all(this.checked)
-        });
-        this.disable_checkboxes(this.select_all_matching)
-      },
-
-      sync_select() {
-        el = this.$refs['table_container']
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        all_checked = cbs.length > 1
-        _this = this
-        for (var i=0; i<cbs.length; i++) {
-            cb = cbs[i]
-            if (cb.value && cb.name && cb.name.length && cb.name != '_ALL_') {
-              cb.checked = _this.selected_topics[cb.value]
-              if (!_this.selected_topics[cb.value]) {
-                all_checked = false
-              }
-            }
-        }
-        select_all = el.querySelector('thead input[type="checkbox"]')
-        select_all.checked = all_checked
-        this.all_checked = all_checked
-        console.log('sync_select set select_all checked', all_checked)
-      },
-      select_all(checked, skipSave) {
-        el = this.$refs['table_container']
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        _this = this
-        for (var i=0; i<cbs.length; i++) {
-            cb = cbs[i]
-            cb.checked = checked
-            console.log('*** set checkbox', cb)
-            if (!skipSave && cb.value && cb.name && cb.name.length) {
-              _this.selected_topics[cb.value] = checked
-            }
-        }
-        this.all_checked = checked
-        console.log('select_all set select_all checked', checked)
-      },
       filter_on_enter(e) {
         if (e.keyCode === 13) {
             this.submit_filters()
@@ -1284,7 +1190,7 @@
       changed_filter_type(filter, index) {
         console.log('changed_filter_type', filter)
         if ((!this.is_value_required(filter) || filter.value) && index < this.filters.length-1) {
-            //this.load_page()
+            this.$refs.topics_table.refresh();
         }
       },
       delete_filter(filter, index) {
@@ -1330,7 +1236,6 @@
         console.log('submit_filters...', event)
         this.check_add_blank_filter()
         this.$refs.topics_table.refresh();
-        //this.load_page()
         if (event) {
             event.preventDefault()
             return false
@@ -1338,11 +1243,7 @@
       },
       add_his_to_filter(event) {
           this.filters.unshift({field: 'his', type: 'present', value: '', op: 'AND'});
-          //this.load_page()
           this.$refs.topics_table.refresh();
-      },
-      select_per_page(event) {
-          //this.load_page()
       },
       read_page_number(href) {
         if (href) {
@@ -1356,30 +1257,6 @@
             this.page = g ? g[1] : 1
             console.log('read_page_number [' + this.page + '] from params', params)
         }
-      },
-      load_page(href) {
-        this.read_page_number(href)
-        url = dutils.urls.resolve('topic_list_table')
-        container = this.$refs['table_container']
-        if (!href) {
-            this.show_load_data_spinner = true;
-            container.innerHTML = '';
-        }
-
-        const formData = new FormData()
-        this.build_filter_data(formData)
-        formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
-        axios.post(url + '?page=' + this.page +'&per_page=' + this.per_page, formData).then(response => {
-            var cn = parseInt(response.headers.topics_counter)
-            if (cn > 0 && this.filters.length > 1 && cn > this.per_page) {
-                this.topics_counter = response.headers.topics_counter
-            } else {
-                this.topics_counter = null
-            }
-            this.show_load_data_spinner = false;
-            container.innerHTML = response.data
-            this.setup_table()
-        });
       },
       get_point_link(item) {
         return dutils.urls.resolve('point_detail', { id: item.point })
@@ -1581,20 +1458,19 @@
 
             <div class="modal-header" >
                 Topic Fields List
-                <button v-on:click="reset_to_default()" class="btn btn-outline-danger"> Reset To Default</button>
+                <button v-on:click="resetToDefault()" class="btn btn-outline-danger"> Reset To Default</button>
             </div>
 
             <div class="modal-body">
 
                 <b-table :items="edit_fields" :fields="fields">
+                    <template v-slot:cell(action)="item">
+                      <button v-on:click="deleteRow(item.index)" class="btn btn-outline-danger btn-sm  ml-1"><i class="fas fa-trash"></i></button>
+                    </template>
 
-                <template slot="action" scope="item">
-                  <button v-on:click="delete_row(item.index)" class="btn btn-outline-danger btn-sm  ml-1"><i class="fas fa-trash"></i></button>
-                </template>
-
-                <template slot="label" scope="item">
-                    <b-form-input type="text" v-model="item.item.label"></b-form-input>
-                </template>
+                    <template v-slot:cell(label)="item">
+                        <b-form-input type="text" v-model="item.item.label"></b-form-input>
+                    </template>
                 </b-table>
 
                 <div class="row p-0 m-0 mb-2 col-12">
@@ -1609,7 +1485,7 @@
                   </v-select>
                 </div>
                 <div class="mr-2 p-0 col-auto">
-                    <button v-on:click="add_field()" class="btn btn-outline-primary">Add</i></button>
+                    <button v-on:click="addField()" class="btn btn-outline-primary">Add</i></button>
                 </div>
                 </div>
 
@@ -1689,17 +1565,17 @@
         this.visible = false
         this.errors = {}
       },
-      delete_row: function(index) {
-        console.log('delete_row', index)
+      deleteRow: function(index) {
+        console.log('deleteRow', index)
         this.edit_fields.splice(index, 1)
       },
-      add_field: function() {
-        console.log('add_field', this.current_tag)
+      addField: function() {
+        console.log('addField', this.current_tag)
         if (this.current_tag) {
             this.edit_fields.push({key: this.current_tag.value, label: this.current_tag.description})
         }
       },
-      reset_to_default: function() {
+      resetToDefault: function() {
           this.edit_fields = []
           if (this.default_topic_fields.length > 3) {
               for (var i=2; i<(this.default_topic_fields.length-1); i++) {
