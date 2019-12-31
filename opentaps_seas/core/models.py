@@ -128,11 +128,23 @@ class Tag(models.Model):
         if not value:
             return None
         if tag == 'siteRef':
-            return SiteView.objects.get(object_id=value)
+            try:
+                sv = SiteView.objects.get(object_id=value)
+            except SiteView.DoesNotExist:
+                sv = None
+            return sv
         elif tag == 'equipRef':
-            return EquipmentView.objects.get(object_id=value)
+            try:
+                ev = EquipmentView.objects.get(object_id=value)
+            except EquipmentView.DoesNotExist:
+                ev = None
+            return ev
         elif tag == 'modelRef':
-            return ModelView.objects.get(object_id=value)
+            try:
+                mv = ModelView.objects.get(object_id=value)
+            except ModelView.DoesNotExist:
+                mv = None
+            return mv
 
 
 @receiver(pre_delete, sender=Tag, dispatch_uid='tag_delete_signal')
