@@ -92,7 +92,8 @@ from .views import (
 from ..eemeter.views import (
     meter_model_detail_view,
     meter_model_create_view,
-    meter_model_delete_view
+    meter_model_delete_view,
+    meter_model_calc_saving_view
 )
 
 app_name = "core"
@@ -143,6 +144,7 @@ urlpatterns = [
     path("meter/<str:meter_id>/model/<str:id>", view=meter_model_detail_view, name="meter_model_detail"),
     path("meter/<str:meter_id>/create/model", view=meter_model_create_view, name="meter_model_create"),
     path("meter/<str:meter_id>/model/<str:id>/delete", view=meter_model_delete_view, name="meter_model_delete"),
+    path("meter/<str:meter_id>/model/<str:id>/calc_saving", view=meter_model_calc_saving_view, name="meter_model_calc_saving"),
     path("newmodel/", view=model_create_view, name="model_create"),
     path("newmodel/<path:entity_id>", view=model_create_view, name="model_create_for"),
     path("dupmodel/<path:entity_id>", view=model_duplicate_view, name="model_duplicate"),

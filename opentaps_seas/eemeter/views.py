@@ -15,17 +15,25 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import logging
 from ..core.models import Meter
 from ..core.models import SiteView
 from ..core.views import WithBreadcrumbsMixin
+from . import utils
 from .models import BaselineModel
 from .forms import MeterModelCreateForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.http import require_POST
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView
 from django.views.generic import DeleteView
 from django.views.generic import DetailView
+
+logger = logging.getLogger(__name__)
 
 
 class ModelBCMixin(WithBreadcrumbsMixin):
@@ -114,3 +122,15 @@ class MeterModelDeleteView(LoginRequiredMixin, ModelBCMixin, DeleteView):
 
 
 meter_model_delete_view = MeterModelDeleteView.as_view()
+
+
+@login_required()
+@require_POST
+def meter_model_calc_saving_view(request, meter_id, id):
+    model = get_object_or_404(BaselineModel, id=id, meter_id=meter_id)
+    m = utils.load_model(model)
+    data = utils.read_meter_data(model.meter, freq=model.frequency)
+    savings = utils.get_savings(data, m)
+    logger.info('meter_model_calc_saving_view: got saving = {}'.format(savings))
+    messages.success(request, 'Calculated savings as of now: {}'.format(savings))
+    return HttpResponseRedirect(model.get_absolute_url())

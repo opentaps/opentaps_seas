@@ -18,6 +18,7 @@
 
 from django.test import TestCase
 from opentaps_seas.eemeter import utils
+from opentaps_seas.eemeter import models
 
 
 class EEMeterTests(TestCase):
@@ -33,6 +34,12 @@ class EEMeterTests(TestCase):
 
         self.assertEquals(s, s2)
 
+        i2 = models.BaselineModel.objects.get(id=i.id)
+        m2 = utils.load_model(i2)
+        s2 = utils.get_savings(d, m2)
+
+        self.assertEquals(s, s2)
+
     def test_daily_model_serialization(self):
         d = utils.get_daily_sample_data()
         m = utils.get_daily_model(d)
@@ -40,6 +47,12 @@ class EEMeterTests(TestCase):
         m2 = utils.load_model(i)
 
         s = utils.get_savings(d, m)
+        s2 = utils.get_savings(d, m2)
+
+        self.assertEquals(s, s2)
+
+        i2 = models.BaselineModel.objects.get(id=i.id)
+        m2 = utils.load_model(i2)
         s2 = utils.get_savings(d, m2)
 
         self.assertEquals(s, s2)

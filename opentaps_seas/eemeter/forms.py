@@ -32,15 +32,8 @@ class MeterField(forms.CharField):
     widget = MeterInput
 
 
-METER_MODEL_CHOICES = [
-    ('hourly', 'Hourly'),
-    ('daily', 'Daily')
-]
-
-
 class MeterModelCreateForm(forms.ModelForm):
     meter_id = MeterField(label='Meter', max_length=255, required=False)
-    frequency = forms.ChoiceField(required=True, choices=METER_MODEL_CHOICES)
 
     def __init__(self, *args, **kwargs):
         super(MeterModelCreateForm, self).__init__(*args, **kwargs)
@@ -82,4 +75,4 @@ class MeterModelCreateForm(forms.ModelForm):
 
     class Meta:
         model = BaselineModel
-        fields = ["meter_id"]
+        fields = ["meter_id", "frequency"]

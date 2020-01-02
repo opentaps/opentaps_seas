@@ -33,6 +33,7 @@
         Model {{ object.meter.description }} {{ object.model_class }}
         {% block add_button %}
         <div class="ml-auto">
+          <form class="d-inline" method="post" action="{% url 'core:meter_model_calc_saving' object.meter_id object.id %}">{% csrf_token %}<button class="btn btn-primary ml-auto" type="submit"><i class="fa fa-dollar-sign"></i> Record Savings</button></form>
           <a href="{% url 'core:meter_model_delete' object.meter_id object.id %}" role="button" class="btn btn-danger"><i class="fa fa-trash mr-2"></i> Delete</a>
         </div>
         {% endblock add_button %}
