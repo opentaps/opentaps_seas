@@ -1365,6 +1365,13 @@
                                   }
                               }
                           }
+                          if (data_items[i].m_tags) {
+                              for (var j=1; j<this.topic_fields.length-1; j++) {
+                                  if (data_items[i].m_tags.includes(this.topic_fields[j].key)) {
+                                      item[this.topic_fields[j].key] = 'X';
+                                  }
+                              }
+                          }
                           console.log('row:', item)
                           this.topic_items.push(item)
                       }
