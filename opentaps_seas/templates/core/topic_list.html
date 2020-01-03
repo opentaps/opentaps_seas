@@ -1484,7 +1484,7 @@
                 <div class="mr-2 p-0 col flex-grow" style="min-width:7em">
                   <v-select select-on-tab :options="tags" v-model="current_tag" placeholder="Field" :clearable="false" class="opt_w_auto">
                     <template slot="option" slot-scope="option">
-                      $[ option.label ]&nbsp;<small>$[ option.description ]</small>
+                      $[ option.label ]&nbsp;<small>$[ option.description ] $[ option.kind ]</small>
                     </template>
                     <template slot="selected-option" slot-scope="option">
                       $[ option.label ]
@@ -1560,7 +1560,8 @@
               this.tags.push({
                 label: x[i].tag,
                 description: x[i].description,
-                value: x[i].tag
+                value: x[i].tag,
+                kind: x[i].kind
               })
             }
           })
@@ -1579,7 +1580,7 @@
       addField: function() {
         console.log('addField', this.current_tag)
         if (this.current_tag) {
-            this.edit_fields.push({key: this.current_tag.value, label: this.current_tag.description})
+            this.edit_fields.push({key: this.current_tag.value, label: this.current_tag.description, kind: this.current_tag.kind})
         }
       },
       resetToDefault: function() {
@@ -1599,7 +1600,11 @@
 
         if (this.edit_fields.length) {
             for (var i=0; i<this.edit_fields.length; i++) {
-                this.edit_fields[i]['sortable'] = true
+                if (this.edit_fields[i]['kind'] == 'Marker') {
+                    this.edit_fields[i]['sortable'] = false
+                } else {
+                    this.edit_fields[i]['sortable'] = true
+                }
                 new_fields.push(this.edit_fields[i])
             }
         }
