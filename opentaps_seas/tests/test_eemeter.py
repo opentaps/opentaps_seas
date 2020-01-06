@@ -26,7 +26,7 @@ class EEMeterTests(TestCase):
     def test_hourly_model_serialization(self):
         d = utils.get_hourly_sample_data()
         m = utils.get_hourly_model(d)
-        i = utils.save_model(m)
+        i = utils.save_model(m, frequency='hourly')
         m2 = utils.load_model(i)
 
         s = utils.get_savings(d, m)
@@ -43,7 +43,7 @@ class EEMeterTests(TestCase):
     def test_daily_model_serialization(self):
         d = utils.get_daily_sample_data()
         m = utils.get_daily_model(d)
-        i = utils.save_model(m)
+        i = utils.save_model(m, frequency='daily')
         m2 = utils.load_model(i)
 
         s = utils.get_savings(d, m)
