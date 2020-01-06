@@ -47,7 +47,8 @@ use or production of energy.  Each Meter is associated with a Weather Station.  
 When you add a Meter, the UI uses the location of the Site to get the nearest Weather Station, so all Meters at the same Site will have the same Weather Stations.  
 A meter could be removed from a site, but it is not deleted.  The meter and weather histories are permanently stored in opentaps for you.
 
-When you click through to a meter, you will see its temperature and metered value history.  
+When you click through to a meter, you will see its history.  You can use the up arrow icon to upload the meter history using either a CSV format or the Green Button XML format.  An example of the
+CSV file format could be found in the file ``examples/meter.csv``.  Examples of the Green Button XML file could be found at https://www.energy.gov/downloads/green-button-sample-data-pge     
 
 Equipment
 ^^^^^^^^^
