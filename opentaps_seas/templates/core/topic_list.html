@@ -1549,7 +1549,7 @@
         this.default_topic_fields = default_topic_fields
         if (topic_fields.length > 3) {
             for (var i=2; i<(topic_fields.length-1); i++) {
-                this.edit_fields.push({key: topic_fields[i].key, label:topic_fields[i].label})
+                this.edit_fields.push({key: topic_fields[i].key, label: topic_fields[i].label, sortable: topic_fields[i].sortable})
             }
         }
 
@@ -1587,12 +1587,12 @@
           this.edit_fields = []
           if (this.default_topic_fields.length > 3) {
               for (var i=2; i<(this.default_topic_fields.length-1); i++) {
-                  this.edit_fields.push({key: this.default_topic_fields[i].key, label:this.default_topic_fields[i].label})
+                  this.edit_fields.push({key: this.default_topic_fields[i].key, label: this.default_topic_fields[i].label, sortable: this.default_topic_fields[i].sortable})
               }
           }
       },
       save: function() {
-        console.log('save')
+        console.log('save', this.edit_fields)
         var new_fields = []
         new_fields.push(this.topic_fields[0])
         this.topic_fields[1]['sortable'] = true
@@ -1600,10 +1600,12 @@
 
         if (this.edit_fields.length) {
             for (var i=0; i<this.edit_fields.length; i++) {
-                if (this.edit_fields[i]['kind'] == 'Marker') {
-                    this.edit_fields[i]['sortable'] = false
-                } else {
-                    this.edit_fields[i]['sortable'] = true
+                if (this.edit_fields[i].hasOwnProperty('kind')) {
+                    if (this.edit_fields[i]['kind'] == 'Marker') {
+                        this.edit_fields[i]['sortable'] = false
+                    } else {
+                        this.edit_fields[i]['sortable'] = true
+                    }
                 }
                 new_fields.push(this.edit_fields[i])
             }
