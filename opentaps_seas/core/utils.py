@@ -1182,3 +1182,13 @@ def get_weather_history_for_station(weather_station, days_from_today=7):
         return temp_degC
     except Exception as e:
         logging.error(e)
+
+
+def get_topic_point(topic):
+    point = None
+    try:
+        point = PointView.objects.filter(topic=topic)[0]
+    except IndexError:
+        point = None
+
+    return point
