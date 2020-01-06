@@ -16,10 +16,13 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+from datetime import timedelta
 from . import utils
 from ..core.models import Meter
+from ..core.models import MeterProduction
 from .models import BaselineModel
 from django import forms
+from django.forms.widgets import HiddenInput
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +69,7 @@ class MeterModelCreateForm(forms.ModelForm):
         model = utils.get_model_for_freq(data, frequency)
 
         if commit:
-            bm = utils.save_model(model)
-            bm.meter_id = meter.meter_id
-            bm.save()
+            bm = utils.save_model(model, meter_id=meter.meter_id, frequency=frequency)
             self.instance = bm
         self._post_clean()  # reset the form as updating the just created instance
         return self.instance
@@ -76,3 +77,88 @@ class MeterModelCreateForm(forms.ModelForm):
     class Meta:
         model = BaselineModel
         fields = ["meter_id", "frequency"]
+
+
+class CalcMeterSavingsForm(forms.Form):
+    meter_id = MeterField(label='Meter', max_length=255, required=True)
+    model_id = forms.CharField(label='Model', max_length=255, required=True)
+    from_datetime = forms.DateTimeField(label='From', required=True)
+    to_datetime = forms.DateTimeField(label='To', required=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.initial.get('meter_id'):
+            self.fields['meter_id'].widget = HiddenInput()
+        if self.initial.get('model_id'):
+            self.fields['model_id'].widget = HiddenInput()
+
+    def is_valid(self):
+        if not super().is_valid():
+            logger.error('CalcMeterSavingsForm: super not valid')
+            return False
+        logger.info('CalcMeterSavingsForm: check is_valid')
+
+        meter_id = self.cleaned_data['meter_id']
+        meter = None
+        if meter_id:
+            # check meter exists
+            try:
+                meter = Meter.objects.get(meter_id=meter_id)
+            except Meter.DoesNotExist:
+                logger.error('CalcMeterSavingsForm: Meter not found with id = %s', meter_id)
+                self.add_error('meter_id', 'Meter {} does not exist.'.format(meter_id))
+                return False
+
+        model_id = self.cleaned_data['model_id']
+        if model_id:
+            # check meter exists
+            try:
+                BaselineModel.objects.get(id=model_id)
+            except BaselineModel.DoesNotExist:
+                logger.error('CalcMeterSavingsForm: BaselineModel not found with id = %s', model_id)
+                self.add_error('model_id', 'BaselineModel {} does not exist.'.format(model_id))
+                return False
+
+        if meter:
+            start = self.cleaned_data['from_datetime']
+            end = self.cleaned_data['to_datetime']
+            # check there is actually data for the range
+            if not meter.get_meter_data(start=start, end=end).count():
+                logger.error('CalcMeterSavingsForm: No Meter data found for %s from %s to %s', model_id, start, end)
+                self.add_error('from_datetime', 'No Meter data found between {} and {}'.format(start, end))
+                self.add_error('to_datetime', 'No Meter data found between {} and {}'.format(start, end))
+                return False
+
+        return True
+
+    def save(self, commit=True):
+        meter_id = self.cleaned_data['meter_id']
+        model_id = self.cleaned_data['model_id']
+        start = self.cleaned_data['from_datetime']
+        end = self.cleaned_data['to_datetime']
+        logger.info('CalcMeterSavingsForm: for Meter %s, from %s to %s', meter_id, start, end)
+
+        meter = Meter.objects.get(meter_id=meter_id)
+        model = BaselineModel.objects.get(id=model_id)
+
+        m = utils.load_model(model)
+        data = utils.read_meter_data(meter, freq=model.frequency, start=start, end=end)
+        savings = utils.get_savings(data, m)
+        logger.info('CalcMeterSavingsForm: got saving = {}'.format(savings))
+        metered_savings = savings.get('metered_savings')
+        if not metered_savings.empty:
+            # save the metered savings inot MeterProduction
+            logger.info('CalcMeterSavingsForm: got metered_savings = {}'.format(metered_savings))
+            for d, v in metered_savings.iterrows():
+                logger.info('CalcMeterSavingsForm: -> {} = {}'.format(d, v.metered_savings))
+                MeterProduction.objects.create(
+                    meter=meter,
+                    from_datetime=d,
+                    thru_datetime=d + timedelta(hours=1),
+                    meter_production_type='EEMeter Savings',
+                    meter_production_reference={'BaselineModel.id': model.id},
+                    amount=v.metered_savings,
+                    uom_id='energy_kWh',
+                    source='CalcMeterSavingsForm')
+        self.model = model
+        return savings

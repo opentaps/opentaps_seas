@@ -16,22 +16,22 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+from datetime import datetime
+from datetime import timedelta
 from ..core.models import Meter
 from ..core.models import SiteView
 from ..core.views import WithBreadcrumbsMixin
-from . import utils
 from .models import BaselineModel
+from .forms import CalcMeterSavingsForm
 from .forms import MeterModelCreateForm
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.decorators.http import require_POST
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView
 from django.views.generic import DeleteView
 from django.views.generic import DetailView
+from django.views.generic.edit import FormView
 
 logger = logging.getLogger(__name__)
 
@@ -124,13 +124,51 @@ class MeterModelDeleteView(LoginRequiredMixin, ModelBCMixin, DeleteView):
 meter_model_delete_view = MeterModelDeleteView.as_view()
 
 
-@login_required()
-@require_POST
-def meter_model_calc_saving_view(request, meter_id, id):
-    model = get_object_or_404(BaselineModel, id=id, meter_id=meter_id)
-    m = utils.load_model(model)
-    data = utils.read_meter_data(model.meter, freq=model.frequency)
-    savings = utils.get_savings(data, m)
-    logger.info('meter_model_calc_saving_view: got saving = {}'.format(savings))
-    messages.success(request, 'Calculated savings as of now: {}'.format(savings))
-    return HttpResponseRedirect(model.get_absolute_url())
+class MeterModelCalcSavingView(LoginRequiredMixin, FormView):
+    form_class = CalcMeterSavingsForm
+    template_name = 'eemeter/calc_saving.html'
+
+    def get_initial(self):
+        logging.info('get_initial: %s', self.kwargs)
+        now = datetime.utcnow()
+        start = now - timedelta(days=30)
+        return {
+            'from_datetime': start,
+            'to_datetime': now,
+            'meter_id': self.kwargs.get('meter_id'),
+            'model_id': self.kwargs.get('id')
+        }
+
+    def get_form_kwargs(self):
+        args = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            # first change the data to be a copy of POST
+            args.update({
+                'data': self.request.POST.copy(),
+            })
+            # add the URL given ID to the params for the Form
+            if 'id' in self.kwargs and 'model_id' not in args['data']:
+                args['data'].update({'model_id': self.kwargs.get('id')})
+        return args
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'meter_id' in self.kwargs:
+            meter = get_object_or_404(Meter, meter_id=self.kwargs['meter_id'])
+            context['meter'] = meter
+        if 'id' in self.kwargs:
+            model = get_object_or_404(BaselineModel, id=self.kwargs['id'])
+            context['model'] = model
+            context['object'] = model
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(form.model.get_absolute_url())
+        else:
+            return self.form_invalid(form)
+
+
+meter_model_calc_saving_view = MeterModelCalcSavingView.as_view()

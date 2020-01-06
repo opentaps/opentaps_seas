@@ -18,7 +18,6 @@
 import logging
 import json
 import csv
-import xml.etree.ElementTree as ET
 from io import TextIOWrapper
 from . import utils
 from .models import EntityFile
@@ -37,6 +36,7 @@ from .models import WeatherStation
 from django import forms
 from django.template.defaultfilters import slugify
 from greenbutton import parse
+from opentaps_seas.eemeter.utils import setup_demo_sample_models
 
 logger = logging.getLogger(__name__)
 
@@ -977,6 +977,8 @@ class MeterDataUploadForm(forms.Form):
 
 
 class MeterCreateForm(forms.ModelForm):
+    sample = forms.BooleanField(label="Create a sample Meter with fake values", required=False, initial=False)
+
     def __init__(self, *args, **kwargs):
         super(MeterCreateForm, self).__init__(*args, **kwargs)
         self.fields['meter_id'].required = True
@@ -992,9 +994,24 @@ class MeterCreateForm(forms.ModelForm):
             error_msg = u"No weather station found for this Site. Please check that your site is set up correctly."
             self.add_error('weather_station', error_msg)
 
+    def is_valid(self):
+        valid = super().is_valid()
+        if self.cleaned_data['sample']:
+            return True
+        else:
+            return valid
+
+    def save(self, commit=True):
+        if self.cleaned_data['sample']:
+            return setup_demo_sample_models(self.cleaned_data['site'],
+                                            meter_id=self.cleaned_data.get('meter_id'),
+                                            description=self.cleaned_data.get('description'))
+        else:
+            return super().save(commit=commit)
+
     class Meta:
         model = Meter
-        fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
+        fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime", "sample"]
 
 
 class MeterUpdateForm(forms.ModelForm):

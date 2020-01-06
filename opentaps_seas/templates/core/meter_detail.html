@@ -54,9 +54,9 @@
           <tr>
             <td>Name:</td>
             <td>
-              <a target="_blank" href="{% url 'core:weather_station_geoview' object.weather_station.weather_station_code %}">
+              {% if object.weather_station.weather_station_code %}<a target="_blank" href="{% url 'core:weather_station_geoview' object.weather_station.weather_station_code %}">{% endif %}
                 {{ object.weather_station.station_name | default:'n/a' }}
-              </a>
+              {% if object.weather_station.weather_station_code %}</a>{% endif %}
             </td>
           </tr>
           <tr>
@@ -84,6 +84,8 @@
         {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id %}
       </p>
       {% endif %}
+
+      {% include "core/_meter_production_chart.html" with meter_id=object.meter_id %}
 
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>

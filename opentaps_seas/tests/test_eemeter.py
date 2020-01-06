@@ -32,13 +32,13 @@ class EEMeterTests(TestCase):
         s = utils.get_savings(d, m)
         s2 = utils.get_savings(d, m2)
 
-        self.assertEquals(s, s2)
+        self.assertEquals(s.get('total_savings'), s2.get('total_savings'))
 
         i2 = models.BaselineModel.objects.get(id=i.id)
         m2 = utils.load_model(i2)
         s2 = utils.get_savings(d, m2)
 
-        self.assertEquals(s, s2)
+        self.assertEquals(s.get('total_savings'), s2.get('total_savings'))
 
     def test_daily_model_serialization(self):
         d = utils.get_daily_sample_data()
@@ -55,4 +55,4 @@ class EEMeterTests(TestCase):
         m2 = utils.load_model(i2)
         s2 = utils.get_savings(d, m2)
 
-        self.assertEquals(s, s2)
+        self.assertEquals(s.get('total_savings'), s2.get('total_savings'))

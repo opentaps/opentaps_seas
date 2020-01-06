@@ -19,9 +19,78 @@ import logging
 import eemeter
 from io import StringIO
 from eemeter import io as eeio
+from ..core.models import SiteView
+from ..core.models import SiteWeatherStations
+from ..core.models import Meter
+from ..core.models import MeterHistory
+from ..core.models import WeatherStation
+from ..core.models import WeatherHistory
 from .models import BaselineModel
 
 logger = logging.getLogger(__name__)
+
+
+def setup_demo_sample_models(site_id, meter_id=None, description=None):
+    # this create a test sample meter with both hourly and daily model
+    # using sample meter and temperature data for the given site id
+
+    # use the hourly sample data
+    meter_data, temperature_data, sample_metadata = (
+        eemeter.load_sample("il-electricity-cdd-hdd-hourly")
+    )
+
+    source = 'eemeter_sample'
+    # throw an exception is Site is not found
+    try:
+        site = SiteView.objects.get(object_id=site_id)
+    except SiteView.DoesNotExist:
+        site = SiteView.objects.get(entity_id=site_id)
+
+    # create a dummy weather station for the sample data if it did not alredy exist
+    try:
+        ws = WeatherStation.objects.get(weather_station_id='eemeter_ws')
+    except WeatherStation.DoesNotExist:
+        ws = WeatherStation.objects.create(
+            weather_station_id='eemeter_ws', source=source, elevation_uom_id='length_m')
+        # associate it to the site
+        SiteWeatherStations.objects.create(
+            weather_station=ws,
+            site_id=site.entity_id,
+            source=source,
+            station_name='Sample Station')
+        # load the temperature data, this is given in F
+        for d, t in temperature_data.iteritems():
+            tc = (t - 32.0) * 5 / 9
+            WeatherHistory.objects.create(weather_station=ws, as_of_datetime=d, temp_f=t, temp_c=tc, source=source)
+
+    if not meter_id:
+        meter_id = '{}-sample_meter'.format(site_id)
+    if not description:
+        description = 'Sample Meter'
+
+    # cleanup previous entries as needed
+    MeterHistory.objects.filter(meter_id=meter_id).delete()
+    Meter.objects.filter(meter_id=meter_id).delete()
+    # create the meter
+    meter = Meter.objects.create(
+        meter_id=meter_id,
+        site_id=site.entity_id,
+        description=description,
+        weather_station_id='eemeter_ws')
+    # setup the meter data (note this is slightly different format than temps)
+    for d, v in meter_data.iterrows():
+        MeterHistory.objects.create(meter=meter, as_of_datetime=d, value=v.value, uom_id='energy_kWh', source=source)
+
+    # create both models
+    frequency = 'hourly'
+    data = read_meter_data(meter, freq=frequency)
+    model = get_model_for_freq(data, frequency)
+    save_model(model, meter_id=meter.meter_id, frequency=frequency)
+
+    frequency = 'daily'
+    data = read_meter_data(meter, freq=frequency)
+    model = get_model_for_freq(data, frequency)
+    return save_model(model, meter_id=meter.meter_id, frequency=frequency)
 
 
 def get_daily_sample_data():
@@ -58,20 +127,23 @@ def read_sample_data(meter_data, temperature_data, sample_metadata):
     }
 
 
-def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, freq=None):
+def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, freq=None, start=None, end=None):
     # get the meter data from the meter history
+    logger.info('read_meter_data: freq %s', freq)
     out = StringIO()
-    meter.write_meter_data_csv(out, columns=[{'as_of_datetime': 'start'}, {'value': 'value'}])
+    meter.write_meter_data_csv(out, columns=[{'as_of_datetime': 'start'}, {'value': 'value'}], start=start, end=end)
     out.seek(0)
     if freq not in ("hourly", "daily"):
         freq = None
     meter_data = eeio.meter_data_from_csv(out, freq=freq)
+    logger.info('read_meter_data: meter_data %s', meter_data)
 
     # get the temperature data from the meter linked weather stations
     out = StringIO()
-    meter.write_weather_data_csv(out, columns=[{'as_of_datetime': 'dt'}, {'temp_f': 'tempF'}])
+    meter.write_weather_data_csv(out, columns=[{'as_of_datetime': 'dt'}, {'temp_f': 'tempF'}], start=start, end=end)
     out.seek(0)
     temperature_data = eeio.temperature_data_from_csv(out, freq="hourly")
+    logger.info('read_meter_data: temperature_data %s', temperature_data)
 
     # get meter data suitable for fitting a baseline model
     baseline_meter_data, warnings = eemeter.get_baseline_data(
@@ -156,11 +228,13 @@ def get_hourly_model(data):
     return baseline_model
 
 
-def save_model(model):
+def save_model(model, meter_id=None, frequency=None):
     # persist the given model in the DB
-    m = BaselineModel(data=model.json(), model_class=model.__class__.__name__)
-    m.save()
-    return m
+    return BaselineModel.objects.create(
+        data=model.json(),
+        model_class=model.__class__.__name__,
+        meter_id=meter_id,
+        frequency=frequency)
 
 
 def load_model(model):
@@ -188,4 +262,8 @@ def get_savings(data, baseline_model):
     # total metered savings
     total_metered_savings = metered_savings_dataframe.metered_savings.sum()
 
-    return total_metered_savings
+    return {
+        'total_savings': total_metered_savings,
+        'metered_savings': metered_savings_dataframe,
+        'error_bands': error_bands
+    }

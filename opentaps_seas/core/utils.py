@@ -38,7 +38,6 @@ from datetime import timezone
 from dateutil.parser import parse as parse_datetime
 from django.db import connections
 from django.db.models import Q
-from django.db.models import Subquery
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings

@@ -738,6 +738,14 @@ def write_csv_data(qs, output, columns, with_header=True):
         writer.writerow(row)
 
 
+def query_timeseries(qs, start=None, end=None):
+    if start:
+        qs = qs.filter(as_of_datetime__gte=start)
+    if end:
+        qs = qs.filter(as_of_datetime__lt=end)
+    return qs.order_by('as_of_datetime')
+
+
 class Meter(models.Model):
     meter_id = CharField(_("Meter ID"), max_length=255, primary_key=True)
     description = CharField(_("Description"), max_length=255, blank=True, null=True)
@@ -749,11 +757,17 @@ class Meter(models.Model):
     def get_absolute_url(self):
         return reverse("core:meter_detail", kwargs={"meter_id": self.meter_id})
 
-    def write_meter_data_csv(self, output, columns, with_header=True):
-        write_csv_data(self.meterhistory_set.order_by('as_of_datetime'), output, columns, with_header)
+    def get_meter_data(self, start=None, end=None):
+        return query_timeseries(self.meterhistory_set, start=start, end=end)
 
-    def write_weather_data_csv(self, output, columns, with_header=True):
-        write_csv_data(self.weather_station.weatherhistory_set.order_by('as_of_datetime'), output, columns, with_header)
+    def get_weather_data(self, start=None, end=None):
+        return query_timeseries(self.weather_station.weatherhistory_set, start=start, end=end)
+
+    def write_meter_data_csv(self, output, columns, with_header=True, start=None, end=None):
+        write_csv_data(self.get_meter_data(start=start, end=end), output, columns, with_header)
+
+    def write_weather_data_csv(self, output, columns, with_header=True, start=None, end=None):
+        write_csv_data(self.get_weather_data(start=start, end=end), output, columns, with_header)
 
     def get_data_panda(self):
         # return a pandas.core.frame.DataFrame of the meter data as date .. value
@@ -775,6 +789,23 @@ class MeterHistory(models.Model):
 
     class Meta:
         db_table = 'core_meter_history'
+
+
+class MeterProduction(models.Model):
+    meter_production_id = AutoField(_("Meter Production ID"), primary_key=True, auto_created=True)
+    meter = ForeignKey(Meter, on_delete=models.CASCADE)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
+    meter_production_type = CharField(max_length=255)
+    meter_production_reference = HStoreField(blank=True, null=True)
+    amount = FloatField(null=True)
+    uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING)
+    source = CharField(max_length=255)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        db_table = 'core_meter_production'
 
 
 class SiteWeatherStations(models.Model):
