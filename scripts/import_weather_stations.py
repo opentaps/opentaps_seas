@@ -25,6 +25,7 @@ def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
         # Delete all meters
+        c.execute("DELETE FROM eemeter_baselinemodel;")
         c.execute("DELETE FROM core_meter_history;")
         c.execute("DELETE FROM core_meter;")
 
