@@ -1408,7 +1408,8 @@
         filters = []
         for (var i=0; i<this.filters.length; i++) {
           var f = this.filters[i]
-          if (f.value && f.value.length) {
+          console.log('apply_tags filter ? ', f)
+          if ((f.value && f.value.length) || !this.is_value_required(f)) {
             var field = f.field ? (f.field.value || f.field) : 'topic'
             filters.push({
               n: field,
