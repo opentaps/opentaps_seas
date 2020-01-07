@@ -298,3 +298,7 @@ input.vs__search:-moz-placeholder {
   height:90%;
   margin-top:0.175rem;
 }
+
+.topics-table thead {
+    color: #007bff;
+}

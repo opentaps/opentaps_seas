@@ -1186,17 +1186,31 @@ def topic_list_table(request):
     return resp
 
 
+@login_required()
+@api_view(['POST'])
+def topic_list_table_fields(request):
+    topic_fields = request.data
+    request.session["topic_fields"] = topic_fields
+
+    response = JsonResponse({'success': 1})
+    return response
+
+
 class TopicListJsonView(LoginRequiredMixin, ListView):
     model = Topic
 
-    def get_queryset(self, **kwargs):
-        qs = super().get_queryset(**kwargs)
-        return qs.order_by(Lower('topic'))
-
-    def render_to_response(self, context, **response_kwargs):
+    def post(self, request, *args, **kwargs):
         logging.info('TopicListJsonView render_to_response ...')
-        qs = context['object_list']
-        select_not_mapped_topics = self.request.GET.get('select_not_mapped_topics')
+        sort_by = self.request.POST.get('sortBy')
+        if not sort_by:
+            sort_by = 'topic'
+        if sort_by != 'topic':
+            sort_by = 'kv_tags__' + sort_by
+        if self.request.POST.get('sortDesc'):
+            sort_by = '-' + sort_by
+
+        qs = Topic.objects.all().order_by(sort_by)
+        select_not_mapped_topics = self.request.POST.get('select_not_mapped_topics')
         if select_not_mapped_topics:
             # only list topics where there is no related data point
             # because those are 2 different DB need to get all the data points
@@ -1205,28 +1219,44 @@ class TopicListJsonView(LoginRequiredMixin, ListView):
             qs = qs.exclude(m_tags__contains=['point'])
 
         n = 0
-        filters_count = self.request.GET.get('filters_count')
+        filters_count = self.request.POST.get('filters_count')
         if filters_count:
             n = int(filters_count)
 
         q_filters = []
         for i in range(n):
-            filter_field = self.request.GET.get('n' + str(i))
-            filter_type = self.request.GET.get('t' + str(i))
-            filter_op = self.request.GET.get('o' + str(i))
+            filter_field = self.request.POST.get('n' + str(i))
+            filter_type = self.request.POST.get('t' + str(i))
+            filter_op = self.request.POST.get('o' + str(i))
             if filter_type:
-                filter_value = self.request.GET.get('f' + str(i))
+                filter_value = self.request.POST.get('f' + str(i))
                 logging.info('topic_list_table got filter [ (%s) %s - %s : %s]',
                              filter_op, filter_field, filter_type, filter_value)
                 q_filters.append((filter_field, filter_type, filter_value, filter_op))
         qs = utils.apply_filters_to_queryset(qs, q_filters)
 
-        per_page = self.request.GET.get('limit') or 10
+        per_page = self.request.GET.get('per_page') or 10
         page = self.request.GET.get('page') or 1
         paginator = Paginator(qs, per_page)
 
         logging.info('TopicListJsonView render_to_response DONE')
-        return JsonResponse({'data': list(paginator.get_page(page).object_list.values()), 'count': paginator.count})
+        topics_list = paginator.get_page(page).object_list.values()
+        data = []
+        try:
+            for item in topics_list:
+                p = utils.get_topic_point(item['topic'])
+                if p:
+                    item['point_entity_id'] = p.entity_id
+
+                data.append(item)
+        except Exception:
+            return JsonResponse({'error': 'Cannot get topics sorted by {}'.format(sort_by)})
+
+        response = {'data': data, 'count': paginator.count}
+        if 'topic_fields' in self.request.session:
+            response['topic_fields'] = self.request.session['topic_fields']
+
+        return JsonResponse(response)
 
 
 topic_list_json = TopicListJsonView.as_view()

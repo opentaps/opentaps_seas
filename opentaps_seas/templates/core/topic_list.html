@@ -124,7 +124,7 @@
               </div>
               <div :class="[topics_counter ? 'col-xl-3' : 'col-xl-4', topics_counter ? 'col-lg-3' : 'col-lg-4']">
                  <b-form-group style="margin-bottom: 0px;" label-cols-sm="5" label-cols="7" label-cols-lg="7" label-cols-xl="8" label-align-sm="left" label-align-lg="right" label="View" label-for="per_page">
-                   <select name="per_page" id="per_page" class="form-control page-length" v-model="per_page" v-on:change="select_per_page">
+                   <select name="per_page" id="per_page" class="form-control page-length" v-model="per_page">
                       <option value="10">10</option>
                       <option value="25">25</option>
                       <option value="50">50</option>
@@ -138,7 +138,7 @@
                 <div class="text-sm-center text-lg-left text-xl-left">of ${ topics_counter }</div>
               </div>
 
-              <div class="col-xl-6 col-lg-8" v-if="all_checked || select_all_matching">
+              <div class="col-xl-6 col-lg-8" v-if="all_selected || select_all_matching">
                 <input id="select_all_matching" type="checkbox" name="_ALL_" class="invisible position-absolute" v-model="select_all_matching" />
                 <label class="m-0 w-100 mx-auto text-center pt-2 pb-2 h-c" for="select_all_matching">
                   <span v-if="!select_all_matching" class="text-primary light-btn">Select all that match the filters on all pages.</span>
@@ -148,14 +148,57 @@
               </div>
             </div>
 
-            <div class="text-center filter-spiner-placeholder" v-if="show_load_data_spinner">
-                <b-spinner label="Loading..." variant="secondary"></b-spinner>
-            </div>
-            <div id="table_container" ref="table_container">
-                {% render_table table %}
-            </div>
         </form>
+        <div class="alert alert-danger mt-3" role="alert" v-if="topic_table_errors.error">
+            ${ topic_table_errors.error }
+        </div>
+        <b-table striped hover
+            class="topics-table"
+            :items="load_topics_page"
+            :fields="topic_fields"
+            :per-page="per_page"
+            :current-page="page"
+            id="topics-table"
+            ref="topics_table"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            sort-icon-left
+            no-local-sorting>
 
+            <template v-slot:table-busy>
+              <div class="text-center filter-spiner-placeholder my-2">
+                <b-spinner label="Loading..." variant="secondary"></b-spinner>
+              </div>
+            </template>
+
+            <template v-slot:head(actions)="data">
+              <input type="checkbox" @click.stop="toggle_selected" v-model="all_selected" :disabled="select_all_matching">
+            </template>
+
+            <template v-slot:head(view)="data">
+              <b-btn variant="light" size="sm" @click.stop="edit_topic_fields()"><i class="fa fa-cog"></i></b-btn>
+            </template>
+
+            <template v-slot:cell(actions)="item">
+              <input type="checkbox" name="checked" :key="item.index" :value="item.item" @click.stop v-model="checked_items" :disabled="select_all_matching">
+            </template>
+
+            <template v-slot:cell(view)="item">
+              <a v-if="item.item.point" class="btn btn-secondary btn-sm" :href="get_point_link(item.item)"><i class="fa fa-external-link-alt"></i>  View</a>
+              <a v-if="!item.item.point" class="btn btn-secondary btn-sm" :href="get_add_point_link(item.item)"><i class="fa fa-plus"></i>  Add</a>
+            </template>
+        </b-table>
+
+        <b-pagination
+          v-model="page"
+          :total-rows="total_rows"
+          :per-page="per_page"
+          :limit="7"
+          aria-controls="topics-table"
+          align="center"
+        ></b-pagination>
+
+        <div id="topic-fields-form-modal" :csrfmiddlewaretoken="csrfmiddlewaretoken"></div>
     </div>
   </div>
 
@@ -1040,6 +1083,39 @@
             },
           {% endfor %}
         ],
+        topic_fields: [],
+        default_topic_fields: [
+          {
+            key: 'actions',
+            label: '',
+            'class': 'text-left'
+          },
+          {
+            key: 'topic',
+            sortable: true
+          },
+          {
+            key: 'bacnet_objectName',
+            label: 'Object Name',
+            sortable: true
+          },
+          {
+            key: 'bacnet_presentValue',
+            label: 'Present Value',
+            sortable: true,
+          },
+          {
+            key: 'bacnet_units',
+            label: 'Units',
+            sortable: true,
+          },
+          {
+            key: 'view',
+            label: '',
+            'class': 'text-right'
+          },
+        ],
+        topic_items: [],
         create_rule_success: false,
         selected_topics: {},
         select_not_mapped_topics: false,
@@ -1047,11 +1123,16 @@
         select_all_matching: false,
         show_load_data_spinner: false,
         per_page: 10,
+        total_rows: 0,
         topics_counter: null,
+        checked_items: [],
+        all_selected: false,
+        sortBy: 'topic',
+        sortDesc: false,
+        topic_table_errors: {}
       }
     },
     mounted: function () {
-        this.setup_table()
         this.read_page_number(window.location.href)
     },
     created: function () {
@@ -1077,16 +1158,9 @@
       eventHub.get_select_not_mapped_topics = () => {
         return this.select_not_mapped_topics
       }
+      eventHub.$on('apply_topicFields', this.apply_topic_fields)
     },
     watch: {
-      select_all_matching: function (val) {
-        if (val) {
-          this.select_all(true, true)
-        } else {
-          this.sync_select()
-        }
-        this.disable_checkboxes(val)
-      },
     },
     methods: {
       noop() {
@@ -1105,107 +1179,6 @@
         }
         eventHub.$emit('apply_rule', rule)
       },
-      setup_table() {
-        this.setup_pager()
-        this.setup_checkboxes()
-      },
-      disable_checkboxes(val) {
-        console.log('disable_checkboxes', val)
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        for (var i=0; i<cbs.length; i++) {
-          cb = cbs[i]
-          if (!cb.id) {
-            cbs[i].disabled = val
-          }
-        }
-      },
-      setup_checkboxes() {
-        el = this.$refs['table_container']
-        select_all = el.querySelector('thead input[type="checkbox"]')
-        console.log('add select_all handler for', select_all)
-        _this = this
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        all_checked = cbs.length > 1
-        has_checkboxes = false
-        console.log('initial select_all checked', all_checked, cbs.length)
-        for (var i=0; i<cbs.length; i++) {
-            cb = cbs[i]
-            if (cb.value && cb.name && cb.name.length) {
-                if (cb.name != '_ALL_') has_checkboxes = true
-                if (_this.select_all_matching || _this.selected_topics[cb.value]) {
-                    cb.checked = true
-                } else {
-                    all_checked = false
-                }
-                cb.addEventListener('change', function(event) {
-                    _this.selected_topics[this.value] = this.checked
-                });
-            } else {
-                cb.checked = false
-            }
-        }
-        if (!has_checkboxes) {
-          all_checked = false
-        }
-        console.log('set select_all checked', all_checked)
-        select_all.checked = all_checked
-        this.all_checked = all_checked
-        select_all.addEventListener('change', function(event) {
-            console.log('* change select_all', this.checked)
-            _this.select_all(this.checked)
-        });
-        this.disable_checkboxes(this.select_all_matching)
-      },
-      setup_pager() {
-        el = this.$refs['table_container']
-        console.log('table = ', el)
-        pagers = el.querySelectorAll('nav li.page-item')
-        _this = this
-        for (var i=0; i<pagers.length; i++) {
-            el = pagers[i]
-            console.log('add pager handler for', el)
-            el.addEventListener('click', function(event) {
-              console.log('click', this)
-              _this.load_page(this.querySelector('a').href)
-              event.preventDefault()
-              return false
-            });
-        }
-      },
-      sync_select() {
-        el = this.$refs['table_container']
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        all_checked = cbs.length > 1
-        _this = this
-        for (var i=0; i<cbs.length; i++) {
-            cb = cbs[i]
-            if (cb.value && cb.name && cb.name.length && cb.name != '_ALL_') {
-              cb.checked = _this.selected_topics[cb.value]
-              if (!_this.selected_topics[cb.value]) {
-                all_checked = false
-              }
-            }
-        }
-        select_all = el.querySelector('thead input[type="checkbox"]')
-        select_all.checked = all_checked
-        this.all_checked = all_checked
-        console.log('sync_select set select_all checked', all_checked)
-      },
-      select_all(checked, skipSave) {
-        el = this.$refs['table_container']
-        cbs = el.querySelectorAll('input[type="checkbox"]')
-        _this = this
-        for (var i=0; i<cbs.length; i++) {
-            cb = cbs[i]
-            cb.checked = checked
-            console.log('*** set checkbox', cb)
-            if (!skipSave && cb.value && cb.name && cb.name.length) {
-              _this.selected_topics[cb.value] = checked
-            }
-        }
-        this.all_checked = checked
-        console.log('select_all set select_all checked', checked)
-      },
       filter_on_enter(e) {
         if (e.keyCode === 13) {
             this.submit_filters()
@@ -1217,7 +1190,7 @@
       changed_filter_type(filter, index) {
         console.log('changed_filter_type', filter)
         if ((!this.is_value_required(filter) || filter.value) && index < this.filters.length-1) {
-            this.load_page()
+            this.$refs.topics_table.refresh();
         }
       },
       delete_filter(filter, index) {
@@ -1242,8 +1215,8 @@
       },
       build_filter_data(formData) {
         n = 0
-        for (i=0; i<this.filters.length; i++) {
-            f = this.filters[i]
+        for (var i=0; i<this.filters.length; i++) {
+            var f = this.filters[i]
             var field = f.field ? (f.field.value || f.field) : 'topic'
             if (!this.is_value_required(f) || f.value) {
                 formData.set('n'+n, field)
@@ -1262,7 +1235,7 @@
       submit_filters(event) {
         console.log('submit_filters...', event)
         this.check_add_blank_filter()
-        this.load_page()
+        this.$refs.topics_table.refresh();
         if (event) {
             event.preventDefault()
             return false
@@ -1270,10 +1243,7 @@
       },
       add_his_to_filter(event) {
           this.filters.unshift({field: 'his', type: 'present', value: '', op: 'AND'});
-          this.load_page()
-      },
-      select_per_page(event) {
-          this.load_page()
+          this.$refs.topics_table.refresh();
       },
       read_page_number(href) {
         if (href) {
@@ -1288,29 +1258,139 @@
             console.log('read_page_number [' + this.page + '] from params', params)
         }
       },
-      load_page(href) {
-        this.read_page_number(href)
-        url = dutils.urls.resolve('topic_list_table')
-        container = this.$refs['table_container']
-        if (!href) {
-            this.show_load_data_spinner = true;
-            container.innerHTML = '';
-        }
+      get_point_link(item) {
+        return dutils.urls.resolve('point_detail', { id: item.point })
+      },
+      get_add_point_link(item) {
+        return dutils.urls.resolve('topic_setup', { id: item.topic })
+      },
+      edit_topic_fields() {
+        eventHub.$emit('showModal_topicFields', this.topic_fields, this.default_topic_fields)
+      },
+      apply_topic_fields(new_fields) {
+          console.log('apply_topic_fields: ', new_fields)
+          this.topic_fields = new_fields
+          this.sortBy = 'topic'
+          this.sortDesc = false
+          // save fields
+          url = dutils.urls.resolve('topic_table_fields')
 
-        const formData = new FormData()
-        this.build_filter_data(formData)
-        formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
-        axios.post(url + '?page=' + this.page +'&per_page=' + this.per_page, formData).then(response => {
-            var cn = parseInt(response.headers.topics_counter)
-            if (cn > 0 && this.filters.length > 1 && cn > this.per_page) {
-                this.topics_counter = response.headers.topics_counter
-            } else {
-                this.topics_counter = null
-            }
-            this.show_load_data_spinner = false;
-            container.innerHTML = response.data
-            this.setup_table()
-        });
+          axios.post(url, new_fields, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              if (x.success) {
+                console.log('apply_topic_fields: successfully saved')
+                // re load page
+                this.$refs.topics_table.refresh();
+              } else {
+                return Promise.reject(x.errors)
+              }
+            })
+            .catch(err => {
+              console.error('apply_topic_fields: save topic table fields error', err)
+            });
+
+      },
+      toggle_selected() {
+          this.all_selected = !this.all_selected;
+          this.reset_checked_items(this.all_selected)
+      },
+      reset_checked_items(all_selected) {
+          if (all_selected) {
+              this.checked_items = []
+              for(var i=0; i<this.topic_items.length; i++) {
+                  this.checked_items.push(this.topic_items[i])
+              }
+          } else {
+              this.checked_items = []
+          }
+      },
+      load_topics_page(ctx) {
+          console.log('load_topics_page, ctx: ', ctx)
+          this.topic_table_errors = {}
+          url = dutils.urls.resolve('topic_json')
+          const formData = new FormData()
+          this.build_filter_data(formData)
+          formData.set('csrfmiddlewaretoken', this.csrfmiddlewaretoken)
+          if (ctx) {
+              if (ctx.sortBy) {
+                  formData.set('sortBy', ctx.sortBy)
+                  if (ctx.sortDesc) {
+                      formData.set('sortDesc', 'Y')
+                  }
+              }
+          }
+          this.topic_items = []
+          _this = this
+          let promise = axios.post(url + '?page=' + this.page +'&per_page=' + this.per_page, formData)
+
+          return promise.then(response => {
+              var cn = parseInt(response.data.count)
+              this.total_rows = cn
+              if (cn > 0 && this.filters.length > 1 && cn > this.per_page) {
+                  this.topics_counter = response.data.count
+              } else {
+                  this.topics_counter = null
+              }
+              this.show_load_data_spinner = false;
+
+              console.log("load_topics_page: data", response.data)
+              var data_items = response.data.data
+              var error = response.data.error
+              if (error) {
+                  this.topic_table_errors['error'] = error
+              } else {
+                  if (!this.topic_fields || (this.topic_fields && !this.topic_fields.length)) {
+                      if (response.data.topic_fields) {
+                          this.topic_fields = response.data.topic_fields
+                      } else {
+                          this.topic_fields = this.default_topic_fields
+                      }
+                  }
+                  console.log('load_topics_page: topic_fields', this.topic_fields)
+
+                  if (data_items && data_items.length) {
+                      for (var i=0; i<data_items.length; i++) {
+                          var item = {topic: data_items[i].topic}
+                          if (data_items[i].m_tags && data_items[i].m_tags.includes('point')) {
+                              if (data_items[i].point_entity_id) {
+                                  item['point'] = data_items[i].point_entity_id
+                              }
+                          }
+                          if (data_items[i].kv_tags) {
+                              for (var j=1; j<this.topic_fields.length-1; j++) {
+                                  tag_value = data_items[i].kv_tags[this.topic_fields[j].key]
+                                  if (tag_value) {
+                                      item[this.topic_fields[j].key] = tag_value
+                                  }
+                              }
+                          }
+                          if (data_items[i].m_tags) {
+                              for (var j=1; j<this.topic_fields.length-1; j++) {
+                                  if (data_items[i].m_tags.includes(this.topic_fields[j].key)) {
+                                      item[this.topic_fields[j].key] = 'X';
+                                  }
+                              }
+                          }
+                          console.log('row:', item)
+                          this.topic_items.push(item)
+                      }
+                  }
+                  if (this.select_all_matching) {
+                      this.reset_checked_items(this.all_selected)
+                  } else {
+                      this.all_selected = false
+                      this.checked_items = []
+                  }
+              }
+              return this.topic_items;
+          }).catch(error => {
+              console.log('load_topics_page: error =', error)
+              this.all_selected = false
+              this.select_all_matching = false
+              this.checked_items = []
+              return this.topic_items;
+          });
       },
       apply_tags(items) {
         console.log('apply_tags tag = ', items)
@@ -1321,13 +1401,12 @@
           tags.push({tag: items[i].tag, value: items[i].value, remove: items[i].remove})
         }
         topics = []
-        for (x in this.selected_topics) {
-          if (x && this.selected_topics.hasOwnProperty(x)) {
-            topics.push(x)
-          }
+        for (var i=0; i<this.checked_items.length; i++) {
+            topics.push(this.checked_items[i].topic)
         }
+
         filters = []
-        for (i=0; i<this.filters.length; i++) {
+        for (var i=0; i<this.filters.length; i++) {
           var f = this.filters[i]
           if (f.value && f.value.length) {
             var field = f.field ? (f.field.value || f.field) : 'topic'
@@ -1370,6 +1449,171 @@
       post_save(x) {
         console.log('updated topics tags', x.updated)
         eventHub.$emit('tag_topics_success', x)
+      }
+    }
+  });
+
+  new Vue({
+    delimiters: ['$[', ']'],
+    el: '#topic-fields-form-modal',
+    name : 'topic-fields-form-modal',
+    template: `
+    <transition name="modal" v-if="visible">
+      <div class="form-modal modal-mask">
+        <div class="modal-wrapper">
+          <div class="modal-container">
+
+            <div class="modal-header" >
+                Topic Fields List
+                <button v-on:click="resetToDefault()" class="btn btn-outline-danger"> Reset To Default</button>
+            </div>
+
+            <div class="modal-body">
+
+                <b-table :items="edit_fields" :fields="fields">
+                    <template v-slot:cell(action)="item">
+                      <button v-on:click="deleteRow(item.index)" class="btn btn-outline-danger btn-sm  ml-1"><i class="fas fa-trash"></i></button>
+                    </template>
+
+                    <template v-slot:cell(label)="item">
+                        <b-form-input type="text" v-model="item.item.label"></b-form-input>
+                    </template>
+                </b-table>
+
+                <div class="row p-0 m-0 mb-2 col-12">
+                <div class="mr-2 p-0 col flex-grow" style="min-width:7em">
+                  <v-select select-on-tab :options="tags" v-model="current_tag" placeholder="Field" :clearable="false" class="opt_w_auto">
+                    <template slot="option" slot-scope="option">
+                      $[ option.label ]&nbsp;<small>$[ option.description ] $[ option.kind ]</small>
+                    </template>
+                    <template slot="selected-option" slot-scope="option">
+                      $[ option.label ]
+                    </template>
+                  </v-select>
+                </div>
+                <div class="mr-2 p-0 col-auto">
+                    <button v-on:click="addField()" class="btn btn-outline-primary">Add</i></button>
+                </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+              <button class="modal-default-button btn btn-outline-danger" @click="closeModal">Cancel</button>
+              <button class="modal-default-button btn btn-outline-primary" @click="save">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    `,
+    props: {
+      csrfmiddlewaretoken: String
+    },
+    data() {
+      return {
+        errors: {},
+        visible: false,
+        topic_fields: [],
+        edit_fields: [],
+        default_topic_fields: [],
+        fields: [
+          {
+            key: 'key',
+          },
+          {
+            key: 'label',
+          },
+          {
+            key: 'action',
+            label: '',
+            'class': 'text-right'
+          },
+        ],
+        tags: [],
+        current_tag: null
+      }
+    },
+    created: function () {
+      eventHub.$on('showModal_topicFields', this.showModal)
+    },
+    methods:{
+      showModal: function(topic_fields, default_topic_fields){
+        console.log('showModal', topic_fields, default_topic_fields)
+        this.tags = []
+        this.current_tag = null
+        this.visible = true
+        this.errors = {}
+        this.edit_fields = []
+        this.topic_fields = topic_fields
+        this.default_topic_fields = default_topic_fields
+        if (topic_fields.length > 3) {
+            for (var i=2; i<(topic_fields.length-1); i++) {
+                this.edit_fields.push({key: topic_fields[i].key, label: topic_fields[i].label, sortable: topic_fields[i].sortable})
+            }
+        }
+
+        axios.get('{% url 'core:tag_list_json' %}')
+          .then(x => x.data.items)
+          .then(x => {
+            for (var i=0;i<x.length;i++) {
+              this.tags.push({
+                label: x[i].tag,
+                description: x[i].description,
+                value: x[i].tag,
+                kind: x[i].kind
+              })
+            }
+          })
+          .catch(err => {
+            console.error('loading tags error :', err);
+          });
+      },
+      closeModal: function(){
+        this.visible = false
+        this.errors = {}
+      },
+      deleteRow: function(index) {
+        console.log('deleteRow', index)
+        this.edit_fields.splice(index, 1)
+      },
+      addField: function() {
+        console.log('addField', this.current_tag)
+        if (this.current_tag) {
+            this.edit_fields.push({key: this.current_tag.value, label: this.current_tag.description, kind: this.current_tag.kind})
+        }
+      },
+      resetToDefault: function() {
+          this.edit_fields = []
+          if (this.default_topic_fields.length > 3) {
+              for (var i=2; i<(this.default_topic_fields.length-1); i++) {
+                  this.edit_fields.push({key: this.default_topic_fields[i].key, label: this.default_topic_fields[i].label, sortable: this.default_topic_fields[i].sortable})
+              }
+          }
+      },
+      save: function() {
+        console.log('save', this.edit_fields)
+        var new_fields = []
+        new_fields.push(this.topic_fields[0])
+        this.topic_fields[1]['sortable'] = true
+        new_fields.push(this.topic_fields[1])
+
+        if (this.edit_fields.length) {
+            for (var i=0; i<this.edit_fields.length; i++) {
+                if (this.edit_fields[i].hasOwnProperty('kind')) {
+                    if (this.edit_fields[i]['kind'] == 'Marker') {
+                        this.edit_fields[i]['sortable'] = false
+                    } else {
+                        this.edit_fields[i]['sortable'] = true
+                    }
+                }
+                new_fields.push(this.edit_fields[i])
+            }
+        }
+
+        new_fields.push(this.topic_fields[this.topic_fields.length-1])
+        eventHub.$emit('apply_topicFields', new_fields)
+        this.closeModal()
       }
     }
   });
