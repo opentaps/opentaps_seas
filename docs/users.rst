@@ -81,8 +81,11 @@ Below are the files and notes for this data point.
 Topics
 ^^^^^^
 
-This page shows a list of the topics that are in the time series database.  If available, it will show the object name, present value, and units from BACNet to help you determine what
-the topics are.  If the topic has been mapped to a data point, you can click on the View button to see it.
+This page shows a list of the topics that are in the time series database.  By default, it will show the object name, present value, and units from BACNet to help you determine what
+the topics are.  You can customize which values are displayed for your topics by clicking on the gear box icon to the right.  This will bring up a menu for configuring the display:
+You can remove fields, change the labels of the fields, or add new fields to display.  You can also click on "Reset to Default" to go back to the default values.  
+
+If the topic has been mapped to a data point, you can click on the View button to see it.
 Otherwise, click on Add to add this topic as a new data point.  At the top, you can filter the list of topics to show only those which have not been mapped to a data point, or show
 those which have the Haystack ``his`` tag, which means that the topics is being trended from the BAS. 
 
