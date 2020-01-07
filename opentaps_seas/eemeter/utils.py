@@ -51,13 +51,15 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
         ws = WeatherStation.objects.get(weather_station_id='eemeter_ws')
     except WeatherStation.DoesNotExist:
         ws = WeatherStation.objects.create(
-            weather_station_id='eemeter_ws', source=source, elevation_uom_id='length_m')
+            weather_station_id='eemeter_ws',
+            station_name='Sample Station',
+            source=source,
+            elevation_uom_id='length_m')
         # associate it to the site
         SiteWeatherStations.objects.create(
             weather_station=ws,
             site_id=site.entity_id,
-            source=source,
-            station_name='Sample Station')
+            source=source)
         # load the temperature data, this is given in F
         for d, t in temperature_data.iteritems():
             tc = (t - 32.0) * 5 / 9
