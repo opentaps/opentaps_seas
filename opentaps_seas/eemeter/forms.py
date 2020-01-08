@@ -37,6 +37,8 @@ class MeterField(forms.CharField):
 
 class MeterModelCreateForm(forms.ModelForm):
     meter_id = MeterField(label='Meter', max_length=255, required=False)
+    blackout_start_date = forms.DateTimeField(label='Blackout Start Date', required=False)
+    blackout_end_date = forms.DateTimeField(label='Blackout End Date', required=False)
 
     def __init__(self, *args, **kwargs):
         super(MeterModelCreateForm, self).__init__(*args, **kwargs)
@@ -61,11 +63,13 @@ class MeterModelCreateForm(forms.ModelForm):
     def save(self, commit=True):
         meter_id = self.cleaned_data['meter_id']
         frequency = self.cleaned_data['frequency']
+        bsd = self.cleaned_data['blackout_start_date']
+        bed = self.cleaned_data['blackout_end_date']
         logger.info('MeterModelCreateForm: for Meter %s', meter_id)
 
         meter = Meter.objects.get(meter_id=meter_id)
 
-        data = utils.read_meter_data(meter, freq=frequency)
+        data = utils.read_meter_data(meter, freq=frequency, blackout_start_date=bsd, blackout_end_date=bed)
         model = utils.get_model_for_freq(data, frequency)
 
         if commit:
@@ -84,6 +88,8 @@ class CalcMeterSavingsForm(forms.Form):
     model_id = forms.CharField(label='Model', max_length=255, required=True)
     from_datetime = forms.DateTimeField(label='From', required=True)
     to_datetime = forms.DateTimeField(label='To', required=True)
+    blackout_start_date = forms.DateTimeField(label='Blackout Start Date', required=False)
+    blackout_end_date = forms.DateTimeField(label='Blackout End Date', required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -136,16 +142,24 @@ class CalcMeterSavingsForm(forms.Form):
         model_id = self.cleaned_data['model_id']
         start = self.cleaned_data['from_datetime']
         end = self.cleaned_data['to_datetime']
+        bsd = self.cleaned_data['blackout_start_date']
+        bed = self.cleaned_data['blackout_end_date']
         logger.info('CalcMeterSavingsForm: for Meter %s, from %s to %s', meter_id, start, end)
 
         meter = Meter.objects.get(meter_id=meter_id)
         model = BaselineModel.objects.get(id=model_id)
 
         m = utils.load_model(model)
-        data = utils.read_meter_data(meter, freq=model.frequency, start=start, end=end)
+        data = utils.read_meter_data(meter,
+                                     freq=model.frequency,
+                                     start=start,
+                                     end=end,
+                                     blackout_start_date=bsd,
+                                     blackout_end_date=bed)
         savings = utils.get_savings(data, m)
         logger.info('CalcMeterSavingsForm: got saving = {}'.format(savings))
         metered_savings = savings.get('metered_savings')
+        source = "{}:{}".format(model.id, model.model_class)
         if not metered_savings.empty:
             # save the metered savings inot MeterProduction
             logger.info('CalcMeterSavingsForm: got metered_savings = {}'.format(metered_savings))
@@ -159,6 +173,6 @@ class CalcMeterSavingsForm(forms.Form):
                     meter_production_reference={'BaselineModel.id': model.id},
                     amount=v.metered_savings,
                     uom_id='energy_kWh',
-                    source='CalcMeterSavingsForm')
+                    source=source)
         self.model = model
         return savings

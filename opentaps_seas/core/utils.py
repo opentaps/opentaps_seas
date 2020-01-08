@@ -185,18 +185,15 @@ DEFAULT_RANGE = '24h'
 DEFAULT_RES = 'minute'
 
 
-def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT_RANGE, ts_as_datetime=False):
-    # validate the date_trunc
-    if date_trunc not in ['day', 'hour', 'minute', 'second']:
-        date_trunc = DEFAULT_RES
-    # use different queries for Number type sensors
-    is_number = 'Number' == d.kind
-    is_bool = 'Bool' == d.kind
+def get_start_date_from_range(trange, from_datetime=None):
     if not trange:
         trange = DEFAULT_RANGE
+
     # convert the range
-    end = datetime.utcnow()
-    start = datetime.utcnow()
+    if not from_datetime:
+        from_datetime = datetime.utcnow()
+    end = from_datetime
+    start = from_datetime
     if 'today' == trange:
         start -= timedelta(days=1)
     elif 'yesterday' == trange:
@@ -206,6 +203,10 @@ def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT
         start -= timedelta(days=30 * int(trange[:-7]))
     elif len(trange) > 6 and ' month' == trange[-6:]:
         start -= timedelta(days=30 * int(trange[:-6]))
+    elif len(trange) > 6 and ' years' == trange[-6:]:
+        start -= timedelta(days=365 * int(trange[:-6]))
+    elif len(trange) > 5 and ' year' == trange[-5:]:
+        start -= timedelta(days=365 * int(trange[:-5]))
     elif len(trange) > 5 and ' days' == trange[-5:]:
         start -= timedelta(days=int(trange[:-5]))
     elif len(trange) > 1 and 'h' == trange[-1:]:
@@ -218,6 +219,18 @@ def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT
         start = parse_datetime(dr[0])
         if len(dr) > 1:
             end = parse_datetime(dr[1])
+    return start, end
+
+
+def get_point_values(d, date_trunc=DEFAULT_RES, value_func='avg', trange=DEFAULT_RANGE, ts_as_datetime=False):
+    # validate the date_trunc
+    if date_trunc not in ['day', 'hour', 'minute', 'second']:
+        date_trunc = DEFAULT_RES
+    # use different queries for Number type sensors
+    is_number = 'Number' == d.kind
+    is_bool = 'Bool' == d.kind
+
+    start, end = get_start_date_from_range(trange)
 
     logger.info("Getting data points for range %s -- %s", start, end)
 

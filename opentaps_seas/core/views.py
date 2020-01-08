@@ -3026,20 +3026,21 @@ def meter_production_data_json(request, meter):
         logger.warning('No Meter found with meter_id = %s', meter)
         return JsonResponse({'error': 'Meter not found : {}'.format(meter)}, status=404)
 
-    trange = 24
-    srange = request.GET.get('range')
-    if srange:
-        try:
-            trange = int(srange)
-            if trange < 0:
-                trange = -trange
-        except Exception:
-            trange = 24
-
     # Select last <trange> records
     # not do a query per "source"
     meter_data_map = {}
     qs0 = m.meterproduction_set
+
+    # to simplify visualization we want to start at the latest production point
+    from_datetime = None
+    last_record = qs0.order_by('-from_datetime').values('from_datetime')[0]
+    if last_record:
+        from_datetime = last_record['from_datetime']
+    start, end = utils.get_start_date_from_range(request.GET.get('range'), from_datetime=from_datetime)
+    if start:
+        qs0 = qs0.filter(from_datetime__gte=start)
+    if end:
+        qs0 = qs0.filter(from_datetime__lt=end)
     for ref in qs0.distinct('meter_production_reference').values('meter_production_reference'):
         ref = ref.get('meter_production_reference')
         qs = qs0.filter(meter_production_reference=ref)
@@ -3051,7 +3052,7 @@ def meter_production_data_json(request, meter):
                 data_ref = '{}:{}'.format(bm.id, bm.model_class)
             except BaselineModel.DoesNotExist:
                 pass
-        for data in qs.order_by('-from_datetime')[:trange]:
+        for data in qs.order_by('-from_datetime'):
             data_key = data_ref or data.source
             meter_data = meter_data_map.get(data_key)
             if not meter_data:

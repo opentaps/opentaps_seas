@@ -22,6 +22,10 @@
 <div id="meterproductionchart" class="container" v-cloak>
   <div class="card mb-3">
     <div class="card-body p-sm-3 p-2">
+      <h2>Meter Production</h2>
+      <b-dropdown id="ddown2" :text="'For: ' + selectedRange" class="m-md-2" size="sm">
+        <b-dropdown-item v-for="item in ranges" v-on:click="selectedRange = item">${item}</b-dropdown-item>
+      </b-dropdown>
       <div class="row">
         <div class="col-12">
           <div class="row d-inline m-0 justify-content-center align-items-stretch">
@@ -72,12 +76,15 @@
   }
   var chartDegreeUnit = 'kWh'
   var myChart = new Vue({
+    delimiters: ['${', '}'],
     el: '#meterproductionchart',
     components: {
       apexchart: VueApexCharts,
     },
     data: function() {
       return {
+        ranges: ['1 year', '6 months', '3 months', '1 month', '15 days', '7 days', '24h'],
+        selectedRange: '1 month',
         options: {
           chart: {
             id: 'meter-production-chart',
@@ -98,11 +105,14 @@
                     click: function(e) {
                       // Genereate CSV data first
                       let lines = [];
-                      lines.push('Date/Time,Value (kWh)');
-                      const chartData = myChart.series[0].data;
-                      for (let i = 0; i < chartData.length; i++) {
-                        let date = new Date(chartData[i].x).toLocaleString()
-                        lines.push(['"', date, '"', ',', chartData[i].y].join(''));
+                      lines.push('Date/Time,Source,Value (kWh)');
+                      for (let s = 0; s< myChart.series.length; s++) {
+                        const chartData = myChart.series[s].data;
+                        const chartName = myChart.series[s].name;
+                        for (let i = 0; i < chartData.length; i++) {
+                          let date = new Date(chartData[i].x).toLocaleString()
+                          lines.push(['"', date, '"', ',', chartName, ',', chartData[i].y].join(''));
+                        }
                       }
 
                       // Save data as csv file
@@ -147,6 +157,11 @@
         }],
       }
     },
+    watch: {
+      selectedRange: function(val, oldVal) {
+        this.refresh();
+      }
+    },
     mounted() {
       this.init();
     },
@@ -163,8 +178,7 @@
         this.fetchData();
       },
       getUrlArgs() {
-        // placeholder to add custom parameters
-        return '';
+        return '?range=' + this.selectedRange;
       },
       fetchData() {
         url = '{% url 'core:meter_production_data_json' meter_id %}' + this.getUrlArgs();
