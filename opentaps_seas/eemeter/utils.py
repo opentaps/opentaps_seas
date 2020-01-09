@@ -265,6 +265,7 @@ def get_savings(data, baseline_model):
     total_metered_savings = metered_savings_dataframe.metered_savings.sum()
 
     return {
+        'reporting_meter_data': reporting_meter_data,
         'total_savings': total_metered_savings,
         'metered_savings': metered_savings_dataframe,
         'error_bands': error_bands

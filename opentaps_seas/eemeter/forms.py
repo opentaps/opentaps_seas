@@ -159,6 +159,7 @@ class CalcMeterSavingsForm(forms.Form):
         savings = utils.get_savings(data, m)
         logger.info('CalcMeterSavingsForm: got saving = {}'.format(savings))
         metered_savings = savings.get('metered_savings')
+        error_bands = savings.get('error_bands')
         source = "{}:{}".format(model.id, model.model_class)
         if not metered_savings.empty:
             # save the metered savings inot MeterProduction
@@ -171,6 +172,7 @@ class CalcMeterSavingsForm(forms.Form):
                     thru_datetime=d + timedelta(hours=1),
                     meter_production_type='EEMeter Savings',
                     meter_production_reference={'BaselineModel.id': model.id},
+                    error_bands=error_bands,
                     amount=v.metered_savings,
                     uom_id='energy_kWh',
                     source=source)

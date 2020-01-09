@@ -798,6 +798,7 @@ class MeterProduction(models.Model):
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
     meter_production_type = CharField(max_length=255)
     meter_production_reference = HStoreField(blank=True, null=True)
+    error_bands = HStoreField(blank=True, null=True)
     amount = FloatField(null=True)
     uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING)
     source = CharField(max_length=255)
