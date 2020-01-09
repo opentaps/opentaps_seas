@@ -206,7 +206,13 @@ This CSV file can then be modified and imported back into the system (see above.
 Exporting Topics
 ################
 
-This can be used to create VOLTTRON BACNet CSV and JSON configuration files, so you can choose which topics to trend or set different intervals for your topics.
+Topics can be exported either to a CSV file like the one used for importing topics or to the VOLTTRON BACNet configuration files.  The CSV file has all the topics and their current tags.  
+The topics are in rows and the tags are in columns, and the value will be in the
+cells.  If the tags is a marker tag, there will be an X.  
+
+This CSV file can then be modified and imported back into the system (see above.)  Tags which start with "__" should not be modified, as they will be ignored when you import the CSV file again. 
+
+The VOLTTRON BACNet configuration files are the CSV and JSON configuration files VOLTTRON uses to configure which topics to trend or set different intervals for your topics.
 To use this feature, first set the ``interval`` tag to the interval in minutes for your topics, as
 part of your Tagging Rules or applying tags to your filtered topics.  Then, click on Export from the Topics page or from the BACNet Configs section of your Site.  If you come from
 the Topics page, you will have to choose the Site and the BACNet Config prefix.
