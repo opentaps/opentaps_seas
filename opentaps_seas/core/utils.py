@@ -940,7 +940,7 @@ def tag_topics(filters, tags, select_all=False, topics=[], select_not_mapped_top
                 e = Entity.objects.get(topic=topic)
             except Entity.DoesNotExist:
                 entity_id = make_random_id(topic)
-                e = Entity(entity_id=entity_id, topic=topic)
+                e = Entity(entity_id=entity_id, topic=topic, m_tags=[])
                 e.add_tag('id', entity_id, commit=False)
             if not e.kv_tags or not e.kv_tags.get('dis'):
                 e.add_tag('dis', topic, commit=False)
