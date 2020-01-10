@@ -19,6 +19,8 @@
 {% endcomment %}
 
 {% load static %}
+{% load time_str from core_tags %}
+{% load fmttime_str from core_tags %}
 
 {% block title %}Site: {{ object.entity_id }}{% endblock %}
 
@@ -58,14 +60,21 @@
       </h3>
       <div class="container header-top">
           {% for meter in meters %}
-            <h6 class="meter-row" >
+            <h6 class="meter-row">
                 <div class="container">
                     <div class="row">
-                      <div class="col-3">
+                      <div class="col-4">
                         <div><a href="{% url 'core:meter_detail' meter.meter_id %}">{{ meter.meter_id }}</a></div>
                       </div>
-                      <div class="col-9">
-                          {{ meter.description }}
+                      <div class="col-4">
+                        {{ meter.description }}
+                      </div>
+                      <div class="col-4">
+                        {% if meter.latest_reading %}
+                          <b>{{ meter.latest_reading.value }} {{ meter.latest_reading.uom.code }}</b>
+                          as of
+                          <my-datetime value="{{ meter.latest_reading.as_of_datetime|time_str }}">{{ meter.latest_reading.as_of_datetime|fmttime_str }}</my-datetime>
+                        {% endif %}
                       </div>
                     </div>
                 </div>

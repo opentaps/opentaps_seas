@@ -20,6 +20,7 @@ from django import template
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.template.base import Node
+from .. import utils
 
 register = template.Library()
 
@@ -47,3 +48,19 @@ class JsCsrfTokenNode(Node):
 @register.tag
 def js_csrf_token(parser, token):
     return JsCsrfTokenNode()
+
+
+def fmttime_str(value):
+    epoch = int(value.timestamp() * 1000)
+    t = utils.format_epoch(epoch)
+    return t['fmttime']
+
+
+def time_str(value):
+    epoch = int(value.timestamp() * 1000)
+    t = utils.format_epoch(epoch)
+    return t['time']
+
+
+register.filter('time_str', time_str)
+register.filter('fmttime_str', fmttime_str)

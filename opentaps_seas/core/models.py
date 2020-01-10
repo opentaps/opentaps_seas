@@ -773,6 +773,10 @@ class Meter(models.Model):
         # return a pandas.core.frame.DataFrame of the meter data as date .. value
         pass
 
+    @property
+    def latest_reading(self):
+        return self.meterhistory_set.order_by('-as_of_datetime').first()
+
 
 class MeterHistory(models.Model):
     meter_history_id = AutoField(_("Meter History ID"), primary_key=True, auto_created=True)
