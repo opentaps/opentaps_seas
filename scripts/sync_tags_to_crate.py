@@ -28,17 +28,18 @@ def sync_tags_to_crate():
 
     entities = Entity.objects.raw('''SELECT entity_id, topic, m_tags, kv_tags FROM {0}
         WHERE 'point' = ANY (m_tags)
-        AND topic is not null
-        AND topic != '' '''.format(Entity._meta.db_table), [])
+        OR 'site' = ANY (m_tags)
+        OR 'equip' = ANY (m_tags)
+        '''.format(Entity._meta.db_table), [])
 
     # iterate the topic data points and copy the tags
     for row in entities:
-        print(" --> {}".format(row.topic))
+        print(" --> {} {} {}".format(row.entity_id, row.topic, row.kv_tags['id']))
         sync_tags_to_crate_entity(row)
 
         count = count + 1
 
-    print(count, "points have been processed")
+    print(count, "entities have been processed")
 
 
 def run():

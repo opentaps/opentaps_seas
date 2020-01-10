@@ -640,15 +640,22 @@ def delete_tags_from_crate_entity(row):
 
 
 def sync_tags_to_crate_entity(row, retried=False):
-    # we only sync for entity linked to a topic
-    if not row.topic:
+    # we sync points, sites and equipment
+    topic = row.topic
+    if not topic:
+        if row.m_tags and ('site' in row.m_tags or 'equip' in row.m_tags):
+            if row.kv_tags:
+                topic = row.kv_tags['id']
+    if not topic:
+        logger.info('sync_tags_to_crate_entity topic or id is empty: %s', row)
         return
+
     with connections['crate'].cursor() as c:
         # make sure the topic is in CrateDB
         sql = """INSERT INTO {0} (topic)
         VALUES (%s)""".format("topic")
         try:
-            c.execute(sql, [row.topic])
+            c.execute(sql, [topic])
         except DatabaseError as e:
             # could be the table is missing
             if 'RelationUnknown' in str(e):
@@ -671,7 +678,7 @@ def sync_tags_to_crate_entity(row, retried=False):
                 sql += " m_tags = %s "
                 params_list.append(row.m_tags)
             sql += """ WHERE topic = %s;"""
-            params_list.append(row.topic)
+            params_list.append(topic)
             logger.info('sync_tags_to_crate_entity SQL: %s', sql)
             logger.info('sync_tags_to_crate_entity Params: %s', params_list)
             c.execute(sql, params_list)
