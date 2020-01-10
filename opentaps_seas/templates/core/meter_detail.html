@@ -55,7 +55,7 @@
 
       {% if has_weather_data %}
       <p>
-        {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id %}
+        {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id site=object.site %}
       </p>
       {% endif %}
 

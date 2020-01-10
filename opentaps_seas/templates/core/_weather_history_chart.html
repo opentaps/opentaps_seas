@@ -33,6 +33,7 @@
               :options="options"
               :series="series"></apexchart>
           </div>
+          <div class="small text-muted text-right">timezone: ${ timezone }</div>  
         </div>
       </div>
     </div>
@@ -69,12 +70,14 @@
   }
   var chartDegreeUnit = '°C'
   var myChart = new Vue({
+    delimiters: ['${', '}'],
     el: '#weatherhistorychart',
     components: {
       apexchart: VueApexCharts,
     },
     data: function() {
       return {
+        timezone: '',
         options: {
           chart: {
             id: 'weather-history-chart',
@@ -173,13 +176,18 @@
       },
       getUrlArgs() {
         // placeholder to add custom parameters
+        {% if site %}
+        return '?site={{ site.entity_id }}';
+        {% else %}
         return '';
+        {% endif %}
       },
       fetchData() {
         url = '{% url 'core:weather_data_json' weather_station_id %}' + this.getUrlArgs();
         console.log('Fetching weather chart from ', url);
         axios.get(url).then(response => {
           console.log('Fetching weather chart got ', response.data.values);
+          this.timezone = response.data.tz || 'UTC';
           if (response.data.values.length < 20) {
             this.$refs['weather_history_line_chart'].updateOptions({markers: {size: 5}});
           } else {

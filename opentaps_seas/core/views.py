@@ -28,6 +28,7 @@ from urllib.parse import urlparse
 
 from datetime import datetime
 from math import isnan
+from pytz import timezone
 
 from opentaps_seas.eemeter.models import BaselineModel
 
@@ -3033,7 +3034,7 @@ def meter_production_data_json(request, meter):
 
     # to simplify visualization we want to start at the latest production point
     from_datetime = None
-    last_record = qs0.order_by('-from_datetime').values('from_datetime')[0]
+    last_record = qs0.order_by('-from_datetime').values('from_datetime').first()
     if last_record:
         from_datetime = last_record['from_datetime']
     start, end = utils.get_start_date_from_range(request.GET.get('range'), from_datetime=from_datetime)
@@ -3254,9 +3255,22 @@ def weather_data_json(request, weather_station_id):
     # Select last <trange> records
     weater_data = []
     qs = m.weatherhistory_set
+
+    # set timezones, default to UTC
+    tz = None
+    if request.GET.get('site'):
+        try:
+            site = SiteView.objects.get(entity_id=request.GET.get('site'))
+            tz = utils.parse_timezone(site.kv_tags.get('tz'))
+        except Exception:
+            tz = None
+
+    if not tz:
+        tz = utils.parse_timezone(request.GET.get('tz'), 'UTC')
+
     for data in qs.order_by("-as_of_datetime")[:trange]:
         # Prevent adding duplicates
-        datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        datetime = data.as_of_datetime.astimezone(tz).strftime("%Y-%m-%d %H:%M:%S")
         if weater_data and datetime == weater_data[-1]['datetime']:
             continue
         weater_data.append({
@@ -3265,7 +3279,7 @@ def weather_data_json(request, weather_station_id):
             'temp_f': data.temp_f
         })
 
-    return JsonResponse({'values': list(reversed(weater_data))})
+    return JsonResponse({'tz': tz.tzname(None), 'values': list(reversed(weater_data))})
 
 
 @login_required()

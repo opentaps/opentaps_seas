@@ -28,6 +28,7 @@ from .models import Entity
 from .models import EquipmentView
 from .models import PointView
 from .models import Tag
+from .models import TimeZone
 from .models import Topic
 from .models import ModelView
 from .models import WeatherHistory
@@ -35,6 +36,9 @@ from .models import WeatherStation
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+from pytz import all_timezones
+from pytz import UnknownTimeZoneError
+from pytz import timezone as pytz_timezone
 from dateutil.parser import parse as parse_datetime
 from django.db import connections
 from django.db.models import Q
@@ -45,6 +49,30 @@ from django.utils.crypto import get_random_string
 from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
+
+
+def parse_timezone(tzname, default=None):
+    if tzname:
+        # accept valid pytz names like US/Pacific
+        try:
+            return pytz_timezone(tzname)
+        except UnknownTimeZoneError:
+            pass
+        # else check if it is a short name
+        for zone in all_timezones:
+            if tzname == zone.split('/')[-1]:
+                return pytz_timezone(zone)
+        # else check if it is one of out Timezone
+        try:
+            tz = TimeZone.objects.get(time_zone=tzname)
+            return timezone(timedelta(seconds=tz.tzoffset))
+        except TimeZone.DoesNotExist:
+            pass
+
+        logging.error('Unknown timezone {}'.format(tzname))
+    if default:
+        return pytz_timezone(default)
+    return None
 
 
 def format_epoch(ts):
