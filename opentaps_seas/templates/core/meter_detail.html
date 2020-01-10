@@ -49,36 +49,7 @@
         {% if not object.weather_station %}
           n/a
         {% else %}
-        <table style="margin-left: 4em;">
-          <tr>
-            <td>USAF ID:</td>
-            <td>{{ object.weather_station.weather_station_code }}</td>
-          </tr>
-          <tr>
-            <td>Name:</td>
-            <td>
-              {% if object.weather_station.weather_station_code %}<a target="_blank" href="{% url 'core:weather_station_geoview' object.weather_station.weather_station_code %}">{% endif %}
-                {{ object.weather_station.station_name | default:'n/a' }}
-              {% if object.weather_station.weather_station_code %}</a>{% endif %}
-            </td>
-          </tr>
-          <tr>
-            <td>Country:</td>
-            <td>{{ object.weather_station.country | default:'n/a' }}</td>
-          </tr>
-          <tr>
-            <td>Latitude:</td>
-            <td>{{ object.weather_station.latitude | default:'n/a' }}</td>
-          </tr>
-          <tr>
-            <td>Longitude:</td>
-            <td>{{ object.weather_station.longitude | default:'n/a' }}</td>
-          </tr>
-          <tr>
-            <td>Elevation:</td>
-            <td>{{ object.weather_station.elevation }}</td>
-          </tr>
-        </table>
+          <a href="{% url 'core:weather_station_detail' object.weather_station.weather_station_id %}">{{ object.weather_station }}</a>
         {% endif %}
       </p>
 

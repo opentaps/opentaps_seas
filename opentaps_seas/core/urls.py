@@ -87,6 +87,7 @@ from .views import (
     meter_production_data_json,
     meter_data_json,
     meter_data_import,
+    weather_station_detail,
     weather_station_geoview,
     weather_stations_json
 )
@@ -187,5 +188,7 @@ urlpatterns = [
     path("weather_station/json/<path:weather_station_id>", view=weather_data_json, name="weather_data_json"),
     path("weather_station/geoview/<path:weather_station_code>",
          view=weather_station_geoview, name="weather_station_geoview"),
+    path("weather_station/view/<path:weather_station_id>",
+         view=weather_station_detail, name="weather_station_detail"),
     path("weather_station.json", view=weather_stations_json, name="weather_stations_json")
 ]

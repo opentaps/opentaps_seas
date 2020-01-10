@@ -3300,6 +3300,16 @@ class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
 meter_deactivate_view = MeterDeactivateView.as_view()
 
 
+class WeatherStationDetail(LoginRequiredMixin, DetailView):
+    model = WeatherStation
+    slug_field = "weather_station_id"
+    slug_url_kwarg = "weather_station_id"
+    template_name = 'core/weather_station_detail.html'
+
+
+weather_station_detail = WeatherStationDetail.as_view()
+
+
 class WeatherStationGeoView(LoginRequiredMixin, DetailView):
     model = WeatherStation
     slug_field = "weather_station_code"

@@ -705,7 +705,10 @@ class WeatherStation(models.Model):
         db_table = 'core_weather_station'
 
     def __str__(self):
-        return self.weather_station_code + (" ({name})".format(name=self.station_name) if self.station_name else '')
+        if self.weather_station_code:
+            return self.weather_station_code + (" ({name})".format(name=self.station_name) if self.station_name else '')
+        else:
+            return self.weather_station_id
 
 
 class WeatherHistory(models.Model):
