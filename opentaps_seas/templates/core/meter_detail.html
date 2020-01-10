@@ -34,10 +34,13 @@
   {% endblock add_button %}
   <div class="card mb-3">
     <div class="card-body">
-      <h2>Meter {{ object.meter_id }}</h2>
+      {% if object.description %}
+        <h2>Meter {{ object.description }} <span style="font-size: 1rem;">({{ object.meter_id }})</span></h2>
+      {% else %}
+        <h2>Meter {{ object.meter_id }}</h2>
+      {% endif %}
       <br/>
       {% block inner_content %}
-      <p><b>Description:</b> {{ object.description|default:'n/a' }}</p>
       <p>
         {% include "core/_meter_history_chart.html" with meter_id=object.meter_id %}
       </p>
