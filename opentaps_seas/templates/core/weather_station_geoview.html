@@ -40,7 +40,7 @@ function initMaps() {
     map_div = document.getElementById("map")
     if (map_div != null) {
         loc = {lat: latitude, lng: longitude}
-        var map = new google.maps.Map(map_div, {zoom: 4, center: loc});
+        var map = new google.maps.Map(map_div, {zoom: 11, center: loc});
 
         var marker_params = {position: loc, map: map}
         if (description != 0) {
