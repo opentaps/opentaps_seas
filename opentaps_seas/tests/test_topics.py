@@ -32,8 +32,7 @@ logger = logging.getLogger(__name__)
 
 class TopicAPITests(TestCase):
 
-    topic_list_get_url = reverse('core:topic_list')
-    topic_list_post_url = reverse('core:topic_table')
+    topic_list_url = reverse('core:topic_json')
 
     def setUp(self):
         # create site
@@ -212,22 +211,25 @@ class TopicAPITests(TestCase):
             sql = """DELETE FROM {0} WHERE topic like %s""".format("data")
             c.execute(sql, ['_test%'])
 
-    def _get_response(self, params, method):
-        if method == 'get':
-            return self.client.get('?'.join((self.topic_list_get_url, params)))
-        else:
-            return self.client.post(self.topic_list_post_url, params)
+    def _get_response(self, params):
+        return self.client.post(self.topic_list_url + '?page=1&per_page=10', params)
 
     def _check_topic_list(self, response, c_list, nc_list):
+        json_resp = json.loads(response.content)
+        self.assertNotEqual(json_resp, {})
+        data_topics = []
+        for item in json_resp['data']:
+            data_topics.append(item['topic'])
         try:
             for entity in c_list:
-                self.assertContains(response, entity)
+                self.assertIn(entity, data_topics)
             for entity in nc_list:
-                self.assertNotContains(response, entity)
+                self.assertNotIn(entity, data_topics)
         except Exception:
             logging.error('_check_topic_list ERROR: c_list %s', c_list)
             logging.error('_check_topic_list ERROR: nc_list %s', nc_list)
-            logging.error('_check_topic_list ERROR: check response %s', response.content)
+            logging.error('_check_topic_list ERROR: check response %s', json_resp['data'])
+            logging.error('_check_topic_list ERROR: check response topics %s', data_topics)
             logger.exception('_check_topic_list error')
             raise
 
@@ -254,11 +256,15 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/zone_temp'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=mapped', 'filters_count=1']]
-        )
-        response = self._get_response(query_params, 'get')
+        # filter data
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'mapped',
+            'filters_count': 1
+        }
+
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         c_list = [
@@ -277,11 +283,16 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/zone_temp'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=mapped', 'filters_count=1', 'select_not_mapped_topics=1']]
-        )
-        response = self._get_response(query_params, 'get')
+        # filter data
+        data = {
+            'n0': 'Topic',
+            't0': 'c',
+            'f0': 'mapped',
+            'filters_count': 1,
+            'select_not_mapped_topics': 1
+        }
+
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
     def test_topics_filter(self):
@@ -297,21 +308,14 @@ class TopicAPITests(TestCase):
         ]
         nc_list = []
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=test', 'filters_count=1']]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
             'f0': 'test',
             'filters_count': 1
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="bar" ----------- #
@@ -325,21 +329,14 @@ class TopicAPITests(TestCase):
             '_test_filters/foo/an_ac'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=bar', 'filters_count=1']]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
             'f0': 'bar',
             'filters_count': 1
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="foo" ----------- #
@@ -353,21 +350,14 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/zone_temp'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=foo', 'filters_count=1']]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
             'f0': 'foo',
             'filters_count': 1
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="bar" n1="zone" t1="present" ----------- #
@@ -381,14 +371,7 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/ahu',
         ]
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=bar', 'n1=zone', 't1=present', 'filters_count=2']]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -397,7 +380,7 @@ class TopicAPITests(TestCase):
             't1': 'present',
             'filters_count': 2
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="foo" n1="ac" t1="absent" ----------- #
@@ -411,14 +394,7 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/zone_temp'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=foo', 'n1=ac', 't1=absent', 'filters_count=2']]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -427,7 +403,7 @@ class TopicAPITests(TestCase):
             't1': 'absent',
             'filters_count': 2
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="FOO" n1="ac" t1="absent" (Case Insensitive)----------- #
@@ -441,14 +417,7 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/zone_temp'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=FOO', 'n1=ac', 't1=absent', 'filters_count=2']]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -457,7 +426,7 @@ class TopicAPITests(TestCase):
             't1': 'absent',
             'filters_count': 2
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="test_filters" ----------- #
@@ -470,21 +439,14 @@ class TopicAPITests(TestCase):
         ]
         nc_list = []
 
-        # get method
-        query_params = '&'.join(
-            [param for param in ['n0=Topic', 't0=c', 'f0=test_filters', 'filters_count=1']]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
             'f0': 'test_filters',
             'filters_count': 1
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="test_filters" n1="appName" t1="eq" f1="test_foo" ----------- #
@@ -498,18 +460,7 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/zone_temp'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [
-                param for param in [
-                    'n0=Topic', 't0=c', 'f0=test_filters', 'n1=appName', 't1=eq', 'f1=test_foo', 'filters_count=2'
-                ]
-            ]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -519,7 +470,7 @@ class TopicAPITests(TestCase):
             'f1': 'test_foo',
             'filters_count': 2
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="test_filters" n1="appName" t1="neq" f1="test_foo" ----------- #
@@ -533,18 +484,7 @@ class TopicAPITests(TestCase):
             '_test_filters/foo/an_ac'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [
-                param for param in [
-                    'n0=Topic', 't0=c', 'f0=test_filters', 'n1=appName', 't1=neq', 'f1=test_foo', 'filters_count=2'
-                ]
-            ]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -554,7 +494,7 @@ class TopicAPITests(TestCase):
             'f1': 'test_foo',
             'filters_count': 2
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test n0="Topic" t0="c" f0="test_filters" n1="appName" t1="neq" f1="test_foo"; n2="zone"
@@ -569,19 +509,7 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/ahu'
         ]
 
-        # get method
-        query_params = '&'.join(
-            [
-                param for param in [
-                    'n0=Topic', 't0=c', 'f0=test_filters', 'n1=appName', 't1=neq', 'f1=test_foo',
-                    'n2=zone', 't2=present', 'n3=ac', 't3=absent', 'n4=unit', 't4=eq', 'f4=celsius', 'filters_count=5'
-                ]
-            ]
-        )
-        response = self._get_response(query_params, 'get')
-        self._check_topic_list(response, c_list, nc_list)
-
-        # post method
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -598,7 +526,7 @@ class TopicAPITests(TestCase):
             'f4': 'celsius',
             'filters_count': 5
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # ----------- start test for OR queries ----------- #
@@ -611,7 +539,7 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/ahu'
         ]
 
-        # post method, first using ANDs which returns nothing
+        # filter data, first using ANDs which returns nothing
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -627,7 +555,7 @@ class TopicAPITests(TestCase):
             'f3': 'bar',
             'filters_count': 4
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         c_list = [
@@ -640,7 +568,7 @@ class TopicAPITests(TestCase):
             '_test_filters/bar/ahu'
         ]
 
-        # post method, now using foo OR bar which returns 2 (A and B and (C or D))
+        # filter data, now using foo OR bar which returns 2 (A and B and (C or D))
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -657,10 +585,10 @@ class TopicAPITests(TestCase):
             'filters_count': 4,
             'o3': 'OR'
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
-        # post method, change the order (A and (B or C) and D)
+        # filter data, change the order (A and (B or C) and D)
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -680,10 +608,10 @@ class TopicAPITests(TestCase):
             'o3': 'AND',
             'filters_count': 4
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
-        # post method, change the order (A or B and C and D)
+        # filter data, change the order (A or B and C and D)
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -702,7 +630,7 @@ class TopicAPITests(TestCase):
             'o3': 'AND',
             'filters_count': 4
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # mix up 2 ORs (A or B and C or D)
@@ -720,6 +648,8 @@ class TopicAPITests(TestCase):
             '_test_Position_Size|vav-100',
             '_test_Position_Size|vav-101',
         ]
+
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -738,7 +668,7 @@ class TopicAPITests(TestCase):
             'o3': 'OR',
             'filters_count': 4
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
         # mix up 3 ORs (A or B or C and D)
@@ -756,6 +686,8 @@ class TopicAPITests(TestCase):
             '_test_Position_Command|vav-100',
             '_test_Position_Command|vav-101',
         ]
+
+        # filter data
         data = {
             'n0': 'Topic',
             't0': 'c',
@@ -774,7 +706,7 @@ class TopicAPITests(TestCase):
             'o3': 'AND',
             'filters_count': 4
         }
-        response = self._get_response(data, 'post')
+        response = self._get_response(data)
         self._check_topic_list(response, c_list, nc_list)
 
     def test_topic_rules(self):

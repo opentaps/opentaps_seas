@@ -1152,7 +1152,7 @@ topic_list_view = TopicListView.as_view()
 @login_required()
 @require_POST
 def topic_list_table(request):
-    qs = Topic.objects.all()
+    qs = Topic.objects.all().exclude(m_tags__contains=['site']).exclude(m_tags__contains=['equip'])
 
     select_not_mapped_topics = request.POST.get('select_not_mapped_topics')
     if select_not_mapped_topics:
@@ -1210,7 +1210,7 @@ class TopicListJsonView(LoginRequiredMixin, ListView):
         if self.request.POST.get('sortDesc'):
             sort_by = '-' + sort_by
 
-        qs = Topic.objects.all().order_by(sort_by)
+        qs = Topic.objects.all().exclude(m_tags__contains=['site']).exclude(m_tags__contains=['equip']).order_by(sort_by)
         select_not_mapped_topics = self.request.POST.get('select_not_mapped_topics')
         if select_not_mapped_topics:
             # only list topics where there is no related data point
