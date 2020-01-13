@@ -55,7 +55,7 @@ eeweather==0.3.22
 sqlalchemy==1.3.11
 
 # Our eemeter fork
--e git+https://github.com/opentaps/eemeter.git@8f4da532c40a9df7d279a493da8ddda33903c75c#egg=eemeter
+-e git+https://github.com/opentaps/eemeter.git@e544a295c3ab8721e632b61510232454ea24932d#egg=eemeter
 
 # Our greenbutton-python fork
 -e git+https://github.com/opentaps/greenbutton-python.git#egg=greenbutton
