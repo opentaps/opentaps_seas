@@ -33,30 +33,15 @@
         Model {{ object.description }}
         {% block add_button %}
         <div class="ml-auto text-nowrap">
-          <a href="{% url 'core:meter_model_calc_saving' object.meter_id object.id %}" role="button" class="btn btn-primary"><i class="fa fa-dollar-sign mr-2"></i> Calculate Savings</a>
-          <a href="{% url 'core:meter_model_delete' object.meter_id object.id %}" role="button" class="btn btn-danger"><i class="fa fa-trash mr-2"></i> Delete</a>
+          <a href="{% url 'core:meter_model_detail' object.meter_id object.id %}" role="button" class="btn btn-primary"><i class="fa fa-back mr-2"></i> Back</a>
         </div>
         {% endblock add_button %}
       </h2>
       {% block inner_content %}
-      <p><b>Created:</b> {{ object.created_datetime }}</p>
-      <p><b>{{ object.model_class }}</b> from {{ object.from_datetime }} to {{ object.thru_datetime }}.</p>
-      <p><b>Last Calculated Savings Date:</b> {{ object.last_calc_saving_datetime }}</p>
-      <h4 class="d-flex">
-        <div class="ml-auto text-nowrap">
-          <a href="{% url 'core:meter_model_extra_detail' object.meter_id object.id %}" role="button" class="btn btn-primary"><i class="fa fa-cog mr-2"></i> View Details</a>
-        </div>
-      </h4>
-      {% if object.plot_data %}<p><b>Model plot:</b> <img src='data:image/png;base64,{{ object.plot_data }}'/> </p>{% endif %}
 
-      <h4 class="d-flex">
-        Model Production
-        <div class="ml-auto text-nowrap">
-          <a href="{% url 'core:meter_model_production_delete' object.meter_id object.id %}" role="button" class="btn btn-danger"><i class="fa fa-trash mr-2"></i> Delete Production</a>
-        </div>
-      </h4>
-      {% include "core/_meter_production_chart.html" with meter_id=object.meter_id model_id=object.id no_title=True %}
-
+      <p><b>Model data:</b>
+        <pre>{{ object.data | pprint }}</pre>
+      </p>
       {% endblock inner_content %}
     </div>
   </div>

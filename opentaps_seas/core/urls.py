@@ -94,8 +94,10 @@ from .views import (
 
 from ..eemeter.views import (
     meter_model_detail_view,
+    meter_model_extra_detail_view,
     meter_model_create_view,
     meter_model_delete_view,
+    meter_model_production_delete_view,
     meter_model_calc_saving_view
 )
 
@@ -146,8 +148,10 @@ urlpatterns = [
     path("meter/view/<path:meter_id>", view=meter_detail_view, name="meter_detail"),
     path("meter/json/<str:meter>", view=meter_data_json, name="meter_data_json"),
     path("meter/<str:meter_id>/model/<str:id>", view=meter_model_detail_view, name="meter_model_detail"),
+    path("meter/<str:meter_id>/model/<str:id>/details", view=meter_model_extra_detail_view, name="meter_model_extra_detail"),
     path("meter/<str:meter_id>/create/model", view=meter_model_create_view, name="meter_model_create"),
     path("meter/<str:meter_id>/model/<str:id>/delete", view=meter_model_delete_view, name="meter_model_delete"),
+    path("meter/<str:meter_id>/model/<str:id>/delete_production", view=meter_model_production_delete_view, name="meter_model_production_delete"),
     path("meter/<str:meter_id>/model/<str:id>/calc_saving", view=meter_model_calc_saving_view, name="meter_model_calc_saving"),
     path("newmodel/", view=model_create_view, name="model_create"),
     path("newmodel/<path:entity_id>", view=model_create_view, name="model_create_for"),

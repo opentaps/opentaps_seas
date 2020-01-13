@@ -23,6 +23,7 @@ argon2-cffi==19.1.0  # https://github.com/hynek/argon2_cffi
 redis>=2.10.6, < 3  # pyup: < 3 # https://github.com/antirez/redis
 
 crate==0.23.2
+matplotlib==3.1.2
 
 # Django
 # ------------------------------------------------------------------------------

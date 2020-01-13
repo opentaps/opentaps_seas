@@ -87,12 +87,22 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
     frequency = 'hourly'
     data = read_meter_data(meter, freq=frequency)
     model = get_model_for_freq(data, frequency)
-    save_model(model, meter_id=meter.meter_id, frequency=frequency)
+    save_model(model,
+               meter_id=meter.meter_id,
+               data=data,
+               frequency=frequency,
+               from_datetime=data['start'],
+               thru_datetime=data['end'])
 
     frequency = 'daily'
     data = read_meter_data(meter, freq=frequency)
     model = get_model_for_freq(data, frequency)
-    return save_model(model, meter_id=meter.meter_id, frequency=frequency)
+    return save_model(model,
+                      meter_id=meter.meter_id,
+                      data=data,
+                      frequency=frequency,
+                      from_datetime=data['start'],
+                      thru_datetime=data['end'])
 
 
 def get_daily_sample_data():
@@ -119,13 +129,19 @@ def read_sample_data(meter_data, temperature_data, sample_metadata):
         meter_data, end=blackout_start_date, max_days=365
     )
 
+    # force alignment of weather data to the read meter data
+    start = meter_data.iloc[0].name.to_pydatetime()
+    end = meter_data.iloc[-1].name.to_pydatetime()
+
     return {
         'meter_data': meter_data,
         'temperature_data': temperature_data,
         'sample_metadata': sample_metadata,
         'blackout_start_date': blackout_start_date,
         'blackout_end_date': blackout_end_date,
-        'baseline_meter_data': baseline_meter_data
+        'baseline_meter_data': baseline_meter_data,
+        'start': start,
+        'end': end
     }
 
 
@@ -140,6 +156,10 @@ def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, fre
     meter_data = eeio.meter_data_from_csv(out, freq=freq)
     logger.info('read_meter_data: meter_data %s', meter_data)
 
+    # force alignment of weather data to the read meter data
+    start = meter_data.iloc[0].name.to_pydatetime()
+    end = meter_data.iloc[-1].name.to_pydatetime()
+
     # get the temperature data from the meter linked weather stations
     out = StringIO()
     meter.write_weather_data_csv(out, columns=[{'as_of_datetime': 'dt'}, {'temp_f': 'tempF'}], start=start, end=end)
@@ -152,12 +172,16 @@ def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, fre
         meter_data, end=blackout_start_date, max_days=365
     )
 
+    logger.info('read_meter_data: DONE')
+
     return {
         'meter_data': meter_data,
         'temperature_data': temperature_data,
         'blackout_start_date': blackout_start_date,
         'blackout_end_date': blackout_end_date,
-        'baseline_meter_data': baseline_meter_data
+        'baseline_meter_data': baseline_meter_data,
+        'start': start,
+        'end': end
     }
 
 
@@ -171,21 +195,27 @@ def get_model_for_freq(data, freq):
 
 
 def get_daily_model(data):
+    logger.info('get_daily_model: ...')
     # create a design matrix (the input to the model fitting step)
+    logger.info('get_daily_model: creating baseline_design_matrix ...')
     baseline_design_matrix = eemeter.create_caltrack_daily_design_matrix(
         data['baseline_meter_data'], data['temperature_data'],
     )
 
     # build a CalTRACK model
+    logger.info('get_daily_model: building CalTRACK model ...')
     baseline_model = eemeter.fit_caltrack_usage_per_day_model(
         baseline_design_matrix,
     )
 
+    logger.info('get_daily_model: DONE')
     return baseline_model
 
 
 def get_hourly_model(data):
+    logger.info('get_hourly_model: ...')
     # create a design matrix for occupancy and segmentation
+    logger.info('get_hourly_model: creating baseline_design_matrix ...')
     preliminary_design_matrix = (
         eemeter.create_caltrack_hourly_preliminary_design_matrix(
             data['baseline_meter_data'], data['temperature_data'],
@@ -193,24 +223,28 @@ def get_hourly_model(data):
     )
 
     # build 12 monthly models - each step from now on operates on each segment
+    logger.info('get_hourly_model: creating segment_time_series ...')
     segmentation = eemeter.segment_time_series(
         preliminary_design_matrix.index,
         'three_month_weighted'
     )
 
     # assign an occupancy status to each hour of the week (0-167)
+    logger.info('get_hourly_model: creating occupancy_lookup ...')
     occupancy_lookup = eemeter.estimate_hour_of_week_occupancy(
         preliminary_design_matrix,
         segmentation=segmentation,
     )
 
     # assign temperatures to bins
+    logger.info('get_hourly_model: creating temperature_bins ...')
     temperature_bins = eemeter.fit_temperature_bins(
         preliminary_design_matrix,
         segmentation=segmentation,
     )
 
     # build a design matrix for each monthly segment
+    logger.info('get_hourly_model: creating segmented_design_matrices ...')
     segmented_design_matrices = (
         eemeter.create_caltrack_hourly_segmented_design_matrices(
             preliminary_design_matrix,
@@ -221,22 +255,45 @@ def get_hourly_model(data):
     )
 
     # build a CalTRACK hourly model
+    logger.info('get_hourly_model: building CalTRACK model ...')
     baseline_model = eemeter.fit_caltrack_hourly_model(
         segmented_design_matrices,
         occupancy_lookup,
         temperature_bins,
     )
 
+    logger.info('get_hourly_model: DONE')
     return baseline_model
 
 
-def save_model(model, meter_id=None, frequency=None):
+def save_model(model, meter_id=None, frequency=None, description=None, from_datetime=None, thru_datetime=None, data=None):
+    plot_data = None
+    if data and hasattr(model, 'plot'):
+        logger.info('save_model: plotting model ...')
+        from matplotlib.figure import Figure
+        from io import BytesIO
+        import base64
+
+        fig = Figure(figsize=(10, 4))
+        ax = eemeter.plot_energy_signature(data['meter_data'], data['temperature_data'], figure=fig)
+        model.plot(
+            ax=ax, figure=fig, candidate_alpha=0.02, with_candidates=True, temp_range=(-5, 88)
+        )
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        # Embed the result in the html output.
+        plot_data = base64.b64encode(buf.getbuffer()).decode("ascii")
+        logger.info('save_model: plotting model DONE')
     # persist the given model in the DB
     return BaselineModel.objects.create(
         data=model.json(),
         model_class=model.__class__.__name__,
         meter_id=meter_id,
-        frequency=frequency)
+        frequency=frequency,
+        from_datetime=from_datetime,
+        thru_datetime=thru_datetime,
+        description=description,
+        plot_data=plot_data)
 
 
 def load_model(model):

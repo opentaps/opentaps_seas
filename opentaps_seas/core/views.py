@@ -3032,6 +3032,11 @@ def meter_production_data_json(request, meter):
     meter_data_map = {}
     qs0 = m.meterproduction_set
 
+    model_id = request.GET.get('model_id')
+    if model_id:
+        logger.info('Filtering for model = %s', model_id)
+        qs0 = qs0.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): model_id}))
+
     # to simplify visualization we want to start at the latest production point
     from_datetime = None
     last_record = qs0.order_by('-from_datetime').values('from_datetime').first()

@@ -79,6 +79,16 @@ class MeterModelDetailView(LoginRequiredMixin, ModelBCMixin, DetailView):
 meter_model_detail_view = MeterModelDetailView.as_view()
 
 
+class MeterModelExtraDetailView(LoginRequiredMixin, ModelBCMixin, DetailView):
+    model = BaselineModel
+    slug_field = "id"
+    slug_url_kwarg = "id"
+    template_name = 'eemeter/model_extra_detail.html'
+
+
+meter_model_extra_detail_view = MeterModelExtraDetailView.as_view()
+
+
 class MeterModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
     model = BaselineModel
     slug_field = "meter_id"
@@ -122,6 +132,21 @@ class MeterModelDeleteView(LoginRequiredMixin, ModelBCMixin, DeleteView):
 
 
 meter_model_delete_view = MeterModelDeleteView.as_view()
+
+
+class MeterModelProductionDeleteView(LoginRequiredMixin, ModelBCMixin, DeleteView):
+    model = BaselineModel
+    slug_field = "id"
+    slug_url_kwarg = "id"
+    template_name = 'eemeter/model_production_delete.html'
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.get_production().delete()
+        return HttpResponseRedirect(self.object.get_absolute_url())
+
+
+meter_model_production_delete_view = MeterModelProductionDeleteView.as_view()
 
 
 class MeterModelCalcSavingView(LoginRequiredMixin, FormView):

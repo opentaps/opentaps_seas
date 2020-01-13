@@ -18,11 +18,16 @@
 import logging
 from enum import Enum
 from opentaps_seas.core.models import Meter
+from opentaps_seas.core.models import MeterProduction
 from django.db import models
+from django.db.models import Q
 from django.db.models import AutoField
 from django.db.models import CharField
+from django.db.models import TextField
+from django.db.models import DateTimeField
 from django.db.models import ForeignKey
 from django.contrib.postgres.fields import JSONField
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
@@ -49,9 +54,18 @@ class BaselineModel(models.Model):
     model_class = CharField(_("Model Class"), blank=False, null=False, max_length=512)
     frequency = CharField(_("Frequency"), blank=False, null=False, max_length=255, choices=[x.value for x in FREQUENCY])
     data = JSONField(blank=True, null=True)
+    description = CharField(_("Description"), blank=True, null=True, max_length=255)
+    from_datetime = DateTimeField(_("From Date"), blank=True, null=True)
+    thru_datetime = DateTimeField(_("Thru Date"), default=now)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    last_calc_saving_datetime = DateTimeField(_("Last Calculated Savings Date"), blank=True, null=True)
+    plot_data = TextField(null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
 
     def get_absolute_url(self):
         return reverse("core:meter_model_detail", kwargs={"meter_id": self.meter_id, "id": self.id})
+
+    def get_production(self):
+        return MeterProduction.objects.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): '{}'.format(self.id)}))

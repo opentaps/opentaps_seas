@@ -22,7 +22,9 @@
 <div id="meterproductionchart" class="container" v-cloak>
   <div class="card mb-3">
     <div class="card-body p-sm-3 p-2">
+      {% if not no_title %}
       <h2>Meter Production</h2>
+      {% endif %}
       <b-dropdown id="ddown2" :text="'For: ' + selectedRange" class="m-md-2" size="sm">
         <b-dropdown-item v-for="item in ranges" v-on:click="selectedRange = item">${item}</b-dropdown-item>
       </b-dropdown>
@@ -178,7 +180,11 @@
         this.fetchData();
       },
       getUrlArgs() {
-        return '?range=' + this.selectedRange;
+        var args = '?range=' + this.selectedRange;
+        {% if model_id %}
+          args += '&model_id={{ model_id }}';
+        {% endif %}
+        return args;
       },
       fetchData() {
         url = '{% url 'core:meter_production_data_json' meter_id %}' + this.getUrlArgs();

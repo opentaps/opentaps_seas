@@ -17,12 +17,14 @@
 
 import logging
 from datetime import timedelta
+from eemeter import NoBaselineDataError
 from . import utils
 from ..core.models import Meter
 from ..core.models import MeterProduction
 from .models import BaselineModel
 from django import forms
 from django.forms.widgets import HiddenInput
+from django.utils.timezone import now
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +39,7 @@ class MeterField(forms.CharField):
 
 class MeterModelCreateForm(forms.ModelForm):
     meter_id = MeterField(label='Meter', max_length=255, required=False)
-    blackout_start_date = forms.DateTimeField(label='Blackout Start Date', required=False)
-    blackout_end_date = forms.DateTimeField(label='Blackout End Date', required=False)
+    thru_date = forms.DateTimeField(label='Ending Date', initial=now, required=False)
 
     def __init__(self, *args, **kwargs):
         super(MeterModelCreateForm, self).__init__(*args, **kwargs)
@@ -50,37 +51,59 @@ class MeterModelCreateForm(forms.ModelForm):
         logger.info('MeterModelCreateForm: check is_valid')
 
         meter_id = self.cleaned_data['meter_id']
+        frequency = self.cleaned_data['frequency']
+        # check meter exists, note meter_id is already required
         if meter_id:
-            # check meter exists
             try:
-                Meter.objects.get(meter_id=meter_id)
+                self.meter = Meter.objects.get(meter_id=meter_id)
+                thru_date = self.cleaned_data['thru_date']
+                self.read_meter_data = utils.read_meter_data(self.meter, freq=frequency, blackout_start_date=thru_date)
             except Meter.DoesNotExist:
                 logger.error('MeterModelCreateForm: Meter not found with id = %s', meter_id)
                 self.add_error('meter_id', 'Meter {} does not exist.'.format(meter_id))
                 return False
+            except NoBaselineDataError:
+                logger.error('MeterModelCreateForm: Cannot get baseline data from = %s', thru_date)
+                if thru_date:
+                    self.add_error('thru_date', '''Meter does not have enough baseline data ending in {},
+                        try leaving blank.'''.format(thru_date))
+                else:
+                    self.add_error('thru_date', 'Meter does not have enough baseline data.')
+                return False
+
         return True
 
     def save(self, commit=True):
         meter_id = self.cleaned_data['meter_id']
         frequency = self.cleaned_data['frequency']
-        bsd = self.cleaned_data['blackout_start_date']
-        bed = self.cleaned_data['blackout_end_date']
+        thru_date = self.cleaned_data['thru_date']
+        description = self.cleaned_data['description']
         logger.info('MeterModelCreateForm: for Meter %s', meter_id)
 
-        meter = Meter.objects.get(meter_id=meter_id)
-
-        data = utils.read_meter_data(meter, freq=frequency, blackout_start_date=bsd, blackout_end_date=bed)
+        # note we already got this in the validate method
+        meter = self.meter or Meter.objects.get(meter_id=meter_id)
+        data = self.read_meter_data or utils.read_meter_data(meter, freq=frequency, blackout_start_date=thru_date)
         model = utils.get_model_for_freq(data, frequency)
 
+        if not description:
+            description = 'CalTrack {} for Meter {} Ending {}'.format(
+                frequency, meter.description or meter.meter_id, data['end'])
+
         if commit:
-            bm = utils.save_model(model, meter_id=meter.meter_id, frequency=frequency)
+            bm = utils.save_model(model,
+                                  meter_id=meter.meter_id,
+                                  data=data,
+                                  frequency=frequency,
+                                  description=description,
+                                  from_datetime=data['start'],
+                                  thru_datetime=data['end'])
             self.instance = bm
         self._post_clean()  # reset the form as updating the just created instance
         return self.instance
 
     class Meta:
         model = BaselineModel
-        fields = ["meter_id", "frequency"]
+        fields = ["meter_id", "frequency", "description"]
 
 
 class CalcMeterSavingsForm(forms.Form):
@@ -88,15 +111,39 @@ class CalcMeterSavingsForm(forms.Form):
     model_id = forms.CharField(label='Model', max_length=255, required=True)
     from_datetime = forms.DateTimeField(label='From', required=True)
     to_datetime = forms.DateTimeField(label='To', required=True)
-    blackout_start_date = forms.DateTimeField(label='Blackout Start Date', required=False)
-    blackout_end_date = forms.DateTimeField(label='Blackout End Date', required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.initial.get('meter_id'):
-            self.fields['meter_id'].widget = HiddenInput()
-        if self.initial.get('model_id'):
-            self.fields['model_id'].widget = HiddenInput()
+        meter = None
+        model = None
+        meter_id = self.initial.get('meter_id')
+        if meter_id:
+            try:
+                meter = Meter.objects.get(meter_id=meter_id)
+                self.fields['meter_id'].widget = HiddenInput()
+            except Meter.DoesNotExist:
+                logger.error('CalcMeterSavingsForm: Meter not found with id = %s', meter_id)
+                self.initial.pop('meter_id')
+        model_id = self.initial.get('model_id')
+        if model_id:
+            try:
+                model = BaselineModel.objects.get(id=model_id)
+                self.fields['model_id'].widget = HiddenInput()
+            except BaselineModel.DoesNotExist:
+                logger.error('CalcMeterSavingsForm: BaselineModel not found with id = %s', model_id)
+                self.initial.pop('model_id')
+
+        if meter and model:
+            # set the initial from date to the model last calculated date
+            # else use the model first data date
+            if model.last_calc_saving_datetime:
+                self.initial['from_datetime'] = model.last_calc_saving_datetime
+            else:
+                self.initial['from_datetime'] = meter.get_meter_data().first().as_of_datetime
+
+        if meter:
+            # set the end date to the last meter data
+            self.initial['to_datetime'] = meter.get_meter_data().last().as_of_datetime
 
     def is_valid(self):
         if not super().is_valid():
@@ -142,8 +189,6 @@ class CalcMeterSavingsForm(forms.Form):
         model_id = self.cleaned_data['model_id']
         start = self.cleaned_data['from_datetime']
         end = self.cleaned_data['to_datetime']
-        bsd = self.cleaned_data['blackout_start_date']
-        bed = self.cleaned_data['blackout_end_date']
         logger.info('CalcMeterSavingsForm: for Meter %s, from %s to %s', meter_id, start, end)
 
         meter = Meter.objects.get(meter_id=meter_id)
@@ -153,9 +198,7 @@ class CalcMeterSavingsForm(forms.Form):
         data = utils.read_meter_data(meter,
                                      freq=model.frequency,
                                      start=start,
-                                     end=end,
-                                     blackout_start_date=bsd,
-                                     blackout_end_date=bed)
+                                     end=end)
         savings = utils.get_savings(data, m)
         logger.info('CalcMeterSavingsForm: got saving = {}'.format(savings))
         metered_savings = savings.get('metered_savings')
@@ -176,5 +219,7 @@ class CalcMeterSavingsForm(forms.Form):
                     amount=v.metered_savings,
                     uom_id='energy_kWh',
                     source=source)
+        model.last_calc_saving_datetime = end
+        model.save()
         self.model = model
         return savings
