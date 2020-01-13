@@ -112,12 +112,13 @@ Syncing PostgreSQL and Crate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default, entity data such as sites, equipment, data points, and their tags are stored in PostgreSQL.  We do this because PostgreSQL is transactional.
-To make querying your data easier, you can also sync your points (topics) data to Crate DB by configuring your ``secrets.json`` and setting ``CRATE_TAG_AUTOSYNC`` to ``true``.
+To make querying your data easier, you can also sync your sites, equipment, and points (topics) data to Crate DB's ``volttron.topic`` table by configuring 
+your ``secrets.json`` and setting ``CRATE_TAG_AUTOSYNC`` to ``true``.  For site or equipment, the key in ``volttron.topic.topic`` will be the value of the
+``id`` key-value tag (``kv_tags``.)  
+
 You can also run a script to sync all existing data to Crate::
 
     $ python manage.py runscript sync_tags_to_crate
-
-This will create a table ``volttron.entity`` and store all the points (topics) data there.
 
 Load seed data
 ^^^^^^^^^^^^^^
