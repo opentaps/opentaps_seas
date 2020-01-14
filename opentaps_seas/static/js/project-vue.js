@@ -93,6 +93,77 @@ Vue.use(VuejsDialog.main.default, {
 Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead)
 Vue.component('v-select', VueSelect.VueSelect)
 
+
+Vue.component('v-meter-input', {
+  delimiters: ['$[', ']'],
+  template: `<div :id="name + '_container'" :class="cssclass" style="border:none;background-image:none;padding:0">
+    <input ref="hiddenInput" type="hidden" :name="name" v-model="internal_value"/>
+    <vue-bootstrap-typeahead
+      :input-class="'form-control $[ cssclass ] ' + (errors ? ' is-invalid' : '')"
+      :serializer="s => s.meter_id"
+      :id="name"
+      ref="valueInput"
+      :min-matching-chars="0"
+      :name="name"
+      v-model="internal_value"
+      v-on:input="$emit('input', $event)"
+      :max-matches="50"
+      :data="valid_meters"
+      @hit="selected_meter = $event"
+      placeholder="Meter...">
+      <template slot="suggestion" slot-scope="{ data, htmlText }">
+        <span v-html="htmlText"></span>&nbsp;<small>$[ display_suggestion(data) ]</small>
+      </template>
+    </vue-bootstrap-typeahead>
+    <span v-for="err in errors" class="text-danger">$[ err ]</span>
+</div>
+  `,
+  props: {
+    csrfmiddlewaretoken: String,
+    url: String,
+    name: String,
+    value: String,
+    cssclass: String
+  },
+  data() {
+      return {
+        selected_meter: {},
+        errors: null,
+        valid_meters: [],
+        internal_value: ''
+      }
+    },
+    created: function() {
+      this.internal_value = this.value;
+      axios.get(this.url)
+        .then(x => this.valid_meters = x.data.items)
+        .then(x => {
+            if (!this.internal_value || !this.internal_value.length) return;
+            if (this.$refs.valueInput) {
+              this.$refs.valueInput.inputValue = this.internal_value
+            }
+            for (var i=0; i<x.length; i++) {
+                var m = x[i]
+                console.log('try meter', this.internal_value, m)
+                if (this.internal_value == m.meter_id) {
+                    this.selected_meter = m
+                    return
+                }
+            }
+        })
+        .catch(err => {
+          console.error('loading meters error :', err)
+        })
+    },
+    methods:{
+        display_suggestion(item) {
+            if (item) return item.description
+            return null
+        }
+    }
+});
+
+
 Vue.component('tag-value-input', {
   delimiters: ['$[', ']'],
   template: `

@@ -26,6 +26,7 @@ from .forms import CalcMeterSavingsForm
 from .forms import MeterModelCreateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
+from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView
@@ -109,6 +110,13 @@ class MeterModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
             except Meter.DoesNotExist:
                 pass
         return {}
+
+    def form_valid(self, form):
+        if form.cleaned_data['use_async']:
+            self.object = form.save()
+            return HttpResponseRedirect(reverse("core:get_task_progress", kwargs={'task_id': self.object.task_id}))
+        else:
+            return super().form_valid(form)
 
 
 meter_model_create_view = MeterModelCreateView.as_view()

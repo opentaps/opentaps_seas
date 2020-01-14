@@ -25,13 +25,30 @@
 {% endblock add_button %}
 
 {% block inner_content %}
-<form method="post">
-  {% csrf_token %}
-  {{ form|crispy }}
+<div id="model_edit_form">
+    <form method="post" @submit="isSaving = true">
+      {% csrf_token %}
+      {{ form|crispy }}
 
-  <div class="form-group d-flex justify-content-around mt-5">
-    <a href="{% if object %}{% url 'core:meter_model_detail' object.id %}{% else %}{% url 'core:meter_detail' meter_id %}{% endif %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
-    <button class="btn btn-primary col-5" type="submit"><i class="fa fa-edit mr-2"></i> Save</button>
-  </div>
-</form>
+      <div class="form-group d-flex justify-content-around mt-5">
+        <a href="{% if object %}{% url 'core:meter_model_detail' object.id %}{% else %}{% url 'core:meter_detail' meter_id %}{% endif %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
+        <button class="btn btn-primary col-5" type="submit" :disabled="isSaving"><i class="fa fa-edit mr-2"></i> Save</button>
+      </div>
+    </form>
+</div>
+
+<script>
+(function() {
+  new Vue({
+    delimiters: ['$[', ']'],
+    el: '#model_edit_form',
+    name: 'model_edit_form',
+    data() {
+      return {
+        isSaving: false
+      }
+    }
+  });
+})();
+</script>
 {% endblock inner_content %}

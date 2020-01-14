@@ -19,6 +19,7 @@ import logging
 from datetime import timedelta
 from eemeter import NoBaselineDataError
 from . import utils
+from . import tasks
 from ..core.models import Meter
 from ..core.models import MeterProduction
 from .models import BaselineModel
@@ -40,6 +41,7 @@ class MeterField(forms.CharField):
 class MeterModelCreateForm(forms.ModelForm):
     meter_id = MeterField(label='Meter', max_length=255, required=False)
     thru_date = forms.DateTimeField(label='Ending Date', initial=now, required=False)
+    use_async = forms.BooleanField(label='Run Async', required=False)
 
     def __init__(self, *args, **kwargs):
         super(MeterModelCreateForm, self).__init__(*args, **kwargs)
@@ -74,30 +76,24 @@ class MeterModelCreateForm(forms.ModelForm):
         return True
 
     def save(self, commit=True):
-        meter_id = self.cleaned_data['meter_id']
-        frequency = self.cleaned_data['frequency']
-        thru_date = self.cleaned_data['thru_date']
-        description = self.cleaned_data['description']
-        logger.info('MeterModelCreateForm: for Meter %s', meter_id)
-
-        # note we already got this in the validate method
-        meter = self.meter or Meter.objects.get(meter_id=meter_id)
-        data = self.read_meter_data or utils.read_meter_data(meter, freq=frequency, blackout_start_date=thru_date)
-        model = utils.get_model_for_freq(data, frequency)
-
-        if not description:
-            description = 'CalTrack {} for Meter {} Ending {}'.format(
-                frequency, meter.description or meter.meter_id, data['end'])
-
         if commit:
-            bm = utils.save_model(model,
-                                  meter_id=meter.meter_id,
-                                  data=data,
-                                  frequency=frequency,
-                                  description=description,
-                                  from_datetime=data['start'],
-                                  thru_datetime=data['end'])
-            self.instance = bm
+            if self.cleaned_data['use_async']:
+                logger.info('MeterModelCreateForm: running Async ...')
+                return self.run_async()
+            else:
+                return self.run()
+        return self.instance
+
+    def get_task_params(self):
+        d = self.cleaned_data.copy()
+        d.update({'meter': self.meter, 'read_meter_data': self.read_meter_data})
+        return d
+
+    def run_async(self):
+        return tasks.create_meter_model_task.delay(self.cleaned_data.copy())
+
+    def run(self):
+        self.instance = tasks.create_meter_model(self.get_task_params())
         self._post_clean()  # reset the form as updating the just created instance
         return self.instance
 

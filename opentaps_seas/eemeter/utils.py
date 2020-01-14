@@ -266,9 +266,11 @@ def get_hourly_model(data):
     return baseline_model
 
 
-def save_model(model, meter_id=None, frequency=None, description=None, from_datetime=None, thru_datetime=None, data=None):
+def save_model(model, meter_id=None, frequency=None, description=None, from_datetime=None, thru_datetime=None, data=None, progress_observer=None):
     plot_data = None
     if data and hasattr(model, 'plot'):
+        if progress_observer:
+            progress_observer.add_progress(description='Plotting model energy signature ...')
         logger.info('save_model: plotting model ...')
         from matplotlib.figure import Figure
         from io import BytesIO
@@ -285,6 +287,8 @@ def save_model(model, meter_id=None, frequency=None, description=None, from_date
         plot_data = base64.b64encode(buf.getbuffer()).decode("ascii")
         logger.info('save_model: plotting model DONE')
     # persist the given model in the DB
+    if progress_observer:
+        progress_observer.add_progress(description='Saving model ...')
     return BaselineModel.objects.create(
         data=model.json(),
         model_class=model.__class__.__name__,

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static i18n %}
+{% block title %}Task Progress{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      {% if progress %}
+        <div id="task_progress">
+          <h4>{{ progress.info.extra.name }} -- {{ progress.state }}</h4>
+          <br/>
+          {% if progress.info.percent %}
+            <div>$[ progress ]</div>
+            <b-progress :value="value"  animated></b-progress>
+          {% elif progress.complete %}
+            <div>Complete</div>
+            <b-progress :value="value" {% if progress.success %}variant="success"{% else %}variant="warning"{% endif %}></b-progress>
+          {% endif %}
+
+          <div class="form-group d-flex justify-content-around mt-5">
+            {% if progress.info.extra.back_url %}
+            <a href="{{ progress.info.extra.back_url }}" class="btn btn-secondary col-3" role="button"><i class="fa fa-back mr-2"></i> Back</a>
+            {% endif %}
+            {% if progress.info.extra.skip_url %}
+            <a href="{{ progress.info.extra.skip_url }}" class="btn btn-secondary col-3" role="button"><i class="fa fa-forward mr-2"></i> {{ progress.info.extra.skip_label|default:'Skip' }}</a>
+            {% endif %}
+            {% if progress.info.extra.success_url %}
+            <a href="{{ progress.info.extra.success_url }}" class="btn btn-primary col-3" role="button" :disabled="!success"><i class="fa fa-back mr-2"></i> {{ progress.info.extra.success_label|default:'View' }}</a>
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        <p>Task not found.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if progress %}
+<script>
+(function() {
+  new Vue({
+    delimiters: ['$[', ']'],
+    el: '#task_progress',
+    name: 'task_progress',
+    data() {
+      return {
+        value: {{ progress.info.percent|default:100.0 }},
+        progress: '{{ progress.info.description }}',
+        success: {% if progress.success %}true{%else%}false{%endif%}
+      }
+    }
+  });
+  {% if not progress.complete %}
+    setTimeout(function() { location. reload(); }, 3000);
+  {% endif %}
+})();
+</script>
+{% endif %}
+{% endblock content %}

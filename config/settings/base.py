@@ -287,6 +287,14 @@ VOLTTRON_VC_PASSWORD = get_secret('VOLTTRON_VC_PASSWORD', required=False)
 GOOGLE_API_KEY = get_secret('GOOGLE_API_KEY', required=False)
 CRATE_TAG_AUTOSYNC = get_secret('CRATE_TAG_AUTOSYNC', required=False)
 
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
 # FIXTURES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#fixture-dirs

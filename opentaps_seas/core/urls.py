@@ -89,7 +89,9 @@ from .views import (
     meter_data_import,
     weather_station_detail,
     weather_station_geoview,
-    weather_stations_json
+    weather_stations_json,
+    get_task_progress_json,
+    get_task_progress
 )
 
 from ..eemeter.views import (
@@ -103,6 +105,8 @@ from ..eemeter.views import (
 
 app_name = "core"
 urlpatterns = [
+    path("task_progress/json/<str:task_id>", view=get_task_progress_json, name="get_task_progress_json"),
+    path("task_progress/<str:task_id>", view=get_task_progress, name="get_task_progress"),
     path("topic/", view=topic_list_view, name="topic_list"),
     path("topic_tag_rulesets/", view=topictagruleset_list_view, name="topictagruleset_list"),
     path("topic_tag_rulesets/<str:id>", view=topictagruleset_detail_view, name="topictagruleset_detail"),

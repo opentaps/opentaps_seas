@@ -28,7 +28,6 @@ from urllib.parse import urlparse
 
 from datetime import datetime
 from math import isnan
-from pytz import timezone
 
 from opentaps_seas.eemeter.models import BaselineModel
 
@@ -76,6 +75,7 @@ from .models import TopicTagRuleSet
 from .models import Meter
 from .models import WeatherStation
 from .models import WeatherHistory
+from .celery import Progress
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -3345,3 +3345,23 @@ class WeatherStationGeoView(LoginRequiredMixin, DetailView):
 
 
 weather_station_geoview = WeatherStationGeoView.as_view()
+
+
+class GetTaskProgressView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
+    model = Topic
+    template_name = 'core/task_progress.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['progress'] = Progress(kwargs.get('task_id')).get_info()
+        logger.info('GetTaskProgressView context = {}'.format(context))
+        return context
+
+
+get_task_progress = GetTaskProgressView.as_view()
+
+
+@login_required()
+def get_task_progress_json(request, task_id):
+    progress = Progress(task_id)
+    return HttpResponse(json.dumps(progress.get_info()), content_type='application/json')
