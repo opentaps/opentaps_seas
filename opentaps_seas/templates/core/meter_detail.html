@@ -35,7 +35,7 @@
   <div class="card mb-3">
     <div class="card-body">
       {% if object.description %}
-        <h2>Meter {{ object.description }} <span style="font-size: 1rem;">({{ object.meter_id }})</span></h2>
+        <h2>Meter {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.meter_id }})</span></h2>
       {% else %}
         <h2>Meter {{ object.meter_id }}</h2>
       {% endif %}
@@ -59,8 +59,6 @@
       </p>
       {% endif %}
 
-      {% include "core/_meter_production_chart.html" with meter_id=object.meter_id %}
-
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
         <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
@@ -82,17 +80,15 @@
           </div>
         </div>
       </h3>
-      <div class="container header-top">
+      <div class="header-top">
           {% for model in object.baselinemodel_set.all %}
-            <h6 class="meter-row" >
-                <div class="container">
-                    <div class="row">
-                      <div class="col-auto">
-                        <div><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}:  {{ model.description|default:model.model_class }}</a></div>
-                      </div>
-                    </div>
-                </div>
-            </h6>
+            <div class="row meter-row">
+              <div class="col-auto">
+                <a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}: {{ model.description|default:model.model_class }}</a>
+              </div>
+              <div class="col-auto" style="width:14em">{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</div>
+              <div class="col text-muted small pl-0 pt-1 text-right">{{ model.created_datetime|date:'m/d/Y' }}</div>
+            </div>
           {% endfor %}
       </div>
     </div>
