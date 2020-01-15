@@ -45,6 +45,14 @@ class MeterModelCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MeterModelCreateForm, self).__init__(*args, **kwargs)
+        meter_id = self.initial.get('meter_id')
+        if meter_id:
+            try:
+                Meter.objects.get(meter_id=meter_id)
+                self.fields['meter_id'].widget = HiddenInput()
+            except Meter.DoesNotExist:
+                logger.error('CalcMeterSavingsForm: Meter not found with id = %s', meter_id)
+                self.initial.pop('meter_id')
 
     def is_valid(self):
         if not super().is_valid():

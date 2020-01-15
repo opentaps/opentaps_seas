@@ -103,13 +103,17 @@ class MeterModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
         return context
 
     def get_initial(self):
+        initials = {}
         if 'meter_id' in self.kwargs:
             try:
                 pm = Meter.objects.get(meter_id=self.kwargs['meter_id'])
-                return {'meter_id': pm.meter_id}
+                initials['meter_id'] = pm.meter_id
+                last = pm.get_meter_data().last()
+                if last:
+                    initials['thru_date'] = last.as_of_datetime
             except Meter.DoesNotExist:
                 pass
-        return {}
+        return initials
 
     def form_valid(self, form):
         if form.cleaned_data['use_async']:
