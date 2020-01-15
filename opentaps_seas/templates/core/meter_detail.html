@@ -84,11 +84,11 @@
           {% load qs_order_by from core_tags %}
           {% for model in object.baselinemodel_set.all|qs_order_by:'-id' %}
             <div class="row meter-row">
-              <div class="col-auto">
+              <div class="col-auto flex-grow-1">
                 <a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}: {{ model.description|default:model.model_class }}</a>
               </div>
               <div class="col-auto" style="width:14em">{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</div>
-              <div class="col text-muted small pl-0 pt-1 text-right">{{ model.created_datetime|date:'m/d/Y' }}</div>
+              <div class="col-auto text-muted small pl-0 pt-1 text-right">{{ model.created_datetime|date:'m/d/Y' }}</div>
             </div>
           {% endfor %}
       </div>
