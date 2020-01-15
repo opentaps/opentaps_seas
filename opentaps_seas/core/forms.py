@@ -977,7 +977,6 @@ class MeterDataUploadForm(forms.Form):
 
 
 class MeterCreateForm(forms.ModelForm):
-    sample = forms.BooleanField(label="Create a sample Meter with fake values", required=False, initial=False)
 
     def __init__(self, *args, **kwargs):
         super(MeterCreateForm, self).__init__(*args, **kwargs)
@@ -994,24 +993,9 @@ class MeterCreateForm(forms.ModelForm):
             error_msg = u"No weather station found for this Site. Please check that your site is set up correctly."
             self.add_error('weather_station', error_msg)
 
-    def is_valid(self):
-        valid = super().is_valid()
-        if self.cleaned_data['sample']:
-            return True
-        else:
-            return valid
-
-    def save(self, commit=True):
-        if self.cleaned_data['sample']:
-            return setup_demo_sample_models(self.cleaned_data['site'],
-                                            meter_id=self.cleaned_data.get('meter_id'),
-                                            description=self.cleaned_data.get('description'))
-        else:
-            return super().save(commit=commit)
-
     class Meta:
         model = Meter
-        fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime", "sample"]
+        fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
 
 
 class MeterUpdateForm(forms.ModelForm):

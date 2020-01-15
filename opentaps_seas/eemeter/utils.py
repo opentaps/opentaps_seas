@@ -50,6 +50,7 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
     try:
         ws = WeatherStation.objects.get(weather_station_id='eemeter_ws')
     except WeatherStation.DoesNotExist:
+        logger.info('setup_demo_sample_models: creating Sample WeatherStation eemeter_ws ...')
         ws = WeatherStation.objects.create(
             weather_station_id='eemeter_ws',
             station_name='Sample Station',
@@ -60,6 +61,7 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
             weather_station=ws,
             site_id=site.entity_id,
             source=source)
+        logger.info('setup_demo_sample_models: adding Sample WeatherStation data ...')
         # load the temperature data, this is given in F
         for d, t in temperature_data.iteritems():
             tc = (t - 32.0) * 5 / 9
@@ -74,12 +76,14 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
     MeterHistory.objects.filter(meter_id=meter_id).delete()
     Meter.objects.filter(meter_id=meter_id).delete()
     # create the meter
+    logger.info('setup_demo_sample_models: creating Sample Meter %s ...', meter_id)
     meter = Meter.objects.create(
         meter_id=meter_id,
         site_id=site.entity_id,
         description=description,
         weather_station_id='eemeter_ws')
     # setup the meter data (note this is slightly different format than temps)
+    logger.info('setup_demo_sample_models: adding Sample Meter %s data ...', meter_id)
     for d, v in meter_data.iterrows():
         MeterHistory.objects.create(meter=meter, as_of_datetime=d, value=v.value, uom_id='energy_kWh', source=source)
 
