@@ -50,17 +50,21 @@ def js_csrf_token(parser, token):
     return JsCsrfTokenNode()
 
 
+@register.filter
 def fmttime_str(value):
     epoch = int(value.timestamp() * 1000)
     t = utils.format_epoch(epoch)
     return t['fmttime']
 
 
+@register.filter
 def time_str(value):
     epoch = int(value.timestamp() * 1000)
     t = utils.format_epoch(epoch)
     return t['time']
 
 
-register.filter('time_str', time_str)
-register.filter('fmttime_str', fmttime_str)
+@register.filter
+def qs_order_by(queryset, args):
+    args = [x.strip() for x in args.split(',')]
+    return queryset.order_by(*args)
