@@ -81,16 +81,27 @@
         </div>
       </h3>
       <div class="header-top">
-          {% load qs_order_by from core_tags %}
+        {% load qs_order_by from core_tags %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Model</th>
+              <th scope="col">Range</th>
+              <th scope="col">Created</th>
+            </tr>
+          </thead>
+          <tbody>
           {% for model in object.baselinemodel_set.all|qs_order_by:'-id' %}
-            <div class="row meter-row">
-              <div class="col-auto flex-grow-1">
-                <a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}: {{ model.description|default:model.model_class }}</a>
-              </div>
-              <div class="col-auto" style="width:14em">{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</div>
-              <div class="col-auto text-muted small pl-0 pt-1 text-right">{{ model.created_datetime|date:'m/d/Y' }}</div>
-            </div>
+            <tr>
+              <th scope="row"><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}</a></th>
+              <td><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.description|default:model.model_class }}</a></td>
+              <td>{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</td>
+              <td><span class="text-muted text-right">{{ model.created_datetime|date:'m/d/Y' }}</span></td>
+            </tr>
           {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
