@@ -59,6 +59,7 @@ class MeterModelCreateForm(forms.ModelForm):
             try:
                 self.meter = Meter.objects.get(meter_id=meter_id)
                 thru_date = self.cleaned_data['thru_date']
+                logger.info('MeterModelCreateForm: checking read_meter_data ending in %s', thru_date)
                 self.read_meter_data = utils.read_meter_data(self.meter, freq=frequency, blackout_start_date=thru_date)
             except Meter.DoesNotExist:
                 logger.error('MeterModelCreateForm: Meter not found with id = %s', meter_id)

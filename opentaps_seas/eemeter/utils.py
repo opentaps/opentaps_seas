@@ -159,6 +159,7 @@ def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, fre
     # force alignment of weather data to the read meter data
     start = meter_data.iloc[0].name.to_pydatetime()
     end = meter_data.iloc[-1].name.to_pydatetime()
+    logger.info('read_meter_data: meter_data from %s to %s', start, end)
 
     # get the temperature data from the meter linked weather stations
     out = StringIO()
@@ -167,10 +168,19 @@ def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, fre
     temperature_data = eeio.temperature_data_from_csv(out, freq="hourly")
     logger.info('read_meter_data: temperature_data %s', temperature_data)
 
+    # we end the model on the given blackout_start_date else end it on the last data
+    blm_end = blackout_start_date or end
+    logger.info('read_meter_data: getting baseline_meter_data ending %s', blm_end)
     # get meter data suitable for fitting a baseline model
     baseline_meter_data, warnings = eemeter.get_baseline_data(
-        meter_data, end=blackout_start_date, max_days=365
+        meter_data, end=blm_end, max_days=365
     )
+
+    logger.info('read_meter_data: baseline_meter_data %s', baseline_meter_data)
+
+    start = baseline_meter_data.iloc[0].name.to_pydatetime()
+    end = baseline_meter_data.iloc[-1].name.to_pydatetime()
+    logger.info('read_meter_data: baseline_meter_data from %s to %s', start, end)
 
     logger.info('read_meter_data: DONE')
 

@@ -81,7 +81,8 @@
         </div>
       </h3>
       <div class="header-top">
-          {% for model in object.baselinemodel_set.all %}
+          {% load qs_order_by from core_tags %}
+          {% for model in object.baselinemodel_set.all|qs_order_by:'-id' %}
             <div class="row meter-row">
               <div class="col-auto">
                 <a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}: {{ model.description|default:model.model_class }}</a>
