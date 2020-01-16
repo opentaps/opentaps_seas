@@ -30,7 +30,7 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="d-flex">
-        Model {{ object.description }}
+        Model {{ object.description|default:"" }}
         {% block add_button %}
         <div class="ml-auto text-nowrap">
           <a href="{% url 'core:meter_model_detail' object.meter_id object.id %}" role="button" class="btn btn-primary"><i class="fa fa-back mr-2"></i> Back</a>
