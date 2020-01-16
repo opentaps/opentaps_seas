@@ -17,8 +17,10 @@
 
 import logging
 import eemeter
+from datetime import timedelta
 from io import StringIO
 from eemeter import io as eeio
+from ..core.models import MeterProduction
 from ..core.models import SiteView
 from ..core.models import SiteWeatherStations
 from ..core.models import Meter
@@ -280,7 +282,8 @@ def get_hourly_model(data):
     return baseline_model
 
 
-def save_model(model, meter_id=None, frequency=None, description=None, from_datetime=None, thru_datetime=None, data=None, progress_observer=None):
+def save_model(model, meter_id=None, frequency=None, description=None, from_datetime=None,
+               thru_datetime=None, data=None, progress_observer=None):
     plot_data = None
     if data and hasattr(model, 'plot'):
         if progress_observer:
@@ -345,3 +348,36 @@ def get_savings(data, baseline_model):
         'metered_savings': metered_savings_dataframe,
         'error_bands': error_bands
     }
+
+
+def calc_meter_savings(meter_id, model_id, start, end):
+    logger.info('calc_meter_savings: for Meter %s, from %s to %s', meter_id, start, end)
+
+    meter = Meter.objects.get(meter_id=meter_id)
+    model = BaselineModel.objects.get(id=model_id)
+
+    m = load_model(model)
+    data = read_meter_data(meter, freq=model.frequency, start=start, end=end)
+    savings = get_savings(data, m)
+    logger.info('calc_meter_savings: got saving = {}'.format(savings))
+    metered_savings = savings.get('metered_savings')
+    error_bands = savings.get('error_bands')
+    source = "{}:{}".format(model.id, model.model_class)
+    if not metered_savings.empty:
+        # save the metered savings inot MeterProduction
+        logger.info('calc_meter_savings: got metered_savings = {}'.format(metered_savings))
+        for d, v in metered_savings.iterrows():
+            logger.info('calc_meter_savings: -> {} = {}'.format(d, v.metered_savings))
+            MeterProduction.objects.create(
+                meter=meter,
+                from_datetime=d,
+                thru_datetime=d + timedelta(hours=1),
+                meter_production_type='EEMeter Savings',
+                meter_production_reference={'BaselineModel.id': model.id},
+                error_bands=error_bands,
+                amount=v.metered_savings,
+                uom_id='energy_kWh',
+                source=source)
+    model.last_calc_saving_datetime = end
+    model.save()
+    return model, savings

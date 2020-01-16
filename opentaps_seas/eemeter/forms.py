@@ -16,12 +16,10 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from datetime import timedelta
 from eemeter import NoBaselineDataError
 from . import utils
 from . import tasks
 from ..core.models import Meter
-from ..core.models import MeterProduction
 from .models import BaselineModel
 from django import forms
 from django.forms.widgets import HiddenInput
@@ -196,35 +194,7 @@ class CalcMeterSavingsForm(forms.Form):
         end = self.cleaned_data['to_datetime']
         logger.info('CalcMeterSavingsForm: for Meter %s, from %s to %s', meter_id, start, end)
 
-        meter = Meter.objects.get(meter_id=meter_id)
-        model = BaselineModel.objects.get(id=model_id)
+        model, savings = utils.calc_meter_savings(meter_id, model_id, start, end)
 
-        m = utils.load_model(model)
-        data = utils.read_meter_data(meter,
-                                     freq=model.frequency,
-                                     start=start,
-                                     end=end)
-        savings = utils.get_savings(data, m)
-        logger.info('CalcMeterSavingsForm: got saving = {}'.format(savings))
-        metered_savings = savings.get('metered_savings')
-        error_bands = savings.get('error_bands')
-        source = "{}:{}".format(model.id, model.model_class)
-        if not metered_savings.empty:
-            # save the metered savings inot MeterProduction
-            logger.info('CalcMeterSavingsForm: got metered_savings = {}'.format(metered_savings))
-            for d, v in metered_savings.iterrows():
-                logger.info('CalcMeterSavingsForm: -> {} = {}'.format(d, v.metered_savings))
-                MeterProduction.objects.create(
-                    meter=meter,
-                    from_datetime=d,
-                    thru_datetime=d + timedelta(hours=1),
-                    meter_production_type='EEMeter Savings',
-                    meter_production_reference={'BaselineModel.id': model.id},
-                    error_bands=error_bands,
-                    amount=v.metered_savings,
-                    uom_id='energy_kWh',
-                    source=source)
-        model.last_calc_saving_datetime = end
-        model.save()
         self.model = model
         return savings
