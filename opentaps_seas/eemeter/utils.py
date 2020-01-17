@@ -17,7 +17,10 @@
 
 import logging
 import eemeter
+import pytz
+from datetime import date
 from datetime import timedelta
+from datetime import datetime
 from io import StringIO
 from eemeter import io as eeio
 from ..core.models import MeterProduction
@@ -50,6 +53,7 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
 
     min_datetime = None
     max_datetime = None
+    yesterday = date.today() - timedelta(days=1)
     # create a dummy weather station for the sample data if it did not alredy exist
     try:
         ws = WeatherStation.objects.get(weather_station_id='eemeter_ws')
@@ -66,14 +70,26 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
             site_id=site.entity_id,
             source=source)
         logger.info('setup_demo_sample_models: adding Sample WeatherStation data ...')
-        # load the temperature data, this is given in F
+        temp_items = []
         for d, t in temperature_data.iteritems():
-            tc = (t - 32.0) * 5 / 9
-            WeatherHistory.objects.create(weather_station=ws, as_of_datetime=d, temp_f=t, temp_c=tc, source=source)
-            if not min_datetime or d < min_datetime:
-                min_datetime = d
-            if not max_datetime or d > max_datetime:
-                max_datetime = d
+            item = {"d": d, "t": t}
+            temp_items.append(item)
+
+        ts = datetime(year=yesterday.year, month=yesterday.month, day=yesterday.day, hour=23,
+                      minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
+        for item in reversed(temp_items):
+            item["d"] = ts
+            ts = ts - timedelta(minutes=60)
+
+        # load the temperature data, this is given in F
+        for item in temp_items:
+            tc = (item["t"] - 32.0) * 5 / 9
+            WeatherHistory.objects.create(weather_station=ws, as_of_datetime=item["d"],
+                                          temp_f=item["t"], temp_c=tc, source=source)
+            if not min_datetime or item["d"] < min_datetime:
+                min_datetime = item["d"]
+            if not max_datetime or item["d"] > max_datetime:
+                max_datetime = item["d"]
 
     if not meter_id:
         meter_id = '{}-sample_meter'.format(site_id)
@@ -92,12 +108,24 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
         weather_station_id='eemeter_ws')
     # setup the meter data (note this is slightly different format than temps)
     logger.info('setup_demo_sample_models: adding Sample Meter %s data ...', meter_id)
+    meter_items = []
     for d, v in meter_data.iterrows():
-        MeterHistory.objects.create(meter=meter, as_of_datetime=d, value=v.value, uom_id='energy_kWh', source=source)
-        if not min_datetime or d < min_datetime:
-            min_datetime = d
-        if not max_datetime or d > max_datetime:
-            max_datetime = d
+        item = {"d": d, "v": v}
+        meter_items.append(item)
+
+    ts = datetime(year=yesterday.year, month=yesterday.month, day=yesterday.day, hour=23,
+                  minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
+    for item in reversed(meter_items):
+        item["d"] = ts
+        ts = ts - timedelta(minutes=60)
+
+    for item in meter_items:
+        MeterHistory.objects.create(meter=meter, as_of_datetime=item["d"], value=item["v"].value,
+                                    uom_id='energy_kWh', source=source)
+        if not min_datetime or item["d"] < min_datetime:
+            min_datetime = item["d"]
+        if not max_datetime or item["d"] > max_datetime:
+            max_datetime = item["d"]
 
     # create both models
     frequency = 'hourly'
