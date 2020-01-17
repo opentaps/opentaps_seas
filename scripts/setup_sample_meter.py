@@ -49,7 +49,7 @@ def import_data(which):
     is_demo = which == 'demo'
 
     if is_demo:
-        utils.setup_demo_sample_models('demo-site-1')
+        utils.setup_demo_sample_models('demo-site-1', None, None, True)
 
 
 def print_help():

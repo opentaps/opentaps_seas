@@ -192,7 +192,7 @@ class CalcMeterSavingsForm(forms.Form):
         model_id = self.cleaned_data['model_id']
         start = self.cleaned_data['from_datetime']
         end = self.cleaned_data['to_datetime']
-        logger.info('CalcMeterSavingsForm: for Meter %s, from %s to %s', meter_id, start, end)
+        logger.info('CalcMeterSavingsForm: for Meter %s, from %s to %s, model id %s', meter_id, start, end, model_id)
 
         model, savings = utils.calc_meter_savings(meter_id, model_id, start, end)
 

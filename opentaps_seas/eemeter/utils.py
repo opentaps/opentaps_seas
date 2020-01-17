@@ -32,7 +32,7 @@ from .models import BaselineModel
 logger = logging.getLogger(__name__)
 
 
-def setup_demo_sample_models(site_id, meter_id=None, description=None):
+def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savings=False):
     # this create a test sample meter with both hourly and daily model
     # using sample meter and temperature data for the given site id
 
@@ -48,6 +48,8 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
     except SiteView.DoesNotExist:
         site = SiteView.objects.get(entity_id=site_id)
 
+    min_datetime = None
+    max_datetime = None
     # create a dummy weather station for the sample data if it did not alredy exist
     try:
         ws = WeatherStation.objects.get(weather_station_id='eemeter_ws')
@@ -68,6 +70,10 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
         for d, t in temperature_data.iteritems():
             tc = (t - 32.0) * 5 / 9
             WeatherHistory.objects.create(weather_station=ws, as_of_datetime=d, temp_f=t, temp_c=tc, source=source)
+            if not min_datetime or d < min_datetime:
+                min_datetime = d
+            if not max_datetime or d > max_datetime:
+                max_datetime = d
 
     if not meter_id:
         meter_id = '{}-sample_meter'.format(site_id)
@@ -88,27 +94,39 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None):
     logger.info('setup_demo_sample_models: adding Sample Meter %s data ...', meter_id)
     for d, v in meter_data.iterrows():
         MeterHistory.objects.create(meter=meter, as_of_datetime=d, value=v.value, uom_id='energy_kWh', source=source)
+        if not min_datetime or d < min_datetime:
+            min_datetime = d
+        if not max_datetime or d > max_datetime:
+            max_datetime = d
 
     # create both models
     frequency = 'hourly'
     data = read_meter_data(meter, freq=frequency)
     model = get_model_for_freq(data, frequency)
-    save_model(model,
-               meter_id=meter.meter_id,
-               data=data,
-               frequency=frequency,
-               from_datetime=data['start'],
-               thru_datetime=data['end'])
+    baseline_model = save_model(model,
+                                meter_id=meter.meter_id,
+                                data=data,
+                                frequency=frequency,
+                                from_datetime=data['start'],
+                                thru_datetime=data['end'])
 
+    if calc_savings:
+        calc_meter_savings(meter_id, baseline_model.id, min_datetime, max_datetime)
     frequency = 'daily'
     data = read_meter_data(meter, freq=frequency)
     model = get_model_for_freq(data, frequency)
-    return save_model(model,
-                      meter_id=meter.meter_id,
-                      data=data,
-                      frequency=frequency,
-                      from_datetime=data['start'],
-                      thru_datetime=data['end'])
+
+    baseline_model = save_model(model,
+                                meter_id=meter.meter_id,
+                                data=data,
+                                frequency=frequency,
+                                from_datetime=data['start'],
+                                thru_datetime=data['end'])
+
+    if calc_savings:
+        calc_meter_savings(meter_id, baseline_model.id, min_datetime, max_datetime)
+
+    return baseline_model
 
 
 def get_daily_sample_data():
@@ -351,7 +369,7 @@ def get_savings(data, baseline_model):
 
 
 def calc_meter_savings(meter_id, model_id, start, end):
-    logger.info('calc_meter_savings: for Meter %s, from %s to %s', meter_id, start, end)
+    logger.info('calc_meter_savings: for Meter %s, from %s to %s, model id %s', meter_id, start, end, model_id)
 
     meter = Meter.objects.get(meter_id=meter_id)
     model = BaselineModel.objects.get(id=model_id)
@@ -367,7 +385,7 @@ def calc_meter_savings(meter_id, model_id, start, end):
         # save the metered savings inot MeterProduction
         logger.info('calc_meter_savings: got metered_savings = {}'.format(metered_savings))
         for d, v in metered_savings.iterrows():
-            logger.info('calc_meter_savings: -> {} = {}'.format(d, v.metered_savings))
+            # logger.info('calc_meter_savings: -> {} = {}'.format(d, v.metered_savings))
             MeterProduction.objects.create(
                 meter=meter,
                 from_datetime=d,
