@@ -108,6 +108,46 @@ Then run the migrations::
     $ python manage.py migrate
 
 
+Redis
+^^^^^
+
+You will need to install Redis for use with Celery. Simply install and make sure Redis is running.
+https://redis.io/download 
+
+If you want to use a different broker (like RabbitMQ, see http://docs.celeryproject.org/en/latest/getting-started/brokers/) or use a different redis port make sure
+to adapt the configuration in ``settings/base.py``::
+
+    # Celery settings
+    CELERY_BROKER_URL = 'redis://localhost:6379'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+Celery
+^^^^^^
+
+Celery is installed as part of the requirements in the virtual-env, but you will need to run the worker thread.
+
+You can run it manually::
+    
+    /home/myuser/opentaps_seas/venv/bin/celery -A opentaps_seas.core worker -l info
+
+Or a better option is to use supervisor which can manage it as a service and ensure it will be running in the background. See http://supervisord.org/
+
+Here is a sample of the config::
+
+    [program:opentaps_seas_celery]
+    command=/home/myuser/opentaps_seas/venv/bin/celery -A opentaps_seas.core  worker -l info
+    directory=/home/myuser/opentaps_seas
+    numprocs=1
+    stdout_logfile=/home/myuser/opentaps_seas/celery-worker-stdout.log
+    stderr_logfile=/home/myuser/opentaps_seas/celery-worker.log
+    autostart=true
+    autorestart=true
+    startsecs=10
+    user=myuser
+
+Important: remember that if the opentaps_seas code is updated the celery worker must be restarted as well or it will keep running the old version.
+
+
 Syncing PostgreSQL and Crate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
