@@ -69,27 +69,29 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
             weather_station=ws,
             site_id=site.entity_id,
             source=source)
-        logger.info('setup_demo_sample_models: adding Sample WeatherStation data ...')
-        temp_items = []
-        for d, t in temperature_data.iteritems():
-            item = {"d": d, "t": t}
-            temp_items.append(item)
 
-        ts = datetime(year=yesterday.year, month=yesterday.month, day=yesterday.day, hour=23,
-                      minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
-        for item in reversed(temp_items):
-            item["d"] = ts
-            ts = ts - timedelta(minutes=60)
+    WeatherHistory.objects.filter(weather_station=ws).delete()
+    logger.info('setup_demo_sample_models: adding Sample WeatherStation data ...')
+    temp_items = []
+    for d, t in temperature_data.iteritems():
+        item = {"d": d, "t": t}
+        temp_items.append(item)
 
-        # load the temperature data, this is given in F
-        for item in temp_items:
-            tc = (item["t"] - 32.0) * 5 / 9
-            WeatherHistory.objects.create(weather_station=ws, as_of_datetime=item["d"],
-                                          temp_f=item["t"], temp_c=tc, source=source)
-            if not min_datetime or item["d"] < min_datetime:
-                min_datetime = item["d"]
-            if not max_datetime or item["d"] > max_datetime:
-                max_datetime = item["d"]
+    ts = datetime(year=yesterday.year, month=yesterday.month, day=yesterday.day, hour=23,
+                  minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
+    for item in reversed(temp_items):
+        item["d"] = ts
+        ts = ts - timedelta(minutes=60)
+
+    # load the temperature data, this is given in F
+    for item in temp_items:
+        tc = (item["t"] - 32.0) * 5 / 9
+        WeatherHistory.objects.create(weather_station=ws, as_of_datetime=item["d"],
+                                      temp_f=item["t"], temp_c=tc, source=source)
+        if not min_datetime or item["d"] < min_datetime:
+            min_datetime = item["d"]
+        if not max_datetime or item["d"] > max_datetime:
+            max_datetime = item["d"]
 
     if not meter_id:
         meter_id = '{}-sample_meter'.format(site_id)
