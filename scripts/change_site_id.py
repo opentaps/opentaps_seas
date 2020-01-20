@@ -51,15 +51,22 @@ def change_site_id(from_id, to_id):
 
     print("Found Site {}".format(site))
 
-    # change the site ID
-    site.kv_tags['id'] = to_id
-    site.save()
+    with connections['default'].cursor() as c:
+        # change the site ID
+        try:
+            c.execute("""update core_entity set kv_tags = kv_tags || hstore('id', %s)
+                where kv_tags->'id' = %s;""", [to_id, from_id])
+        except Exception as e:
+            print(e)
 
-    # change all related Entities:
-    for entity in Entity.objects.filter(kv_tags__siteRef=from_id):
-        print("Updating related Entity {}".format(entity))
-        entity.kv_tags['siteRef'] = to_id
-        entity.save()
+        # change all related Entities:
+        try:
+            c.execute("""update core_entity set kv_tags = kv_tags || hstore('siteRef', %s)
+                where kv_tags->'siteRef' = %s;""", [to_id, from_id])
+        except Exception as e:
+            print(e)
+
+        c.close()
 
     cleanup_crate(from_id)
 
