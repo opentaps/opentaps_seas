@@ -186,6 +186,10 @@ To reset the data and **delete all previous data** add **clean**::
 
  $ ./import_data.sh all_data all clean
 
+To reset the data and **delete all previous data** add **clean** and run demo rules::
+
+ $ ./import_data.sh all_data all clean run_rules
+
 These are equivalent::
 
  $ ./import_data.sh all_data clean
