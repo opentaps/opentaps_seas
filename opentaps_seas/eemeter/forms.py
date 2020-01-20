@@ -114,6 +114,7 @@ class CalcMeterSavingsForm(forms.Form):
     model_id = forms.CharField(label='Model', max_length=255, required=True)
     from_datetime = forms.DateTimeField(label='From', required=True)
     to_datetime = forms.DateTimeField(label='To', required=True)
+    use_async = forms.BooleanField(label='Run Async', required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -192,9 +193,16 @@ class CalcMeterSavingsForm(forms.Form):
         model_id = self.cleaned_data['model_id']
         start = self.cleaned_data['from_datetime']
         end = self.cleaned_data['to_datetime']
+        use_async = self.cleaned_data['use_async']
         logger.info('CalcMeterSavingsForm: for Meter %s, from %s to %s, model id %s', meter_id, start, end, model_id)
 
-        model, savings = utils.calc_meter_savings(meter_id, model_id, start, end)
+        if use_async:
+            logger.info('CalcMeterSavingsForm: running Async ...')
+            return self.run_async()
+        else:
+            model, savings = utils.calc_meter_savings(meter_id, model_id, start, end)
+            self.model = model
+            return savings
 
-        self.model = model
-        return savings
+    def run_async(self):
+        return tasks.calc_meter_savings_task.delay(self.cleaned_data.copy())

@@ -83,3 +83,27 @@ def create_meter_model(kwargs):
                           from_datetime=data['start'],
                           thru_datetime=data['end'])
     return bm
+
+
+@shared_task(bind=True)
+def calc_meter_savings_task(self, kwargs):
+    meter_id = kwargs.get('meter_id')
+    model_id = kwargs.get('model_id')
+    start = kwargs.get('from_datetime')
+    end = kwargs.get('to_datetime')
+    obs = ProgressRecorder(
+        self,
+        name="Calculate Meter Savings",
+        success_label='View Model',
+        skip_url=reverse("core:meter_detail", kwargs={'meter_id': meter_id}),
+        skip_label='View Meter',
+        back_url=reverse("core:meter_model_detail", kwargs={'meter_id': meter_id, 'id': model_id})
+        )
+    kwargs['progress_observer'] = obs
+    model, savings = utils.calc_meter_savings(meter_id, model_id, start, end, progress_observer=obs)
+
+    obs.extra.update({'success_url': reverse("core:meter_model_detail", kwargs={'meter_id': meter_id, 'id': model_id})})
+    return {
+        'result': model_id,
+        'extra': obs.extra
+        }

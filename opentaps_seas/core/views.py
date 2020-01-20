@@ -3070,7 +3070,7 @@ def meter_production_data_json(request, meter):
                 continue
             value = data.amount
             if value and not isnan(value):
-                logging.info('meter_production_data_json: value %s', value)
+                # logging.info('meter_production_data_json: value %s', value)
                 if data.uom_id == 'energy_Wh':
                     value = value/1000
 

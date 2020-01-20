@@ -398,14 +398,18 @@ def get_savings(data, baseline_model):
     }
 
 
-def calc_meter_savings(meter_id, model_id, start, end):
+def calc_meter_savings(meter_id, model_id, start, end, progress_observer=None):
     logger.info('calc_meter_savings: for Meter %s, from %s to %s, model id %s', meter_id, start, end, model_id)
 
     meter = Meter.objects.get(meter_id=meter_id)
     model = BaselineModel.objects.get(id=model_id)
 
+    if progress_observer:
+        progress_observer.set_progress(1, 4, description='Load model ...')
+
     m = load_model(model)
     data = read_meter_data(meter, freq=model.frequency, start=start, end=end)
+
     savings = get_savings(data, m)
     logger.info('calc_meter_savings: got saving = {}'.format(savings))
     metered_savings = savings.get('metered_savings')
@@ -414,6 +418,9 @@ def calc_meter_savings(meter_id, model_id, start, end):
     if not metered_savings.empty:
         # save the metered savings inot MeterProduction
         logger.info('calc_meter_savings: got metered_savings = {}'.format(metered_savings))
+        if progress_observer:
+            progress_observer.add_progress(description='Create Meter Productions ...')
+
         for d, v in metered_savings.iterrows():
             # logger.info('calc_meter_savings: -> {} = {}'.format(d, v.metered_savings))
             MeterProduction.objects.create(

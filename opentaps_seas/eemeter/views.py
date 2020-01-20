@@ -201,8 +201,12 @@ class MeterModelCalcSavingView(LoginRequiredMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(form.model.get_absolute_url())
+            if form.cleaned_data['use_async']:
+                self.object = form.save()
+                return HttpResponseRedirect(reverse("core:get_task_progress", kwargs={'task_id': self.object.task_id}))
+            else:
+                form.save()
+                return HttpResponseRedirect(form.model.get_absolute_url())
         else:
             return self.form_invalid(form)
 
