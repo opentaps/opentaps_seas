@@ -40,10 +40,10 @@
         {% endblock add_button %}
       </h2>
       {% block inner_content %}
-      <p><b>Created:</b> {{ object.created_datetime }}</p>
+      <p><b>Created:</b> {{ object.created_datetime }} <b>Last Calculated Savings Date:</b> {{ object.last_calc_saving_datetime }}</p>
       <p><b>{{ object.model_class }}</b> from {{ object.from_datetime }} to {{ object.thru_datetime }}.</p>
-      <p><b>Last Calculated Savings Date:</b> {{ object.last_calc_saving_datetime }}</p>
-      {% if object.plot_data %}<p><b>Model plot:</b> <img src='data:image/png;base64,{{ object.plot_data }}'/> </p>{% endif %}
+      
+      {% if object.plot_data %}<img src='data:image/png;base64,{{ object.plot_data }}'/> {% endif %}
 
       <h4 class="d-flex">
         Model Production
