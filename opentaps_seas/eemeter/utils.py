@@ -129,9 +129,12 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
         if not max_datetime or item["d"] > max_datetime:
             max_datetime = item["d"]
 
+    baseline_end_date = min_datetime + timedelta(days=365)
+    if baseline_end_date > max_datetime:
+        baseline_end_date = max_datetime
     # create both models
     frequency = 'hourly'
-    data = read_meter_data(meter, freq=frequency)
+    data = read_meter_data(meter, freq=frequency, end=baseline_end_date)
     model = get_model_for_freq(data, frequency)
     baseline_model = save_model(model,
                                 meter_id=meter.meter_id,
@@ -142,9 +145,9 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
                                 thru_datetime=data['end'])
 
     if calc_savings:
-        calc_meter_savings(meter_id, baseline_model.id, min_datetime, max_datetime)
+        calc_meter_savings(meter_id, baseline_model.id, baseline_end_date, max_datetime)
     frequency = 'daily'
-    data = read_meter_data(meter, freq=frequency)
+    data = read_meter_data(meter, freq=frequency, end=baseline_end_date)
     model = get_model_for_freq(data, frequency)
 
     baseline_model = save_model(model,
@@ -156,7 +159,7 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
                                 thru_datetime=data['end'])
 
     if calc_savings:
-        calc_meter_savings(meter_id, baseline_model.id, min_datetime, max_datetime)
+        calc_meter_savings(meter_id, baseline_model.id, baseline_end_date, max_datetime)
 
     return baseline_model
 
