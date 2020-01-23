@@ -3357,6 +3357,11 @@ class GetTaskProgressView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView
         logger.info('GetTaskProgressView context = {}'.format(context))
         return context
 
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'label': 'Meter'})
+        return b
+
 
 get_task_progress = GetTaskProgressView.as_view()
 

@@ -93,7 +93,7 @@ def calc_meter_savings_task(self, kwargs):
     end = kwargs.get('to_datetime')
     obs = ProgressRecorder(
         self,
-        name="Calculate Meter Savings",
+        name="Calculate Meter Production",
         success_label='View Model',
         skip_url=reverse("core:meter_detail", kwargs={'meter_id': meter_id}),
         skip_label='View Meter',
