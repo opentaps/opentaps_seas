@@ -135,6 +135,7 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
     model = get_model_for_freq(data, frequency)
     baseline_model = save_model(model,
                                 meter_id=meter.meter_id,
+                                description='CalTrack Hourly Model',
                                 data=data,
                                 frequency=frequency,
                                 from_datetime=data['start'],
@@ -148,6 +149,7 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
 
     baseline_model = save_model(model,
                                 meter_id=meter.meter_id,
+                                description='CalTrack Daily Model',
                                 data=data,
                                 frequency=frequency,
                                 from_datetime=data['start'],
