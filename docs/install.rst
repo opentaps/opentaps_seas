@@ -126,13 +126,11 @@ Celery
 
 Celery is installed as part of the requirements in the virtual-env, but you will need to run the worker thread.
 
-You can run it manually::
+For development and testing, you can run it manually::
     
     /home/myuser/opentaps_seas/venv/bin/celery -A opentaps_seas.core worker -l info
 
-Or a better option is to use supervisor which can manage it as a service and ensure it will be running in the background. See http://supervisord.org/
-
-Here is a sample of the config::
+For production, you can use supervisor to manage it as a service and ensure it will be running in the background. See http://supervisord.org/  Here is a sample of the config::
 
     [program:opentaps_seas_celery]
     command=/home/myuser/opentaps_seas/venv/bin/celery -A opentaps_seas.core  worker -l info
