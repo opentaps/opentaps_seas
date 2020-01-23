@@ -191,16 +191,129 @@
         console.log('Fetching meter chart from ', url);
         axios.get(url).then(response => {
           console.log('Fetching meter chart got ', response.data);
-          this.$refs['meter_production_line_chart'].updateOptions({markers: {size: 5}});
+          this.$refs['meter_production_line_chart'].updateOptions({markers: {size: 5, shape: 'circle'}, stroke: {width: 4}});
           if (response.data.values.length == 0) {
             this.series[0].data = [{y:0, x:new Date().getTime()}]
           } else {
             this.series = [];
             for (var k in response.data.values) {
-              this.series.push({
-                name: k,
-                data: response.data.values[k].map(x => { return { y: x.value, x: parse_date(x.datetime).getTime() } } )
-              })
+              var l = response.data.values[k].length;
+              if (l > 90) {
+                this.$refs['meter_production_line_chart'].updateOptions({markers: {size: [0,3]}, stroke: {width: [1,2]}});
+              } else if (l > 31) {
+                this.$refs['meter_production_line_chart'].updateOptions({markers: {size: 3}, stroke: {width: 2}});
+              }
+              if (l > 90) {
+                // do client side moving average ..
+                // since we do not know if the serie is complete or regular
+                // we have to look at the date (given by getTime() so in ms) and values and build a bucket
+                // Since we can have many date ranges we scale to the current range if the number of points
+                // is past a threshold 
+                // for example here we look at the serie start date and end date and the number of points
+                //
+                var s_start = response.data.values[k][0];
+                var s_end = response.data.values[k][l-1];
+                var s_start_dt = parse_date(s_start.datetime).getTime();
+                var s_end_dt = parse_date(s_end.datetime).getTime();
+
+                var data = [];
+                var m_avg = [];
+
+                var bucket = {sum: 0, n: 0, start:0, end:0, target:0 }
+                // scale the bucket to have roughly 50 points in moving average
+                var bucket_size = (s_end_dt - s_start_dt) / 50.0;
+                console.log('+ bucket_size: ', bucket_size);
+                // translate the size into a human readable metric, we start at the bigger end
+                // years
+                var r = 365*86400000;
+                var bs_hr = bucket_size/r;
+                var bs_hr_str = 'years';
+                var bs_hr_found = false;
+                console.log('+ bucket_size: in '+bs_hr_str+' = ', bs_hr);
+                if (bs_hr >= 1) {
+                  // round it 
+                  bs_hr = Math.round(bs_hr);
+                  bucket_size = bs_hr * r;
+                  bs_hr_found = true;
+                } else {
+                  // months (30 days)
+                  r = 30*86400000;
+                  bs_hr = bucket_size/r;
+                  bs_hr_str = 'months';
+                  console.log('+ bucket_size: in '+bs_hr_str+' = ', bs_hr);
+                  if (bs_hr >= 1) {
+                    // round it 
+                    bs_hr = Math.round(bs_hr);
+                    bucket_size = bs_hr * r;
+                    bs_hr_found = true;
+                  } else {
+                    // days
+                    r = 86400000;
+                    bs_hr = bucket_size/r;
+                    bs_hr_str = 'days';
+                    console.log('+ bucket_size: in '+bs_hr_str+' = ', bs_hr);
+                    if (bs_hr >= 1) {
+                      // round it 
+                      bs_hr = Math.round(bs_hr);
+                      bucket_size = bs_hr * r;
+                      bs_hr_found = true;
+                    } else {
+                      // hours
+                      r = 3600000;
+                      bs_hr = bucket_size/r;
+                      bs_hr_str = 'hours';
+                      console.log('+ bucket_size: in '+bs_hr_str+' = ', bs_hr);
+                      if (bs_hr >= 1) {
+                        // round it 
+                        bs_hr = Math.round(bs_hr);
+                        bucket_size = bs_hr * r;
+                        bs_hr_found = true;
+                      }
+                    }
+                  }
+                }
+
+                for (var i = 0; i < l; i++) {
+                  // the point
+                  var p = response.data.values[k][i];
+                  var v = p.value;
+                  var dt = parse_date(p.datetime).getTime();
+                  // the direct serie
+                  data.push({ x: dt, y: v });
+                  // add to bucket:
+                  if (bucket.n == 0) {
+                    bucket.start = dt;
+                    bucket.target = dt + bucket_size;
+                    bucket.sum = 0;
+                  }
+                  bucket.sum += v;
+                  bucket.n += 1;
+                  bucket.end = dt;
+                  // if we have enough
+                  if (dt >= bucket.target) {
+                    var m_avg_dt = (bucket.end + bucket.start) / 2.0;
+                    var m_avg_v = bucket.sum / bucket.n;
+                    m_avg.push({ x: m_avg_dt, y: m_avg_v });
+                    // reset bucket
+                    bucket.n = 0;
+                  }
+                }
+
+                this.series.push({
+                  name: k,
+                  data: data
+                })
+                this.series.push({
+                  name: k + ' m_avg' + (bs_hr_found ? ' ' + bs_hr + ' ' + bs_hr_str : ''),
+                  data: m_avg
+                })
+              } else {
+                // if not enough points just plot the series
+                this.series.push({
+                  name: k,
+                  data: response.data.values[k].map(x => { return { y: x.value, x: parse_date(x.datetime).getTime() } } )
+                })
+              }
             }
           }
           });
