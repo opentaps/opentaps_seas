@@ -137,17 +137,19 @@ class CalcMeterSavingsForm(forms.Form):
                 logger.error('CalcMeterSavingsForm: BaselineModel not found with id = %s', model_id)
                 self.initial.pop('model_id')
 
-        if meter and model:
-            # set the initial from date to the model last calculated date
-            # else use the model first data date
-            if model.last_calc_saving_datetime:
-                self.initial['from_datetime'] = model.last_calc_saving_datetime
-            else:
-                self.initial['from_datetime'] = meter.get_meter_data().first().as_of_datetime
+        from_datetime = None
+        if meter and model_id:
+            meter_production_data = meter.get_meter_production_data(model_id).last()
+            if meter_production_data:
+                from_datetime = meter_production_data.from_datetime
 
-        if meter:
-            # set the end date to the last meter data
-            self.initial['to_datetime'] = meter.get_meter_data().last().as_of_datetime
+        if not from_datetime and model:
+            from_datetime = model.thru_datetime
+
+        if not from_datetime:
+            from_datetime = self.initial.get('from_datetime')
+
+        self.initial['from_datetime'] = from_datetime
 
     def is_valid(self):
         if not super().is_valid():

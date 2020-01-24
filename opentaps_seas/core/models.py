@@ -37,6 +37,7 @@ from django.db.models import TextField
 from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.db.models.signals import pre_delete
+from django.db.models import Q
 from django.db.utils import DatabaseError
 from django.dispatch import receiver
 from django.urls import reverse
@@ -769,6 +770,15 @@ class Meter(models.Model):
 
     def get_meter_data(self, start=None, end=None):
         return query_timeseries(self.meterhistory_set, start=start, end=end)
+
+    def get_meter_production_data(self, model_id, start=None, end=None):
+        qs = self.meterproduction_set
+        qs = qs.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): model_id}))
+        if start:
+            qs = qs.filter(from_datetime__gte=start)
+        if end:
+            qs = qs.filter(from_datetime__lt=end)
+        return qs.order_by('from_datetime')
 
     def get_weather_data(self, start=None, end=None):
         return query_timeseries(self.weather_station.weatherhistory_set, start=start, end=end)
