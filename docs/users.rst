@@ -47,8 +47,27 @@ use or production of energy.  Each Meter is associated with a Weather Station.  
 When you add a Meter, the UI uses the location of the Site to get the nearest Weather Station, so all Meters at the same Site will have the same Weather Stations.  
 A meter could be removed from a site, but it is not deleted.  The meter and weather histories are permanently stored in opentaps for you.
 
-When you click through to a meter, you will see its history.  You can use the up arrow icon to upload the meter history using either a CSV format or the Green Button XML format.  An example of the
+When you click through to a meter, you will see its past readings (history).  You can use the up arrow icon to upload the meter history using either a CSV format or the Green Button XML format.  An example of the
 CSV file format could be found in the file ``examples/meter.csv``.  Examples of the Green Button XML file could be found at https://www.energy.gov/downloads/green-button-sample-data-pge     
+
+Below the Meter is a list of Models.  These models are models of energy usage and can be used for Measurement and Verification (M&V) of energy savings.  Currently we're including the OpenEEMeter 
+models, which are IPMVP Option C whole building energy use statistical models that follow the CalTrack 2.0 standard (See https://www.caltrack.org and http://eemeter.openee.io/tutorial.html for more details.)  
+
+You can click on the "Build a Model" button to build a new model for this meter.  This screen is currently based on input needed for OpenEEMeter models and will ask if you want a daily or hourly model and the
+ending date of the weather and meter readings used to build the model.  CalTrack requires that exactly a full year (no more, no less) of data be used for model estimation, so your model will be built with data 
+from a year before to this ending date.  Once it is built, you will see it in the list of Models below.  Because building a model takes a while, you have the option to run it in the background (async.)
+
+Clicking on a Model, you will see the following:
+
+ * View Details - You can see the actual parameters of the model here
+ * Calculate Production - Calculate the energy produced, as calculated by this model.  (See below.)
+ * A graph of the model if you have a daily model.  Currently OpenEEMeter produces graphs for its daily but not hourly models.  
+ * History of the energy produced, as calculated by this model.
+
+The Meter Production shows the actual energy saved, or "produced," as calculated by this particular model for this meter.  It is a time series of kWh and calculated in either hourly or daily increments, depending 
+on the type of model you have.  It may be counterintuitive to think that energy savings has produced energy, but remember that we'll ultimately be considering energy efficiency savings, renewable energy production,
+and battery stored energy in the same way: More energy for the benefit of the users.
+
 
 Equipment
 ^^^^^^^^^
