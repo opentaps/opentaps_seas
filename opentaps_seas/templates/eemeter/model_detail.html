@@ -47,7 +47,7 @@
       {% if object.plot_data %}<img src='data:image/png;base64,{{ object.plot_data }}'/> {% endif %}
 
       <h4 class="d-flex">
-        Model Production
+        Meter Production
         <div class="ml-auto text-nowrap">
           <a href="{% url 'core:meter_model_production_delete' object.meter_id object.id %}" role="button" class="btn btn-danger"><i class="fa fa-trash mr-2"></i> Delete Production</a>
         </div>
