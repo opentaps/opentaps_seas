@@ -1,4 +1,3 @@
-{% extends "base.html" %}
 {% comment 'header' %}
 # This file is part of opentaps Smart Energy Applications Suite (SEAS).
 
@@ -18,18 +17,34 @@
 # If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load django_tables2 %}
 {% load static i18n %}
-{% block title %}{{object.station_name}}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="card mb-3">
-        <div class="card-body">
-            <div style="height: 600px;">
-                {% include "core/_weather_station_geoview.html" with weather_station=object %}
-            </div>
-        </div>
-    </div>
-</div>
+
+<div id="map_{{weather_station.weather_station_code}}" style="height: 100%;width: 100%;"></div>
+
+<script type="text/javascript">
+function initMaps() {
+    var latitude = {{ weather_station.latitude }};
+    var longitude = {{ weather_station.longitude }};
+    var description = "{{ weather_station.station_name }}";
+
+    map_div = document.getElementById("map_{{weather_station.weather_station_code}}")
+    if (map_div != null) {
+        loc = {lat: latitude, lng: longitude}
+        var map = new google.maps.Map(map_div, {zoom: 11, center: loc});
+
+        var marker_params = {position: loc, map: map}
+        if (description != 0) {
+            marker_params.title = description
+        }
+
+        var marker = new google.maps.Marker(marker_params);
+    }
+}
+</script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMaps">
+</script>
+
 {% endblock content %}

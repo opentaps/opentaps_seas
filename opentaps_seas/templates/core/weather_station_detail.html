@@ -36,36 +36,43 @@
 
       {% block inner_content %}
 
-      <table style="margin-left: 4em;">
-          <tr>
-            <td>USAF ID:</td>
-            <td>{{ object.weather_station_code | default:'n/a' }}</td>
-          </tr>
-          <tr>
-            <td>Name:</td>
-            <td>
-              {% if object.weather_station_code %}<a target="_blank" href="{% url 'core:weather_station_geoview' object.weather_station_code %}">{% endif %}
-                {{ object.station_name | default:'n/a' }}
-              {% if object.weather_station_code %}</a>{% endif %}
-            </td>
-          </tr>
-          <tr>
-            <td>Country:</td>
-            <td>{{ object.country | default:'n/a' }}</td>
-          </tr>
-          <tr>
-            <td>Latitude:</td>
-            <td>{{ object.latitude | default:'n/a' }}</td>
-          </tr>
-          <tr>
-            <td>Longitude:</td>
-            <td>{{ object.longitude | default:'n/a' }}</td>
-          </tr>
-          <tr>
-            <td>Elevation:</td>
-            <td>{{ object.elevation }}</td>
-          </tr>
-      </table>
+      <div class="row">
+        <div class="col-md">
+          <table class="ml-md-4 mb-4">
+            <tr>
+              <td>USAF ID:</td>
+              <td>{{ object.weather_station_code | default:'n/a' }}</td>
+            </tr>
+            <tr>
+              <td>Name:</td>
+              <td>
+                {% if object.weather_station_code %}<a target="_blank" href="{% url 'core:weather_station_geoview' object.weather_station_code %}">{% endif %}
+                  {{ object.station_name | default:'n/a' }}
+                {% if object.weather_station_code %}</a>{% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td>Country:</td>
+              <td>{{ object.country | default:'n/a' }}</td>
+            </tr>
+            <tr>
+              <td>Latitude:</td>
+              <td>{{ object.latitude | default:'n/a' }}</td>
+            </tr>
+            <tr>
+              <td>Longitude:</td>
+              <td>{{ object.longitude | default:'n/a' }}</td>
+            </tr>
+            <tr>
+              <td>Elevation:</td>
+              <td>{{ object.elevation }}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-md" style="min-height: 200px">
+          {% include "core/_weather_station_geoview.html" with weather_station=object %}
+        </div>
+      </div>
 
       <p>
         {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id %}

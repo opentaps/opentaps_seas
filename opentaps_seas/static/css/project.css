@@ -302,3 +302,45 @@ input.vs__search:-moz-placeholder {
 .topics-table thead {
     color: #007bff;
 }
+
+@media (min-width: 576px) {
+  .border-sm-0 {
+    border: 0!important;
+  }
+}
+@media (min-width: 768px) {
+  .border-md-0 {
+    border: 0!important;
+  }
+}
+@media (min-width: 992px) {
+  .border-lg-0 {
+    border: 0!important;
+  }
+}
+@media (min-width: 992px) {
+  .border-xl-0 {
+    border: 0!important;
+  }
+}
+
+@media (max-width: 576px) {
+  .border-nsm-0 {
+    border: 0!important;
+  }
+}
+@media (max-width: 768px) {
+  .border-nmd-0 {
+    border: 0!important;
+  }
+}
+@media (max-width: 992px) {
+  .border-nlg-0 {
+    border: 0!important;
+  }
+}
+@media (max-width: 992px) {
+  .border-nxl-0 {
+    border: 0!important;
+  }
+}
