@@ -85,7 +85,7 @@
     },
     data: function() {
       return {
-        ranges: ['10 years', '5 years', '2 years', '1 year', '6 months', '3 months', '1 month', '15 days', '7 days', '24h'],
+        ranges: ['10 years', '5 years', '2 years', '1 year', '6 months', '3 months', '1 month', '15 days', '7 days'{% if frequency != 'daily' %}, '24h'{% endif %}],
         selectedRange: '1 month',
         options: {
           chart: {

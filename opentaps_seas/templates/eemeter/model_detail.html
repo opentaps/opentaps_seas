@@ -52,7 +52,7 @@
           <a href="{% url 'core:meter_model_production_delete' object.meter_id object.id %}" role="button" class="btn btn-danger"><i class="fa fa-trash mr-2"></i> Delete Production</a>
         </div>
       </h4>
-      {% include "core/_meter_production_chart.html" with meter_id=object.meter_id model_id=object.id no_title=True %}
+      {% include "core/_meter_production_chart.html" with meter_id=object.meter_id model_id=object.id no_title=True frequency=object.frequency %}
 
       {% endblock inner_content %}
     </div>
