@@ -15,20 +15,14 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-import json
-import os
-import eeweather
 import numpy as np
 
-from django.test import TestCase
-from django.urls import reverse
-from django.contrib.auth import get_user_model
+from .base import OpentapsSeasTestCase
 from opentaps_seas.core.models import WeatherStation
-from opentaps_seas.core.models import WeatherHistory
 from opentaps_seas.core.utils import get_weather_history_for_station
 
 
-class WeatherHistoryAPITests(TestCase):
+class WeatherHistoryAPITests(OpentapsSeasTestCase):
 
     def setUp(self):
         self.model_id = '_test/myweatherhistory'

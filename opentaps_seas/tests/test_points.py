@@ -23,7 +23,7 @@ import io
 import zipfile
 from io import StringIO
 
-from django.test import TestCase
+from .base import OpentapsSeasTestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.db import connections
@@ -31,7 +31,7 @@ from opentaps_seas.core.models import Entity
 from opentaps_seas.core.models import Tag
 
 
-class SyncAPITests(TestCase):
+class SyncAPITests(OpentapsSeasTestCase):
 
     entity_id = '_testTopic'
     topic_id = '_testTopic'

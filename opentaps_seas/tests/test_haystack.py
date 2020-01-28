@@ -15,12 +15,12 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-from django.test import TestCase
+from .base import OpentapsSeasTestCase
 from django.urls import reverse
 from opentaps_seas.core.models import Entity
 
 
-class HaystackTests(TestCase):
+class HaystackTests(OpentapsSeasTestCase):
 
     @classmethod
     def setUpTestData(cls):

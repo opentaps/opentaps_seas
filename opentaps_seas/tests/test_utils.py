@@ -17,14 +17,14 @@
 
 import time
 
+from .base import OpentapsSeasTestCase
 from datetime import datetime
 from django.db import connections
-from django.test import TestCase
 from opentaps_seas.core.models import Entity
 from opentaps_seas.core import utils
 
 
-class UtilsTests(TestCase):
+class UtilsTests(OpentapsSeasTestCase):
 
     entity_id = '_test_myentity'
     topic = '_test/topic'

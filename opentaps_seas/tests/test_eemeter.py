@@ -16,12 +16,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 
-from django.test import TestCase
+from .base import OpentapsSeasTestCase
 from opentaps_seas.eemeter import utils
 from opentaps_seas.eemeter import models
 
 
-class EEMeterTests(TestCase):
+class EEMeterTests(OpentapsSeasTestCase):
 
     def test_hourly_model_serialization(self):
         d = utils.get_hourly_sample_data()

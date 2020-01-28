@@ -18,7 +18,7 @@
 import json
 import os
 
-from django.test import TestCase
+from .base import OpentapsSeasTestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from opentaps_seas.core.models import Entity
@@ -26,7 +26,7 @@ from opentaps_seas.core.models import Tag
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 
-class EquipmentAPITests(TestCase):
+class EquipmentAPITests(OpentapsSeasTestCase):
 
     def setUp(self):
         self._cleanup_data()

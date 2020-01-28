@@ -17,14 +17,14 @@
 
 import json
 
-from django.test import TestCase
+from .base import OpentapsSeasTestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from opentaps_seas.core.models import Entity
 from opentaps_seas.core.models import Tag
 
 
-class TagsAPITests(TestCase):
+class TagsAPITests(OpentapsSeasTestCase):
 
     @classmethod
     def setUpTestData(cls):

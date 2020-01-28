@@ -17,7 +17,7 @@
 
 import json
 
-from django.test import TestCase
+from .base import OpentapsSeasTestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.db import connections
@@ -26,7 +26,7 @@ from opentaps_seas.core.models import (
 )
 
 
-class TopicRestAPITests(TestCase):
+class TopicRestAPITests(OpentapsSeasTestCase):
 
     topic_import_url = reverse('api:topic_import', kwargs={'site_entity_id': '_test_site'})
     topic_export_url = reverse('api:topic_export', kwargs={'site_entity_id': '_test_site'})
