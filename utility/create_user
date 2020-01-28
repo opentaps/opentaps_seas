@@ -20,10 +20,23 @@
 USER="$1"
 PASSWORD="$2"
 EMAIL="$3"
-ADMIN="$4"
 
-if [[ "$#" -lt 3 || "$#" -gt 4 ]]; then
-    echo "usage: $0 username password email [admin]"
+ADMIN=""
+FORCE=""
+for a in "$@"
+do
+   if [ "$a" == "force" ]
+   then
+     FORCE="1"
+   fi
+   if [ "$a" == "admin" ]
+   then
+     ADMIN="1"
+   fi
+done
+
+if [[ "$#" -lt 3 || "$#" -gt 5 ]]; then
+    echo "usage: $0 username password email [admin] [force]"
     exit 0
 fi
 
@@ -31,6 +44,12 @@ if [ -z "${ADMIN}" ]; then
     ADMIN="False"
 else
     ADMIN="True"
+fi
+
+if [ -z "${FORCE}" ]; then
+    FORCE="False"
+else
+    FORCE="True"
 fi
 
 MANAGE="manage.py"
@@ -43,13 +62,20 @@ python "${MANAGE}" shell  <<EOF
 from opentaps_seas.users.models import User
 from allauth.account.models import EmailAddress
 
+force = ${FORCE}
+
 if len(EmailAddress.objects.filter(email='${EMAIL}')) != 0:
-    print("That email address is already being used")
-    exit(1)
+    if not force:
+        print("That email address is already being used")
+        exit(1)
 
 if len(User.objects.filter(username='${USER}')) != 0:
-    print("That username is already being used")
-    exit(1)
+    if not force:
+        print("That username is already being used")
+        exit(1)
+
+if force:
+    User.objects.filter(username='${USER}').delete()
 
 u = User.objects.create_user('${USER}', password='${PASSWORD}', is_superuser=${ADMIN}, is_staff=${ADMIN}, is_active=True, email='${EMAIL}')
 u.save()

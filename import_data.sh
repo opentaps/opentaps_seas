@@ -23,6 +23,15 @@
 
 ARGS=$*
 
+DEMO=0
+for a in "$@"
+do
+   if [ "$a" == "demo" ] || [ "$a" == "all" ]
+   then
+     DEMO=1
+   fi
+done
+
 if [ "$1" == "all_data" ]; then
     echo "Import all data"
     python manage.py runscript import_tags --script-args $ARGS
@@ -68,3 +77,8 @@ else
     fi
 fi
 
+# if loading demo data, also sensure we have a demo admin user
+if [ $DEMO -eq 1 ]
+then
+    ./utility/create_user admin opentaps admin@example.com admin force
+fi
