@@ -121,6 +121,14 @@ from rest_framework.decorators import api_view
 logger = logging.getLogger(__name__)
 
 
+class GoogleApiMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if settings.GOOGLE_API_KEY:
+            context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
+        return context
+
+
 class WithBreadcrumbsMixin(object):
     def get_breadcrumbs(self, context):
         b = []
@@ -799,7 +807,7 @@ class SiteBCMixin(WithBreadcrumbsMixin):
         return b
 
 
-class SiteListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, FilterView):
+class SiteListView(LoginRequiredMixin, SingleTableMixin, GoogleApiMixin, WithBreadcrumbsMixin, FilterView):
     model = SiteView
     table_class = SiteTable
     filterset_class = SiteFilter
@@ -834,9 +842,8 @@ class SiteListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, F
                             addr_locs.append(addr_loc)
                 counter = counter + 1
 
-        if addr_locs and settings.GOOGLE_API_KEY:
+        if addr_locs:
             context['addr_locs'] = addr_locs
-            context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
 
         return context
 
@@ -3319,7 +3326,7 @@ class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
 meter_deactivate_view = MeterDeactivateView.as_view()
 
 
-class WeatherStationDetail(LoginRequiredMixin, DetailView):
+class WeatherStationDetail(LoginRequiredMixin, GoogleApiMixin, WithBreadcrumbsMixin, DetailView):
     model = WeatherStation
     slug_field = "weather_station_id"
     slug_url_kwarg = "weather_station_id"
@@ -3329,19 +3336,11 @@ class WeatherStationDetail(LoginRequiredMixin, DetailView):
 weather_station_detail = WeatherStationDetail.as_view()
 
 
-class WeatherStationGeoView(LoginRequiredMixin, DetailView):
+class WeatherStationGeoView(LoginRequiredMixin, GoogleApiMixin, WithBreadcrumbsMixin, DetailView):
     model = WeatherStation
     slug_field = "weather_station_code"
     slug_url_kwarg = "weather_station_code"
     template_name = 'core/weather_station_geoview.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(WeatherStationGeoView, self).get_context_data(**kwargs)
-
-        if settings.GOOGLE_API_KEY:
-            context['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
-
-        return context
 
 
 weather_station_geoview = WeatherStationGeoView.as_view()
