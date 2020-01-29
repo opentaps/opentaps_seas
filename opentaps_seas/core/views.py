@@ -3336,16 +3336,6 @@ class WeatherStationDetail(LoginRequiredMixin, GoogleApiMixin, WithBreadcrumbsMi
 weather_station_detail = WeatherStationDetail.as_view()
 
 
-class WeatherStationGeoView(LoginRequiredMixin, GoogleApiMixin, WithBreadcrumbsMixin, DetailView):
-    model = WeatherStation
-    slug_field = "weather_station_code"
-    slug_url_kwarg = "weather_station_code"
-    template_name = 'core/weather_station_geoview.html'
-
-
-weather_station_geoview = WeatherStationGeoView.as_view()
-
-
 class GetTaskProgressView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
     model = Topic
     template_name = 'core/task_progress.html'

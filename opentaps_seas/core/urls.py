@@ -88,7 +88,6 @@ from .views import (
     meter_data_json,
     meter_data_import,
     weather_station_detail,
-    weather_station_geoview,
     weather_stations_json,
     get_task_progress_json,
     get_task_progress
@@ -197,8 +196,6 @@ urlpatterns = [
     path("meter/json/<path:meter>", view=meter_data_json, name="meter_data_json"),
     path("meter/import/<path:meter>", view=meter_data_import, name="meter_data_import"),
     path("weather_station/json/<path:weather_station_id>", view=weather_data_json, name="weather_data_json"),
-    path("weather_station/geoview/<path:weather_station_code>",
-         view=weather_station_geoview, name="weather_station_geoview"),
     path("weather_station/view/<path:weather_station_id>",
          view=weather_station_detail, name="weather_station_detail"),
     path("weather_station.json", view=weather_stations_json, name="weather_stations_json")

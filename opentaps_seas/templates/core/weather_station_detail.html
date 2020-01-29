@@ -45,11 +45,7 @@
             </tr>
             <tr>
               <td>Name:</td>
-              <td>
-                {% if object.weather_station_code %}<a target="_blank" href="{% url 'core:weather_station_geoview' object.weather_station_code %}">{% endif %}
-                  {{ object.station_name | default:'n/a' }}
-                {% if object.weather_station_code %}</a>{% endif %}
-              </td>
+              <td>{{ object.station_name | default:'n/a' }}</td>
             </tr>
             <tr>
               <td>Country:</td>
