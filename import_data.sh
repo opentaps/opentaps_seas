@@ -31,6 +31,14 @@ do
      DEMO=1
    fi
 done
+CLEAN=0
+for a in "$@"
+do
+   if [ "$a" == "clean" ]
+   then
+     CLEAN=1
+   fi
+done
 
 if [ "$1" == "all_data" ]; then
     echo "Import all data"
@@ -80,5 +88,10 @@ fi
 # if loading demo data, also sensure we have a demo admin user
 if [ $DEMO -eq 1 ]
 then
-    ./utility/create_user admin opentaps admin@example.com admin force
+    if [ $CLEAN -eq 1 ]
+    then
+        ./utility/create_user admin opentaps admin@example.com admin force
+    else
+        ./utility/create_user admin opentaps admin@example.com admin
+    fi
 fi
