@@ -3097,6 +3097,78 @@ def meter_production_data_json(request, meter):
     return JsonResponse({'values': meter_data_map})
 
 
+def meter_financial_value_data_json(request, meter):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+
+    m = Meter.objects.get(meter_id=meter)
+    if not m:
+        logger.warning('No Meter found with meter_id = %s', meter)
+        return JsonResponse({'error': 'Meter not found : {}'.format(meter)}, status=404)
+
+    # Select last <trange> records
+    # not do a query per "source"
+    meter_data_map = {}
+    qs0 = m.meterfinancialvalue_set
+
+    # convert values to kWh
+    uom = UnitOfMeasure.objects.get(uom_id='currency_USD')
+
+    model_id = request.GET.get('model_id')
+    if model_id:
+        logger.info('Filtering for model = %s', model_id)
+        qs0 = qs0.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): model_id}))
+
+    # to simplify visualization we want to start at the latest production point
+    from_datetime = None
+    last_record = qs0.order_by('-from_datetime').values('from_datetime').first()
+    if last_record:
+        from_datetime = last_record['from_datetime']
+    start, end = utils.get_start_date_from_range(request.GET.get('range'), from_datetime=from_datetime)
+    if start:
+        qs0 = qs0.filter(from_datetime__gte=start)
+    if end:
+        qs0 = qs0.filter(from_datetime__lt=end)
+    for ref in qs0.distinct('meter_production_reference').values('meter_production_reference'):
+        ref = ref.get('meter_production_reference')
+        qs = qs0.filter(meter_production_reference=ref)
+        logging.info('meter_financial_value_data_json: for meter %s ref %s has %s', m, ref, qs.count())
+        data_ref = None
+        if ref and ref.get('BaselineModel.id'):
+            try:
+                bm = BaselineModel.objects.get(id=ref.get('BaselineModel.id'))
+                data_ref = '{}:{}'.format(bm.id, bm.model_class)
+            except BaselineModel.DoesNotExist:
+                pass
+        for data in qs.order_by('-from_datetime'):
+            data_key = data_ref or data.source
+            meter_data = meter_data_map.get(data_key)
+            if not meter_data:
+                meter_data = []
+                meter_data_map[data_key] = meter_data
+            # Prevent adding duplicates
+            datetime = data.from_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            if meter_data and datetime == meter_data[-1]['datetime']:
+                continue
+            value = data.net_value
+            if value and not isnan(value):
+                # logging.info('meter_production_data_json: value %s', value)
+
+                # convert to our chosen uom
+                value = data.uom.convert_amount_to(value, uom)
+
+                meter_data.append({
+                    'datetime': datetime,
+                    'value': value,
+                    'unit': uom.code
+                })
+
+    for k in meter_data_map.keys():
+        meter_data_map[k] = list(reversed(meter_data_map[k]))
+
+    return JsonResponse({'values': meter_data_map})
+
+
 def meter_data_json(request, meter):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Authentication required'}, status=401)

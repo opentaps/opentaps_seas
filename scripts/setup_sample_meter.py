@@ -27,6 +27,8 @@ def clean():
         c.execute("""DELETE FROM core_meter_history WHERE source = 'eemeter_sample';""")
         c.execute("""DELETE FROM core_meter_production WHERE source = 'eemeter_sample';""")
         c.execute("""DELETE FROM core_site_weather_stations WHERE weather_station_id = 'eemeter_ws';""")
+        c.execute("""DELETE FROM core_meter_financial_value WHERE meter_id IN
+                     (SELECT meter_id FROM core_meter WHERE weather_station_id = 'eemeter_ws');""")
         c.execute("""DELETE FROM core_meter_production WHERE meter_id IN
                      (SELECT meter_id FROM core_meter WHERE weather_station_id = 'eemeter_ws');""")
         c.execute("""DELETE FROM eemeter_baselinemodel WHERE meter_id IN
@@ -49,7 +51,10 @@ def import_data(which):
     is_demo = which == 'demo'
 
     if is_demo:
-        utils.setup_demo_sample_models('demo-site-1', calc_savings=True)
+        # setup a sample meter and calcualte the savings
+        site, meter, model = utils.setup_demo_sample_models('demo-site-1', calc_savings=True)
+        # setup a demo rate plan and calculate the financial values
+        utils.setup_sample_rate_plan(meter, price=0.2, calc_financials=True)
 
 
 def print_help():

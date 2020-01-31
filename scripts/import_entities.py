@@ -21,10 +21,12 @@ from django.db import connections
 from django.db.utils import IntegrityError
 from django.template.defaultfilters import slugify
 
+
 def clean():
     print('Deleting entity data ...')
     with connections['default'].cursor() as c:
         c.execute("DELETE FROM eemeter_baselinemodel;")
+        c.execute("DELETE FROM core_meter_financial_value;")
         c.execute("DELETE FROM core_meter_history;")
         c.execute("DELETE FROM core_meter;")
         c.execute("DELETE FROM core_entity;")

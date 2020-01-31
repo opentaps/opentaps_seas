@@ -18,6 +18,7 @@
 import csv
 import logging
 import re
+from datetime import time
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
@@ -29,6 +30,7 @@ from django.db.models import AutoField
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
+from django.db.models import TimeField
 from django.db.models import FloatField
 from django.db.models import ForeignKey
 from django.db.models import IntegerField
@@ -847,17 +849,116 @@ class MeterProduction(models.Model):
     meter = ForeignKey(Meter, on_delete=models.CASCADE)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
-    meter_production_type = CharField(max_length=255)
-    meter_production_reference = HStoreField(blank=True, null=True)
-    error_bands = HStoreField(blank=True, null=True)
-    amount = FloatField(null=True)
+    meter_production_type = CharField(_("Meter Production Type"), max_length=255)
+    meter_production_reference = HStoreField(_("Meter Production Reference"), blank=True, null=True)
+    error_bands = HStoreField(_("Error Bands"), blank=True, null=True)
+    net_value = FloatField(_("Net Value"), null=True)
+    model_baseline_value = FloatField(_("Model Baseline Value"), null=True)
+    actual_value = FloatField(_("Actual Value"), null=True)
     uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING)
-    source = CharField(max_length=255)
+    source = CharField(_("Source"), max_length=255)
     created_datetime = DateTimeField(_("Created Date"), default=now)
     created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         db_table = 'core_meter_production'
+
+
+def day_start_time():
+    return time.min
+
+
+def day_end_time():
+    return time.max
+
+
+class ValuationMethod(models.Model):
+    id = AutoField(primary_key=True, auto_created=True)
+    description = CharField(_("Description"), max_length=255)
+
+    class Meta:
+        db_table = 'core_valuation_method'
+
+    def get_periods(self, date_time):
+        periods = self.valuationmethodperiod_set
+        periods = periods.filter(from_day_of_week__lte=date_time.weekday())
+        periods = periods.filter(to_day_of_week__gte=date_time.weekday())
+        periods = periods.filter(from_time__lte=date_time.time())
+        periods = periods.filter(to_time__gte=date_time.time())
+        return periods
+
+
+class ValuationMethodPeriod(models.Model):
+    id = AutoField(primary_key=True, auto_created=True)
+    from_day_of_week = IntegerField(default=0)
+    to_day_of_week = IntegerField(default=6)
+    from_time = TimeField(default=day_start_time)
+    to_time = TimeField(default=day_end_time)
+    unit_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+')
+    currency_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+', limit_choices_to={'type': 'currency'})
+    rate = FloatField(_("Rate"), null=True)
+    custom_method = CharField(_("Custom Calculation Method"), max_length=255, blank=True, null=True)
+    valuation_method = ForeignKey(ValuationMethod, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'core_valuation_method_period'
+
+    def valuate(self, amount, uom):
+        return uom.convert_amount_to(amount, self.unit_uom) * self.rate
+
+
+class MeterRatePlan(models.Model):
+    rate_plan_id = AutoField(_("Rate Plan ID"), primary_key=True, auto_created=True)
+    description = CharField(_("Description"), max_length=255)
+    params = HStoreField(_("Parameters"), blank=True, null=True)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
+    billing_frequency_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+', limit_choices_to={'type': 'time_interval'})
+    billing_day = IntegerField(_("Billing Day"), default=0)
+    valuation_method = ForeignKey(ValuationMethod, on_delete=models.DO_NOTHING)
+    source = CharField(_("Source"), max_length=255)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        db_table = 'core_meter_rate_plan'
+
+    def __str__(self):
+        if self.description:
+            return "{} ({})".format(self.description, self.rate_plan_id)
+        return self.rate_plan_id
+
+    def get_valuation_period(self, meter_production):
+        if not self.valuation_method:
+            raise Exception("No Valuation Method setup for Meter Rate Plan: {}".format(self))
+        # naive implementation, assume only the from_datetime is necessary to lookup the valuation
+        periods = self.valuation_method.get_periods(meter_production.from_datetime)
+        # assume the periods are not overlapping for now
+        period = periods.first()
+        if not period:
+            raise Exception("Undefined Valuation Period for date time: {}".format(meter_production.from_datetime))
+
+        return period
+
+
+class MeterFinancialValue(models.Model):
+    meter_value_id = AutoField(_("Meter Value ID"), primary_key=True, auto_created=True)
+    meter = ForeignKey(Meter, on_delete=models.DO_NOTHING)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
+    meter_production_type = CharField(_("Meter Production Type"), max_length=255)
+    meter_production_reference = HStoreField(_("Meter Production Reference"), blank=True, null=True)
+    net_value = FloatField(_("Net Value"), null=True)
+    model_baseline_value = FloatField(_("Model Baseline Value"), null=True)
+    actual_value = FloatField(_("Actual Value"), null=True)
+    # status = ForeignKey(??, on_delete=models.DO_NOTHING)
+    uom = ForeignKey(UnitOfMeasure, related_name='+', on_delete=models.DO_NOTHING)
+    source = CharField(_("Source"), max_length=255)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        db_table = 'core_meter_financial_value'
 
 
 class SiteWeatherStations(models.Model):

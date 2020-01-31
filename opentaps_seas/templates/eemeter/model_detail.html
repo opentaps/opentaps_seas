@@ -54,6 +54,11 @@
       </h4>
       {% include "core/_meter_production_chart.html" with meter_id=object.meter_id model_id=object.id no_title=True frequency=object.frequency %}
 
+      <h4 class="d-flex mt-4">
+        Meter Financial Value
+      </h4>
+      {% include "core/_meter_financial_value_chart.html" with meter_id=object.meter_id model_id=object.id no_title=True frequency=object.frequency %}
+
       {% endblock inner_content %}
     </div>
   </div>

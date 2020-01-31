@@ -17,6 +17,7 @@
 
 import logging
 from enum import Enum
+from datetime import timedelta
 from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import MeterProduction
 from django.db import models
@@ -66,6 +67,12 @@ class BaselineModel(models.Model):
 
     def get_absolute_url(self):
         return reverse("core:meter_model_detail", kwargs={"meter_id": self.meter_id, "id": self.id})
+
+    def get_frequency_delta(self):
+        if self.frequency == 'daily':
+            return timedelta(hours=24)
+        else:
+            return timedelta(hours=1)
 
     def get_production(self):
         return MeterProduction.objects.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): '{}'.format(self.id)}))

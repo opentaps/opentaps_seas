@@ -23,7 +23,11 @@ from datetime import timedelta
 from datetime import datetime
 from io import StringIO
 from eemeter import io as eeio
+from ..core.models import MeterFinancialValue
 from ..core.models import MeterProduction
+from ..core.models import MeterRatePlan
+from ..core.models import ValuationMethod
+from ..core.models import ValuationMethodPeriod
 from ..core.models import SiteView
 from ..core.models import SiteWeatherStations
 from ..core.models import Meter
@@ -161,7 +165,34 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
     if calc_savings:
         calc_meter_savings(meter_id, baseline_model.id, baseline_end_date, max_datetime)
 
-    return baseline_model
+    return site, meter, baseline_model
+
+
+def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials=False):
+    vm = ValuationMethod.objects.create(description='Sample Valuation Method')
+
+    ValuationMethodPeriod.objects.create(
+        valuation_method=vm,
+        unit_uom_id='energy_kWh',
+        currency_uom_id='currency_USD',
+        rate=price)
+
+    # make the plan starting 2 years from now unless from_datetime is given
+    if not from_datetime:
+        from_datetime = datetime.utcnow()
+        from_datetime -= timedelta(days=365*2)
+
+    rp = MeterRatePlan.objects.create(
+        description='Sample Rate Plan',
+        from_datetime=from_datetime,
+        billing_frequency_uom_id='time_interval_monthly',
+        billing_day=1,
+        valuation_method=vm)
+
+    if calc_financials:
+        calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
+
+    return rp
 
 
 def get_daily_sample_data():
@@ -426,18 +457,84 @@ def calc_meter_savings(meter_id, model_id, start, end, progress_observer=None):
         if progress_observer:
             progress_observer.add_progress(description='Create Meter Productions ...')
 
+        delta = model.get_frequency_delta()
+
         for d, v in metered_savings.iterrows():
             # logger.info('calc_meter_savings: -> {} = {}'.format(d, v.metered_savings))
             MeterProduction.objects.create(
                 meter=meter,
                 from_datetime=d,
-                thru_datetime=d + timedelta(hours=1),
+                thru_datetime=d + delta,
                 meter_production_type='EEMeter Savings',
                 meter_production_reference={'BaselineModel.id': model.id},
                 error_bands=error_bands,
-                amount=v.metered_savings,
+                model_baseline_value=v.counterfactual_usage,
+                actual_value=v.reporting_observed,
+                net_value=v.metered_savings,
                 uom_id='energy_kWh',
                 source=source)
     model.last_calc_saving_datetime = end
     model.save()
     return model, savings
+
+
+def calc_meter_financial_values(meter_id, rate_plan_id, progress_observer=None):
+    logger.info('calc_meter_financial_values: for Meter %s and Meter Rate Plan %s,', meter_id, rate_plan_id)
+
+    plan = MeterRatePlan.objects.get(rate_plan_id=rate_plan_id)
+    # (a) Iterate through a billing time period, for each interval:
+    # (b) Calculate the billing of the original (counterfactual_usage) kWh and the actual (reporting_observed) kWh
+    # (c) at the end of the period, store the billing period's from date and thru date, and then the actual
+    #   billing - baseline model billing as the energy savings
+
+    # Note it must NOT aggregate all the energy savings of the time period but rather iterate through the time period,
+    #  because there are many billing schedules which are time interval sensitive: Different rates at different times
+    #  of the day (cheap at 1500, expensive at 1700) or peak demand charges, which is a function of the highest kWh
+    #  usage during a 15 minute interval of the billing period.
+
+    # ensure meter exists
+    meter = Meter.objects.get(meter_id=meter_id)
+
+    # find the latest calculated financial value for this Meter
+    last_value = MeterFinancialValue.objects.filter(meter_id=meter_id).order_by('thru_datetime').last()
+    # find the interval of Meter PRoduction after that last financial value
+    prod_qs = MeterProduction.objects.filter(meter_id=meter_id).order_by('thru_datetime')
+    if last_value:
+        prod_qs = prod_qs.filter(thru_datetime__gt=last_value.thru_datetime)
+    # filter by the plan valid period
+    if plan.from_datetime:
+        prod_qs = prod_qs.filter(from_datetime__gte=plan.from_datetime)
+    if plan.thru_datetime:
+        prod_qs = prod_qs.filter(thru_datetime__lt=plan.thru_datetime)
+
+    if progress_observer:
+        progress_observer.set_progress(1, prod_qs.count()+1, description='Calculating ...')
+
+    results = []
+    # get the meter production matching the time period
+    for prod in prod_qs:
+        period = plan.get_valuation_period(prod)
+        # save a MeterFinancialValue
+        meter_production_reference = {}
+        if prod.meter_production_reference:
+            meter_production_reference.update(prod.meter_production_reference)
+        meter_production_reference['MeterRatePlan.id'] = plan.rate_plan_id
+        meter_production_reference['ValuationMethodPeriod.id'] = period.id
+        meter_production_reference['MeterProduction.id'] = prod.meter_production_id
+        m = MeterFinancialValue.objects.create(
+            meter=meter,
+            from_datetime=prod.from_datetime,
+            thru_datetime=prod.thru_datetime,
+            source=prod.source,
+            meter_production_type=prod.meter_production_type,
+            meter_production_reference=meter_production_reference,
+            model_baseline_value=period.valuate(prod.model_baseline_value, prod.uom),
+            actual_value=period.valuate(prod.actual_value, prod.uom),
+            net_value=period.valuate(prod.net_value, prod.uom),
+            uom=period.currency_uom
+            )
+        results.append(m)
+        if progress_observer:
+            progress_observer.add_progress()
+
+    return results
