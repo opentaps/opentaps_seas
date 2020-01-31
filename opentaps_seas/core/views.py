@@ -72,6 +72,7 @@ from .models import TimeZone
 from .models import Topic
 from .models import TopicTagRule
 from .models import TopicTagRuleSet
+from .models import UnitOfMeasure
 from .models import Meter
 from .models import WeatherStation
 from .models import WeatherHistory
@@ -3039,6 +3040,9 @@ def meter_production_data_json(request, meter):
     meter_data_map = {}
     qs0 = m.meterproduction_set
 
+    # convert values to kWh
+    uom = UnitOfMeasure.objects.get(uom_id='energy_kWh')
+
     model_id = request.GET.get('model_id')
     if model_id:
         logger.info('Filtering for model = %s', model_id)
@@ -3075,11 +3079,12 @@ def meter_production_data_json(request, meter):
             datetime = data.from_datetime.strftime("%Y-%m-%d %H:%M:%S")
             if meter_data and datetime == meter_data[-1]['datetime']:
                 continue
-            value = data.amount
+            value = data.net_value
             if value and not isnan(value):
                 # logging.info('meter_production_data_json: value %s', value)
-                if data.uom_id == 'energy_Wh':
-                    value = value/1000
+
+                # convert to our chosen uom
+                value = data.uom.convert_amount_to(value, uom)
 
                 meter_data.append({
                     'datetime': datetime,
