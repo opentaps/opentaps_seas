@@ -31,6 +31,7 @@ class ProgressRecorder(object):
                  skip_url=None, skip_label=None,
                  back_url=None):
         self.task = task
+        self.description = "Processing ..."
         self.current = 0
         self.total = 1
         self.extra = {
@@ -41,11 +42,13 @@ class ProgressRecorder(object):
             'back_url': back_url,
         }
 
-    def add_progress(self, description="", total=None, current=None):
+    def add_progress(self, description=None, total=None, current=None):
         if total:
             self.total = total
         if current:
             self.current = current
+        if description:
+            self.description = description
         else:
             self.current += 1
 
@@ -54,10 +57,12 @@ class ProgressRecorder(object):
 
         self.set_progress(self.current, self.total, description=description)
 
-    def set_progress(self, current, total, description=""):
+    def set_progress(self, current, total, description=None):
         logger.info('ProgressRecorder:set_progress %s of %s : %s', current, total, description)
         self.current = current
         self.total = total
+        if description:
+            self.description = description
         percent = 0
         if total > 0:
             percent = (Decimal(current) / Decimal(total)) * Decimal(100)
@@ -69,7 +74,7 @@ class ProgressRecorder(object):
                 'current': current,
                 'total': total,
                 'percent': percent,
-                'description': description,
+                'description': self.description,
             }
         )
 
