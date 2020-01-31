@@ -36,7 +36,6 @@ from .models import WeatherStation
 from django import forms
 from django.template.defaultfilters import slugify
 from greenbutton import parse
-from opentaps_seas.eemeter.utils import setup_demo_sample_models
 
 logger = logging.getLogger(__name__)
 
