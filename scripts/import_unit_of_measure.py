@@ -33,6 +33,8 @@ def clean():
         c.execute("DELETE FROM core_weather_history;")
         c.execute("DELETE FROM core_site_weather_stations;")
         c.execute("DELETE FROM core_weather_station;")
+        c.execute("DELETE FROM core_valuation_method_period;")
+        c.execute("DELETE FROM core_unit_of_measure_conversion;")
         c.execute("DELETE FROM core_unit_of_measure;")
         c.close()
 
@@ -48,6 +50,12 @@ def seed():
 def import_files(which):
     print('Importing {} data...'.format(which))
     dirname = os.path.dirname(os.path.realpath(__file__))
+    import_uom_files(which, dirname)
+    import_uom_conversion_files(which, dirname)
+
+
+def import_uom_files(which, dirname):
+    print('Importing {} UOM data...'.format(which))
     dirname = dirname.replace('scripts', 'data/unit_of_measure')
     mypath = os.path.join(dirname, which)
     print(mypath)
@@ -56,12 +64,27 @@ def import_files(which):
             filename = os.path.join(mypath, f)
             if os.path.isfile(filename):
                 print('Importing {} data [{}]'.format(which, filename))
-                import_entities(filename)
+                import_uom(filename)
     else:
         print('No {} data to import.'.format(which))
 
 
-def import_entities(source_file_name):
+def import_uom_conversion_files(which, dirname):
+    print('Importing {} UOM data...'.format(which))
+    dirname = dirname.replace('scripts', 'data/unit_of_measure_conversion')
+    mypath = os.path.join(dirname, which)
+    print(mypath)
+    if os.path.isdir(mypath):
+        for f in os.listdir(mypath):
+            filename = os.path.join(mypath, f)
+            if os.path.isfile(filename):
+                print('Importing {} data [{}]'.format(which, filename))
+                import_uom_conversion(filename)
+    else:
+        print('No {} data to import.'.format(which))
+
+
+def import_uom(source_file_name):
     f = open(source_file_name, 'r', encoding='utf8')
     reader = csv.reader(f)
 
@@ -89,6 +112,37 @@ def import_entities(source_file_name):
                         WHERE uom_id = %s""", [code, type, description, uom_id])
                     counter_update += 1
                     print('-- UPDATE unit of measure: ', uom_id)
+
+    print('{0} rows have been successfully processed {1} '
+          'inserted {2} updated.'.format(counter_insert+counter_update, counter_insert, counter_update))
+
+
+def import_uom_conversion(source_file_name):
+    f = open(source_file_name, 'r', encoding='utf8')
+    reader = csv.reader(f)
+
+    first_row = True
+    counter_insert = 0
+    counter_update = 0
+    with connections['default'].cursor() as c:
+        for row in reader:
+            if first_row:
+                first_row = False
+            else:
+                from_uom_id = row[0]
+                to_uom_id = row[1]
+                rate = row[2]
+
+                try:
+                    c.execute("""INSERT INTO core_unit_of_measure_conversion (from_uom_id, to_uom_id, rate, from_datetime)
+                        VALUES (%s, %s, %s, now())""", [from_uom_id, to_uom_id, rate])
+                    counter_insert += 1
+                    print('-- INSERT unit of measure conversion: ', from_uom_id, to_uom_id, rate)
+                except IntegrityError:
+                    c.execute("""UPDATE core_unit_of_measure_conversion SET rate = %s
+                        WHERE from_uom_id = %s and to_uom_id = %s""", [rate, from_uom_id, to_uom_id])
+                    counter_update += 1
+                    print('-- UPDATE unit of measure conversion: ', from_uom_id, to_uom_id, rate)
 
     print('{0} rows have been successfully processed {1} '
           'inserted {2} updated.'.format(counter_insert+counter_update, counter_insert, counter_update))

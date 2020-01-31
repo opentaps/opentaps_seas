@@ -694,6 +694,33 @@ class UnitOfMeasure(models.Model):
     class Meta:
         db_table = 'core_unit_of_measure'
 
+    def convert_amount_to(self, amount, uom):
+        if (self.uom_id == uom.uom_id):
+            return amount
+        # Lookup the UnitOfMeasureConversion
+        n = now()
+        cuom = self.conversions_from.filter(from_datetime__lte=n)
+        cuom = cuom.exclude(thru_datetime_lte=n)
+        cuom = cuom.filter(from_uom_id=self.uom_id)
+        cuom = cuom.filter(to_uom_id=uom.uom_id)
+        cuom = cuom.first()
+
+        if not cuom:
+            raise Exception("Cannot convert UOM {} to {}".format(self, uom))
+
+        return amount * cuom.rate
+
+
+class UnitOfMeasureConversion(models.Model):
+    from_uom = ForeignKey(UnitOfMeasure, related_name='conversions_from', on_delete=models.DO_NOTHING)
+    to_uom = ForeignKey(UnitOfMeasure, related_name='conversions_to', on_delete=models.DO_NOTHING)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
+    rate = FloatField(_("Rate"), null=False)
+
+    class Meta:
+        db_table = 'core_unit_of_measure_conversion'
+
 
 class WeatherStation(models.Model):
     weather_station_id = CharField(max_length=12, primary_key=True)

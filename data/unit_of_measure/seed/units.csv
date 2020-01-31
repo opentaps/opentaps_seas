@@ -389,6 +389,11 @@ time,Day,day
 time,Week,wk
 time,Julian Month,mo
 time,Year,yr
+time_interval,Daily,daily
+time_interval,Weekly,weekly
+time_interval,Monthly,monthly
+time_interval,Quarterly,quarterly
+time_interval,Annually,annually
 velocity,Meters Per Second,m/s
 velocity,Kilometers Per Second,km/s
 velocity,Kilometers Per Hour,km/h
