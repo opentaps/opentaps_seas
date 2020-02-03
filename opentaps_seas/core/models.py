@@ -18,7 +18,9 @@
 import csv
 import logging
 import re
+from datetime import datetime
 from datetime import time
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
@@ -30,7 +32,6 @@ from django.db.models import AutoField
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
-from django.db.models import TimeField
 from django.db.models import FloatField
 from django.db.models import ForeignKey
 from django.db.models import IntegerField
@@ -690,11 +691,16 @@ def sync_tags_to_crate_entity(row, retried=False):
 class UnitOfMeasure(models.Model):
     uom_id = CharField(max_length=255, primary_key=True)
     code = CharField(max_length=255)
+    symbol = CharField(max_length=255, blank=True, null=True)
     type = CharField(max_length=255)
     description = CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'core_unit_of_measure'
+
+    @property
+    def unit(self):
+        return self.symbol or self.code
 
     def convert_amount_to(self, amount, uom):
         if (self.uom_id == uom.uom_id):
@@ -875,6 +881,7 @@ def day_end_time():
 class ValuationMethod(models.Model):
     id = AutoField(primary_key=True, auto_created=True)
     description = CharField(_("Description"), max_length=255)
+    params = HStoreField(_("Parameters"), blank=True, null=True)
 
     class Meta:
         db_table = 'core_valuation_method'
@@ -886,25 +893,6 @@ class ValuationMethod(models.Model):
         periods = periods.filter(from_time__lte=date_time.time())
         periods = periods.filter(to_time__gte=date_time.time())
         return periods
-
-
-class ValuationMethodPeriod(models.Model):
-    id = AutoField(primary_key=True, auto_created=True)
-    from_day_of_week = IntegerField(default=0)
-    to_day_of_week = IntegerField(default=6)
-    from_time = TimeField(default=day_start_time)
-    to_time = TimeField(default=day_end_time)
-    unit_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+')
-    currency_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+', limit_choices_to={'type': 'currency'})
-    rate = FloatField(_("Rate"), null=True)
-    custom_method = CharField(_("Custom Calculation Method"), max_length=255, blank=True, null=True)
-    valuation_method = ForeignKey(ValuationMethod, on_delete=models.DO_NOTHING)
-
-    class Meta:
-        db_table = 'core_valuation_method_period'
-
-    def valuate(self, amount, uom):
-        return uom.convert_amount_to(amount, self.unit_uom) * self.rate
 
 
 class MeterRatePlan(models.Model):
@@ -928,17 +916,111 @@ class MeterRatePlan(models.Model):
             return "{} ({})".format(self.description, self.rate_plan_id)
         return self.rate_plan_id
 
-    def get_valuation_period(self, meter_production):
+    @property
+    def currency_uom(self):
+        return UnitOfMeasure.objects.get(uom_id=self.valuation_method.params.get('currency_uom_id', 'currency_USD'))
+
+    @property
+    def energy_uom(self):
+        return UnitOfMeasure.objects.get(uom_id=self.valuation_method.params.get('energy_uom_id', 'energy_kWh'))
+
+    @property
+    def flat_rate(self):
+        r = self.valuation_method.params.get('flat_rate')
+        logging.info("flat_rate = %s", r)
+        return float(r)
+
+    def valuate_meter_production(self, meter_production):
         if not self.valuation_method:
             raise Exception("No Valuation Method setup for Meter Rate Plan: {}".format(self))
-        # naive implementation, assume only the from_datetime is necessary to lookup the valuation
-        periods = self.valuation_method.get_periods(meter_production.from_datetime)
-        # assume the periods are not overlapping for now
-        period = periods.first()
-        if not period:
-            raise Exception("Undefined Valuation Period for date time: {}".format(meter_production.from_datetime))
+        if not self.flat_rate:
+            raise Exception("No Flat Rate defined for Meter Rate Plan: {}".format(self))
 
-        return period
+        r = meter_production.uom.convert_amount_to(meter_production.net_value, self.energy_uom)
+        logging.info("valuate_meter_production: flat_rate = %s", self.flat_rate)
+        logging.info("valuate_meter_production: meter value = %s", r)
+        return r * self.flat_rate
+
+    @classmethod
+    def to_day_start(cls, date_time):
+        return date_time.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    @classmethod
+    def to_day_end(cls, date_time):
+        return date_time.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    def get_billing_period(self, date_time):
+        # note billing period can be any valid time_interval: daily,weekly,monthly,quarterly,annually
+        # and depends on the billing_day
+        # so far a given date_time return the start, end of the corresponding period
+        # note: end is given as the start of the next period so the period is the interval [start, end[
+        bp = self.billing_frequency_uom.uom_id
+        if bp == 'time_interval_daily':
+            # daily period is easiest, simply return day start / day end
+            start = self.to_day_start(date_time)
+            end = start + timedelta(days=1)
+            return start, end
+        if bp == 'time_interval_weekly':
+            # consider billing_day as weekday (0 is Monday)
+            start = self.to_day_start(date_time)
+            # sanity check
+            if self.billing_day < 0 or self.billing_day > 6:
+                raise Exception("Invalid billing weekday {} for Meter Rate Plan: {}".format(self.billing_day, self))
+
+            while start.weekday() != self.billing_day:
+                start -= timedelta(days=1)
+            end = start + timedelta(days=7)
+            return start, end
+        if bp == 'time_interval_monthly':
+            # consider billing_day as day of the month (starting at 1)
+            start = self.to_day_start(date_time)
+            # sanity check, for now don't handle tricky days of month ..
+            if self.billing_day < 0 or self.billing_day > 28:
+                raise Exception("Invalid billing day {} for Meter Rate Plan: {}".format(self.billing_day, self))
+
+            if start.day != self.billing_day:
+                start = start.replace(day=self.billing_day)
+            next_month = start.month + 1
+            if next_month > 12:
+                next_month = 1
+            end = start.replace(month=next_month)
+            return start, end
+        if bp == 'time_interval_quarterly':
+            # consider billing_day as day of the quarter (starting at 1)
+            start = self.to_day_start(date_time)
+            y = start.year
+            # define the quarters, padded by 1 on each end since the
+            # billing day can be != 1
+            if self.billing_day < 0 or self.billing_day > 92:
+                raise Exception("Invalid quarter billing day {} for Meter Rate Plan: {}".format(self.billing_day, self))
+            td = timedelta(days=self.billing_day-1)
+            quarters = [
+                datetime(y-1, 10, 1) + td,
+                datetime(y, 1, 1) + td,
+                datetime(y, 4, 1) + td,
+                datetime(y, 7, 1) + td,
+                datetime(y, 10, 1) + td,
+                datetime(y+1, 1, 1) + td
+                ]
+
+            for i, q in reversed(list(enumerate(quarters))):
+                if start > q:
+                    return q, quarters[i+1]
+            raise Exception("Cannot determine quarter for Meter Rate Plan: {} and date {}".format(self, date_time))
+        if bp == 'time_interval_annually':
+            # consider billing_day as day of the year (starting at 1)
+            start = self.to_day_start(date_time)
+            if self.billing_day < 0 or self.billing_day > 365:
+                raise Exception("Invalid billing day of year {} for Meter Rate Plan: {}".format(self.billing_day, self))
+            doy = start.timetuple().tm_yday
+            if doy != self.billing_day:
+                start -= timedelta(doy - self.billing_day)
+            # need to start at the previous year
+            if doy < self.billing_day:
+                start = start.replace(year=start.year-1)
+            return start, start.replace(year=start.year+1)
+
+        raise Exception("Unsupported billing period {} for Meter Rate Plan: {}".format(bp, self))
 
 
 class MeterFinancialValue(models.Model):
@@ -948,9 +1030,7 @@ class MeterFinancialValue(models.Model):
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
     meter_production_type = CharField(_("Meter Production Type"), max_length=255)
     meter_production_reference = HStoreField(_("Meter Production Reference"), blank=True, null=True)
-    net_value = FloatField(_("Net Value"), null=True)
-    model_baseline_value = FloatField(_("Model Baseline Value"), null=True)
-    actual_value = FloatField(_("Actual Value"), null=True)
+    amount = FloatField(_("Amount"), null=True)
     # status = ForeignKey(??, on_delete=models.DO_NOTHING)
     uom = ForeignKey(UnitOfMeasure, related_name='+', on_delete=models.DO_NOTHING)
     source = CharField(_("Source"), max_length=255)

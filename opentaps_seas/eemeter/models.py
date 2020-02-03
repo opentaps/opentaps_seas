@@ -20,6 +20,7 @@ from enum import Enum
 from datetime import timedelta
 from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import MeterProduction
+from opentaps_seas.core.models import MeterFinancialValue
 from django.db import models
 from django.db.models import Q
 from django.db.models import AutoField
@@ -75,4 +76,11 @@ class BaselineModel(models.Model):
             return timedelta(hours=1)
 
     def get_production(self):
-        return MeterProduction.objects.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): '{}'.format(self.id)}))
+        q = MeterProduction.objects
+        q = q.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): '{}'.format(self.id)}))
+        return q.order_by('from_datetime')
+
+    def get_financial_value(self):
+        q = MeterFinancialValue.objects
+        q = q.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): '{}'.format(self.id)}))
+        return q.order_by('from_datetime')

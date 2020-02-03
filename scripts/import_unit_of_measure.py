@@ -27,13 +27,14 @@ def clean():
     with connections['default'].cursor() as c:
         # delete all related tables first_row
         c.execute("DELETE FROM eemeter_baselinemodel;")
+        c.execute("DELETE FROM core_meter_financial_value;")
         c.execute("DELETE FROM core_meter_production;")
         c.execute("DELETE FROM core_meter_history;")
+        c.execute("DELETE FROM core_meter_rate_plan;")
         c.execute("DELETE FROM core_meter;")
         c.execute("DELETE FROM core_weather_history;")
         c.execute("DELETE FROM core_site_weather_stations;")
         c.execute("DELETE FROM core_weather_station;")
-        c.execute("DELETE FROM core_valuation_method_period;")
         c.execute("DELETE FROM core_unit_of_measure_conversion;")
         c.execute("DELETE FROM core_unit_of_measure;")
         c.close()
@@ -99,17 +100,20 @@ def import_uom(source_file_name):
                 type = row[0]
                 description = row[1]
                 code = row[2]
+                symbol = None
+                if len(row) > 3:
+                    symbol = row[3]
                 uom_id = cleanup_id(type + "_" + code)
                 uom_id = uom_id.replace("%", "percent")
 
                 try:
-                    c.execute("""INSERT INTO core_unit_of_measure (uom_id, code, type, description)
-                        VALUES (%s, %s, %s, %s)""", [uom_id, code, type, description])
+                    c.execute("""INSERT INTO core_unit_of_measure (uom_id, code, symbol, type, description)
+                        VALUES (%s, %s, %s, %s, %s)""", [uom_id, code, symbol, type, description])
                     counter_insert += 1
                     print('-- INSERT unit of measure: ', uom_id)
                 except IntegrityError:
-                    c.execute("""UPDATE core_unit_of_measure SET code = %s, type = %s, description = %s
-                        WHERE uom_id = %s""", [code, type, description, uom_id])
+                    c.execute("""UPDATE core_unit_of_measure SET code = %s, symbol = %s, type = %s, description = %s
+                        WHERE uom_id = %s""", [code, symbol, type, description, uom_id])
                     counter_update += 1
                     print('-- UPDATE unit of measure: ', uom_id)
 

@@ -1,0 +1,115 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+<div id="meterproductiontable" v-cloak>
+  <div class="card mb-3 border-nmd-0 m-n2 m-md-0">
+    <div class="card-body p-md-3 p-0 mt-3 mt-md-0">
+      {% if not no_title %}
+      <h2>Meter Production</h2>
+      {% endif %}
+      
+      <table class="table" v-for="serie in series">
+        <thead>
+          <th>From</th>
+          <th>Thru</th>
+          <th>Amount</th>
+        </thead>
+        <tr v-for="value in serie.values">
+          <td>${ value.from }</td>
+          <td>${ value.thru }</td>
+          <td>${ value.symbol } ${ value.amount | amount_fmt }</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#meterproductiontable',
+    components: {
+      apexchart: VueApexCharts,
+    },
+    data: function() {
+      return {
+        series: [{}]
+      }
+    },
+    mounted() {
+      this.init();
+    },
+    filters: {
+      amount_fmt: function (value) {
+        if (!value) return '0.00'
+        return value.toFixed(2)
+      }
+    },
+    methods: {
+      init() {
+        this.refresh();
+        eventHub.$on('meter_data_changed', this.refresh)
+      },
+      clear() {
+        console.log('Clear tables.');
+        this.series.splice(0);
+      },
+      refresh() {
+        this.fetchData();
+      },
+      getUrlArgs() {
+        var args = '';
+        {% if model_id %}
+          args += '?model_id={{ model_id }}';
+        {% endif %}
+        return args;
+      },
+      fetchData() {
+        url = '{% url 'core:meter_financial_value_data_json' meter_id %}' + this.getUrlArgs();
+        console.log('Fetching meter financial values from ', url);
+        axios.get(url).then(response => {
+          console.log('Fetching meter financial values got ', response.data);
+          this.clear();
+          if (response.data.values) {
+            for (var k in response.data.values) {
+              var l = response.data.values[k].length;
+              console.log(' meter financial values', k, response.data.values[k]);
+              this.series.push({
+                name: k,
+                values: response.data.values[k].map(x => { return {
+                  from: x.datetime,
+                  thru: x.thru_datetime,
+                  amount: x.amount,
+                  symbol: x.symbol,
+                } } )
+              })
+            }
+          }});
+        console.log('Fetched ', this.series);
+      },
+    }
+  })
+})();
+</script>

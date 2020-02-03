@@ -27,6 +27,7 @@ import logging
 from urllib.parse import urlparse
 
 from datetime import datetime
+from datetime import timedelta
 from math import isnan
 
 from opentaps_seas.eemeter.models import BaselineModel
@@ -3119,16 +3120,6 @@ def meter_financial_value_data_json(request, meter):
         logger.info('Filtering for model = %s', model_id)
         qs0 = qs0.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): model_id}))
 
-    # to simplify visualization we want to start at the latest production point
-    from_datetime = None
-    last_record = qs0.order_by('-from_datetime').values('from_datetime').first()
-    if last_record:
-        from_datetime = last_record['from_datetime']
-    start, end = utils.get_start_date_from_range(request.GET.get('range'), from_datetime=from_datetime)
-    if start:
-        qs0 = qs0.filter(from_datetime__gte=start)
-    if end:
-        qs0 = qs0.filter(from_datetime__lt=end)
     for ref in qs0.distinct('meter_production_reference').values('meter_production_reference'):
         ref = ref.get('meter_production_reference')
         qs = qs0.filter(meter_production_reference=ref)
@@ -3147,10 +3138,12 @@ def meter_financial_value_data_json(request, meter):
                 meter_data = []
                 meter_data_map[data_key] = meter_data
             # Prevent adding duplicates
-            datetime = data.from_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            datetime = data.from_datetime.strftime("%Y-%m-%d")
+            # Offset the thru_datetime by one minute so the range is inclusive
+            thru_datetime = (data.thru_datetime - timedelta(seconds=1)).strftime("%Y-%m-%d")
             if meter_data and datetime == meter_data[-1]['datetime']:
                 continue
-            value = data.net_value
+            value = data.amount
             if value and not isnan(value):
                 # logging.info('meter_production_data_json: value %s', value)
 
@@ -3159,8 +3152,10 @@ def meter_financial_value_data_json(request, meter):
 
                 meter_data.append({
                     'datetime': datetime,
-                    'value': value,
-                    'unit': uom.code
+                    'thru_datetime': thru_datetime,
+                    'amount': value,
+                    'unit': uom.code,
+                    'symbol': uom.symbol,
                 })
 
     for k in meter_data_map.keys():

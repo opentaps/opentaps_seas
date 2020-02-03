@@ -27,7 +27,6 @@ from ..core.models import MeterFinancialValue
 from ..core.models import MeterProduction
 from ..core.models import MeterRatePlan
 from ..core.models import ValuationMethod
-from ..core.models import ValuationMethodPeriod
 from ..core.models import SiteView
 from ..core.models import SiteWeatherStations
 from ..core.models import Meter
@@ -169,13 +168,14 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
 
 
 def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials=False):
-    vm = ValuationMethod.objects.create(description='Sample Valuation Method')
-
-    ValuationMethodPeriod.objects.create(
-        valuation_method=vm,
-        unit_uom_id='energy_kWh',
-        currency_uom_id='currency_USD',
-        rate=price)
+    vm = ValuationMethod.objects.create(
+        description='Sample Valuation Method',
+        params={
+            'flat_rate': 0.2,
+            'currency_uom_id': 'currency_USD',
+            'energy_uom_id': 'energy_kWh'
+            }
+        )
 
     # make the plan starting 2 years from now unless from_datetime is given
     if not from_datetime:
@@ -498,7 +498,7 @@ def calc_meter_financial_values(meter_id, rate_plan_id, progress_observer=None):
     # find the latest calculated financial value for this Meter
     last_value = MeterFinancialValue.objects.filter(meter_id=meter_id).order_by('thru_datetime').last()
     # find the interval of Meter PRoduction after that last financial value
-    prod_qs = MeterProduction.objects.filter(meter_id=meter_id).order_by('thru_datetime')
+    prod_qs = MeterProduction.objects.filter(meter_id=meter_id)
     if last_value:
         prod_qs = prod_qs.filter(thru_datetime__gt=last_value.thru_datetime)
     # filter by the plan valid period
@@ -512,29 +512,49 @@ def calc_meter_financial_values(meter_id, rate_plan_id, progress_observer=None):
 
     results = []
     # get the meter production matching the time period
-    for prod in prod_qs:
-        period = plan.get_valuation_period(prod)
-        # save a MeterFinancialValue
-        meter_production_reference = {}
-        if prod.meter_production_reference:
-            meter_production_reference.update(prod.meter_production_reference)
-        meter_production_reference['MeterRatePlan.id'] = plan.rate_plan_id
-        meter_production_reference['ValuationMethodPeriod.id'] = period.id
-        meter_production_reference['MeterProduction.id'] = prod.meter_production_id
-        m = MeterFinancialValue.objects.create(
-            meter=meter,
-            from_datetime=prod.from_datetime,
-            thru_datetime=prod.thru_datetime,
-            source=prod.source,
-            meter_production_type=prod.meter_production_type,
-            meter_production_reference=meter_production_reference,
-            model_baseline_value=period.valuate(prod.model_baseline_value, prod.uom),
-            actual_value=period.valuate(prod.actual_value, prod.uom),
-            net_value=period.valuate(prod.net_value, prod.uom),
-            uom=period.currency_uom
-            )
-        results.append(m)
-        if progress_observer:
-            progress_observer.add_progress()
+    # we want to group those into billing periods
+    bp = None
+
+    # for reference, save all attributes of the meter production entities here
+    meter_production_reference = {}
+    total_amount = 0.0
+
+    # we need to iterate for each reference of production (different models, etc..)
+    for ref in prod_qs.distinct('meter_production_reference').values('meter_production_reference'):
+        ref = ref.get('meter_production_reference')
+        qs = prod_qs.filter(meter_production_reference=ref)
+        for prod in qs.order_by('thru_datetime'):
+            # check if the billing period changed
+            n_bp = plan.get_billing_period(prod.from_datetime)
+
+            # first period
+            if not bp:
+                bp = n_bp
+
+            if n_bp != bp:
+                # we changed billing period, save the previous on if needed
+                meter_production_reference['MeterRatePlan.id'] = plan.rate_plan_id
+                m = MeterFinancialValue.objects.create(
+                    meter=meter,
+                    from_datetime=bp[0],
+                    thru_datetime=bp[1],
+                    source=prod.source,
+                    meter_production_type=prod.meter_production_type,
+                    meter_production_reference=meter_production_reference,
+                    amount=total_amount,
+                    uom=plan.currency_uom
+                    )
+                results.append(m)
+                bp = n_bp
+                meter_production_reference = {}
+                total_amount = 0.0
+            else:
+                # same billing period update our current results
+                total_amount += plan.valuate_meter_production(prod)
+                if prod.meter_production_reference:
+                    meter_production_reference.update(prod.meter_production_reference)
+
+            if progress_observer:
+                progress_observer.add_progress()
 
     return results
