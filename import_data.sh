@@ -83,6 +83,9 @@ else
     if [ "$1" == "sample_meter" ]; then
         python manage.py runscript setup_sample_meter --script-args $ARGS
     fi
+    if [ "$1" == "party" ]; then
+        python manage.py runscript import_party --script-args $ARGS
+    fi
 fi
 
 # if loading demo data, also sensure we have a demo admin user

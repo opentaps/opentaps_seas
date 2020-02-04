@@ -132,6 +132,7 @@ LOCAL_APPS = [
     'opentaps_seas.core.apps.CoreAppConfig',
     'opentaps_seas.api.apps.ApiAppConfig',
     'opentaps_seas.eemeter.apps.EEMeterAppConfig',
+    'opentaps_seas.party.apps.PartyAppConfig',
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
