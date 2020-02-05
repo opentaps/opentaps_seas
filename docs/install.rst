@@ -203,6 +203,8 @@ Basic Commands
 Setting Up Your Users
 ^^^^^^^^^^^^^^^^^^^^^
 
+If you load the demo data, an admin user with username ``admin`` and pasword ``opentaps`` will be created for you.
+
 * To create a **user account** from the command line you can use the following script which will skip the need for email verification. Note: the admin flag sets a superuser::
 
     $ utility/create_user <username> <password> <email> [admin]
