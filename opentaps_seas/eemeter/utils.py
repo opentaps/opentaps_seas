@@ -23,9 +23,7 @@ from datetime import timedelta
 from datetime import datetime
 from io import StringIO
 from eemeter import io as eeio
-from ..core.models import MeterFinancialValue
 from ..core.models import MeterProduction
-from ..core.models import MeterRatePlan
 from ..core.models import SiteView
 from ..core.models import SiteWeatherStations
 from ..core.models import Meter
@@ -164,33 +162,6 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
         calc_meter_savings(meter_id, baseline_model.id, baseline_end_date, max_datetime)
 
     return site, meter, baseline_model
-
-
-def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials=False):
-    # make the plan starting 2 years from now unless from_datetime is given
-    if not from_datetime:
-        from_datetime = datetime.utcnow()
-        from_datetime -= timedelta(days=365*2)
-
-    rp = MeterRatePlan.objects.create(
-        description='Simple Rate Plan',
-        from_datetime=from_datetime,
-        billing_frequency_uom_id='time_interval_monthly',
-        billing_day=1,
-        params={
-            'flat_rate': 0.2,
-            'currency_uom_id': 'currency_USD',
-            'energy_uom_id': 'energy_kWh'
-            })
-
-    if not meter.rate_plan:
-        meter.rate_plan = rp
-        meter.save()
-
-    if calc_financials:
-        calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
-
-    return rp
 
 
 def get_daily_sample_data():
@@ -474,85 +445,3 @@ def calc_meter_savings(meter_id, model_id, start, end, progress_observer=None):
     model.last_calc_saving_datetime = end
     model.save()
     return model, savings
-
-
-def calc_meter_financial_values(meter_id, rate_plan_id, progress_observer=None):
-    logger.info('calc_meter_financial_values: for Meter %s and Meter Rate Plan %s,', meter_id, rate_plan_id)
-
-    plan = MeterRatePlan.objects.get(rate_plan_id=rate_plan_id)
-    # (a) Iterate through a billing time period, for each interval:
-    # (b) Calculate the billing of the original (counterfactual_usage) kWh and the actual (reporting_observed) kWh
-    # (c) at the end of the period, store the billing period's from date and thru date, and then the actual
-    #   billing - baseline model billing as the energy savings
-
-    # Note it must NOT aggregate all the energy savings of the time period but rather iterate through the time period,
-    #  because there are many billing schedules which are time interval sensitive: Different rates at different times
-    #  of the day (cheap at 1500, expensive at 1700) or peak demand charges, which is a function of the highest kWh
-    #  usage during a 15 minute interval of the billing period.
-
-    # ensure meter exists
-    meter = Meter.objects.get(meter_id=meter_id)
-
-    # find the latest calculated financial value for this Meter
-    last_value = MeterFinancialValue.objects.filter(meter_id=meter_id).order_by('thru_datetime').last()
-    # find the interval of Meter PRoduction after that last financial value
-    prod_qs = MeterProduction.objects.filter(meter_id=meter_id)
-    if last_value:
-        prod_qs = prod_qs.filter(thru_datetime__gt=last_value.thru_datetime)
-    # filter by the plan valid period
-    if plan.from_datetime:
-        prod_qs = prod_qs.filter(from_datetime__gte=plan.from_datetime)
-    if plan.thru_datetime:
-        prod_qs = prod_qs.filter(thru_datetime__lt=plan.thru_datetime)
-
-    if progress_observer:
-        progress_observer.set_progress(1, prod_qs.count()+1, description='Calculating ...')
-
-    results = []
-    # get the meter production matching the time period
-    # we want to group those into billing periods
-    bp = None
-
-    # for reference, save all attributes of the meter production entities here
-    meter_production_reference = {}
-    total_amount = 0.0
-
-    # we need to iterate for each reference of production (different models, etc..)
-    for ref in prod_qs.distinct('meter_production_reference').values('meter_production_reference'):
-        ref = ref.get('meter_production_reference')
-        qs = prod_qs.filter(meter_production_reference=ref)
-        for prod in qs.order_by('thru_datetime'):
-            # check if the billing period changed
-            n_bp = plan.get_billing_period(prod.from_datetime)
-
-            # first period
-            if not bp:
-                bp = n_bp
-
-            if n_bp != bp:
-                # we changed billing period, save the previous on if needed
-                meter_production_reference['MeterRatePlan.id'] = plan.rate_plan_id
-                m = MeterFinancialValue.objects.create(
-                    meter=meter,
-                    from_datetime=bp[0],
-                    thru_datetime=bp[1],
-                    source=prod.source,
-                    meter_production_type=prod.meter_production_type,
-                    meter_production_reference=meter_production_reference,
-                    amount=total_amount,
-                    uom=plan.currency_uom
-                    )
-                results.append(m)
-                bp = n_bp
-                meter_production_reference = {}
-                total_amount = 0.0
-            else:
-                # same billing period update our current results
-                total_amount += plan.valuate_meter_production(prod)
-                if prod.meter_production_reference:
-                    meter_production_reference.update(prod.meter_production_reference)
-
-            if progress_observer:
-                progress_observer.add_progress()
-
-    return results

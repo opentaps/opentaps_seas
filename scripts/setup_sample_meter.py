@@ -16,7 +16,8 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import connections
-from opentaps_seas.eemeter import utils
+from opentaps_seas.eemeter import utils as eemeter_utils
+from opentaps_seas.core import utils as core_utils
 
 
 def clean():
@@ -52,9 +53,9 @@ def import_data(which):
 
     if is_demo:
         # setup a sample meter and calcualte the savings
-        site, meter, model = utils.setup_demo_sample_models('demo-site-1', calc_savings=True)
+        site, meter, model = eemeter_utils.setup_demo_sample_models('demo-site-1', calc_savings=True)
         # setup a demo rate plan and calculate the financial values
-        utils.setup_sample_rate_plan(meter, price=0.2, calc_financials=True)
+        core_utils.setup_sample_rate_plan(meter, price=0.2, calc_financials=True)
 
 
 def print_help():
