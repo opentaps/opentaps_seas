@@ -1,6 +1,37 @@
 Developer Documentation
 =======================
 
+From Meters to Money
+--------------------
+
+Meters
+^^^^^^
+
+The Meter is central entity for measuring and valuing energy usage.  It is associated with a Site, and a Site could have any number of Meters -- for example, meters for
+different fuel types (gas vs. electricity) or sub-meters for different energy systems.
+
+A Meter uses the Weather Station associated with the Site to get the weather data for analysis, so all the Meters at a Site will share the same weather data.
+
+A Meter has a history of readings (Meter_History), which could come from a utility via Green Button XML or any other source.  
+
+Energy use models are then built based on the Meter's History and the Site's Weather history.  These are called Meter Models (not related to Haystack Tag Models) and
+can be used to calculate the energy savings as the actual energy usage, from future Meter History readings, minus the Meter Model's baseline, calculated, or counterfactual
+energy usage.  Alternatively, a Meter could simply record the energy produced by equipment such as solar panel, or the charging and discharging of a battery energy storage system.
+In all these cases, we use Meter Production to record the net energy "produced" either by equipment or by energy efficiency.  It might be counterintuitive to think of
+energy savings as producing energy, but it's true!  Energy efficiency is an asset, not an expense.
+
+From Meter Production, we calculate the Meter Financial Value as the value of the produced energy.  This must be calculated over the actual billing period for the Meter,     
+using the rate plan for the Meter (see below) to calculate the billable energy use and the baseline (or model) energy use.  It's done this way to correctly capture the
+value of time of use and demand charges.
+
+Rate Plans
+^^^^^^^^^^
+
+A Meter can have a Rate Plan at any one time.  
+
+A Rate Plan defines how the energy usage at the meter is calculated.  It defines the frequency of billing, when the billing occurs, and how the billing is calculated.
+Right now for demo purposes we only support a simple flat rate billing rate which is calculated monthly on a fixed day of the month.  We're working on expanding support
+for actual U.S. utility rates based NREL's OpenEI database.
 
 
 Haystack
