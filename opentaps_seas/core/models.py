@@ -698,6 +698,12 @@ class UnitOfMeasure(models.Model):
     class Meta:
         db_table = 'core_unit_of_measure'
 
+    def __str__(self):
+        t = self.description or self.code or self.uom_id
+        if self.type:
+            return "{} ({})".format(t, self.type)
+        return t
+
     @property
     def unit(self):
         return self.symbol or self.code
@@ -753,6 +759,9 @@ class WeatherStation(models.Model):
         else:
             return self.weather_station_id
 
+    def get_absolute_url(self):
+        return reverse("core:weather_station_detail", kwargs={"weather_station_id": self.weather_station_id})
+
 
 class WeatherHistory(models.Model):
     weather_history_id = AutoField(_("Weather History ID"), primary_key=True, auto_created=True)
@@ -799,7 +808,12 @@ class Meter(models.Model):
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
-    rate_plan = ForeignKey('MeterRatePlan', null=True, on_delete=models.DO_NOTHING)
+    rate_plan = ForeignKey('MeterRatePlan', blank=True, null=True, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        if self.description:
+            return "{} ({})".format(self.description, self.meter_id)
+        return self.meter_id
 
     def get_absolute_url(self):
         return reverse("core:meter_detail", kwargs={"meter_id": self.meter_id})
@@ -898,6 +912,9 @@ class MeterRatePlan(models.Model):
         if self.description:
             return "{} ({})".format(self.description, self.rate_plan_id)
         return self.rate_plan_id
+
+    def get_absolute_url(self):
+        return reverse("core:meter_rate_plan_detail", kwargs={"rate_plan_id": self.rate_plan_id})
 
     @property
     def currency_uom(self):

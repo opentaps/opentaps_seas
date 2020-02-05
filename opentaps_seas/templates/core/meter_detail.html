@@ -49,7 +49,7 @@
         {% if not object.weather_station %}
           n/a
         {% else %}
-          <a href="{% url 'core:weather_station_detail' object.weather_station.weather_station_id %}">{{ object.weather_station }}</a>
+          <a href="{{ object.weather_station.get_absolute_url }}">{{ object.weather_station }}</a>
         {% endif %}
       </p>
 
@@ -59,6 +59,17 @@
       </p>
       {% endif %}
 
+      <div>
+        <p>
+          <b>Meter Rate Plan:</b> 
+          {% if not object.rate_plan %}
+            n/a
+          {% else %}
+            <a href="{{ object.rate_plan.get_absolute_url }}">{{ object.rate_plan }}</a>
+          {% endif %}
+        </p>
+      </div>
+
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
         <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
@@ -67,45 +78,47 @@
     </div>
   </div>
 
-  {% if object and object.meter_id %}
-  <div class="card mb-3">
-    <div class="card-body">
-      <h3>
-        <div class="row m-0">
-          <div class="">
-            Models
-          </div>
-          <div class="text-right flex-grow-1">
-            <a class="btn btn-primary" href="{% url 'core:meter_model_create' object.meter_id %}"><i class="fa fa-plus"></i> Build a Model</a>
+  {% block after_content %}
+    {% if object and object.meter_id %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h3>
+            <div class="row m-0">
+              <div class="">
+                Models
+              </div>
+              <div class="text-right flex-grow-1">
+                <a class="btn btn-primary" href="{% url 'core:meter_model_create' object.meter_id %}"><i class="fa fa-plus"></i> Build a Model</a>
+              </div>
+            </div>
+          </h3>
+          <div class="header-top">
+            {% load qs_order_by from core_tags %}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Model</th>
+                  <th scope="col">Range</th>
+                  <th scope="col">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for model in object.baselinemodel_set.all|qs_order_by:'-id' %}
+                <tr>
+                  <th scope="row"><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}</a></th>
+                  <td><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.description|default:model.model_class }}</a></td>
+                  <td>{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</td>
+                  <td><span class="text-muted text-right">{{ model.created_datetime|date:'m/d/Y' }}</span></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
-      </h3>
-      <div class="header-top">
-        {% load qs_order_by from core_tags %}
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Model</th>
-              <th scope="col">Range</th>
-              <th scope="col">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for model in object.baselinemodel_set.all|qs_order_by:'-id' %}
-            <tr>
-              <th scope="row"><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}</a></th>
-              <td><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.description|default:model.model_class }}</a></td>
-              <td>{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</td>
-              <td><span class="text-muted text-right">{{ model.created_datetime|date:'m/d/Y' }}</span></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
       </div>
-    </div>
-  </div>
-  {% endif %}
+    {% endif %}
+  {% endblock after_content %}
 
 </div>
 {% endblock content %}

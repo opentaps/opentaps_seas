@@ -75,6 +75,7 @@ from .models import TopicTagRule
 from .models import TopicTagRuleSet
 from .models import UnitOfMeasure
 from .models import Meter
+from .models import MeterRatePlan
 from .models import WeatherStation
 from .models import WeatherHistory
 from .celery import Progress
@@ -3228,6 +3229,21 @@ def meter_data_import(request, meter):
             return JsonResponse({'errors': form.errors})
     else:
         return JsonResponse({'error': 'Only POST methods are supported'})
+
+
+class MeterRatePlanDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+    model = MeterRatePlan
+    slug_field = "rate_plan_id"
+    slug_url_kwarg = "rate_plan_id"
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        b.append({'label': 'Meter Rate Plan {}'.format(self.kwargs['rate_plan_id'])})
+        return b
+
+
+meter_rate_plan_detail_view = MeterRatePlanDetailView.as_view()
 
 
 class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):

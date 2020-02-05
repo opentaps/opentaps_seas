@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}Meter Rate Plan: {{ object.rate_plan_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  {% block add_button %}
+  <div class="d-flex mb-2">
+    {# <a href="{% url 'core:meter_rate_plan_create' %}" class="btn btn-primary ml-auto" role="button"><i class="fa fa-plus"></i> Add Meter Rate Plan</a> #}
+  </div>
+  {% endblock add_button %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      {% if object.description %}
+        <h2>Meter Rate Plan {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.rate_plan_id }})</span></h2>
+      {% else %}
+        <h2>Meter Rate Plan {{ object.rate_plan_id }}</h2>
+      {% endif %}
+      <br/>
+      {% block inner_content %}
+
+      <div class="row"><b class="col-sm-2">From:</b> {{ object.from_datetime }}</div>
+      <div class="row"><b class="col-sm-2">Thru:</b> {{ object.thru_datetime }}</div>
+      <div class="row"><b class="col-sm-2">Billing Frequency:</b> {{ object.billing_frequency_uom }}</div>
+      <div class="row"><b class="col-sm-2">Billing Day:</b> {{ object.billing_day }}</div>
+      <div class="row"><b class="col-sm-2">Params:</b> {{ object.params }}</div>
+
+      {% if object.meter_set.exists %}
+        <h3 class="mt-5">Meters</h3>
+        <ul>
+        {% for meter in object.meter_set.all %}
+        <li><a href="{{ meter.get_absolute_url }}">{{ meter }}</a></li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+
+      {# <div class="form-group d-flex justify-content-around mt-5"> #}
+      {#   <a href="{% url 'core:meter_rate_plan_delete' object.rate_plan_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Delete</a> #}
+      {#   <a href="{% url 'core:meter_rate_plan_edit' object.rate_plan_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a> #}
+      {# </div> #}
+      {% endblock inner_content %}
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
