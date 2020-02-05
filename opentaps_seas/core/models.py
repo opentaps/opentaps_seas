@@ -799,6 +799,7 @@ class Meter(models.Model):
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
+    rate_plan = ForeignKey('MeterRatePlan', null=True, on_delete=models.DO_NOTHING)
 
     def get_absolute_url(self):
         return reverse("core:meter_detail", kwargs={"meter_id": self.meter_id})
@@ -878,23 +879,6 @@ def day_end_time():
     return time.max
 
 
-class ValuationMethod(models.Model):
-    id = AutoField(primary_key=True, auto_created=True)
-    description = CharField(_("Description"), max_length=255)
-    params = HStoreField(_("Parameters"), blank=True, null=True)
-
-    class Meta:
-        db_table = 'core_valuation_method'
-
-    def get_periods(self, date_time):
-        periods = self.valuationmethodperiod_set
-        periods = periods.filter(from_day_of_week__lte=date_time.weekday())
-        periods = periods.filter(to_day_of_week__gte=date_time.weekday())
-        periods = periods.filter(from_time__lte=date_time.time())
-        periods = periods.filter(to_time__gte=date_time.time())
-        return periods
-
-
 class MeterRatePlan(models.Model):
     rate_plan_id = AutoField(_("Rate Plan ID"), primary_key=True, auto_created=True)
     description = CharField(_("Description"), max_length=255)
@@ -903,7 +887,6 @@ class MeterRatePlan(models.Model):
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
     billing_frequency_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+', limit_choices_to={'type': 'time_interval'})
     billing_day = IntegerField(_("Billing Day"), default=0)
-    valuation_method = ForeignKey(ValuationMethod, on_delete=models.DO_NOTHING)
     source = CharField(_("Source"), max_length=255)
     created_datetime = DateTimeField(_("Created Date"), default=now)
     created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
@@ -918,21 +901,19 @@ class MeterRatePlan(models.Model):
 
     @property
     def currency_uom(self):
-        return UnitOfMeasure.objects.get(uom_id=self.valuation_method.params.get('currency_uom_id', 'currency_USD'))
+        return UnitOfMeasure.objects.get(uom_id=self.params.get('currency_uom_id', 'currency_USD'))
 
     @property
     def energy_uom(self):
-        return UnitOfMeasure.objects.get(uom_id=self.valuation_method.params.get('energy_uom_id', 'energy_kWh'))
+        return UnitOfMeasure.objects.get(uom_id=self.params.get('energy_uom_id', 'energy_kWh'))
 
     @property
     def flat_rate(self):
-        r = self.valuation_method.params.get('flat_rate')
+        r = self.params.get('flat_rate')
         logging.info("flat_rate = %s", r)
         return float(r)
 
     def valuate_meter_production(self, meter_production):
-        if not self.valuation_method:
-            raise Exception("No Valuation Method setup for Meter Rate Plan: {}".format(self))
         if not self.flat_rate:
             raise Exception("No Flat Rate defined for Meter Rate Plan: {}".format(self))
 

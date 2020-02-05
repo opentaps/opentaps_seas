@@ -26,7 +26,6 @@ from eemeter import io as eeio
 from ..core.models import MeterFinancialValue
 from ..core.models import MeterProduction
 from ..core.models import MeterRatePlan
-from ..core.models import ValuationMethod
 from ..core.models import SiteView
 from ..core.models import SiteWeatherStations
 from ..core.models import Meter
@@ -168,15 +167,6 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
 
 
 def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials=False):
-    vm = ValuationMethod.objects.create(
-        description='Sample Valuation Method',
-        params={
-            'flat_rate': 0.2,
-            'currency_uom_id': 'currency_USD',
-            'energy_uom_id': 'energy_kWh'
-            }
-        )
-
     # make the plan starting 2 years from now unless from_datetime is given
     if not from_datetime:
         from_datetime = datetime.utcnow()
@@ -187,7 +177,11 @@ def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials
         from_datetime=from_datetime,
         billing_frequency_uom_id='time_interval_monthly',
         billing_day=1,
-        valuation_method=vm)
+        params={
+            'flat_rate': 0.2,
+            'currency_uom_id': 'currency_USD',
+            'energy_uom_id': 'energy_kWh'
+            })
 
     if calc_financials:
         calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
