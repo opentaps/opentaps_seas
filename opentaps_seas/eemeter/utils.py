@@ -183,6 +183,10 @@ def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials
             'energy_uom_id': 'energy_kWh'
             })
 
+    if not meter.rate_plan:
+        meter.rate_plan = rp
+        meter.save()
+
     if calc_financials:
         calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
 
