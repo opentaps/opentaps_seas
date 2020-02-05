@@ -183,7 +183,7 @@ def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials
         from_datetime -= timedelta(days=365*2)
 
     rp = MeterRatePlan.objects.create(
-        description='Sample Rate Plan',
+        description='Simple Rate Plan',
         from_datetime=from_datetime,
         billing_frequency_uom_id='time_interval_monthly',
         billing_day=1,
