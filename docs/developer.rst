@@ -14,6 +14,18 @@ A Meter uses the Weather Station associated with the Site to get the weather dat
 
 A Meter has a history of readings (Meter_History), which could come from a utility via Green Button XML or any other source.  
 
+Rate Plans
+^^^^^^^^^^
+
+A Meter can have a Rate Plan at any one time.  
+
+A Rate Plan defines how the energy usage at the meter is calculated.  It defines the frequency of billing, when the billing occurs, and how the billing is calculated.
+Right now for demo purposes we only support a simple flat rate billing rate which is calculated monthly on a fixed day of the month.  We're working on expanding support
+for actual U.S. utility rates based NREL's OpenEI database.
+
+Valuing Energy
+^^^^^^^^^^^^^^
+
 Energy use models are then built based on the Meter's History and the Site's Weather history.  These are called Meter Models (not related to Haystack Tag Models) and
 can be used to calculate the energy savings as the actual energy usage, from future Meter History readings, minus the Meter Model's baseline, calculated, or counterfactual
 energy usage.  Alternatively, a Meter could simply record the energy produced by equipment such as solar panel, or the charging and discharging of a battery energy storage system.
@@ -24,15 +36,12 @@ From Meter Production, we calculate the Meter Financial Value as the value of th
 using the rate plan for the Meter (see below) to calculate the billable energy use and the baseline (or model) energy use.  It's done this way to correctly capture the
 value of time of use and demand charges.
 
-Rate Plans
-^^^^^^^^^^
+Parties: People 
+---------------
 
-A Meter can have a Rate Plan at any one time.  
-
-A Rate Plan defines how the energy usage at the meter is calculated.  It defines the frequency of billing, when the billing occurs, and how the billing is calculated.
-Right now for demo purposes we only support a simple flat rate billing rate which is calculated monthly on a fixed day of the month.  We're working on expanding support
-for actual U.S. utility rates based NREL's OpenEI database.
-
+Parties are the people and organizations in business relationships, such as the customers who use energy or utilities that supply them.  You probably already have an ERP or CRM
+system or a specialized billing system that has all this information.  So instead of implementing it all over again in opentaps SEAS and making you implement an integration, 
+parties are just a "stub" for interfacing with external system.  See the `opentaps_seas/party` directory.
 
 Haystack
 --------
