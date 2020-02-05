@@ -66,7 +66,11 @@ Clicking on a Model, you will see the following:
 
 The Meter Production shows the actual energy saved, or "produced," as calculated by this particular model for this meter.  It is a time series of kWh and calculated in either hourly or daily increments, depending 
 on the type of model you have.  It may be counterintuitive to think that energy savings has produced energy, but remember that we'll ultimately be considering energy efficiency savings, renewable energy production,
-and battery stored energy in the same way: More energy for the benefit of the users.
+and battery stored energy in the same way: More energy for the consumer.  Or, as we like to say, "Energy efficiency is an asset, not an expense."
+
+Below the Meter Production is a history of the financial value of the energy produced (or saved) as calculated by this Model, based on this Meter's rate plan.  It is always aggregated by the billing interval of the 
+Meter's rate plan, even if the particular Model was only active during part of the month.
+
 
 
 Equipment
