@@ -18,6 +18,7 @@
 from .base import OpentapsSeasTestCase
 from django.db import connections
 from opentaps_seas.party.models import Party
+from opentaps_seas.party.party import DummyParty
 
 
 class PartyTests(OpentapsSeasTestCase):
@@ -28,6 +29,19 @@ class PartyTests(OpentapsSeasTestCase):
                 VALUES (%s, %s, %s)""".format("party_party")
             c.execute(sql, [10000, 'test01', 'dummy'])
             c.execute(sql, [10001, 'test02', 'dummy'])
+
+        DummyParty.parties['test01'] = {
+                    'name': 'FirstName LastName test01',
+                    'address': 'test01 Somewhere St',
+                    'email': 'email_test01@example.org',
+                    'phone_number': '310-11111101'
+                    }
+        DummyParty.parties['test02'] = {
+                    'name': 'FirstName LastName test02',
+                    'address': 'test02 Somewhere St',
+                    'email': 'email_test02@example.org',
+                    'phone_number': '310-11111102'
+                    }
 
     def tearDown(self):
         self._cleanup_data()
@@ -45,10 +59,10 @@ class PartyTests(OpentapsSeasTestCase):
         self.assertEqual(party.get_name(), 'FirstName LastName test01')
         self.assertEqual(party.get_email(), 'email_test01@example.org')
         self.assertEqual(party.get_address(), 'test01 Somewhere St')
-        self.assertEqual(party.get_phone_number(), '310-11111111')
+        self.assertEqual(party.get_phone_number(), '310-11111101')
 
         party = Party.objects.get(party_id=10001)
         self.assertEqual(party.get_name(), 'FirstName LastName test02')
         self.assertEqual(party.get_email(), 'email_test02@example.org')
         self.assertEqual(party.get_address(), 'test02 Somewhere St')
-        self.assertEqual(party.get_phone_number(), '310-11111111')
+        self.assertEqual(party.get_phone_number(), '310-11111102')

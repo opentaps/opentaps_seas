@@ -34,14 +34,39 @@ class BaseParty:
 
 
 class DummyParty(BaseParty):
+    parties = {
+        'dummy01': {'name': 'FirstName LastName 1',
+                    'address': '1 Somewhere St',
+                    'email': 'email_dummy01@example.org',
+                    'phone_number': '310-11111111'
+                    },
+        'dummy02': {'name': 'FirstName LastName 2',
+                    'address': '2 Somewhere St',
+                    'email': 'email_dummy02@example.org',
+                    'phone_number': '310-22222222'
+                    },
+    }
+
     def get_name(self):
-        return "FirstName LastName " + self.party_external_id
+        party = self.parties.get(self.party_external_id)
+        if party:
+            return party.get('name')
+        return super().get_name()
 
     def get_address(self):
-        return self.party_external_id + " Somewhere St"
+        party = self.parties.get(self.party_external_id)
+        if party:
+            return party.get('address')
+        return super().get_address()
 
     def get_email(self):
-        return "email_" + self.party_external_id + "@example.org"
+        party = self.parties.get(self.party_external_id)
+        if party:
+            return party.get('email')
+        return super().get_email()
 
     def get_phone_number(self):
-        return "310-11111111"
+        party = self.parties.get(self.party_external_id)
+        if party:
+            return party.get('phone_number')
+        return super().get_phone_number()
