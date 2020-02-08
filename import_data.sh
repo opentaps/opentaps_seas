@@ -20,7 +20,7 @@
 # ahu|entity|geo|tag|tagrule|timezone|unit_of_measure|weather_station or all_data
 # other arguments are what python script expected, i.e.
 # [all|seed|demo] [clean] [run_rules] [ahu_no_point]
-
+set -e
 ARGS=$*
 
 DEMO=0
@@ -43,6 +43,7 @@ done
 if [ "$1" == "all_data" ]; then
     echo "Import all data"
     python manage.py runscript import_tags --script-args $ARGS
+    python manage.py runscript import_statuses --script-args $ARGS
     python manage.py runscript import_unit_of_measure --script-args $ARGS
     python manage.py runscript import_weather_stations --script-args $ARGS
     python manage.py runscript import_entities --script-args $ARGS
@@ -70,6 +71,9 @@ else
     fi
     if [ "$1" == "timezone" ]; then
         python manage.py runscript import_timezones --script-args $ARGS
+    fi
+    if [ "$1" == "status" ]; then
+        python manage.py runscript import_statuses --script-args $ARGS
     fi
     if [ "$1" == "unit_of_measure" ]; then
         python manage.py runscript import_unit_of_measure --script-args $ARGS

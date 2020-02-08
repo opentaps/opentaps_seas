@@ -59,10 +59,22 @@ from .forms import TopicTagRuleSetRunForm
 from .forms import TopicTagRuleRunForm
 from .forms import EquipmentCreateForm
 from .forms import TagImportForm
+from .forms import FinancialTransactionUpdateForm
+from .forms import FinancialTransactionNoteForm
+from .forms import FinancialTransactionNoteUpdateForm
+from .forms import FinancialTransactionNoteDeleteForm
+from .forms import FinancialTransactionLinkForm
+from .forms import FinancialTransactionFileDeleteForm
+from .forms import FinancialTransactionFileUpdateForm
+from .forms import FinancialTransactionFileUploadForm
 from .models import Entity
 from .models import EntityFile
 from .models import EntityNote
 from .models import EquipmentView
+from .models import FinancialTransaction
+from .models import FinancialTransactionHistory
+from .models import FinancialTransactionFile
+from .models import FinancialTransactionNote
 from .models import Geo
 from .models import ListableEntity
 from .models import ModelView
@@ -321,6 +333,37 @@ class SiteFilter(FilterSet):
             | Q(state__icontains=value)
             | Q(area__icontains=value)
         )
+
+
+class FinancialTransactionTable(Table):
+    financial_transaction_id = Column(verbose_name='ID', linkify=lambda record: record.get_absolute_url())
+    meter = Column(linkify=True)
+    meter__site = Column(linkify=True)
+
+    class Meta:
+        model = FinancialTransaction
+        fields = (
+            'transaction_datetime',
+            'financial_transaction_id',
+            'from_party',
+            'to_party',
+            'amount',
+            'status',
+            'meter'
+            )
+        order_by = 'transaction_datetime'
+
+
+class FinancialTransactionHistoryTable(Table):
+
+    class Meta:
+        model = FinancialTransactionHistory
+        fields = (
+            'as_of_datetime',
+            'history',
+            'created_by_user'
+            )
+        order_by = '-as_of_datetime'
 
 
 class TopicTable(Table):
@@ -1022,6 +1065,220 @@ class EquipmentCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
 
 
 equipment_create_view = EquipmentCreateView.as_view()
+
+
+class TransactionListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):
+    model = FinancialTransaction
+    table_class = FinancialTransactionTable
+    table_pagination = {'per_page': 10}
+    template_name = 'core/transaction_list.html'
+
+
+transaction_list_view = TransactionListView.as_view()
+
+
+class TransactionDetailView(LoginRequiredMixin, DetailView):
+    model = FinancialTransaction
+    slug_field = "financial_transaction_id"
+    slug_url_kwarg = "financial_transaction_id"
+    template_name = 'core/transaction_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj_id = self.kwargs["financial_transaction_id"]
+
+        # check for files
+        context['file_upload_form'] = {
+            'url': reverse("core:transaction_file_upload", kwargs={"financial_transaction_id": obj_id}),
+            'link_add_url': reverse("core:transaction_link", kwargs={"financial_transaction_id": obj_id}),
+            'params': [
+                {'key': 'financial_transaction', 'value': obj_id}
+            ]
+        }
+
+        # check for notes
+        context['notes_form'] = {
+            'url': reverse("core:transaction_note", kwargs={"financial_transaction_id": obj_id}),
+            'params': [
+                {'key': 'financial_transaction', 'value': obj_id}
+            ]
+        }
+        return context
+
+
+transaction_detail_view = TransactionDetailView.as_view()
+
+
+class TransactionEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
+    model = FinancialTransaction
+    slug_field = "financial_transaction_id"
+    slug_url_kwarg = "financial_transaction_id"
+    template_name = 'core/transaction_edit.html'
+    form_class = FinancialTransactionUpdateForm
+
+
+transaction_edit_view = TransactionEditView.as_view()
+
+
+class TransactionDeleteView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
+    model = FinancialTransaction
+    slug_field = "financial_transaction_id"
+    slug_url_kwarg = "financial_transaction_id"
+    template_name = 'core/transaction_delete.html'
+    success_url = reverse_lazy('core:transaction_list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        try:
+            self.object.delete()
+        except ProtectedError:
+            messages.add_message(request, messages.ERROR, 'Can not delete this Transaction!')
+            return HttpResponseRedirect(self.object.get_absolute_url())
+
+        return HttpResponseRedirect(success_url)
+
+
+transaction_delete_view = TransactionDeleteView.as_view()
+
+
+@login_required()
+def transaction_note(request, financial_transaction_id):
+    if request.method == 'GET':
+        items = []
+        _read_notes(FinancialTransactionNote.objects.filter(financial_transaction_id=financial_transaction_id), items)
+        return JsonResponse({'items': items})
+    elif request.method == 'POST':
+        if request.POST.get('update'):
+            form = FinancialTransactionNoteUpdateForm(request.POST)
+            if form.is_valid():
+                try:
+                    e = FinancialTransactionNote.objects.get(id=form.cleaned_data['id'],
+                                                             financial_transaction_id=financial_transaction_id)
+                except FinancialTransactionNote.DoesNotExist:
+                    return JsonResponse({'errors': 'FinancialTransactionNote not found {} : {}'.format(
+                        form.cleaned_data['id'], form.cleaned_data['entity_id'])}, status=404)
+                e.content = form.cleaned_data['content']
+                e.save()
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        elif request.POST.get('delete'):
+            form = FinancialTransactionNoteDeleteForm(request.POST)
+            if form.is_valid():
+                FinancialTransactionNote.objects.get(id=form.cleaned_data['id'],
+                                                     financial_transaction_id=financial_transaction_id).delete()
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        else:
+            form = FinancialTransactionNoteForm(request.POST)
+            if form.is_valid():
+                e = form.save(commit=False)
+                e.owner = request.user
+                e.save()
+                return JsonResponse({'success': 1, 'results': [{
+                    'id': e.id,
+                    'content': e.content,
+                    'owner': e.owner.username,
+                    'created': utils.format_date(e.created)
+                }]})
+            else:
+                return JsonResponse({'errors': form.errors})
+
+
+@login_required()
+def transaction_file_upload(request, financial_transaction_id):
+    if request.method == 'GET':
+        items = []
+        _read_files(FinancialTransactionFile.objects.filter(financial_transaction_id=financial_transaction_id), items)
+        return JsonResponse({'items': items})
+    elif request.method == 'POST':
+        if request.POST.get('update'):
+            form = FinancialTransactionFileUpdateForm(request.POST)
+            if form.is_valid():
+                e = FinancialTransactionFile.objects.get(id=form.cleaned_data['id'],
+                                                         financial_transaction_id=financial_transaction_id)
+                e.comments = form.cleaned_data['comments']
+                e.save()
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        elif request.POST.get('delete'):
+            form = FinancialTransactionFileDeleteForm(request.POST)
+            if form.is_valid():
+                try:
+                    e = FinancialTransactionFile.objects.get(id=form.cleaned_data['id'],
+                                                             financial_transaction_id=financial_transaction_id)
+                except FinancialTransactionFile.DoesNotExist:
+                    return JsonResponse({'errors': 'FinancialTransactionFile not found {} : {}'.format(
+                        form.cleaned_data['id'], financial_transaction_id)}, status=404)
+                e.delete()
+
+                return JsonResponse({'success': 1, 'id': form.cleaned_data['id']})
+            else:
+                return JsonResponse({'errors': form.errors})
+        else:
+            form = FinancialTransactionFileUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                f = form.cleaned_data['uploaded_file']
+                file_obj = File(f, name=f.name)
+                filer_file = FilerFile.objects.create(owner=request.user,
+                                                      original_filename=f.name,
+                                                      file=file_obj)
+                e = FinancialTransactionFile.objects.create(financial_transaction_id=financial_transaction_id,
+                                                            comments=form.cleaned_data['comments'],
+                                                            owner=request.user,
+                                                            uploaded_file=filer_file)
+                # note try to make the thumbnail after upload, but catch errors since it may not be an image
+                try:
+                    thumb = get_thumbnailer(e.uploaded_file)['xs_thumb'].url
+                    e.can_thumbnail = True
+                    e.save()
+                except Exception:
+                    thumb = None
+                return JsonResponse({'success': 1, 'results': [{
+                    'id': e.id,
+                    'comments': e.comments,
+                    'owner': e.owner.username,
+                    'created': utils.format_date(e.created),
+                    'thumbnail_url': thumb,
+                    'url': e.uploaded_file.url,
+                    'name': e.uploaded_file.original_filename,
+                    'size': e.uploaded_file.size,
+                }]})
+            else:
+                return JsonResponse({'errors': form.errors})
+
+
+@require_POST
+@login_required()
+def transaction_link(request, financial_transaction_id):
+    if request.POST.get('update'):
+        try:
+            e = FinancialTransactionFile.objects.get(id=request.POST.get('id'),
+                                                     financial_transaction_id=financial_transaction_id)
+        except FinancialTransactionFile.DoesNotExist:
+            return JsonResponse({'errors': 'FinancialTransactionFile not found {} : {}'.format(
+                request.POST.get('id'), financial_transaction_id)}, status=404)
+        form = FinancialTransactionLinkForm(request.POST, instance=e)
+    else:
+        form = FinancialTransactionLinkForm(request.POST)
+    if form.is_valid():
+        e = form.save(commit=False)
+        e.owner = request.user
+        e.save()
+        return JsonResponse({'success': 1, 'results': [{
+            'id': e.id,
+            'comments': e.comments,
+            'owner': e.owner.username,
+            'url': e.link,
+            'name': e.link_name,
+            'created': utils.format_date(e.created)
+        }]})
+    else:
+        return JsonResponse({'errors': form.errors})
 
 
 class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):

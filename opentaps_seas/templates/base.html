@@ -116,6 +116,9 @@
             <li class="nav-item {% if 'core:topic' in request.resolver_match.view_name %}active{% endif %}">
               <a class="nav-link" href="{% url 'core:topic_list' %}">{% trans "Topics" %} {% if 'core:topic' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
             </li>
+            <li class="nav-item {% if 'core:transaction' in request.resolver_match.view_name %}active{% endif %}">
+              <a class="nav-link" href="{% url 'core:transaction_list' %}">{% trans "Transactions" %} {% if 'core:transaction' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+            </li>
             <li class="nav-item {% if 'core:model_' in request.resolver_match.view_name %}active{% endif %}">
               <a class="nav-link" href="{% url 'core:model_list' %}">{% trans "Models" %} {% if 'core:model_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
             </li>

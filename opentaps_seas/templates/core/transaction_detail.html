@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load django_tables2 %}
+{% load static i18n %}
+{% block title %}Transaction: {{ object.financial_transaction_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+    {% block inner_content %}
+      <h2>Transaction {{ object.financial_transaction_id }}</h2>
+
+      <div class="ml-1">
+        <p><b>Date:</b> {{ object.transaction_datetime }}</p>
+        <p><b>Status:</b> {{ object.status }}</p>
+        <p><b>Type:</b> {{ object.transaction_type }}</p>
+        <p><b>Amount:</b> {{ object.uom.symbol }} {{ object.amount }}</p>
+        <p><b>From:</b> {{ object.from_party }}</p>
+        <p><b>To:</b> {{ object.to_party }}</p>
+        <p><b>Billing Period From:</b> {{ object.from_datetime }}</p>
+        <p><b>Billing Period Thru:</b> {{ object.thru_datetime }}</p>
+        <p><b>Source:</b> {{ object.source }}</p>
+        {% if object.meter %}
+          <p><b>Meter:</b> <a href="{{ object.meter.get_absolute_url }}">{{ object.meter }}</a></p>
+          {% if object.meter and object.meter.site %}
+            <p><b>Site:</b> <a href="{{ object.meter.site.get_absolute_url }}">{{ object.meter.site }}</a></p>
+          {% endif %}
+        {% endif %}
+        <p><b>Created:</b> {{ object.created_datetime }}{% if object.created_by_user %} by {{ object.created_by_user }}{% endif %}</p>
+      </div>
+
+      {% if object.financialtransactionhistory_set.exists %}
+        <h3 class="mt-4">History</h3>
+        <ul class="list-group mb-4">
+        {% for h in object.financialtransactionhistory_set.all %}
+            <li class="list-group-item">{{ h.history|linebreaks }}<small class="text-muted">by {{ h.created_by_user }} {{ h.as_of_datetime }}</small></li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="form-group d-flex justify-content-around mt-2">
+        <a href="{% url 'core:transaction_delete' object.financial_transaction_id %}" class="btn btn-danger col-5" role="button"><i class="fa fa-trash mr-2"></i> Delete</a>
+        {% if object.can_edit %}
+        <a href="{% url 'core:transaction_edit' object.financial_transaction_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
+        {% else %}
+        <a href="#" class="btn btn-primary col-5 disabled" role="button" aria-disabled="true"><i class="fa fa-edit mr-2"></i> Edit</a>
+        {% endif %}
+      </div>
+    {% endblock inner_content %}
+    </div>
+  </div>
+
+  {% if file_upload_form %}
+    {% include "core/_upload.html" with form_title='Upload File' link_form_title='Add Link' form=file_upload_form items=files %}
+  {% endif %}
+
+  {% if notes_form %}
+    {% include "core/_notes.html" with form_title='Add Note' form=notes_form items=notes %}
+  {% endif %}
+
+</div>
+{% endblock content %}

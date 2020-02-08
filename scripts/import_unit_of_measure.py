@@ -35,6 +35,8 @@ def clean():
         c.execute("DELETE FROM core_weather_history;")
         c.execute("DELETE FROM core_site_weather_stations;")
         c.execute("DELETE FROM core_weather_station;")
+        c.execute("DELETE FROM core_financial_transaction_history;")
+        c.execute("DELETE FROM core_financial_transaction;")
         c.execute("DELETE FROM core_unit_of_measure_conversion;")
         c.execute("DELETE FROM core_unit_of_measure;")
         c.close()

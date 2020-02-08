@@ -23,6 +23,9 @@ from . import utils
 from .models import EntityFile
 from .models import EntityNote
 from .models import Entity
+from .models import FinancialTransaction
+from .models import FinancialTransactionNote
+from .models import FinancialTransactionFile
 from .models import ModelView
 from .models import Meter
 from .models import MeterHistory
@@ -580,6 +583,71 @@ class EntityLinkForm(forms.ModelForm):
     class Meta:
         model = EntityFile
         fields = ["id", "entity_id", "comments", "owner", "link", "link_name"]
+
+
+class FinancialTransactionUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = FinancialTransaction
+        fields = [
+            "transaction_datetime",
+            "status",
+            "transaction_type",
+            "amount",
+            "uom",
+            "from_party",
+            "to_party",
+            "from_datetime",
+            "thru_datetime",
+            "source",
+            "meter"
+            ]
+
+
+class FinancialTransactionNoteForm(forms.ModelForm):
+    content = forms.CharField(widget=forms.Textarea, required=True)
+
+    class Meta:
+        model = FinancialTransactionNote
+        fields = ["id", "financial_transaction", "content", "owner"]
+
+
+class FinancialTransactionNoteUpdateForm(forms.Form):
+    id = forms.IntegerField()
+    financial_transaction = forms.IntegerField()
+    content = forms.CharField(widget=forms.Textarea, required=True)
+
+
+class FinancialTransactionNoteDeleteForm(forms.Form):
+    id = forms.IntegerField()
+    financial_transaction = forms.IntegerField()
+
+
+class FinancialTransactionFileUploadForm(forms.Form):
+    financial_transaction = forms.IntegerField()
+    comments = forms.CharField(widget=forms.Textarea, required=False)
+    uploaded_file = forms.FileField()
+
+
+class FinancialTransactionFileDeleteForm(forms.Form):
+    id = forms.IntegerField()
+    financial_transaction = forms.IntegerField()
+
+
+class FinancialTransactionFileUpdateForm(forms.Form):
+    id = forms.IntegerField()
+    financial_transaction = forms.IntegerField()
+    comments = forms.CharField(widget=forms.Textarea, required=False)
+
+
+class FinancialTransactionLinkForm(forms.ModelForm):
+    comments = forms.CharField(widget=forms.Textarea, required=False)
+    link = forms.URLField()
+    link_name = forms.CharField()
+
+    class Meta:
+        model = FinancialTransactionFile
+        fields = ["id", "financial_transaction", "comments", "owner", "link", "link_name"]
 
 
 class TopicAssocForm(forms.Form):

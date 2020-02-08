@@ -1,0 +1,8 @@
+type,name,description
+transaction,Created,Created
+transaction,Pending Review,Needs review
+transaction,In Dispute,In dispute between parties
+transaction,Approved,Approved 
+transaction,Denied,Denied
+transaction,Completed,Completed
+transaction,Error,Cannot be completed due to technical error

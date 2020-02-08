@@ -40,6 +40,7 @@ from django.db.models import TextField
 from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_save
 from django.db.models import Q
 from django.db.utils import DatabaseError
 from django.dispatch import receiver
@@ -51,6 +52,7 @@ from filer.fields.file import FilerFileField
 from filer.models import Image as FilerFile
 from cratedb.fields import HStoreField as CrateHStoreField
 from cratedb.fields import ArrayField as CrateArrayField
+from ..party.models import Party
 
 logger = logging.getLogger(__name__)
 
@@ -688,6 +690,19 @@ def sync_tags_to_crate_entity(row, retried=False):
             c.execute(sql, params_list)
 
 
+class Status(models.Model):
+    status_id = CharField(_("Status ID"), max_length=255, primary_key=True)
+    name = CharField(_("Name"), max_length=255)
+    type = CharField(_("Type"), max_length=255)
+    description = CharField(_("Description"), max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'core_status'
+
+    def __str__(self):
+        return self.name
+
+
 class UnitOfMeasure(models.Model):
     uom_id = CharField(max_length=255, primary_key=True)
     code = CharField(max_length=255)
@@ -700,8 +715,6 @@ class UnitOfMeasure(models.Model):
 
     def __str__(self):
         t = self.description or self.code or self.uom_id
-        if self.type:
-            return "{} ({})".format(t, self.type)
         return t
 
     @property
@@ -1050,3 +1063,175 @@ class SiteWeatherStations(models.Model):
 
     class Meta:
         db_table = 'core_site_weather_stations'
+
+
+class FinancialTransaction(models.Model):
+    financial_transaction_id = AutoField(_("Financial Transaction ID"), primary_key=True, auto_created=True)
+    uom = ForeignKey(UnitOfMeasure, related_name='+', on_delete=models.DO_NOTHING, verbose_name='Currency',
+                     limit_choices_to={'type': 'currency'})
+    amount = FloatField(_("Amount"))
+    meter = ForeignKey(Meter, null=True, blank=True, on_delete=models.DO_NOTHING)
+    from_party = ForeignKey(Party, null=True, blank=True, on_delete=models.DO_NOTHING,
+                            related_name='financial_transactions_from')
+    to_party = ForeignKey(Party, null=True, blank=True, on_delete=models.DO_NOTHING,
+                          related_name='financial_transactions_to')
+    transaction_datetime = DateTimeField(_("Transaction Date"), default=now)
+    from_datetime = DateTimeField(_("Transaction Billing From Date"), default=now)
+    thru_datetime = DateTimeField(_("Transaction Billing Thru Date"), null=True, blank=True)
+    transaction_type = CharField(_("Transaction Type"), max_length=255)
+    status = ForeignKey(Status, related_name='+', on_delete=models.DO_NOTHING,
+                        limit_choices_to={'type': 'transaction'})
+    source = CharField(_("Source"), max_length=255)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def get_absolute_url(self):
+        return reverse("core:transaction_detail", kwargs={"financial_transaction_id": self.financial_transaction_id})
+
+    def can_edit(self):
+        # only allow Created transactions to be edited
+        return 'transaction_created' == self.status_id
+
+    def can_delete(self):
+        return True
+
+    class Meta:
+        db_table = 'core_financial_transaction'
+
+
+class FinancialTransactionNote(models.Model):
+    financial_transaction = ForeignKey(FinancialTransaction, on_delete=models.DO_NOTHING)
+    content = TextField(_("Comments"), blank=True)
+    created = DateTimeField(_("Created Date"), default=now)
+    owner = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+
+class FinancialTransactionFile(models.Model):
+    financial_transaction = ForeignKey(FinancialTransaction, on_delete=models.DO_NOTHING)
+    comments = TextField(_("Comments"), blank=True)
+    created = DateTimeField(_("Created Date"), default=now)
+    owner = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    uploaded_file = FilerFileField(null=True, blank=True, related_name="transaction_file", on_delete=models.CASCADE)
+    can_thumbnail = BooleanField(default=False)
+    link = TextField(blank=True)
+    link_name = TextField(blank=True)
+
+
+class FinancialTransactionHistory(models.Model):
+    financial_transaction_history_id = AutoField(_("Financial Transaction History ID"),
+                                                 primary_key=True, auto_created=True)
+    financial_transaction = ForeignKey(FinancialTransaction, on_delete=models.DO_NOTHING)
+    as_of_datetime = DateTimeField(_("History Date"), default=now)
+    history = CharField(_("History"), max_length=255, blank=True, null=True)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        db_table = 'core_financial_transaction_history'
+
+
+# below we want to get the current user from the request in the signal handlers
+# so this allows to fetch it from the stack:
+def get_current_user_from_stack():
+    import inspect
+    for frame_record in inspect.stack():
+        if frame_record[3] == 'get_response':
+            request = frame_record[0].f_locals['request']
+            return request.user
+    else:
+        return None
+
+
+@receiver(pre_save, sender=FinancialTransaction)
+def on_change(sender, instance, raw, using, **kwargs):
+    if instance.financial_transaction_id is None:
+        # new object will be created
+        pass
+    else:
+        change = ''
+        previous = FinancialTransaction.objects.get(financial_transaction_id=instance.financial_transaction_id)
+        if previous.status != instance.status:
+            change += 'Status changed from {} to {}\n'.format(previous.status, instance.status)
+        if previous.amount != instance.amount:
+            change += 'Amount changed from {} to {}\n'.format(previous.amount, instance.amount)
+        if previous.uom != instance.uom:
+            change += 'Currency changed from {} to {}\n'.format(previous.uom, instance.uom)
+        if previous.transaction_type != instance.transaction_type:
+            change += 'Type changed from {} to {}\n'.format(previous.transaction_type, instance.transaction_type)
+        if previous.from_party != instance.from_party:
+            change += 'From Party changed from {} to {}\n'.format(previous.from_party, instance.from_party)
+        if previous.to_party != instance.to_party:
+            change += 'To Party changed from {} to {}\n'.format(previous.to_party, instance.to_party)
+        if previous.transaction_type != instance.transaction_type:
+            change += 'Type changed from {} to {}\n'.format(previous.transaction_type, instance.transaction_type)
+        if previous.source != instance.source:
+            change += 'Source changed from {} to {}\n'.format(previous.source, instance.source)
+        if previous.meter != instance.meter:
+            change += 'Meter changed from {} to {}\n'.format(previous.meter, instance.meter)
+        if previous.from_datetime != instance.from_datetime:
+            change += 'Billing From Date changed from {} to {}\n'.format(previous.from_datetime, instance.from_datetime)
+        if previous.thru_datetime != instance.thru_datetime:
+            change += 'Billing Thru Date changed from {} to {}\n'.format(previous.thru_datetime, instance.thru_datetime)
+
+    FinancialTransactionHistory.objects.create(
+        financial_transaction_id=instance.financial_transaction_id,
+        history=change,
+        created_by_user=get_current_user_from_stack())
+
+
+@receiver(post_delete, sender=FinancialTransactionFile, dispatch_uid='financialtransactionfile_delete_signal')
+def financial_transaction_file_deleted(sender, instance, using, **kwargs):
+    logger.info('financial_transaction_file_deleted: id=%s uploaded_file=%s', instance.id, instance.uploaded_file_id)
+    change = "Removed FinancialTransactionFile {}".format(instance.id)
+    if instance.uploaded_file_id:
+        c = FinancialTransactionFile.objects.filter(uploaded_file_id=instance.uploaded_file_id).count()
+        if c == 0:
+            logger.info('entity_file_deleted: file no longer referenced, deleting id=%s', instance.uploaded_file_id)
+            FilerFile.objects.get(id=instance.uploaded_file_id).delete()
+        change = "Removed file {}".format(instance.uploaded_file.original_filename)
+    elif instance.link:
+        change = "Removed link {}".format(instance.link)
+
+    FinancialTransactionHistory.objects.create(
+        financial_transaction_id=instance.financial_transaction_id,
+        history=change,
+        created_by_user=get_current_user_from_stack())
+
+
+@receiver(post_save, sender=FinancialTransactionFile, dispatch_uid='financialtransactionfile_save_signal')
+def financial_transaction_file_saved(sender, instance, created, raw, using, **kwargs):
+    logger.info('financial_transaction_file_saved: id=%s created=%s', instance.id, created)
+    if created:
+        change = "Added file"
+    else:
+        change = "Modified file"
+
+    FinancialTransactionHistory.objects.create(
+        financial_transaction_id=instance.financial_transaction_id,
+        history=change,
+        created_by_user=get_current_user_from_stack())
+
+
+@receiver(post_delete, sender=FinancialTransactionNote, dispatch_uid='financialtransactionnote_delete_signal')
+def financial_transaction_note_deleted(sender, instance, using, **kwargs):
+    logger.info('financial_transaction_note_deleted: id=%s', instance.id)
+    change = "Removed note"
+
+    FinancialTransactionHistory.objects.create(
+        financial_transaction_id=instance.financial_transaction_id,
+        history=change,
+        created_by_user=get_current_user_from_stack())
+
+
+@receiver(post_save, sender=FinancialTransactionNote, dispatch_uid='financialtransactionnote_save_signal')
+def financial_transaction_note_saved(sender, instance, created, raw, using, **kwargs):
+    logger.info('financial_transaction_note_saved: id=%s created=%s', instance.id, created)
+    if created:
+        change = "Added note"
+    else:
+        change = "Modified note"
+
+    FinancialTransactionHistory.objects.create(
+        financial_transaction_id=instance.financial_transaction_id,
+        history=change,
+        created_by_user=get_current_user_from_stack())
