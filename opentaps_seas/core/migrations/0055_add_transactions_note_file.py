@@ -13,7 +13,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('filer', '0012_merge_20191212_1810'),
         ('core', '0054_financial_transaction'),
     ]
 
