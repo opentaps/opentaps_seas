@@ -51,15 +51,6 @@
         <p><b>Created:</b> {{ object.created_datetime }}{% if object.created_by_user %} by {{ object.created_by_user }}{% endif %}</p>
       </div>
 
-      {% if object.financialtransactionhistory_set.exists %}
-        <h3 class="mt-4">History</h3>
-        <ul class="list-group mb-4">
-        {% for h in object.financialtransactionhistory_set.all %}
-            <li class="list-group-item">{{ h.history|linebreaks }}<small class="text-muted">by {{ h.created_by_user }} {{ h.as_of_datetime }}</small></li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-
       <div class="form-group d-flex justify-content-around mt-2">
         <a href="{% url 'core:transaction_delete' object.financial_transaction_id %}" class="btn btn-danger col-5" role="button"><i class="fa fa-trash mr-2"></i> Delete</a>
         {% if object.can_edit %}
@@ -78,6 +69,24 @@
 
   {% if notes_form %}
     {% include "core/_notes.html" with form_title='Add Note' form=notes_form items=notes %}
+  {% endif %}
+
+  {% if object.financialtransactionhistory_set.exists %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h3>History</h3>
+      <div class="container notes-table ftable">
+      {% for h in object.financialtransactionhistory_set.all %}
+        <div scope="row" class="row ftable-row align-items-start justify-content-between">
+          <div class="owner-and-comments col-8 col-lg-auto row order-lg-2 order-1 text-nowrap m-0">{{ h.created_by_user }} <span class="ml-2 text-muted">{{ h.as_of_datetime }}</span></div>
+          <div class="comments col-12 col-lg-8 order-3 order-lg-1">
+            {{ h.history|linebreaks }}
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
   {% endif %}
 
 </div>
