@@ -26,6 +26,9 @@ def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
         # delete all related tables first_row
+        c.execute("DELETE FROM core_financialtransactionfile;")
+        c.execute("DELETE FROM core_financialtransactionnote;")
+        c.execute("DELETE FROM core_financial_transaction_history;")
         c.execute("DELETE FROM core_financial_transaction;")
         c.execute("DELETE FROM core_status;")
         c.close()

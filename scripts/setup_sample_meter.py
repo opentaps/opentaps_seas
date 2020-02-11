@@ -15,9 +15,12 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+from datetime import timedelta
 from django.db import connections
 from opentaps_seas.eemeter import utils as eemeter_utils
 from opentaps_seas.core import utils as core_utils
+from opentaps_seas.core.models import FinancialTransaction
+from opentaps_seas.party.models import Party
 
 
 def clean():
@@ -55,7 +58,44 @@ def import_data(which):
         # setup a sample meter and calcualte the savings
         site, meter, model = eemeter_utils.setup_demo_sample_models('demo-site-1', calc_savings=True)
         # setup a demo rate plan and calculate the financial values
-        core_utils.setup_sample_rate_plan(meter, price=0.2, calc_financials=True)
+        rp = core_utils.setup_sample_rate_plan(meter, price=0.2)
+        results = core_utils.calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
+        # ensure we have parties
+        p1 = Party.objects.filter(party_external_id='party1').first()
+        if not p1:
+            p1 = Party.objects.create(party_external_id='party1', source='example')
+        p2 = Party.objects.filter(party_external_id='party2').first()
+        if not p2:
+            p2 = Party.objects.create(party_external_id='party2', source='example')
+        for result in results:
+            # create financial transaction which from Party1 to Party2 the meter financial
+            # value 21 days after the ending of the billing cycle if the meter financial
+            # value is positive, or Party2 pay to Party1 if it negative.
+            amount = result.amount
+            if not amount:
+                continue
+            amount = round(amount, 2)
+            if not amount:
+                continue
+            from_party = p1
+            to_party = p2
+            if amount < 0:
+                from_party = p2
+                to_party = p1
+                amount = -amount
+            FinancialTransaction.objects.create(
+                from_party=from_party,
+                to_party=to_party,
+                transaction_datetime=result.thru_datetime + timedelta(days=21),
+                amount=amount,
+                uom=result.uom,
+                meter=meter,
+                source=result.source,
+                transaction_type='Meter Financial Value',
+                status_id='transaction_created',
+                from_datetime=result.from_datetime,
+                thru_datetime=result.thru_datetime
+                )
 
 
 def print_help():
