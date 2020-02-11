@@ -67,6 +67,8 @@ from .forms import FinancialTransactionLinkForm
 from .forms import FinancialTransactionFileDeleteForm
 from .forms import FinancialTransactionFileUpdateForm
 from .forms import FinancialTransactionFileUploadForm
+from .models import date_to_string
+from .models import datetime_to_string
 from .models import Entity
 from .models import EntityFile
 from .models import EntityNote
@@ -2746,7 +2748,7 @@ def point_data_csv(request, point, site=None, equip=None):
     pseudo_buffer = Echo()
     writer = csv.writer(pseudo_buffer)
     response = StreamingHttpResponse(
-        (writer.writerow([datetime.utcfromtimestamp(int(row[0]) / 1000).strftime('%Y-%m-%d %H:%M:%S'), row[1]])
+        (writer.writerow([datetime_to_string(datetime.utcfromtimestamp(int(row[0]) / 1000)), row[1]])
             for row in rows),
         content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename="{}_{}_{}_{}_{}_{}.csv"'.format(
@@ -3335,7 +3337,7 @@ def meter_production_data_json(request, meter):
                 meter_data = []
                 meter_data_map[data_key] = meter_data
             # Prevent adding duplicates
-            datetime = data.from_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            datetime = datetime_to_string(data.from_datetime)
             if meter_data and datetime == meter_data[-1]['datetime']:
                 continue
             value = data.net_value
@@ -3396,9 +3398,9 @@ def meter_financial_value_data_json(request, meter):
                 meter_data = []
                 meter_data_map[data_key] = meter_data
             # Prevent adding duplicates
-            datetime = data.from_datetime.strftime("%Y-%m-%d")
+            datetime = date_to_string(data.from_datetime)
             # Offset the thru_datetime by one minute so the range is inclusive
-            thru_datetime = (data.thru_datetime - timedelta(seconds=1)).strftime("%Y-%m-%d")
+            thru_datetime = date_to_string(data.thru_datetime - timedelta(seconds=1))
             if meter_data and datetime == meter_data[-1]['datetime']:
                 continue
             value = data.amount
@@ -3446,7 +3448,7 @@ def meter_data_json(request, meter):
     qs = m.meterhistory_set
     for data in qs.order_by("-as_of_datetime")[:trange]:
         # Prevent adding duplicates
-        datetime = data.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        datetime = datetime_to_string(data.as_of_datetime)
         if meter_data and datetime == meter_data[-1]['datetime']:
             continue
         value = data.value
@@ -3627,7 +3629,7 @@ def weather_data_json(request, weather_station_id):
 
     for data in qs.order_by("-as_of_datetime")[:trange]:
         # Prevent adding duplicates
-        datetime = data.as_of_datetime.astimezone(tz).strftime("%Y-%m-%d %H:%M:%S")
+        datetime = datetime_to_string(data.as_of_datetime, tz=tz)
         if weater_data and datetime == weater_data[-1]['datetime']:
             continue
         weater_data.append({

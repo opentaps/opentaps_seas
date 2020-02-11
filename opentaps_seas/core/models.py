@@ -46,6 +46,7 @@ from django.db.utils import DatabaseError
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.timezone import now
+from django.utils.timezone import get_current_timezone
 from django.utils.translation import ugettext_lazy as _
 from enum import Enum
 from filer.fields.file import FilerFileField
@@ -55,6 +56,26 @@ from cratedb.fields import ArrayField as CrateArrayField
 from ..party.models import Party
 
 logger = logging.getLogger(__name__)
+
+
+DATE_FORMAT = "%Y-%m-%d"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+def date_to_string(datetime, tz=None):
+    if not datetime:
+        return None
+    if tz:
+        datetime = datetime.astimezone(tz)
+    return datetime.strftime(DATE_FORMAT)
+
+
+def datetime_to_string(datetime, tz=None):
+    if not datetime:
+        return None
+    if tz:
+        datetime = datetime.astimezone(tz)
+    return datetime.strftime(DATETIME_FORMAT)
 
 
 class Tag(models.Model):
@@ -1169,14 +1190,22 @@ def on_change(sender, instance, raw, using, **kwargs):
         if previous.meter != instance.meter:
             change += 'Meter changed from {} to {}\n'.format(previous.meter, instance.meter)
         if previous.from_datetime != instance.from_datetime:
-            change += 'Billing From Date changed from {} to {}\n'.format(previous.from_datetime, instance.from_datetime)
+            logger.info('on_change : from_datetime from=%s to=%s', previous.from_datetime, instance.from_datetime)
+            a = datetime_to_string(previous.from_datetime, tz=get_current_timezone())
+            b = datetime_to_string(instance.from_datetime, tz=get_current_timezone())
+            if a != b:
+                change += 'Billing From Date changed from {} to {}\n'.format(a, b)
         if previous.thru_datetime != instance.thru_datetime:
-            change += 'Billing Thru Date changed from {} to {}\n'.format(previous.thru_datetime, instance.thru_datetime)
+            a = datetime_to_string(previous.thru_datetime, tz=get_current_timezone())
+            b = datetime_to_string(instance.thru_datetime, tz=get_current_timezone())
+            if a != b:
+                change += 'Billing Thru Date changed from {} to {}\n'.format(a, b)
 
-        FinancialTransactionHistory.objects.create(
-            financial_transaction_id=instance.financial_transaction_id,
-            history=change,
-            created_by_user=get_current_user_from_stack())
+        if change:
+            FinancialTransactionHistory.objects.create(
+                financial_transaction_id=instance.financial_transaction_id,
+                history=change,
+                created_by_user=get_current_user_from_stack())
 
 
 @receiver(post_delete, sender=FinancialTransactionFile, dispatch_uid='financialtransactionfile_delete_signal')
