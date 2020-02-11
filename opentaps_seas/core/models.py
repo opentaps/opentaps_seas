@@ -1173,10 +1173,10 @@ def on_change(sender, instance, raw, using, **kwargs):
         if previous.thru_datetime != instance.thru_datetime:
             change += 'Billing Thru Date changed from {} to {}\n'.format(previous.thru_datetime, instance.thru_datetime)
 
-    FinancialTransactionHistory.objects.create(
-        financial_transaction_id=instance.financial_transaction_id,
-        history=change,
-        created_by_user=get_current_user_from_stack())
+        FinancialTransactionHistory.objects.create(
+            financial_transaction_id=instance.financial_transaction_id,
+            history=change,
+            created_by_user=get_current_user_from_stack())
 
 
 @receiver(post_delete, sender=FinancialTransactionFile, dispatch_uid='financialtransactionfile_delete_signal')
