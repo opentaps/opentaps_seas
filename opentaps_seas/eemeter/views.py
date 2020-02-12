@@ -20,7 +20,7 @@ from datetime import datetime
 from datetime import timedelta
 from ..core.models import Meter
 from ..core.models import SiteView
-from ..core.views import WithBreadcrumbsMixin
+from ..core.views.common import WithBreadcrumbsMixin
 from .models import BaselineModel
 from .forms import CalcMeterSavingsForm
 from .forms import MeterModelCreateForm
