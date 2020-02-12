@@ -28,7 +28,7 @@ celery==4.4.0
 
 # Django
 # ------------------------------------------------------------------------------
-django==2.2.9
+django==2.2.10
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==4.0.0  # https://github.com/jazzband/django-model-utils
 django-allauth==0.41.0  # https://github.com/pennersr/django-allauth
@@ -47,8 +47,8 @@ djangorestframework-simplejwt==4.4.0
 django-contrib-postgres==0.0.1
 
 #filer
-boto3==1.11.9
-django-storages==1.8
+boto3==1.11.15
+django-storages==1.9.1
 django-filer==1.6.0
 
 geocoder==1.38.1
