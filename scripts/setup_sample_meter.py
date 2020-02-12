@@ -37,6 +37,8 @@ def clean():
                      (SELECT meter_id FROM core_meter WHERE weather_station_id = 'eemeter_ws');""")
         c.execute("""DELETE FROM eemeter_baselinemodel WHERE meter_id IN
                      (SELECT meter_id FROM core_meter WHERE weather_station_id = 'eemeter_ws');""")
+        c.execute("""DELETE FROM core_financial_transaction WHERE meter_id IN
+                     (SELECT meter_id FROM core_meter WHERE weather_station_id = 'eemeter_ws');""")
         c.execute("""DELETE FROM core_meter WHERE weather_station_id = 'eemeter_ws';""")
         c.execute("""DELETE FROM core_weather_station WHERE weather_station_id = 'eemeter_ws';""")
         c.close()

@@ -18,6 +18,7 @@
 import logging
 import eemeter
 import pytz
+from math import isnan
 from datetime import date
 from datetime import timedelta
 from datetime import datetime
@@ -430,18 +431,19 @@ def calc_meter_savings(meter_id, model_id, start, end, progress_observer=None):
 
         for d, v in metered_savings.iterrows():
             # logger.info('calc_meter_savings: -> {} = {}'.format(d, v.metered_savings))
-            MeterProduction.objects.create(
-                meter=meter,
-                from_datetime=d,
-                thru_datetime=d + delta,
-                meter_production_type='EEMeter Savings',
-                meter_production_reference={'BaselineModel.id': model.id},
-                error_bands=error_bands,
-                model_baseline_value=v.counterfactual_usage,
-                actual_value=v.reporting_observed,
-                net_value=v.metered_savings,
-                uom_id='energy_kWh',
-                source=source)
+            if not isnan(v.metered_savings):
+                MeterProduction.objects.create(
+                    meter=meter,
+                    from_datetime=d,
+                    thru_datetime=d + delta,
+                    meter_production_type='EEMeter Savings',
+                    meter_production_reference={'BaselineModel.id': model.id},
+                    error_bands=error_bands,
+                    model_baseline_value=v.counterfactual_usage,
+                    actual_value=v.reporting_observed,
+                    net_value=v.metered_savings,
+                    uom_id='energy_kWh',
+                    source=source)
     model.last_calc_saving_datetime = end
     model.save()
     return model, savings

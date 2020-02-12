@@ -24,6 +24,7 @@ import numpy
 import pytz
 import requests
 import re
+from math import isnan
 from .models import Entity
 from .models import EquipmentView
 from .models import PointView
@@ -1336,9 +1337,13 @@ def calc_meter_financial_values(meter_id, rate_plan_id, progress_observer=None):
                 total_amount = 0.0
             else:
                 # same billing period update our current results
-                total_amount += plan.valuate_meter_production(prod)
-                if prod.meter_production_reference:
-                    meter_production_reference.update(prod.meter_production_reference)
+                val = plan.valuate_meter_production(prod)
+                if isnan(val):
+                    pass
+                else:
+                    total_amount += val
+                    if prod.meter_production_reference:
+                        meter_production_reference.update(prod.meter_production_reference)
 
             if progress_observer:
                 progress_observer.add_progress()
