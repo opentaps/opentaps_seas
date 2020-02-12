@@ -35,14 +35,14 @@ from ..models import Topic
 from ..models import TopicTagRule
 from ..models import TopicTagRuleSet
 from ..models import SiteView
-from ..forms import TopicExportForm
-from ..forms import TopicImportForm
-from ..forms import TopicAssocForm
-from ..forms import TopicTagRuleSetImportForm
-from ..forms import TopicTagRuleSetCreateForm
-from ..forms import TopicTagRuleCreateForm
-from ..forms import TopicTagRuleSetRunForm
-from ..forms import TopicTagRuleRunForm
+from ..forms.topic import TopicExportForm
+from ..forms.topic import TopicImportForm
+from ..forms.topic import TopicAssocForm
+from ..forms.topic import TopicTagRuleSetImportForm
+from ..forms.topic import TopicTagRuleSetCreateForm
+from ..forms.topic import TopicTagRuleCreateForm
+from ..forms.topic import TopicTagRuleSetRunForm
+from ..forms.topic import TopicTagRuleRunForm
 
 from django.core.paginator import Paginator
 from django.contrib import messages

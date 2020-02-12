@@ -15,31 +15,24 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-from django.contrib import admin
+import logging
+from django import forms
 
-from .forms.entity import EntityFileUploadForm
-from .forms.tag import TagChangeForm
-from .models import EntityFile
-from .models import EntityNote
-from .models import Tag
+logger = logging.getLogger(__name__)
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-
-    form = TagChangeForm
-    add_form = TagChangeForm
-    fieldsets = (("Tag", {"fields": ("tag", "kind", "description", "details")}),)
-    list_display = ["tag", "kind", "description", "details"]
+class FileUploadForm(forms.Form):
+    entity_id = forms.CharField(max_length=255)
+    comments = forms.CharField(widget=forms.Textarea, required=False)
+    uploaded_file = forms.FileField()
 
 
-@admin.register(EntityFile)
-class EntityFileAdmin(admin.ModelAdmin):
-
-    form = EntityFileUploadForm
-    add_form = EntityFileUploadForm
-    fieldsets = (("EntityFile", {"fields": ("entity_id", "uploaded_file")}),)
-    list_display = ["id", "entity_id", "uploaded_file"]
+class FileDeleteForm(forms.Form):
+    id = forms.IntegerField()
+    entity_id = forms.CharField(max_length=255)
 
 
-admin.site.register(EntityNote)
+class FileUpdateForm(forms.Form):
+    id = forms.IntegerField()
+    entity_id = forms.CharField(max_length=255)
+    comments = forms.CharField(widget=forms.Textarea, required=False)

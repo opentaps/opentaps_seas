@@ -21,7 +21,7 @@ from .common import GoogleApiMixin
 from .common import WithBreadcrumbsMixin
 from .common import WithFilesAndNotesAndTagsMixin
 from .. import utils
-from ..forms import SiteCreateForm
+from ..forms.site import SiteCreateForm
 from ..models import Entity
 from ..models import EquipmentView
 from ..models import Geo

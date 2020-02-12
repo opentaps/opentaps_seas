@@ -27,13 +27,13 @@ from ..models import EntityFile
 from ..models import EntityNote
 from ..models import ListableEntity
 from ..models import ModelView
-from ..forms import EntityLinkForm
-from ..forms import EntityNoteDeleteForm
-from ..forms import EntityNoteForm
-from ..forms import EntityNoteUpdateForm
-from ..forms import FileDeleteForm
-from ..forms import FileUpdateForm
-from ..forms import FileUploadForm
+from ..forms.entity import EntityLinkForm
+from ..forms.entity import EntityNoteDeleteForm
+from ..forms.entity import EntityNoteForm
+from ..forms.entity import EntityNoteUpdateForm
+from ..forms.file import FileDeleteForm
+from ..forms.file import FileUpdateForm
+from ..forms.file import FileUploadForm
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin

@@ -20,9 +20,9 @@ import logging
 from .common import WithBreadcrumbsMixin
 from .common import WithFilesAndNotesAndTagsMixin
 from .. import utils
-from ..forms import ModelCreateForm
-from ..forms import ModelDuplicateForm
-from ..forms import ModelUpdateForm
+from ..forms.model import ModelCreateForm
+from ..forms.model import ModelDuplicateForm
+from ..forms.model import ModelUpdateForm
 from ..models import Entity
 from ..models import ModelView
 

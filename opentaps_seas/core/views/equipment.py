@@ -22,7 +22,7 @@ from .common import WithFilesAndNotesAndTagsMixin
 from .common import WithPointBreadcrumbsMixin
 from .point import PointTable
 from .. import utils
-from ..forms import EquipmentCreateForm
+from ..forms.equipment import EquipmentCreateForm
 from ..models import Entity
 from ..models import EquipmentView
 from ..models import PointView

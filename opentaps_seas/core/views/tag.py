@@ -18,9 +18,9 @@
 import logging
 
 from .common import WithBreadcrumbsMixin
-from ..forms import TagChangeForm
-from ..forms import TagUpdateForm
-from ..forms import TagImportForm
+from ..forms.tag import TagChangeForm
+from ..forms.tag import TagUpdateForm
+from ..forms.tag import TagImportForm
 from ..models import Tag
 from ..models import Topic
 

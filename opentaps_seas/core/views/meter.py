@@ -22,9 +22,9 @@ from math import isnan
 
 from .common import WithBreadcrumbsMixin
 from .. import utils
-from ..forms import MeterCreateForm
-from ..forms import MeterDataUploadForm
-from ..forms import MeterUpdateForm
+from ..forms.meter import MeterCreateForm
+from ..forms.meter import MeterDataUploadForm
+from ..forms.meter import MeterUpdateForm
 from ..models import date_to_string
 from ..models import datetime_to_string
 from ..models import Entity
