@@ -30,12 +30,12 @@
         <thead>
           <th>From</th>
           <th>Thru</th>
-          <th>Amount</th>
+          <th style="text-align:right">Amount</th>
         </thead>
         <tr v-for="value in serie.values">
           <td>${ value.from }</td>
           <td>${ value.thru }</td>
-          <td>${ value.symbol } ${ value.amount | amount_fmt }</td>
+          <td align="right">${ value.symbol } ${ value.amount | amount_fmt }</td>
         </tr>
       </table>
     </div>
