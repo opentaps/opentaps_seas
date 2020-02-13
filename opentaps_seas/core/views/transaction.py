@@ -66,6 +66,7 @@ class FinancialTransactionTable(Table):
         return "{} {}".format(record.uom.symbol, record.amount)
 
     class Meta:
+        attrs = {"style": "font-size:small"}
         model = FinancialTransaction
         fields = (
             'transaction_datetime',
