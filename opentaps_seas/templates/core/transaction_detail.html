@@ -32,26 +32,42 @@
     {% block inner_content %}
       <h2>Transaction {{ object.financial_transaction_id }}</h2>
 
-      <div class="ml-1">
-        <p><b>Date:</b> {{ object.transaction_datetime }}</p>
-        <p><b>Status:</b> {{ object.status }}</p>
-        <p><b>Type:</b> {{ object.transaction_type }}</p>
-        <p><b>Amount:</b> {{ object.uom.symbol }} {{ object.amount }}</p>
-        <p><b>From:</b> {{ object.from_party }}</p>
-        <p><b>To:</b> {{ object.to_party }}</p>
-        <p><b>Billing Period From:</b> {{ object.from_datetime }}</p>
-        <p><b>Billing Period Thru:</b> {{ object.thru_datetime }}</p>
-        <p><b>Source:</b> {{ object.source }}</p>
+      <div class="mb-3">
+        <div class="row">
+          <div class="col mb-2"><b>Date:</b> {{ object.transaction_datetime }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md mb-2"><b>From:</b> {{ object.from_party }}</div>
+          <div class="col-md mb-2"><b>To:</b> {{ object.to_party }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md mb-2"><b>Status:</b> {{ object.status }}</div>
+          <div class="col-md mb-2"><b>Type:</b> {{ object.transaction_type }}</div>
+        </div>
+        <div class="row">
+          <div class="col mb-2"><b>Amount:</b> {{ object.uom.symbol }} {{ object.amount }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md mb-2"><b>Billing Period From:</b> {{ object.from_datetime }}</div>
+          <div class="col-md mb-2"><b>Billing Period Thru:</b> {{ object.thru_datetime }}</div>
+        </div>
         {% if object.meter %}
-          <p><b>Meter:</b> <a href="{{ object.meter.get_absolute_url }}">{{ object.meter }}</a></p>
+        <div class="row">
+          <div class="col-lg mb-2">
           {% if object.meter and object.meter.site %}
-            <p><b>Site:</b> <a href="{{ object.meter.site.get_absolute_url }}">{{ object.meter.site }}</a></p>
+            <b>Site:</b> <a href="{{ object.meter.site.get_absolute_url }}">{{ object.meter.site }}</a>
           {% endif %}
+          </div>
+          <div class="col-lg mb-2"><b>Meter:</b> <a href="{{ object.meter.get_absolute_url }}">{{ object.meter }}</a></div>
+        </div>
         {% endif %}
-        <p><b>Created:</b> {{ object.created_datetime }}{% if object.created_by_user %} by {{ object.created_by_user }}{% endif %}</p>
+        <div class="row">
+          <div class="col-lg mb-2"><b>Created:</b> {{ object.created_datetime }}{% if object.created_by_user %} by {{ object.created_by_user }}{% endif %}</div>
+          <div class="col-lg mb-2"><b>Source:</b> {{ object.source }}</div>
+        </div>
       </div>
 
-      <div class="form-group d-flex justify-content-around mt-2">
+      <div class="form-group d-flex justify-content-around mt-4">
         <a href="{% url 'core:transaction_delete' object.financial_transaction_id %}" class="btn btn-danger col-5" role="button"><i class="fa fa-trash mr-2"></i> Delete</a>
         {% if object.can_edit %}
         <a href="{% url 'core:transaction_edit' object.financial_transaction_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
