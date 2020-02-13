@@ -36,24 +36,14 @@ class BaseParty:
 class DummyParty(BaseParty):
     parties = {
         'party1': {'name': 'Big Utility',
-                    'address': '1 Somewhere St',
-                    'email': 'billing@big-utiltiy.com',
-                    'phone_number': '213-987-6543'
-                    },
-        'party2': {'name': 'Smart Building',
-                    'address': '100 Somewhere St',
-                    'email': 'owner@smartbuilding.com',
-                    'phone_number': '310-565-8321'
-                    },
-        'party1': {'name': 'Big Utility',
-                   'address': '2 Somewhere St',
-                   'email': 'email_party1@example.org',
-                   'phone_number': '310-22222222'
+                   'address': '1 Somewhere St',
+                   'email': 'billing@big-utiltiy.com',
+                   'phone_number': '213-987-6543'
                    },
         'party2': {'name': 'Smart Building',
-                   'address': '2 Somewhere St',
-                   'email': 'email_party2@example.org',
-                   'phone_number': '310-22222222'
+                   'address': '100 Somewhere St',
+                   'email': 'owner@smartbuilding.com',
+                   'phone_number': '310-565-8321'
                    },
     }
 
