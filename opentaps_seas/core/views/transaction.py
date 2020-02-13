@@ -58,8 +58,12 @@ logger = logging.getLogger(__name__)
 
 class FinancialTransactionTable(Table):
     financial_transaction_id = Column(verbose_name='ID', linkify=lambda record: record.get_absolute_url())
+    amount = Column(attrs={'th': {'align': 'right'}, 'td': {'align': 'right'}})
     meter = Column(linkify=True)
     meter__site = Column(linkify=True)
+
+    def render_amount(self, record):
+        return "{} {}".format(record.uom.symbol, record.amount)
 
     class Meta:
         model = FinancialTransaction
