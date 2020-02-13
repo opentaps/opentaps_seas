@@ -17,7 +17,7 @@
 
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
-from opentaps_seas.core.forms import TopicTagRuleSetImportForm
+from opentaps_seas.core.forms.topic import TopicTagRuleSetImportForm
 
 
 def import_tagruleset(file_name, run_rule=False):
