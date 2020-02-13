@@ -45,6 +45,16 @@ class DummyParty(BaseParty):
                     'email': 'owner@smartbuilding.com',
                     'phone_number': '310-565-8321'
                     },
+        'party1': {'name': 'Big Utility',
+                   'address': '2 Somewhere St',
+                   'email': 'email_party1@example.org',
+                   'phone_number': '310-22222222'
+                   },
+        'party2': {'name': 'Smart Building',
+                   'address': '2 Somewhere St',
+                   'email': 'email_party2@example.org',
+                   'phone_number': '310-22222222'
+                   },
     }
 
     def get_name(self):

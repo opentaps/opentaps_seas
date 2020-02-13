@@ -65,10 +65,10 @@ def import_data(which):
         # ensure we have parties
         p1 = Party.objects.filter(party_external_id='party1').first()
         if not p1:
-            p1 = Party.objects.create(party_external_id='party1', source='example')
+            p1 = Party.objects.create(party_external_id='party1', source='dummy')
         p2 = Party.objects.filter(party_external_id='party2').first()
         if not p2:
-            p2 = Party.objects.create(party_external_id='party2', source='example')
+            p2 = Party.objects.create(party_external_id='party2', source='dummy')
         for result in results:
             # create financial transaction which from Party1 to Party2 the meter financial
             # value 21 days after the ending of the billing cycle if the meter financial
