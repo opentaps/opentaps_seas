@@ -104,7 +104,7 @@ Below are the files and notes for this data point.
 
 
 Topics
-^^^^^^
+======
 
 This page shows a list of the topics that are in the time series database.  By default, it will show the object name, present value, and units from BACNet to help you determine what
 the topics are.  You can customize which values are displayed for your topics by clicking on the gear box icon to the right.  This will bring up a menu for configuring the display:
@@ -251,8 +251,26 @@ You will get a zip file with CSV and JSON for each distinct ``interval`` tag val
 Interval set", then you will get a CSV and JSON file combination for all the other topics that do not have interval set as well.  These config files can then be loaded into your 
 on site VOLTTRON instance. 
 
+Transactions
+============
+
+Transactions are payments for the energy produced.  They are automatically created from metered energy production or savings and are related to the specific site, meter, and M&V model.
+Once created, they can be in a variety of statuses, such as 
+
+ * Created: Created 
+ * Pending Review: Needs review 
+ * In Dispute: In dispute between parties 
+ * Approved: Approved 
+ * Denied: Denied 
+ * Completed: Completed (i.e., paid) 
+ * Error: Cannot be completed due to technical error 
+
+With each transaction, you can associate files, documents, and notes as part of the payment process.
+
+Transactions related to a particular site or meter are also displayed when you view that site or meter.
+
 Models
-^^^^^^
+======
 
 Models are standard templates of tags, content, and notes.  They can be used to standardize tags, content, and notes for commoonly used equipment.  If you put tags, files or links, and notes 
 on a Model, and then tag the Equipment of a Site as that Model, the Equipment gets all the tags, files, links, and notes of your Model.  This is a one time inheritance: If you change them on 
@@ -270,7 +288,7 @@ deeply as you want.  When you create a new Model, you can choose any other Model
 You can duplicate a Model, which creates a copy of the original Model with all the same tags.  
 
 Tags
-^^^^
+====
 
 Tags are for any metadata information.  They could be your custom tags or the tags from Project Haystack.  By default, the Project Haystack 3.0 tags are loaded as part of the seed data.  There are also
 some other tags which are not part of the Haystack standard, but which are useful to opentaps SEAS.  They are loaded from a separate tag seed data file.
