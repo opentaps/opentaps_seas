@@ -32,7 +32,7 @@ class Party(models.Model):
     source = CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return str(self.party_id) + " " + self.party_external_id
+        return "{} ({})".format(self.get_name() or str(self.party_id), self.party_external_id)
 
     def get_external_party(self):
         ext_party = None
