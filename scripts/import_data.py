@@ -127,9 +127,13 @@ def import_sql(source_file_name):
 
         with connections['default'].cursor() as c:
             for sql in sqlCommands:
-                if sql and sql.strip():
-                    c.execute(sql)
-                    print('-- SQL: ', sql)
+                try:
+                    if sql and sql.strip():
+                        c.execute(sql)
+                        print('-- SQL: ', sql)
+                except IntegrityError:
+                     print('-- SQL execute error: ', sql)
+
             c.close()
 
 

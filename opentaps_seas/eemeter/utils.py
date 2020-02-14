@@ -29,6 +29,8 @@ from ..core.models import SiteView
 from ..core.models import SiteWeatherStations
 from ..core.models import Meter
 from ..core.models import MeterHistory
+from ..core.models import MeterFinancialValue
+from ..core.models import FinancialTransaction
 from ..core.models import WeatherStation
 from ..core.models import WeatherHistory
 from .models import BaselineModel
@@ -101,6 +103,8 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
 
     # cleanup previous entries as needed
     MeterHistory.objects.filter(meter_id=meter_id).delete()
+    MeterFinancialValue.objects.filter(meter_id=meter_id).delete()
+    FinancialTransaction.objects.filter(meter_id=meter_id).delete()
     Meter.objects.filter(meter_id=meter_id).delete()
     # create the meter
     logger.info('setup_demo_sample_models: creating Sample Meter %s ...', meter_id)
