@@ -77,7 +77,7 @@ class FinancialTransactionTable(Table):
             'status',
             'meter'
             )
-        order_by = 'transaction_datetime'
+        order_by = '-transaction_datetime'
 
 
 class TransactionListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):
