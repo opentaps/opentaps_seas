@@ -31,15 +31,15 @@ class FinancialTransactionUpdateForm(forms.ModelForm):
         fields = [
             "transaction_datetime",
             "status",
-            "transaction_type",
-            "amount",
-            "uom",
             "from_party",
             "to_party",
+            "amount",
+            "uom",
+            "transaction_type",
             "from_datetime",
             "thru_datetime",
-            "source",
-            "meter"
+            "meter",
+            "source"
             ]
 
 

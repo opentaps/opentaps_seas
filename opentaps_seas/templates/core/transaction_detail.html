@@ -34,36 +34,31 @@
 
       <div class="mb-3">
         <div class="row">
-          <div class="col mb-2"><b>Date:</b> {{ object.transaction_datetime }}</div>
+          <div class="col mb-2">&nbsp;</div>
+          <div class="col-md mb-2"><b>Status:</b> {{ object.status }}</div>
+        </div>
+        <div class="row">
+          <div class="col mb-2">&nbsp;</div>
+          <div class="col-md mb-2"><b>Date:</b> {{ object.transaction_datetime }}</div>
         </div>
         <div class="row">
           <div class="col-md mb-2"><b>From:</b> {{ object.from_party }}</div>
+          <div class="col mb-2">&nbsp;</div>
+        </div>
+        <div class="row">
           <div class="col-md mb-2"><b>To:</b> {{ object.to_party }}</div>
-        </div>
-        <div class="row">
-          <div class="col-md mb-2"><b>Status:</b> {{ object.status }}</div>
-          <div class="col-md mb-2"><b>Type:</b> {{ object.transaction_type }}</div>
-        </div>
-        <div class="row">
           <div class="col mb-2"><b>Amount:</b> {{ object.uom.symbol }} {{ object.amount }}</div>
         </div>
         <div class="row">
-          <div class="col-md mb-2"><b>Billing Period From:</b> {{ object.from_datetime }}</div>
-          <div class="col-md mb-2"><b>Billing Period Thru:</b> {{ object.thru_datetime }}</div>
-        </div>
+          <div class="col-md mb-2"><i>{{ object.transaction_type }} for billing period from {{ object.from_datetime }} thru {{ object.thru_datetime }}
         {% if object.meter %}
-        <div class="row">
-          <div class="col-lg mb-2">
+          using meter <a href="{{ object.meter.get_absolute_url }}">{{ object.meter }}</a>
           {% if object.meter and object.meter.site %}
-            <b>Site:</b> <a href="{{ object.meter.site.get_absolute_url }}">{{ object.meter.site }}</a>
+            at site <a href="{{ object.meter.site.get_absolute_url }}">{{ object.meter.site }}</a>
           {% endif %}
-          </div>
-          <div class="col-lg mb-2"><b>Meter:</b> <a href="{{ object.meter.get_absolute_url }}">{{ object.meter }}</a></div>
-        </div>
         {% endif %}
-        <div class="row">
-          <div class="col-lg mb-2"><b>Created:</b> {{ object.created_datetime }}{% if object.created_by_user %} by {{ object.created_by_user }}{% endif %}</div>
-          <div class="col-lg mb-2"><b>Source:</b> {{ object.source }}</div>
+           Created at {{ object.created_datetime }}{% if object.created_by_user %} by {{ object.created_by_user }}{% endif %} from {{ object.source }}</div></i>
+          </div>
         </div>
       </div>
 
