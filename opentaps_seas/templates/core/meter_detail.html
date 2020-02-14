@@ -80,6 +80,12 @@
 
   {% block after_content %}
     {% if object and object.meter_id %}
+
+      {% if object.transactions.exists %}
+        {% url 'core:meter_transactions_table' object.meter_id as meter_transactions_url %}
+        {% include "core/_ajax_table.html" with title="Transactions" name="transactions" table_url=meter_transactions_url %}
+      {% endif %}
+
       <div class="card mb-3">
         <div class="card-body">
           <h3>

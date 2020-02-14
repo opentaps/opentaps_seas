@@ -32,14 +32,18 @@ from ..forms.transaction import FinancialTransactionFileUploadForm
 from ..models import FinancialTransaction
 from ..models import FinancialTransactionFile
 from ..models import FinancialTransactionNote
+from ..models import SiteView
+from ..models import Meter
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
 from django.db.models import ProtectedError
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -49,6 +53,7 @@ from django.views.generic import ListView
 from django.views.generic import UpdateView
 from django_tables2 import Column
 from django_tables2 import Table
+from django_tables2.config import RequestConfig
 from django_tables2.views import SingleTableMixin
 from easy_thumbnails.files import get_thumbnailer
 from filer.models import Image as FilerFile
@@ -292,3 +297,19 @@ def transaction_link(request, financial_transaction_id):
         }]})
     else:
         return JsonResponse({'errors': form.errors})
+
+
+@login_required()
+def site_transactions_table(request, site):
+    s = get_object_or_404(SiteView, entity_id=site)
+    rc = RequestConfig(request, paginate={"per_page": 10})
+    table = rc.configure(FinancialTransactionTable(s.transactions()))
+    return HttpResponse(table.as_html(request))
+
+
+@login_required()
+def meter_transactions_table(request, meter):
+    s = get_object_or_404(Meter, meter_id=meter)
+    rc = RequestConfig(request, paginate={"per_page": 10})
+    table = rc.configure(FinancialTransactionTable(s.transactions()))
+    return HttpResponse(table.as_html(request))

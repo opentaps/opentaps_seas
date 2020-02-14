@@ -1,0 +1,71 @@
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+
+{% block content %}
+<div class="card mb-3">
+  <div class="card-body" id="{{ name }}_table"  @click="override_click">
+    <loading :active.sync="isLoading" :is-full-page="false"></loading>
+    {% if title %}<h3>{{ title }}</h3>{% endif %}
+    <div id="table" ref="table">Loading ...</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#{{ name }}_table',
+    data() {
+      return {
+        isLoading: false
+      }
+    },
+    mounted() {
+      this.fetchData();
+    },
+    methods: {
+      override_click(e) {
+        console.log('override_click ', e);
+        var element = e.target || e.srcElement;
+        var h = element.getAttribute('href');
+        if (h.indexOf('?') == 0) {
+          // those are table handling links
+          if (e && e.preventDefault) e.preventDefault();
+          console.log('override_click got internal table link ', h);
+          this.fetchData(h);
+          return false;
+        }
+      },
+      fetchData(paramString) {
+        this.isLoading = true;
+        url = '{{ table_url }}';
+        if (paramString) url += paramString;
+        console.log('Fetching {{ name }} table from ', url);
+        axios.get(url).then(response => {
+          console.log('Fetching {{ name }} table got ', response);
+          this.$refs.table.innerHTML = response.data;
+          this.isLoading = false;
+        });
+      },
+    }
+  });
+})();
+</script>
+{% endblock content %}

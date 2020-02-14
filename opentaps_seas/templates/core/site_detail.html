@@ -132,6 +132,11 @@
     </div>
   </div>
 
+  {% if has_transactions %}
+    {% url 'core:site_transactions_table' object.entity_id as site_transactions_url %}
+    {% include "core/_ajax_table.html" with title="Transactions" name="transactions" table_url=site_transactions_url %}
+  {% endif %}
+
   {% if file_upload_form %}
     {% include "core/_upload.html" with form_title='Upload File' link_form_title='Add Link' form=file_upload_form items=files %}
   {% endif %}

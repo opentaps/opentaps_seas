@@ -358,6 +358,13 @@ class SiteView(models.Model):
     def count():
         return SiteView.objects.all().count()
 
+    def meters(self):
+        return Meter.objects.filter(site_id=self.entity_id, thru_datetime__isnull=True).order_by('meter_id')
+
+    def transactions(self):
+        qs = FinancialTransaction.objects.filter(meter__site__entity_id=self.entity_id)
+        return qs.order_by('-transaction_datetime')
+
     class Meta:
         verbose_name = 'site'
         managed = False
@@ -884,6 +891,10 @@ class Meter(models.Model):
     def get_data_panda(self):
         # return a pandas.core.frame.DataFrame of the meter data as date .. value
         pass
+
+    def transactions(self):
+        qs = FinancialTransaction.objects.filter(meter_id=self.meter_id)
+        return qs.order_by('-transaction_datetime')
 
     @property
     def latest_reading(self):

@@ -25,7 +25,6 @@ from ..forms.site import SiteCreateForm
 from ..models import Entity
 from ..models import EquipmentView
 from ..models import Geo
-from ..models import Meter
 from ..models import PointView
 from ..models import SiteView
 from .point import PointTable
@@ -215,8 +214,8 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
                 bacnet_cfg.append(item)
             context['bacnet_configs'] = bacnet_cfg
 
-        meters = Meter.objects.filter(site_id=site.entity_id, thru_datetime__isnull=True).order_by('meter_id')
-        context['meters'] = meters
+        context['meters'] = site.meters()
+        context['has_transactions'] = site.transactions().exists()
 
         return context
 

@@ -90,6 +90,9 @@ Vue.use(VuejsDialog.main.default, {
   loader: true
 });
 
+Vue.use(VueLoading);
+Vue.component('loading', VueLoading)
+
 Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead)
 Vue.component('v-select', VueSelect.VueSelect)
 
