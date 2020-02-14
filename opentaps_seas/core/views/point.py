@@ -30,6 +30,7 @@ from ..models import SiteView
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import OperationalError
 from django.db.models import Count
 from django.http import JsonResponse
 from django.http import StreamingHttpResponse
@@ -77,7 +78,13 @@ class PointDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, WithPoi
             pass
 
         if context['object']:
-            context['charts'] = utils.charts_for_points([context['object']])
+            charts = []
+            try:
+                charts = utils.charts_for_points([context['object']])
+            except OperationalError:
+                logging.warning('Crate database unavailable')
+
+            context['charts'] = charts
 
         return context
 

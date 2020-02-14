@@ -46,6 +46,7 @@ from pytz import UnknownTimeZoneError
 from pytz import timezone as pytz_timezone
 from dateutil.parser import parse as parse_datetime
 from django.db import connections
+from django.db import OperationalError
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.html import format_html
@@ -157,7 +158,11 @@ def get_current_value(point, raw=False):
 def add_current_values(data, raw=False):
     d2 = list(data)
     for d in d2:
-        cv = get_current_value(d, raw=raw)
+        cv = None
+        try:
+            cv = get_current_value(d, raw=raw)
+        except OperationalError:
+            logging.warning('Crate database unavailable')
         if not cv:
             if raw:
                 cv = {}

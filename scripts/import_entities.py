@@ -21,6 +21,10 @@ from django.db import connections
 from django.db.utils import IntegrityError
 from django.template.defaultfilters import slugify
 
+GLB_OPTIONS = {
+    'no_crate': False
+}
+
 
 def clean():
     print('Deleting entity data ...')
@@ -28,14 +32,16 @@ def clean():
         c.execute("DELETE FROM eemeter_baselinemodel;")
         c.execute("DELETE FROM core_meter_financial_value;")
         c.execute("DELETE FROM core_meter_history;")
+        c.execute("DELETE FROM core_meter_production;")
         c.execute("DELETE FROM core_meter;")
         c.execute("DELETE FROM core_entity;")
         c.close()
 
-    print('Deleting crate database entity data ...')
-    with connections['crate'].cursor() as c:
-        c.execute("DELETE FROM topic;")
-        c.close()
+    if not GLB_OPTIONS['no_crate']:
+        print('Deleting crate database entity data ...')
+        with connections['crate'].cursor() as c:
+            c.execute("DELETE FROM topic;")
+            c.close()
 
 
 def demo(filters):
@@ -124,6 +130,8 @@ def run(*args):
             if a.startswith('entity_mtag='):
                 filters = a[len('entity_mtag='):].split(',')
                 print("Filtering entities matching m_tag = {}".format(filters))
+
+        GLB_OPTIONS['no_crate'] = 'no_crate' in args
         if 'clean' in args:
             clean()
         if 'all' in args or 'clean' in args or 'seed' in args:

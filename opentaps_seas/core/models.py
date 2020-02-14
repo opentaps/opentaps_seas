@@ -28,6 +28,7 @@ from django.contrib.postgres.fields import HStoreField
 from django.core.exceptions import ValidationError
 from django.db import connections
 from django.db import models
+from django.db import OperationalError
 from django.db.models import AutoField
 from django.db.models import BooleanField
 from django.db.models import CharField
@@ -656,14 +657,18 @@ def delete_tags_from_crate_entity(row):
     # we only sync for entity linked to a topic
     if not row.topic:
         return
-    with connections['crate'].cursor() as c:
-        # make sure the topic is in CrateDB
-        sql = """DELETE {0} WHERE topic = %s;""".format("topic")
-        try:
-            c.execute(sql, [row.topic])
-        except Exception:
-            # ignore if the entity did not exist
-            pass
+
+    try:
+        with connections['crate'].cursor() as c:
+            # make sure the topic is in CrateDB
+            sql = """DELETE {0} WHERE topic = %s;""".format("topic")
+            try:
+                c.execute(sql, [row.topic])
+            except Exception:
+                # ignore if the entity did not exist
+                pass
+    except OperationalError:
+        logging.warning('Crate database unavailable')
 
 
 def sync_tags_to_crate_entity(row, retried=False):
@@ -677,38 +682,41 @@ def sync_tags_to_crate_entity(row, retried=False):
         logger.info('sync_tags_to_crate_entity topic or id is empty: %s', row)
         return
 
-    with connections['crate'].cursor() as c:
-        # make sure the topic is in CrateDB
-        sql = """INSERT INTO {0} (topic)
-        VALUES (%s)""".format("topic")
-        try:
-            c.execute(sql, [topic])
-        except DatabaseError as e:
-            # could be the table is missing
-            if 'RelationUnknown' in str(e):
-                if not retried:
-                    ensure_crate_entity_table()
-                    # try again
-                    return sync_tags_to_crate_entity(row, retried=True)
-        except Exception:
-            # just make sure the topic exists
-            pass
+    try:
+        with connections['crate'].cursor() as c:
+            # make sure the topic is in CrateDB
+            sql = """INSERT INTO {0} (topic)
+            VALUES (%s)""".format("topic")
+            try:
+                c.execute(sql, [topic])
+            except DatabaseError as e:
+                # could be the table is missing
+                if 'RelationUnknown' in str(e):
+                    if not retried:
+                        ensure_crate_entity_table()
+                        # try again
+                        return sync_tags_to_crate_entity(row, retried=True)
+            except Exception:
+                # just make sure the topic exists
+                pass
 
-        if row.m_tags or row.kv_tags:
-            params_list = []
-            sql = """ UPDATE "topic" SET """
-            if row.kv_tags:
-                sql += " kv_tags = {} ".format(kv_tags_update_crate_entity_string(row.kv_tags, params_list))
-            if row.m_tags:
+            if row.m_tags or row.kv_tags:
+                params_list = []
+                sql = """ UPDATE "topic" SET """
                 if row.kv_tags:
-                    sql += ", "
-                sql += " m_tags = %s "
-                params_list.append(row.m_tags)
-            sql += """ WHERE topic = %s;"""
-            params_list.append(topic)
-            logger.info('sync_tags_to_crate_entity SQL: %s', sql)
-            logger.info('sync_tags_to_crate_entity Params: %s', params_list)
-            c.execute(sql, params_list)
+                    sql += " kv_tags = {} ".format(kv_tags_update_crate_entity_string(row.kv_tags, params_list))
+                if row.m_tags:
+                    if row.kv_tags:
+                        sql += ", "
+                    sql += " m_tags = %s "
+                    params_list.append(row.m_tags)
+                sql += """ WHERE topic = %s;"""
+                params_list.append(topic)
+                logger.info('sync_tags_to_crate_entity SQL: %s', sql)
+                logger.info('sync_tags_to_crate_entity Params: %s', params_list)
+                c.execute(sql, params_list)
+    except OperationalError:
+        logging.warning('Crate database unavailable')
 
 
 class Status(models.Model):

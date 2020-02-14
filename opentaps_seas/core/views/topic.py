@@ -48,6 +48,8 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import connections
+from django.db import OperationalError
 from django.db.models import Q
 from django.db.models import Count
 from django.http import HttpResponse
@@ -148,10 +150,22 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
     table_pagination = {'per_page': 10}
     template_name = 'core/topic_list.html'
 
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        try:
+            connections['crate'].ensure_connection()
+            self.crate_conn = True
+        except OperationalError:
+            logging.warning('Crate database unavailable')
+            self.crate_conn = False
+
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
-        self.used_filters = []
         self.rule = None
+        if not self.crate_conn:
+            return qs
+
+        self.used_filters = []
 
         topic_filter = None
         site_filter = None
@@ -235,7 +249,13 @@ class TopicListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, 
         return qs
 
     def get_context_data(self, **kwargs):
+        if not self.crate_conn:
+            context = {}
+            context['crate_conn'] = self.crate_conn
+            return context
+
         context = super().get_context_data(**kwargs)
+        context['crate_conn'] = self.crate_conn
         context['used_filters'] = self.used_filters
         context['sites_list'] = SiteView.get_site_obj_choices()
         if context['sites_list']:

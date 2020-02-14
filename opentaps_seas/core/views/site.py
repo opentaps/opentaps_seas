@@ -32,6 +32,7 @@ from .point import PointTable
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import OperationalError
 from django.db.models.functions import Lower
 from django.db.models import Q
 from django.db.models import Count
@@ -233,34 +234,38 @@ def site_ahu_summary_json(request, site):
     # get range of date, from data point values epoch
     epoch_0 = None
     epoch_1 = None
-    for e in ahus:
-        ahu_data_points = utils.get_ahu_current_values(e.object_id)
-        logger.info('site_ahu_summary_json ==> %s', e.object_id)
-        points = []
-        for k, point in ahu_data_points.items():
-            logger.info('ahu_data_point %s ==> %s', k, point)
-            v = point.current_value
-            epoch = v.get('epoch')
-            if epoch:
-                if not epoch_0 or epoch_0 > epoch:
-                    epoch_0 = epoch
-                if not epoch_1 or epoch_1 < epoch:
-                    epoch_1 = epoch
-            points.append({
-                'name': k,
-                'value': v,
-                'topic': point.topic,
-                'tags': point.m_tags,
-                'ts': utils.format_epoch(epoch) if epoch else None
+    try:
+        for e in ahus:
+            ahu_data_points = utils.get_ahu_current_values(e.object_id)
+            logger.info('site_ahu_summary_json ==> %s', e.object_id)
+            points = []
+            for k, point in ahu_data_points.items():
+                logger.info('ahu_data_point %s ==> %s', k, point)
+                v = point.current_value
+                epoch = v.get('epoch')
+                if epoch:
+                    if not epoch_0 or epoch_0 > epoch:
+                        epoch_0 = epoch
+                    if not epoch_1 or epoch_1 < epoch:
+                        epoch_1 = epoch
+                points.append({
+                    'name': k,
+                    'value': v,
+                    'topic': point.topic,
+                    'tags': point.m_tags,
+                    'ts': utils.format_epoch(epoch) if epoch else None
+                })
+            ahus_results.append({
+                'equipment': {
+                    'entity_id': e.entity_id,
+                    'object_id': e.object_id,
+                    'description': e.description
+                },
+                'data_points': points
             })
-        ahus_results.append({
-            'equipment': {
-                'entity_id': e.entity_id,
-                'object_id': e.object_id,
-                'description': e.description
-            },
-            'data_points': points
-        })
+    except OperationalError:
+        logging.warning('Crate database unavailable')
+
     logger.info('site_ahu_summary_json ahus_results: %s', ahus_results)
     results['ahus'] = ahus_results
     if epoch_0:
@@ -287,34 +292,38 @@ def site_pie_chart_data_json(request, site):
         data_points = PointView.objects.filter(equipment_id=e.object_id)
         data_points = data_points.filter(m_tags__contains=['air', 'his', 'point', 'sensor', 'temp'])
         data_points = data_points.exclude(m_tags__contains=['equip'])
-        for d in utils.add_current_values(data_points, raw=True):
-            cv = d.current_value.get('value', 'N/A')
-            logger.info('site_pie_chart_data_json got value %s -> %s', d.entity_id, cv)
-            if isinstance(cv, str):
-                try:
-                    cv = float(cv)
-                except ValueError:
-                    cv = 'N/A'
-            if 'N/A' == cv or cv > 200 or cv < -50:
-                if 'No Data' not in pie:
-                    pie['No Data'] = 1
+        try:
+            for d in utils.add_current_values(data_points, raw=True):
+                cv = d.current_value.get('value', 'N/A')
+                logger.info('site_pie_chart_data_json got value %s -> %s', d.entity_id, cv)
+                if isinstance(cv, str):
+                    try:
+                        cv = float(cv)
+                    except ValueError:
+                        cv = 'N/A'
+                if 'N/A' == cv or cv > 200 or cv < -50:
+                    if 'No Data' not in pie:
+                        pie['No Data'] = 1
+                    else:
+                        pie['No Data'] += 1
+                elif cv < cold_threshold:
+                    if 'Cold' not in pie:
+                        pie['Cold'] = 1
+                    else:
+                        pie['Cold'] += 1
+                elif cv > hot_threshold:
+                    if 'Hot' not in pie:
+                        pie['Hot'] = 1
+                    else:
+                        pie['Hot'] += 1
                 else:
-                    pie['No Data'] += 1
-            elif cv < cold_threshold:
-                if 'Cold' not in pie:
-                    pie['Cold'] = 1
-                else:
-                    pie['Cold'] += 1
-            elif cv > hot_threshold:
-                if 'Hot' not in pie:
-                    pie['Hot'] = 1
-                else:
-                    pie['Hot'] += 1
-            else:
-                if 'Comfortable' not in pie:
-                    pie['Comfortable'] = 1
-                else:
-                    pie['Comfortable'] += 1
+                    if 'Comfortable' not in pie:
+                        pie['Comfortable'] = 1
+                    else:
+                        pie['Comfortable'] += 1
+        except OperationalError:
+            logging.warning('Crate database unavailable')
+
     labels = []
     values = []
     logger.info('site_pie_chart_data_json pie: %s', pie)

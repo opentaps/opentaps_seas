@@ -26,16 +26,18 @@ from datetime import timedelta
 from django.template.defaultfilters import slugify
 
 GLB_OPTIONS = {
-    'ahu_no_point': False
+    'ahu_no_point': False,
+    'no_crate': False
 }
 
 
 def clean():
-    print('Deleting crate database data ...')
-    with connections['crate'].cursor() as c:
-        c.execute("DELETE FROM data where topic like 'demo_%';")
-        c.execute("DELETE FROM topic where topic like 'demo_%';")
-        c.close()
+    if not GLB_OPTIONS['no_crate']:
+        print('Deleting crate database data ...')
+        with connections['crate'].cursor() as c:
+            c.execute("DELETE FROM data where topic like 'demo_%';")
+            c.execute("DELETE FROM topic where topic like 'demo_%';")
+            c.close()
 
     print('Deleting entity data ...')
     with connections['default'].cursor() as c:
@@ -53,14 +55,15 @@ def seed():
 
 
 def ensure_topic(topic):
-    with connections['crate'].cursor() as c:
-        sql = """INSERT INTO {0} (topic) VALUES (%s)""".format("topic")
-        try:
-            c.execute(sql, [topic])
-            print('-- INSERT topic: ', topic)
-        except Exception:
-            print('-- Topic already exists: ', topic)
-            pass
+    if not GLB_OPTIONS['no_crate']:
+        with connections['crate'].cursor() as c:
+            sql = """INSERT INTO {0} (topic) VALUES (%s)""".format("topic")
+            try:
+                c.execute(sql, [topic])
+                print('-- INSERT topic: ', topic)
+            except Exception:
+                print('-- Topic already exists: ', topic)
+                pass
 
 
 def import_files(which):
@@ -200,19 +203,20 @@ def import_csv(source_file_name):
     for item, csv_writer in csv_writers.items():
         if csv_writer['started']:
             print('-- INSERT CSV data {} file: {}'.format(name, csv_writer['filename']))
-            with connections['crate'].cursor() as c:
-                try:
-                    csv_writer['fp'].close()
-                    sql = "COPY data FROM '{}'".format(csv_writer['filename'])
-                    print('-- INSERT: ', sql)
-                    c.execute(sql)
-                    print('-- Cleanup CSV file: {}'.format(csv_writer['filename']))
-                    os.remove(csv_writer['filename'])
-                    counter_insert += 1
-                except ProgrammingError:
-                    print('-- ERROR loading data: {}'.format(csv_writer['filename']))
-                    raise
-                c.close()
+            if not GLB_OPTIONS['no_crate']:
+                with connections['crate'].cursor() as c:
+                    try:
+                        csv_writer['fp'].close()
+                        sql = "COPY data FROM '{}'".format(csv_writer['filename'])
+                        print('-- INSERT: ', sql)
+                        c.execute(sql)
+                        counter_insert += 1
+                    except ProgrammingError:
+                        print('-- ERROR loading data: {}'.format(csv_writer['filename']))
+                        raise
+                    c.close()
+            print('-- Cleanup CSV file: {}'.format(csv_writer['filename']))
+            os.remove(csv_writer['filename'])
 
             if not GLB_OPTIONS['ahu_no_point']:
                 print('-- Create Demo Point with topic {}'.format(csv_writer['topic']))
@@ -247,6 +251,7 @@ def print_help():
 def run(*args):
     if len(args) > 0:
         GLB_OPTIONS['ahu_no_point'] = 'ahu_no_point' in args
+        GLB_OPTIONS['no_crate'] = 'no_crate' in args
         if 'clean' in args:
             clean()
         if 'all' in args or 'clean' in args or 'seed' in args:

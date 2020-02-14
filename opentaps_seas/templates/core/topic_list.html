@@ -32,6 +32,7 @@
   {% url 'core:topic_report_tags_csv' as topic_report_tags_url %}
   {% url 'core:topictagruleset_list' as topictagruleset_list %}
 
+  {% if crate_conn %}
   <div class="card mb-3">
     <div class="card-body p-2 p-md-3" id="topics-list" v-cloak>
         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" v-if="create_rule_success">
@@ -456,6 +457,9 @@
     </div>
 
   </div>
+  {% else %}
+    <div class="card mb-3"><div class="card-body">Crate database unavailable.</div></div>
+  {% endif %}
 
 {{ rule.tags|json_script:'rule_tags' }}
 <script>

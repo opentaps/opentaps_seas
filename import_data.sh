@@ -19,7 +19,7 @@
 # script first argument should be one of
 # ahu|entity|geo|tag|tagrule|timezone|unit_of_measure|weather_station or all_data
 # other arguments are what python script expected, i.e.
-# [all|seed|demo] [clean] [run_rules] [ahu_no_point]
+# [all|seed|demo] [clean] [run_rules] [ahu_no_point] [no_crate]
 set -e
 ARGS=$*
 
@@ -52,6 +52,7 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_tagrules --script-args $ARGS
     python manage.py runscript import_weather_histories --script-args $ARGS
+    python manage.py runscript import_party --script-args $ARGS
     python manage.py runscript setup_sample_meter --script-args $ARGS
 else
     if [ "$1" == "ahu" ]; then
