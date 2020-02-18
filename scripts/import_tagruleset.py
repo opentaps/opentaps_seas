@@ -59,7 +59,7 @@ def print_help():
 def run(*args):
     if len(args) > 0:
         run_rule = False
-        if len(args) > 1 and args[1] == 'run' and not 'no_crate' in args:
+        if len(args) > 1 and args[1] == 'run' and 'tsdemo' in args:
             run_rule = True
         import_tagruleset(args[0], run_rule)
     else:

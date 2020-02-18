@@ -77,7 +77,7 @@ def run(*args):
         sys.path.append(os.path.join(current_path, "opentaps_seas"))
         sys.path.append(current_path)
         run_rules = False
-        if 'run_rules' in args and not 'no_crate' in args:
+        if 'run_rules' in args and 'tsdemo' in args:
             run_rules = True
         if 'clean' in args:
             clean()

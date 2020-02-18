@@ -17,9 +17,11 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 # script first argument should be one of
-# ahu|entity|geo|tag|tagrule|timezone|unit_of_measure|weather_station or all_data
+# entity|geo|tag|tagrule|timezone|unit_of_measure|weather_station or all_data
 # other arguments are what python script expected, i.e.
-# [all|seed|demo] [clean] [run_rules] [ahu_no_point] [no_crate]
+# [all|seed|demo] [clean] [run_rules] [ahu_no_point]
+# [tsdemo] to import time series data demo from data/ahu/demo
+
 set -e
 ARGS=$*
 
@@ -40,6 +42,15 @@ do
    fi
 done
 
+TSDEMO=0
+for a in "$@"
+do
+   if [ "$a" == "tsdemo" ]
+   then
+     TSDEMO=1
+   fi
+done
+
 if [ "$1" == "all_data" ]; then
     echo "Import all data"
     python manage.py runscript import_tags --script-args $ARGS
@@ -47,7 +58,6 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_unit_of_measure --script-args $ARGS
     python manage.py runscript import_weather_stations --script-args $ARGS
     python manage.py runscript import_entities --script-args $ARGS
-    python manage.py runscript import_data --script-args $ARGS
     python manage.py runscript import_timezones --script-args $ARGS
     python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_tagrules --script-args $ARGS
@@ -55,9 +65,6 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_party --script-args $ARGS
     python manage.py runscript setup_sample_meter --script-args $ARGS
 else
-    if [ "$1" == "ahu" ]; then
-        python manage.py runscript import_data --script-args $ARGS
-    fi
     if [ "$1" == "entity" ]; then
         python manage.py runscript import_entities --script-args $ARGS
     fi
@@ -91,6 +98,11 @@ else
     if [ "$1" == "party" ]; then
         python manage.py runscript import_party --script-args $ARGS
     fi
+fi
+
+if [ $TSDEMO -eq 1 ]
+then
+    python manage.py runscript import_data --script-args $ARGS
 fi
 
 # if loading demo data, also sensure we have a demo admin user

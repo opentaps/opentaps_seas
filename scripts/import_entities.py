@@ -22,7 +22,7 @@ from django.db.utils import IntegrityError
 from django.template.defaultfilters import slugify
 
 GLB_OPTIONS = {
-    'no_crate': False
+    'no_crate': True
 }
 
 
@@ -62,14 +62,22 @@ def import_files(which, filters=[]):
         for f in os.listdir(mypath):
             filename = os.path.join(mypath, f)
             if os.path.isfile(filename):
-                print('Importing {} data [{}]'.format(which, filename))
-                import_entities(filename, filters)
+                if '.json' in filename:
+                    print('Importing {} data [{}]'.format(which, filename))
+                    import_entities_json(filename, filters)
+
+        for f in os.listdir(mypath):
+            filename = os.path.join(mypath, f)
+            if os.path.isfile(filename):
+                if filename.endswith('.sql'):
+                    print('Running SQL {} [{}]'.format(which, filename))
+                    import_sql(filename)
 
     else:
         print('No {} data to import.'.format(which))
 
 
-def import_entities(source_file_name, filters):
+def import_entities_json(source_file_name, filters):
     reader = None
     with open(source_file_name) as f:
         reader = json.loads(f.read())
@@ -113,6 +121,22 @@ def import_entities(source_file_name, filters):
           'inserted {2} updated.'.format(counter_insert+counter_update, counter_insert, counter_update))
 
 
+def import_sql(source_file_name):
+    with open(source_file_name) as f:
+        sqlCommands = filter(None, f.read().split(';'))
+
+        with connections['default'].cursor() as c:
+            for sql in sqlCommands:
+                try:
+                    if sql and sql.strip():
+                        c.execute(sql)
+                        print('-- SQL: ', sql)
+                except IntegrityError:
+                    print('-- SQL execute error: ', sql)
+
+            c.close()
+
+
 def print_help():
     print("Usage: python manage.py runscript import_entities --script-args [all|seed|demo] [clean]")
     print("  note: table managed by DJANGO, make sure the migrations are run so the table exists")
@@ -131,7 +155,7 @@ def run(*args):
                 filters = a[len('entity_mtag='):].split(',')
                 print("Filtering entities matching m_tag = {}".format(filters))
 
-        GLB_OPTIONS['no_crate'] = 'no_crate' in args
+        GLB_OPTIONS['no_crate'] = 'tsdemo' not in args
         if 'clean' in args:
             clean()
         if 'all' in args or 'clean' in args or 'seed' in args:
