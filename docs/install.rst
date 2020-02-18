@@ -1,6 +1,9 @@
 Installation Instructions
 =========================
 
+Getting Started
+^^^^^^^^^^^^^^^
+
 You will need the following::
 
  * Linux
@@ -14,79 +17,24 @@ Then create the virtualenv::
     $ source venv/bin/activate
     $ pip install -r requirements/local.txt
 
-VOLTTRON
-^^^^^^^^
-
-VOLTTRON is used as a data historian to get data from buildings and energy systems with standard protocols such as BACNet and MODBUS, then store them in a time series database
-such as Crate.  There are also many applications developed for VOLTTRON under a separate VOLTTRON-applications repository. 
-
-We have made some enhancements to VOLTTRON for opentaps SEAS, which we are giving back to the VOLTTRON project.  Meanwhile you can get our enhanced versions from
-github at https://github.com/opentaps/VOLTTRON (use the develop branch) and https://github.com/opentaps/VOLTTRON-applications (use the master branch.) 
-
-Please follow https://volttron.readthedocs.io/en/develop/setup/index.html to install VOLTTRON.  You may want to have one or more VOLTTRON instances collecting data from devices
-and forwarding them to a master instance.  opentaps SEAS should then connect to the master instance and the database it is using to store the data.  
-After installing and starting VOLTTRON, you will need to install the following agents::
-
- $ python scripts/install-agent.py -s services/core/VOLTTRONCentral -c services/core/VOLTTRONCentral/config -t vc
- $ python scripts/install-agent.py -s services/core/VOLTTRONCentralPlatform -t vcp
- $ python scripts/install-agent.py -s services/core/CrateHistorian -c services/core/CrateHistorian/config -i crate-historian -t crate
- $ python scripts/install-agent.py -s services/core/MasterDriverAgent/ -t master
-
-The VOLTTRON Central and VOLTTRON Central Platform agents need to be configured and running to connect with opentaps SEAS.  Configure them by editing ``~/.VOLTTRON/config``, or
-create a new one if you do not have one, and put in the following::
-
- [VOLTTRON]
- vip-address = tcp://127.0.0.1:22916
- instance-name = "VOLTTRON_Instance"
- bind-web-address = http://your.external.ip.address:8080
- VOLTTRON-central-address = http://your.external.ip.address:8080
-  
-Now edit your ``secrets.json`` file and put in the username, password, and ip address of your VOLTTRON Central instance.
-
-Verify the following: 
- * Your VOLTTRON instance is there with at http://VOLTTRON.central.ip.address:8080/vc/jsonrpc  You should see a response
- * Go to the VOLTTRON tab of opentaps SEAS web interface.  It should show you the agents that are running in VOLTTRON.  You should see a VOLTTRON central agent and a VOLTTRON central platform agent running.
- 
 Databases
 ^^^^^^^^^
 
-We use two databases: a relational database to store application data and a time series database to store IOT data trended by VOLTTRON. 
-We use PostgreSQL as the relational database and Crate as the time series database.  The names of the databases and their connections setup are configured in ``config/settings/base.py``: 
+We use two databases: a relational database to store application data and, optionally, a time series database to store IOT data trended by VOLTTRON (see below.) 
+The relational database we use is PostgreSQL, and the time series database is Crate.  The names of the databases and their connections setup are configured in ``config/settings/base.py``: 
 
  DATABASES = {
      'default': env.db('DATABASE_URL', default='postgres:///opentaps_seas'),
      'crate': env.db('CRATE_DATABASE_URL', default='postgres://crate@127.0.0.1:5433/volttron'),
  }  
 
-
-Crate
-^^^^^
-
-
-As of Crate 4.0, the open source edition of Crate must be installed following directions in https://crate.io/docs/crate/reference/en/latest/editions.html#community-edition
-
-You will also need `crash`, the CrateDB shell,  See directions from https://crate.io/docs/clients/crash/en/latest/index.html
-
-Note that the CrateDB postgres connection is by default done on port 5433 instead of 5432 to avoid conflict. This should be at the end of the ``crate/config/crate.yml``::
-
-    psql.enabled: true
-    psql.port: 5433
-
-You should then initialize your Crate database with::
-
- $ cat cratedb/init_schema.sql | crash
-
-This creates a couple of other tables in addition to the ones created by VOLTTRON CrateDBHistorian, ``volttron.data`` and ``volttron.topic``, which we use as well.
-
 Postgres
 ^^^^^^^^
 
-Django specific data is currently storted in a Postgres DB:
- * use <unixuser> as the user that would run the server so it authenticates in postgres using ident.
- * you may need to switch to postgres user to run those commands (eg: sudo su - postgres)
+Note: You may need to switch to postgres user to run those commands (eg: sudo su - postgres)
 
-Postgres Extensions must be installed, eg: in some distributions install the postgresql-contrib package.
-The HSTORE extension must be setup which requires running this in postgres as the superuser::
+You will need to set up your PostgreSQL database properly so that you can use your <unixuser> as the user that would run the server so it authenticates in postgres using ident. 
+Postgres Extensions must be installed, which means in some distributions installing the `postgresql-contrib` package.  The HSTORE extension must be setup which requires running this in postgres as the superuser::
 
     $ psql -d template1 -c 'create extension hstore;'
 
@@ -103,7 +51,7 @@ If you find you're still missing the HSTORE extension, it must be setup for each
     $ psql test_opentaps_seas -U postgres
     test_opentaps_seas=# CREATE EXTENSION IF NOT EXISTS hstore
 
-Then run the migrations::
+Then initialize your database by running the migrations::
 
     $ python manage.py migrate
 
@@ -145,26 +93,67 @@ For production, you can use supervisor to manage it as a service and ensure it w
 
 Important: remember that if the opentaps_seas code is updated the celery worker must be restarted as well or it will keep running the old version.
 
+VOLTTRON
+^^^^^^^^
 
-Syncing PostgreSQL and Crate
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+VOLTTRON can be used to get data from buildings and energy systems with standard protocols such as BACNet and MODBUS, then store them in a time series database
+such as Crate.  There are also many applications developed for VOLTTRON under a separate VOLTTRON-applications repository. 
 
-By default, entity data such as sites, equipment, data points, and their tags are stored in PostgreSQL.  We do this because PostgreSQL is transactional.
-To make querying your data easier, you can also sync your sites, equipment, and points (topics) data to Crate DB's ``volttron.topic`` table by configuring 
-your ``secrets.json`` and setting ``CRATE_TAG_AUTOSYNC`` to ``true``.  For site or equipment, the key in ``volttron.topic.topic`` will be the value of the
-``id`` key-value tag (``kv_tags``.)  
+We have made some enhancements to VOLTTRON for opentaps SEAS, which have been contributed back to the VOLTTRON project.  Meanwhile you can get our enhanced versions from
+github at https://github.com/opentaps/VOLTTRON (use the develop branch) and https://github.com/opentaps/VOLTTRON-applications (use the master branch.) 
 
-You can also run a script to sync all existing data to Crate::
+Please follow https://volttron.readthedocs.io/en/develop/setup/index.html to install VOLTTRON.  You may want to have one or more VOLTTRON instances collecting data from devices
+and forwarding them to a master instance.  opentaps SEAS should then connect to the master instance and the database it is using to store the data.  
+After installing and starting VOLTTRON, you will need to install the following agents::
 
-    $ python manage.py runscript sync_tags_to_crate
+ $ python scripts/install-agent.py -s services/core/VOLTTRONCentral -c services/core/VOLTTRONCentral/config -t vc
+ $ python scripts/install-agent.py -s services/core/VOLTTRONCentralPlatform -t vcp
+ $ python scripts/install-agent.py -s services/core/CrateHistorian -c services/core/CrateHistorian/config -i crate-historian -t crate
+ $ python scripts/install-agent.py -s services/core/MasterDriverAgent/ -t master
+
+The VOLTTRON Central and VOLTTRON Central Platform agents need to be configured and running to connect with opentaps SEAS.  Configure them by editing ``~/.VOLTTRON/config``, or
+create a new one if you do not have one, and put in the following::
+
+ [VOLTTRON]
+ vip-address = tcp://127.0.0.1:22916
+ instance-name = "VOLTTRON_Instance"
+ bind-web-address = http://your.external.ip.address:8080
+ VOLTTRON-central-address = http://your.external.ip.address:8080
+  
+Now edit your ``secrets.json`` file and put in the username, password, and ip address of your VOLTTRON Central instance.
+
+Verify the following: 
+ * Your VOLTTRON instance is there with at http://VOLTTRON.central.ip.address:8080/vc/jsonrpc  You should see a response
+ * Go to the VOLTTRON tab of opentaps SEAS web interface.  It should show you the agents that are running in VOLTTRON.  You should see a VOLTTRON central agent and a VOLTTRON central platform agent running.
+
+
+Crate
+^^^^^
+
+Crate is a time series database which is specialized in storing time series databases from machines, such as BACNet and MODBUS data from VOLTTRON.  If you wish to use VOLTTRON to get this data for your sites and work with them in opentaps, then please follow these instructions to set up Crate.
+
+As of Crate 4.0, the open source edition of Crate must be installed following directions in https://crate.io/docs/crate/reference/en/latest/editions.html#community-edition
+
+You will also need `crash`, the CrateDB shell,  See directions from https://crate.io/docs/clients/crash/en/latest/index.html
+
+Note that the CrateDB postgres connection is by default done on port 5433 instead of 5432 to avoid conflict. This should be at the end of the ``crate/config/crate.yml``::
+
+    psql.enabled: true
+    psql.port: 5433
+
+You should then initialize your Crate database with::
+
+ $ cat cratedb/init_schema.sql | crash
+
+This creates a couple of other tables in addition to the ones created by VOLTTRON CrateDBHistorian, ``volttron.data`` and ``volttron.topic``, which we use as well.
 
 Load seed data
 ^^^^^^^^^^^^^^
 
 opentaps SEAS comes with two sets of data: seed and demo.  Seed data is needed to run the application.  Demo data can be used to show how the application
-works.  The demo data is based on "Long-term data on 3 office Air Handling Units" from https://openei.org/datasets/dataset/long-term-data-on-3-office-air-handling-units 
+works.  
 
-To init the Django related seed data::
+Before loading your data, you must initialize your database::
 
  $ python manage.py migrate
 
@@ -196,6 +185,36 @@ These are equivalent::
 Notes about the seed data:
  * Time zones are linked to country in the ``data/timezone/seed/timezone.csv`` file.  They are currently pre-defined for USA and Canada.
  * Haystack tags are defined in the file ``data/seed/tags.csv`` file.  They currently implement the Project Haystack 3.0 spec.
+
+There is also a set of time series demo data based on "Long-term data on 3 office Air Handling Units" from https://openei.org/datasets/dataset/long-term-data-on-3-office-air-handling-units  This data can be loaded into your time series database (currently Crate) with::
+
+ $ ./import_data.sh all_data tsdemo
+
+You can also delete this demo data from your time series database::
+
+ $ ./import_data.sh clean tsdemo
+
+This time series demo data can also be loaded as part of loading all demo data:
+
+ $ ./import_data.sh all_data all clean
+
+and deleted with the other data as well:
+ 
+ $ ./import_data.sh all_data all clean tsdemo
+
+
+Syncing PostgreSQL and Crate
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, entity data such as sites, equipment, data points, and their tags are stored in PostgreSQL.  We do this because PostgreSQL is transactional.
+To make querying your data easier, you can also sync your sites, equipment, and points (topics) data to Crate DB's ``volttron.topic`` table by configuring 
+your ``secrets.json`` and setting ``CRATE_TAG_AUTOSYNC`` to ``true``.  For site or equipment, the key in ``volttron.topic.topic`` will be the value of the
+``id`` key-value tag (``kv_tags``.)  
+
+You can also run a script to sync all existing data to Crate::
+
+    $ python manage.py runscript sync_tags_to_crate
+
 
 Basic Commands
 --------------
