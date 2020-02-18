@@ -50,7 +50,7 @@
           <div class="col mb-2"><b>Amount:</b> {{ object.uom.symbol }} {{ object.amount }}</div>
         </div>
         <div class="row">
-          <div class="col-md mb-2"><i>{{ object.transaction_type }} for billing period from {{ object.from_datetime }} thru {{ object.thru_datetime }}
+          <div class="col-md mb-2 mt-4"><i>{{ object.transaction_type }} for billing period from {{ object.from_datetime }} thru {{ object.thru_datetime }}
         {% if object.meter %}
           using meter <a href="{{ object.meter.get_absolute_url }}">{{ object.meter }}</a>
           {% if object.meter and object.meter.site %}
