@@ -21,7 +21,7 @@ Databases
 ^^^^^^^^^
 
 We use two databases: a relational database to store application data and, optionally, a time series database to store IOT data trended by VOLTTRON (see below.) 
-The relational database we use is PostgreSQL, and the time series database is Crate.  The names of the databases and their connections setup are configured in ``config/settings/base.py``: 
+The relational database we use is PostgreSQL, and the time series database is Crate.  The names of the databases and their connections setup are configured in ``config/settings/base.py``:: 
 
  DATABASES = {
      'default': env.db('DATABASE_URL', default='postgres:///opentaps_seas'),
@@ -31,7 +31,7 @@ The relational database we use is PostgreSQL, and the time series database is Cr
 Postgres
 ^^^^^^^^
 
-Note: You may need to switch to postgres user to run those commands (eg: sudo su - postgres)
+Note: You may need to switch to postgres user to run those commands (eg: `sudo su - postgres`)
 
 You will need to set up your PostgreSQL database properly so that you can use your <unixuser> as the user that would run the server so it authenticates in postgres using ident. 
 Postgres Extensions must be installed, which means in some distributions installing the `postgresql-contrib` package.  The HSTORE extension must be setup which requires running this in postgres as the superuser::
@@ -97,7 +97,7 @@ VOLTTRON
 ^^^^^^^^
 
 VOLTTRON can be used to get data from buildings and energy systems with standard protocols such as BACNet and MODBUS, then store them in a time series database
-such as Crate.  There are also many applications developed for VOLTTRON under a separate VOLTTRON-applications repository. 
+such as Crate.  There are also many applications developed for VOLTTRON under a separate VOLTTRON-applications repository.  VOLTTRON is not required for opentaps SEAS.
 
 We have made some enhancements to VOLTTRON for opentaps SEAS, which have been contributed back to the VOLTTRON project.  Meanwhile you can get our enhanced versions from
 github at https://github.com/opentaps/VOLTTRON (use the develop branch) and https://github.com/opentaps/VOLTTRON-applications (use the master branch.) 
@@ -130,7 +130,7 @@ Verify the following:
 Crate
 ^^^^^
 
-Crate is a time series database which is specialized in storing time series databases from machines, such as BACNet and MODBUS data from VOLTTRON.  If you wish to use VOLTTRON to get this data for your sites and work with them in opentaps, then please follow these instructions to set up Crate.
+Crate is a time series database which is specialized in storing time series databases from machines, such as BACNet and MODBUS data from VOLTTRON.  Crate is not required for opentaps SEAS to function, unless you wish to use VOLTTRON to get data for your sites and work with them in opentaps.  If so, then please follow these instructions to set up Crate.
 
 As of Crate 4.0, the open source edition of Crate must be installed following directions in https://crate.io/docs/crate/reference/en/latest/editions.html#community-edition
 
@@ -194,11 +194,11 @@ You can also delete this demo data from your time series database::
 
  $ ./import_data.sh clean tsdemo
 
-This time series demo data can also be loaded as part of loading all demo data:
+This time series demo data can also be loaded as part of loading all demo data::
 
  $ ./import_data.sh all_data all clean
 
-and deleted with the other data as well:
+and deleted with the other data as well::
  
  $ ./import_data.sh all_data all clean tsdemo
 
