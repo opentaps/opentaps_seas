@@ -20,6 +20,7 @@
 
 {% load django_tables2 %}
 {% load static i18n %}
+{% load fmttime_str from core_tags %}
 {% block title %}Weather Station: {{ object }}{% endblock %}
 
 {% block content %}
@@ -27,11 +28,20 @@
 
   <div class="card mb-3">
     <div class="card-body">
-      {% if object.station_name %}
-        <h2>Weather Station {{ object.station_name }} <span style="font-size: 1rem;">({{ object.weather_station_code | default:object.weather_station_id }})</span></h2>
-      {% else %}
-        <h2>Weather Station {{ object }}</h2>
-      {% endif %}
+      <h2 class="d-flex">
+        <span>
+        {% if object.station_name %}
+          Weather Station {{ object.station_name }} <span style="font-size: 1rem;">({{ object.weather_station_code | default:object.weather_station_id }})</span>
+        {% else %}
+          Weather Station {{ object }}
+        {% endif %}
+        </span>
+        {% block add_button %}
+        <div class="ml-auto text-nowrap">
+          <a href="{% url 'core:weather_station_fetch_data' object.weather_station_id %}" role="button" class="btn btn-primary"><i class="fa fa-plus mr-2"></i> Fetch Data</a>
+        </div>
+        {% endblock add_button %}
+      </h2>
       <br/>
 
       {% block inner_content %}
@@ -63,11 +73,21 @@
               <td>Elevation:</td>
               <td>{{ object.elevation }}</td>
             </tr>
+            {% if object.latest_reading %}
+            <tr>
+              <td>Latest data:</td>
+              <td>{{ object.latest_reading.as_of_datetime|fmttime_str }}</td>
+            </tr>
+            {% endif %}
           </table>
         </div>
-        <div class="col-md" style="min-height: 200px">
-          {% include "core/_weather_station_geoview.html" with weather_station=object %}
-        </div>
+        {% if object.latest_reading %}
+          <div class="col-md" style="min-height: 200px">
+            {% include "core/_weather_station_geoview.html" with weather_station=object %}
+          </div>
+        {% else %}
+          Fetch Weather data.
+        {% endif %}
       </div>
 
       <p>

@@ -1193,44 +1193,54 @@ def get_default_weather_station_for_site(site):
     return get_weather_station_for_location(latitude, longitude)
 
 
-def get_weather_history_for_station(weather_station, days_from_today=7):
+def get_weather_history_for_station(weather_station, days_from_today=7, start_date=None, end_date=None):
     if days_from_today <= 0:
         days_from_today = 1     # 1 day as minimum
-    end_date = datetime.now(pytz.UTC)
-    start_date = end_date - timedelta(hours=days_from_today*24)
+    if not end_date:
+        end_date = datetime.now(pytz.UTC)
+        logger.info('get_weather_history_for_station: using default now end_date %s', end_date)
+    given_start = True
+    if not start_date:
+        start_date = end_date - timedelta(hours=days_from_today*24)
+        logger.info('get_weather_history_for_station: using default start_date %s', start_date)
+        given_start = False
 
     # Get last update datetime
-    try:
-        last_record = WeatherHistory.objects.filter(weather_station=weather_station).order_by('-as_of_datetime').first()
-        if last_record:
-            start_date = last_record.as_of_datetime + timedelta(minutes=1)
-    except Exception as e:
-        logging.warning(e)
+    if not given_start:
+        try:
+            last_record = WeatherHistory.objects.filter(weather_station=weather_station).order_by('-as_of_datetime').first()
+            if last_record:
+                start_date = last_record.as_of_datetime + timedelta(minutes=1)
+                logger.info('get_weather_history_for_station: last record start_date %s', start_date)
+        except Exception as e:
+            logging.warning(e)
 
     # Get weather station
-    station = None
-    try:
-        station = eeweather.ISDStation(weather_station.weather_station_code)
-    except Exception as e:
-        logging.error(e)
-        return
+    station = eeweather.ISDStation(weather_station.weather_station_code)
 
-    try:
-        temp_degC, warnings = station.load_isd_hourly_temp_data(start_date, end_date)
-        for dt, deg_c in temp_degC.iteritems():
-            if dt < start_date:
-                continue
-            elif numpy.isnan(deg_c):
-                continue
-            deg_f = deg_c * 9 / 5 + 32
+    # Make sure all dates are UTC
+    start_date = start_date.replace(tzinfo=pytz.UTC)
+    end_date = end_date.replace(tzinfo=pytz.UTC)
+    logger.info('get_weather_history_for_station: from %s to %s',
+                start_date, end_date)
+    temp_degC, warnings = station.load_isd_hourly_temp_data(
+                            start_date,
+                            end_date,
+                            read_from_cache=False)
+    logger.info('get_weather_history_for_station: got %s / %s',
+                temp_degC, warnings)
+    for dt, deg_c in temp_degC.iteritems():
+        if dt < start_date:
+            continue
+        elif numpy.isnan(deg_c):
+            continue
+        deg_f = deg_c * 9 / 5 + 32
 
-            new_data = WeatherHistory(weather_station=weather_station, as_of_datetime=dt,
-                                      temp_c=deg_c, temp_f=deg_f, source='EEWeather')
-            new_data.save()
+        new_data = WeatherHistory(weather_station=weather_station, as_of_datetime=dt,
+                                  temp_c=deg_c, temp_f=deg_f, source='EEWeather')
+        new_data.save()
 
-        return temp_degC
-    except Exception as e:
-        logging.error(e)
+    return temp_degC
 
 
 def get_topic_point(topic):

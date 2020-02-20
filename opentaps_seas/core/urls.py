@@ -155,5 +155,7 @@ urlpatterns = [
     path("weather_station/json/<path:weather_station_id>", view=weather.weather_data_json, name="weather_data_json"),
     path("weather_station/view/<path:weather_station_id>",
          view=weather.weather_station_detail, name="weather_station_detail"),
+    path("weather_station/fetch/<path:weather_station_id>",
+         view=weather.weather_station_fetch_data, name="weather_station_fetch_data"),
     path("weather_station.json", view=weather.weather_stations_json, name="weather_stations_json")
 ]

@@ -20,14 +20,18 @@ import logging
 from .common import GoogleApiMixin
 from .common import WithBreadcrumbsMixin
 from .. import utils
+from ..forms.weather import WeatherStationFetchDataForm
 from ..models import datetime_to_string
 from ..models import WeatherStation
 from ..models import SiteView
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import DetailView
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import FormView
 
 logger = logging.getLogger(__name__)
 
@@ -102,3 +106,59 @@ class WeatherStationDetail(LoginRequiredMixin, GoogleApiMixin, WithBreadcrumbsMi
 
 
 weather_station_detail = WeatherStationDetail.as_view()
+
+
+class WeatherStationFetchData(LoginRequiredMixin, WithBreadcrumbsMixin, SingleObjectMixin, FormView):
+    model = WeatherStation
+    slug_field = "weather_station_id"
+    slug_url_kwarg = "weather_station_id"
+    template_name = 'core/weather_station_fetch_data.html'
+    form_class = WeatherStationFetchDataForm
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return obj.get_absolute_url()
+
+    def get_form_kwargs(self, *args, **kwargs):
+        form_data = super().get_form_kwargs(*args, **kwargs)
+
+        try:
+            if not self.request.POST:
+                ws = self.get_object()
+                initial_values = {}
+                if ws:
+                    initial_values['weather_station_id'] = ws.weather_station_id
+                    if ws.latest_reading:
+                        initial_values['from_date'] = ws.latest_reading.as_of_datetime
+                form_data['initial'] = initial_values
+        except Exception as e:
+            logging.error(e)
+
+        return form_data
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            try:
+                form_results = form.save()
+                if form_results is not None and len(form_results):
+                    messages.success(self.request, 'Imported {} temperature records.'.format(len(form_results)))
+            except Exception as e:
+                logging.exception(e)
+                if e.__class__.__name__ == 'UnrecognizedUSAFIDError':
+                    messages.error(self.request, 'Unrecognized Weather Station USAF ID, cannot fetch data.')
+                else:
+                    messages.error(self.request, 'Unexpected Error {}: {}'.format(e.__class__.__name__, e))
+
+            return self.form_valid(form)
+        else:
+            messages.error(self.request, 'Invalid request')
+            return self.form_invalid(form)
+
+
+weather_station_fetch_data = WeatherStationFetchData.as_view()

@@ -811,6 +811,10 @@ class WeatherStation(models.Model):
     def get_absolute_url(self):
         return reverse("core:weather_station_detail", kwargs={"weather_station_id": self.weather_station_id})
 
+    @property
+    def latest_reading(self):
+        return self.weatherhistory_set.order_by('-as_of_datetime').first()
+
 
 class WeatherHistory(models.Model):
     weather_history_id = AutoField(_("Weather History ID"), primary_key=True, auto_created=True)
