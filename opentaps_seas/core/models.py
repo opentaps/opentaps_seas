@@ -900,6 +900,14 @@ class Meter(models.Model):
     def latest_reading(self):
         return self.meterhistory_set.order_by('-as_of_datetime').first()
 
+    @property
+    def latest_value_kwh(self):
+        lr = self.latest_reading
+        if not lr:
+            return None
+        kwh_uom = UnitOfMeasure.objects.get(uom_id='energy_kWh')
+        return lr.uom.convert_amount_to(lr.value, kwh_uom)
+
 
 class MeterHistory(models.Model):
     meter_history_id = AutoField(_("Meter History ID"), primary_key=True, auto_created=True)
