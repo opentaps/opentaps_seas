@@ -763,7 +763,7 @@ class UnitOfMeasure(models.Model):
         # Lookup the UnitOfMeasureConversion
         n = now()
         cuom = self.conversions_from.filter(from_datetime__lte=n)
-        cuom = cuom.exclude(thru_datetime_lte=n)
+        cuom = cuom.exclude(thru_datetime__lte=n)
         cuom = cuom.filter(from_uom_id=self.uom_id)
         cuom = cuom.filter(to_uom_id=uom.uom_id)
         cuom = cuom.first()
