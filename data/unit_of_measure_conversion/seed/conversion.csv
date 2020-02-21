@@ -1,3 +1,4 @@
+from,to,factor
 energy_Wh,energy_kWh,0.001
 energy_Wh,energy_MWh,0.000001
 energy_kWh,energy_Wh,1000.0
