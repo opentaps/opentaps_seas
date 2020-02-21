@@ -99,6 +99,12 @@ def import_entities(source_file_name):
                     get_isd_station_metadata(usaf_id)
                 except Exception:
                     print('-- IGNORE station without eemeter metadata: ', usaf_id)
+                    try:
+                        c.execute("""DELETE FROM core_weather_station where weather_station_code = %s""",
+                                  [weather_station_code]
+                                  )
+                    except Exception:
+                        pass
                     continue
 
                 try:
