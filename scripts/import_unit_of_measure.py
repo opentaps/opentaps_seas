@@ -140,6 +140,13 @@ def import_uom_conversion(source_file_name):
                 rate = row[2]
 
                 try:
+                    c.execute("""UPDATE core_unit_of_measure_conversion SET thru_datetime = now()
+                        WHERE from_uom_id = %s and to_uom_id = %s""", [from_uom_id, to_uom_id])
+                    print('-- EXPIRE unit of measure conversion: ', from_uom_id, to_uom_id)
+                except Exception:
+                    pass
+
+                try:
                     c.execute("""INSERT INTO core_unit_of_measure_conversion (from_uom_id, to_uom_id, rate, from_datetime)
                         VALUES (%s, %s, %s, now())""", [from_uom_id, to_uom_id, rate])
                     counter_insert += 1
