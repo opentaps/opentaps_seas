@@ -19,6 +19,7 @@ import csv
 import os
 from django.db import connections
 from django.db.utils import IntegrityError
+from eeweather.stations import get_isd_station_metadata
 
 
 def clean():
@@ -91,6 +92,14 @@ def import_entities(source_file_name):
 
                 weather_station_id = 'USAF_' + usaf_id
                 weather_station_code = usaf_id
+
+                # note ensure eemeter has metadata for it
+                # else fetching data would fail anyway ..
+                try:
+                    get_isd_station_metadata(usaf_id)
+                except Exception:
+                    print('-- IGNORE station without eemeter metadata: ', usaf_id)
+                    continue
 
                 try:
                     c.execute("""INSERT INTO core_weather_station (weather_station_id, weather_station_code,
