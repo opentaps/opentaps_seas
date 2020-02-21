@@ -30,11 +30,13 @@
     <div class="card-body">
       <h2 class="d-flex">
         <span>
+        {% block section_title %}
         {% if object.station_name %}
           Weather Station {{ object.station_name }} <span style="font-size: 1rem;">({{ object.weather_station_code | default:object.weather_station_id }})</span>
         {% else %}
           Weather Station {{ object }}
         {% endif %}
+        {% endblock section_title %}
         </span>
         {% block add_button %}
         <div class="ml-auto text-nowrap">

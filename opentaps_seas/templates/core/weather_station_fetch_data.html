@@ -24,14 +24,31 @@
 {% block add_button %}
 {% endblock add_button %}
 
+{% block section_title %}
+Fetch Weather Station Data
+{% endblock section_title %}
+
+
 {% block inner_content %}
 <form method="post" id="wsFetchForm" data-weather-stations-url="{% url 'core:weather_stations_json' %}" novalidate>
   {% csrf_token %}
+  {% if object %}
+    <div class="form-group">
+      <label>Station</label>
+      <div>
+      {% if object.station_name %}
+        {{ object.station_name }} <span style="font-size: 1rem;">({{ object.weather_station_code | default:object.weather_station_id }})</span>
+      {% else %}
+        {{ object }}
+      {% endif %}
+      </div>
+    </div>
+  {% endif %}
   {{ form|crispy }}
 
   <div class="form-group d-flex justify-content-around mt-5">
     <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'core:site_list' %}{% endif %}" class="btn btn-secondary col-5" role="button"><i class="fa fa-times mr-2"></i> Cancel</a>
-    <button class="btn btn-primary col-5" type="submit"><i class="fa fa-edit mr-2"></i> Save</button>
+    <button class="btn btn-primary col-5" type="submit"><i class="fa fa-edit mr-2"></i> Fetch Data</button>
   </div>
 </form>
 {% endblock inner_content %}
