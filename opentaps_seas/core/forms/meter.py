@@ -19,6 +19,7 @@ import logging
 import json
 import csv
 from io import TextIOWrapper
+from .. import utils
 from ..models import Meter
 from ..models import MeterHistory
 from ..models import WeatherStation
@@ -130,7 +131,7 @@ class MeterCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MeterCreateForm, self).__init__(*args, **kwargs)
-        self.fields['meter_id'].required = True
+        self.fields['meter_id'].required = False
         self.fields['site'].widget = forms.HiddenInput()
 
         # Dynamic load weather station list
@@ -142,6 +143,38 @@ class MeterCreateForm(forms.ModelForm):
                 self.cleaned_data = {}
             error_msg = u"No weather station found for this Site. Please check that your site is set up correctly."
             self.add_error('weather_station', error_msg)
+
+    def save(self, commit=True):
+        description = self.cleaned_data['description']
+        meter_id = self.cleaned_data['meter_id']
+        site = self.cleaned_data['site']
+
+        if not meter_id or meter_id == '':
+            id_base = site.entity_id
+            if description:
+                id_base += "-" + description
+            meter_id = utils.make_random_id(id_base)
+
+        weather_station = self.cleaned_data['weather_station']
+        rate_plan = self.cleaned_data['rate_plan']
+        from_datetime = self.cleaned_data['from_datetime']
+        thru_datetime = self.cleaned_data['thru_datetime']
+
+        meter = Meter(meter_id=meter_id)
+        meter.site_id = site.entity_id
+        meter.description = description
+        if weather_station:
+            meter.weather_station_id = weather_station.weather_station_id
+        if rate_plan:
+            meter.rate_plan_id = rate_plan.rate_plan_id
+        meter.from_datetime = from_datetime
+        meter.thru_datetime = thru_datetime
+
+        meter.save()
+        self.instance = Meter.objects.get(meter_id=meter_id)
+        self.cleaned_data['meter_id'] = meter_id
+        self._post_clean()  # reset the form as updating the just created instance
+        return self.instance
 
     class Meta:
         model = Meter
