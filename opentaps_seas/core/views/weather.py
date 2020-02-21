@@ -16,6 +16,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+from timezonefinder import TimezoneFinder
 
 from .common import GoogleApiMixin
 from .common import WithBreadcrumbsMixin
@@ -59,7 +60,7 @@ def weather_data_json(request, weather_station_id):
     weater_data = []
     qs = m.weatherhistory_set
 
-    # set timezones, default to UTC
+    # set timezones
     tz = None
     if request.GET.get('site'):
         try:
@@ -69,7 +70,12 @@ def weather_data_json(request, weather_station_id):
             tz = None
 
     if not tz:
-        tz = utils.parse_timezone(request.GET.get('tz'), 'UTC')
+        tz = utils.parse_timezone(request.GET.get('tz'))
+
+    if not tz:
+        # find from the station position
+        tf = TimezoneFinder()
+        tz = utils.parse_timezone(tf.timezone_at(lng=m.longitude, lat=m.latitude))
 
     for data in qs.order_by("-as_of_datetime")[:trange]:
         # Prevent adding duplicates
