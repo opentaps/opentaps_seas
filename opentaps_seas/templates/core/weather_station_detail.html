@@ -83,13 +83,9 @@
             {% endif %}
           </table>
         </div>
-        {% if object.latest_reading %}
-          <div class="col-md" style="min-height: 200px">
-            {% include "core/_weather_station_geoview.html" with weather_station=object %}
-          </div>
-        {% else %}
-          Fetch Weather data.
-        {% endif %}
+        <div class="col-md" style="min-height: 200px">
+          {% include "core/_weather_station_geoview.html" with weather_station=object %}
+        </div>
       </div>
 
       <p>
