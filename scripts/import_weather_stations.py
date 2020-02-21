@@ -25,10 +25,9 @@ from eeweather.stations import get_isd_station_metadata
 def clean():
     print('Deleting data ...')
     with connections['default'].cursor() as c:
-        # Delete all meters
-        c.execute("DELETE FROM eemeter_baselinemodel;")
-        c.execute("DELETE FROM core_meter_history;")
-        c.execute("DELETE FROM core_meter;")
+        # Delete all meters stations
+        c.execute("UPDATE core_meter set weather_station_id = null;")
+        c.execute("DELETE FROM core_site_weather_stations;")
 
         # Delete all weather histories
         c.execute("DELETE FROM core_weather_history;")
