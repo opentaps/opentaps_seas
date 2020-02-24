@@ -33,7 +33,7 @@
               :options="options"
               :series="series"></apexchart>
           </div>
-          <div class="small text-muted text-right">timezone: ${ timezone }</div>  
+          <div class="small text-muted text-right">timezone: ${ timezone }</div>
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@
       clipMarkers: false
     },
   }
-  var chartDegreeUnit = '°C'
+  var chartDegreeUnit = '°F'
   var myChart = new Vue({
     delimiters: ['${', '}'],
     el: '#weatherhistorychart',
@@ -196,7 +196,7 @@
           if (response.data.values.length == 0) {
             this.series[0].data = [{y:0, x:new Date().getTime()}]
           } else {
-            this.series[0].data = response.data.values.map(x => { return { y: x.temp_c, x: parse_date(x.datetime).getTime() } } );
+            this.series[0].data = response.data.values.map(x => { return { y: x.temp_f, x: parse_date(x.datetime).getTime() } } );
             this.series[0].data_c = response.data.values.map(x => { return { y: x.temp_c, x: parse_date(x.datetime).getTime() } } );
             this.series[0].data_f = response.data.values.map(x => { return { y: x.temp_f, x: parse_date(x.datetime).getTime() } } );
           }
