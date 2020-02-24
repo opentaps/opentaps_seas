@@ -34,9 +34,8 @@ Fetch Weather Station Data
   {% csrf_token %}
   {% if object %}
     <div class="form-group">
-      <label>For</label>
       <div>
-      {% if object.station_name %}
+      For {% if object.station_name %}
         {{ object.station_name }} <span style="font-size: 1rem;">({{ object.weather_station_code | default:object.weather_station_id }})</span>
       {% else %}
         {{ object }}
