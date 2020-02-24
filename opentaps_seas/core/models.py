@@ -21,6 +21,7 @@ import re
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from functools import lru_cache
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
@@ -753,13 +754,17 @@ class UnitOfMeasure(models.Model):
         t = self.description or self.code or self.uom_id
         return t
 
+    @classmethod
+    @lru_cache(maxsize=64)
+    def get(cls, uom_id):
+        return UnitOfMeasure.objects.get(uom_id=uom_id)
+
     @property
     def unit(self):
         return self.symbol or self.code
 
-    def convert_amount_to(self, amount, uom):
-        if (self.uom_id == uom.uom_id):
-            return amount
+    @lru_cache(maxsize=64)
+    def conversion_to(self, uom):
         # Lookup the UnitOfMeasureConversion
         n = now()
         cuom = self.conversions_from.filter(from_datetime__lte=n)
@@ -767,6 +772,12 @@ class UnitOfMeasure(models.Model):
         cuom = cuom.filter(from_uom_id=self.uom_id)
         cuom = cuom.filter(to_uom_id=uom.uom_id)
         cuom = cuom.first()
+        return cuom
+
+    def convert_amount_to(self, amount, uom):
+        if (self.uom_id == uom.uom_id):
+            return amount
+        cuom = self.conversion_to(uom)
 
         if not cuom:
             raise Exception("Cannot convert UOM {} to {}".format(self, uom))
@@ -830,10 +841,16 @@ class WeatherHistory(models.Model):
         db_table = 'core_weather_history'
 
 
-def write_csv_data(qs, output, columns, with_header=True):
+def write_csv_data(qs, output, columns, with_header=True, convert_field=None, convert_uom='uom_id', convert_to=None):
     writer = csv.writer(output)
     header = []
     fields = []
+    # check if we want to convert some value field
+    convert = False
+    if convert_field and convert_uom and convert_to:
+        # get the UOM to convert to
+        uom = UnitOfMeasure.get(convert_to)
+        convert = True
     for c in columns:
         header.append(list(c.values())[0])
         fields.append(list(c.keys())[0])
@@ -842,7 +859,13 @@ def write_csv_data(qs, output, columns, with_header=True):
     for d in qs:
         row = []
         for f in fields:
-            row.append(d.__dict__.get(f))
+            val = d.__dict__.get(f)
+            if convert and convert_field == f:
+                # check what uom that field is in
+                f_uom_id = d.__dict__.get(convert_uom)
+                f_uom = UnitOfMeasure.get(f_uom_id)
+                val = f_uom.convert_amount_to(val, uom)
+            row.append(val)
         writer.writerow(row)
 
 
@@ -886,8 +909,14 @@ class Meter(models.Model):
     def get_weather_data(self, start=None, end=None):
         return query_timeseries(self.weather_station.weatherhistory_set, start=start, end=end)
 
-    def write_meter_data_csv(self, output, columns, with_header=True, start=None, end=None):
-        write_csv_data(self.get_meter_data(start=start, end=end), output, columns, with_header)
+    def write_meter_data_csv(self, output, columns, with_header=True, start=None, end=None, uom_id='energy_kWh'):
+        write_csv_data(
+            self.get_meter_data(start=start, end=end),
+            output,
+            columns,
+            with_header,
+            convert_field='value',
+            convert_to=uom_id)
 
     def write_weather_data_csv(self, output, columns, with_header=True, start=None, end=None):
         write_csv_data(self.get_weather_data(start=start, end=end), output, columns, with_header)
