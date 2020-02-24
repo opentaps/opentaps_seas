@@ -44,7 +44,10 @@ Meters
 
 Each site could be associated with one or more meters, which could be a utility meter or a measuring device to record solar generation, battery charge or discharge, or any other technology’s 
 use or production of energy.  Each Meter is associated with a Weather Station.  We currently use the NOAA ISD weather stations and weather data based on OpenEE Weather.
-When you add a Meter, the UI uses the location of the Site to get the nearest Weather Station, so all Meters at the same Site will have the same Weather Stations.  
+When you add a Meter, the UI uses the location of the Site to get the nearest Weather Station, so all Meters at the same Site will have the same Weather Stations.  If you click on a
+Weather Station, you can see detailed information about it and use the Fetch Data button to get historical readings from the station.  
+
+
 A meter could be removed from a site, but it is not deleted.  The meter and weather histories are permanently stored in opentaps for you.
 
 Each meter is also associated with a rate plan, which is used to calculate billing for the meter's readings.  You will be prompted to add this rate plan when you add a new meter.
