@@ -156,7 +156,7 @@
                     click: function(e) {
                       // Genereate CSV data first
                       let lines = [];
-                      lines.push('Date/Time,Value (kWh)');
+                      lines.push('Date/Time,Value (' + chartDegreeUnit + ')');
                       const chartData = myChart.series[0].data;
                       for (let i = 0; i < chartData.length; i++) {
                         let date = new Date(chartData[i].x).toLocaleString()
@@ -187,6 +187,10 @@
               format: 'dd MMM yyyy HH:mm'
             }
           }
+        },
+        uom: {
+          id: 'energy_kWh',
+          unit: 'kWh'
         },
         series: [{
           name: "Value",
@@ -225,6 +229,11 @@
         url = '{% url 'core:meter_data_json' meter_id %}' + this.getUrlArgs();
         console.log('Fetching meter chart from ', url);
         axios.get(url).then(response => {
+          if (response.data.uom) {
+            console.log('Fetching meter chart got UOM ', response.data.uom);
+            this.uom = response.data.uom;
+            chartDegreeUnit = this.uom.unit;
+          }
           console.log('Fetching meter chart got ', response.data.values);
           if (response.data.values.length < 20) {
             this.$refs['meter_history_line_chart'].updateOptions({markers: {size: 5}});

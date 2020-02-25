@@ -226,22 +226,31 @@ def meter_data_json(request, meter):
     # Select last <trange> records
     meter_data = []
     qs = m.meterhistory_set
+    uom = None
     for data in qs.order_by("-as_of_datetime")[:trange]:
         # Prevent adding duplicates
         datetime = datetime_to_string(data.as_of_datetime)
         if meter_data and datetime == meter_data[-1]['datetime']:
             continue
+        if not uom:
+            uom = data.uom
         value = data.value
         if value and not isnan(value):
-            if data.uom_id == 'energy_Wh':
-                value = value/1000
+            value = data.uom.convert_amount_to(value, uom)
 
             meter_data.append({
                 'datetime': datetime,
                 'value': value
             })
 
-    return JsonResponse({'values': list(reversed(meter_data))})
+    uom_d = None
+    if uom:
+        uom_d = {
+            'id': uom.uom_id,
+            'unit': uom.unit
+        }
+
+    return JsonResponse({'uom': uom_d, 'values': list(reversed(meter_data))})
 
 
 @login_required()
