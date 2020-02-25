@@ -81,9 +81,6 @@ def meter_production_data_json(request, meter):
     meter_data_map = {}
     qs0 = m.meterproduction_set
 
-    # convert values to kWh
-    uom = UnitOfMeasure.objects.get(uom_id='energy_kWh')
-
     model_id = request.GET.get('model_id')
     if model_id:
         logger.info('Filtering for model = %s', model_id)
@@ -99,6 +96,10 @@ def meter_production_data_json(request, meter):
         qs0 = qs0.filter(from_datetime__gte=start)
     if end:
         qs0 = qs0.filter(from_datetime__lt=end)
+
+    # convert values to the same UOM
+    uom = None
+
     for ref in qs0.distinct('meter_production_reference').values('meter_production_reference'):
         ref = ref.get('meter_production_reference')
         qs = qs0.filter(meter_production_reference=ref)
@@ -111,6 +112,9 @@ def meter_production_data_json(request, meter):
             except BaselineModel.DoesNotExist:
                 pass
         for data in qs.order_by('-from_datetime'):
+            # use the first UOM found
+            if not uom:
+                uom = data.uom
             data_key = data_ref or data.source
             meter_data = meter_data_map.get(data_key)
             if not meter_data:
@@ -135,7 +139,14 @@ def meter_production_data_json(request, meter):
     for k in meter_data_map.keys():
         meter_data_map[k] = list(reversed(meter_data_map[k]))
 
-    return JsonResponse({'values': meter_data_map})
+    uom_d = None
+    if uom:
+        uom_d = {
+            'id': uom.uom_id,
+            'unit': uom.unit
+        }
+
+    return JsonResponse({'uom': uom_d, 'values': meter_data_map})
 
 
 def meter_financial_value_data_json(request, meter):

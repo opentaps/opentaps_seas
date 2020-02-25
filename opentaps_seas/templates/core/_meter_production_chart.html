@@ -107,7 +107,7 @@
                     click: function(e) {
                       // Genereate CSV data first
                       let lines = [];
-                      lines.push('Date/Time,Source,Value (kWh)');
+                      lines.push('Date/Time,Source,Value (' + chartDegreeUnit + ')');
                       for (let s = 0; s< myChart.series.length; s++) {
                         const chartData = myChart.series[s].data;
                         const chartName = myChart.series[s].name;
@@ -190,6 +190,10 @@
         url = '{% url 'core:meter_production_data_json' meter_id %}' + this.getUrlArgs();
         console.log('Fetching meter chart from ', url);
         axios.get(url).then(response => {
+          if (response.data.uom) {
+            console.log('Fetching meter chart got UOM ', response.data.uom);
+            chartDegreeUnit = response.data.uom.unit;
+          }
           console.log('Fetching meter chart got ', response.data);
           this.$refs['meter_production_line_chart'].updateOptions({markers: {size: 5, shape: 'circle'}, stroke: {width: 4}});
           if (response.data.values.length == 0) {

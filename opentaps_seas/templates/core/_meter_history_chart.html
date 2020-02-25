@@ -188,10 +188,6 @@
             }
           }
         },
-        uom: {
-          id: 'energy_kWh',
-          unit: 'kWh'
-        },
         series: [{
           name: "Value",
           data: [
@@ -231,8 +227,7 @@
         axios.get(url).then(response => {
           if (response.data.uom) {
             console.log('Fetching meter chart got UOM ', response.data.uom);
-            this.uom = response.data.uom;
-            chartDegreeUnit = this.uom.unit;
+            chartDegreeUnit = response.data.uom.unit;
           }
           console.log('Fetching meter chart got ', response.data.values);
           if (response.data.values.length < 20) {
