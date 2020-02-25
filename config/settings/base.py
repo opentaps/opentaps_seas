@@ -126,6 +126,7 @@ THIRD_PARTY_APPS = [
     'storages',
     'filer',
     'mptt',
+    'flatpickr',
 ]
 LOCAL_APPS = [
     'opentaps_seas.users.apps.UsersAppConfig',
