@@ -198,6 +198,7 @@ def read_sample_data(meter_data, temperature_data, sample_metadata):
     end = meter_data.iloc[-1].name.to_pydatetime()
 
     return {
+        'meter_uom_id': 'energy_kWh',
         'meter_data': meter_data,
         'temperature_data': temperature_data,
         'sample_metadata': sample_metadata,
@@ -348,6 +349,9 @@ def get_hourly_model(data):
 def save_model(model, meter_id=None, frequency=None, description=None, from_datetime=None,
                thru_datetime=None, data=None, progress_observer=None):
     plot_data = None
+    uom_id = 'energy_kWh'
+    if data and data['meter_uom_id']:
+        uom_id = data['meter_uom_id']
     if data and hasattr(model, 'plot'):
         if progress_observer:
             progress_observer.add_progress(description='Plotting model energy signature ...')
@@ -378,7 +382,7 @@ def save_model(model, meter_id=None, frequency=None, description=None, from_date
         thru_datetime=thru_datetime,
         description=description,
         plot_data=plot_data,
-        uom_id=data['meter_uom_id'])
+        uom_id=uom_id)
 
 
 def load_model(model):

@@ -19,9 +19,23 @@
 from .base import OpentapsSeasTestCase
 from opentaps_seas.eemeter import utils
 from opentaps_seas.eemeter import models
+from opentaps_seas.core.models import UnitOfMeasure
 
 
 class EEMeterTests(OpentapsSeasTestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        UnitOfMeasure.objects.get_or_create(
+            uom_id='energy_kWh',
+            code='kWh',
+            type='energy'
+            )
+        UnitOfMeasure.objects.get_or_create(
+            uom_id='energy_Wh',
+            code='Wh',
+            type='energy'
+            )
 
     def test_hourly_model_serialization(self):
         d = utils.get_hourly_sample_data()
@@ -39,6 +53,7 @@ class EEMeterTests(OpentapsSeasTestCase):
         s2 = utils.get_savings(d, m2)
 
         self.assertEquals(s.get('total_savings'), s2.get('total_savings'))
+        self.assertEquals(i2.uom_id, 'energy_kWh')
 
     def test_daily_model_serialization(self):
         d = utils.get_daily_sample_data()
@@ -56,3 +71,24 @@ class EEMeterTests(OpentapsSeasTestCase):
         s2 = utils.get_savings(d, m2)
 
         self.assertEquals(s.get('total_savings'), s2.get('total_savings'))
+        self.assertEquals(i2.uom_id, 'energy_kWh')
+
+    def test_daily_model_uom(self):
+        d = utils.get_daily_sample_data()
+        d['meter_uom_id'] = 'energy_Wh'
+
+        m = utils.get_daily_model(d)
+        i = utils.save_model(m, data=d, frequency='daily')
+        m2 = utils.load_model(i)
+
+        s = utils.get_savings(d, m)
+        s2 = utils.get_savings(d, m2)
+
+        self.assertEquals(s.get('total_savings'), s2.get('total_savings'))
+
+        i2 = models.BaselineModel.objects.get(id=i.id)
+        m2 = utils.load_model(i2)
+        s2 = utils.get_savings(d, m2)
+
+        self.assertEquals(s.get('total_savings'), s2.get('total_savings'))
+        self.assertEquals(i2.uom_id, 'energy_Wh')
