@@ -80,6 +80,35 @@ class MeterModelCreateForm(forms.ModelForm):
                     self.add_error('thru_date', 'Meter does not have enough baseline data.')
                 return False
 
+        md_start = self.read_meter_data['start']
+        md_end = self.read_meter_data['end']
+
+        # check the meter has weather data through the date range
+        logger.info('MeterModelCreateForm: got meter data from %s to %s', md_start, md_end)
+        wd = self.meter.get_weather_data(start=md_start, end=md_end)
+        wds = wd.first()
+        if not wds:
+            self.add_error('thru_date', 'Meter does not have Weather Data for that period.')
+            return False
+
+        wd_start = wds.as_of_datetime
+        wd_end = wd.last().as_of_datetime
+
+        logger.info('MeterModelCreateForm: got weather data from %s to %s', wd_start, wd_end)
+
+        # check we have reasonable coverage for the meter data:
+        mdl = md_end - md_start
+        wdl = wd_end - wd_start
+
+        logger.info('MeterModelCreateForm: coverage -> weather = %s days, meter data = %s days', wdl, mdl)
+
+        if abs(mdl.days - wdl.days) > 2:
+            self.add_error('thru_date', '''Meter does not have complete Weather Data from {} to {},
+                only found from {} to {}'''.format(
+                    md_start.strftime("%m/%d/%Y"), md_end.strftime("%m/%d/%Y"),
+                    wd_start.strftime("%m/%d/%Y"), wd_end.strftime("%m/%d/%Y")))
+            return False
+
         return True
 
     def save(self, commit=True):
