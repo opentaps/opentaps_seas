@@ -71,7 +71,7 @@
                       </div>
                       <div class="col-4">
                         {% if meter.latest_reading %}
-                          <b>{{ meter.latest_value_kwh }} kWh</b>
+                          <b>{{ meter.latest_reading.value }} {{ meter.latest_reading.uom.unit }}</b>
                           as of
                           <my-datetime value="{{ meter.latest_reading.as_of_datetime|time_str }}">{{ meter.latest_reading.as_of_datetime|fmttime_str }}</my-datetime>
                         {% endif %}

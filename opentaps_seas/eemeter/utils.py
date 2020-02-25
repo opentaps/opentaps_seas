@@ -209,11 +209,15 @@ def read_sample_data(meter_data, temperature_data, sample_metadata):
     }
 
 
-def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, freq=None, start=None, end=None):
+def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, freq=None, start=None, end=None, uom=None):
     # get the meter data from the meter history
     logger.info('read_meter_data: freq %s', freq)
     out = StringIO()
-    meter.write_meter_data_csv(out, columns=[{'as_of_datetime': 'start'}, {'value': 'value'}], start=start, end=end)
+    # read the meter data, returns the unit of the meter data
+    m_uom = meter.write_meter_data_csv(
+            out,
+            columns=[{'as_of_datetime': 'start'}, {'value': 'value'}],
+            start=start, end=end)
     out.seek(0)
     if freq not in ("hourly", "daily"):
         freq = None
@@ -249,6 +253,7 @@ def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, fre
     logger.info('read_meter_data: DONE')
 
     return {
+        'meter_uom_id': m_uom.uom_id if m_uom else None,
         'meter_data': meter_data,
         'temperature_data': temperature_data,
         'blackout_start_date': blackout_start_date,
@@ -372,7 +377,8 @@ def save_model(model, meter_id=None, frequency=None, description=None, from_date
         from_datetime=from_datetime,
         thru_datetime=thru_datetime,
         description=description,
-        plot_data=plot_data)
+        plot_data=plot_data,
+        uom_id=data['meter_uom_id'])
 
 
 def load_model(model):
@@ -418,7 +424,7 @@ def calc_meter_savings(meter_id, model_id, start, end, progress_observer=None):
         progress_observer.set_progress(1, 4, description='Load model ...')
 
     m = load_model(model)
-    data = read_meter_data(meter, freq=model.frequency, start=start, end=end)
+    data = read_meter_data(meter, freq=model.frequency, start=start, end=end, uom=model.uom)
 
     savings = get_savings(data, m)
     logger.info('calc_meter_savings: got saving = {}'.format(savings))
@@ -446,7 +452,7 @@ def calc_meter_savings(meter_id, model_id, start, end, progress_observer=None):
                     model_baseline_value=v.counterfactual_usage,
                     actual_value=v.reporting_observed,
                     net_value=v.metered_savings,
-                    uom_id='energy_kWh',
+                    uom=model.uom,
                     source=source)
     model.last_calc_saving_datetime = end
     model.save()

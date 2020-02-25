@@ -848,8 +848,6 @@ def write_csv_data(qs, output, columns, with_header=True, convert_field=None, co
     # check if we want to convert some value field
     convert = False
     if convert_field and convert_uom and convert_to:
-        # get the UOM to convert to
-        uom = UnitOfMeasure.get(convert_to)
         convert = True
     for c in columns:
         header.append(list(c.values())[0])
@@ -864,7 +862,7 @@ def write_csv_data(qs, output, columns, with_header=True, convert_field=None, co
                 # check what uom that field is in
                 f_uom_id = d.__dict__.get(convert_uom)
                 f_uom = UnitOfMeasure.get(f_uom_id)
-                val = f_uom.convert_amount_to(val, uom)
+                val = f_uom.convert_amount_to(val, convert_to)
             row.append(val)
         writer.writerow(row)
 
@@ -909,14 +907,21 @@ class Meter(models.Model):
     def get_weather_data(self, start=None, end=None):
         return query_timeseries(self.weather_station.weatherhistory_set, start=start, end=end)
 
-    def write_meter_data_csv(self, output, columns, with_header=True, start=None, end=None, uom_id='energy_kWh'):
+    def write_meter_data_csv(self, output, columns, with_header=True, start=None, end=None, uom=None):
+        data = self.get_meter_data(start=start, end=end)
+        if not uom:
+            first = data.first()
+            if first:
+                uom = first.uom
         write_csv_data(
-            self.get_meter_data(start=start, end=end),
+            data,
             output,
             columns,
             with_header,
             convert_field='value',
-            convert_to=uom_id)
+            convert_to=uom)
+        # return the uom of the data
+        return uom
 
     def write_weather_data_csv(self, output, columns, with_header=True, start=None, end=None):
         write_csv_data(self.get_weather_data(start=start, end=end), output, columns, with_header)

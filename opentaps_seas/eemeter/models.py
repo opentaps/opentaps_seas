@@ -21,6 +21,7 @@ from datetime import timedelta
 from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import MeterProduction
 from opentaps_seas.core.models import MeterFinancialValue
+from opentaps_seas.core.models import UnitOfMeasure
 from django.db import models
 from django.db.models import Q
 from django.db.models import AutoField
@@ -62,6 +63,7 @@ class BaselineModel(models.Model):
     created_datetime = DateTimeField(_("Created Date"), default=now)
     last_calc_saving_datetime = DateTimeField(_("Last Calculated Savings Date"), blank=True, null=True)
     plot_data = TextField(null=True, blank=True)
+    uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+')
 
     def __str__(self):
         return str(self.id)

@@ -42,7 +42,8 @@
       {% block inner_content %}
       <p>Model Class <b>{{ object.model_class }}</b>
       Created {{ object.created_datetime }}
-      with data from {{ object.from_datetime|date:'m/d/Y' }} to {{ object.thru_datetime|date:'m/d/Y' }}.</p>
+      with {% if object.uom %} {{ object.uom.unit }} {% endif %}
+      data from {{ object.from_datetime|date:'m/d/Y' }} to {{ object.thru_datetime|date:'m/d/Y' }}.</p>
 
       {% if object.plot_data %}<img src='data:image/png;base64,{{ object.plot_data }}'/> {% endif %}
 
