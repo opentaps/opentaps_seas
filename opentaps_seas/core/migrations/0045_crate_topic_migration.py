@@ -17,32 +17,37 @@
 
 from django.db import migrations
 from django.db import connections
+from django.db import OperationalError
 
 
 def check_schema(apps, schema_editor):
-    with connections['crate'].cursor() as c:
-        try:
-            c.execute("""ALTER TABLE "volttron"."topic"
-                         ADD COLUMN "kv_tags" OBJECT (DYNAMIC) AS (
-                          "dis" STRING,
-                          "id" STRING
-                         );""")
-        except Exception as e:
-            print(e)
+    try:
+        with connections['crate'].cursor() as c:
+            try:
+                c.execute("""ALTER TABLE "volttron"."topic"
+                             ADD COLUMN "kv_tags" OBJECT (DYNAMIC) AS (
+                              "dis" STRING,
+                              "id" STRING
+                             );""")
+            except Exception as e:
+                print(e)
 
-        try:
-            c.execute("""ALTER TABLE "volttron"."topic" ADD COLUMN "m_tags" ARRAY(STRING);""")
-        except Exception as e:
-            print(e)
+            try:
+                c.execute("""ALTER TABLE "volttron"."topic" ADD COLUMN "m_tags" ARRAY(STRING);""")
+            except Exception as e:
+                print(e)
 
-        c.close()
-    print("!!!!!!!!!!!!")
-    print("This migration only updates the database schema.")
-    print("To migrate the data use the following script:")
-    print("")
-    print("python manage.py runscript copy_crate_entity_tags_to_topics")
-    print("")
-    print("!!!!!!!!!!!!")
+            c.close()
+    except OperationalError:
+        print('Crate database unavailable !!!')
+    else:
+        print("!!!!!!!!!!!!")
+        print("This migration only updates the database schema.")
+        print("To migrate the data use the following script:")
+        print("")
+        print("python manage.py runscript copy_crate_entity_tags_to_topics")
+        print("")
+        print("!!!!!!!!!!!!")
 
 
 class Migration(migrations.Migration):
