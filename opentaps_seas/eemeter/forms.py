@@ -20,6 +20,7 @@ from eemeter import NoBaselineDataError
 from . import utils
 from . import tasks
 from ..core.models import Meter
+from ..core.forms.widgets import DateTimeField
 from .models import BaselineModel
 from django import forms
 from django.forms.widgets import HiddenInput
@@ -38,7 +39,7 @@ class MeterField(forms.CharField):
 
 class MeterModelCreateForm(forms.ModelForm):
     meter_id = MeterField(label='Meter', max_length=255, required=False)
-    thru_date = forms.DateTimeField(label='Ending Date', initial=now, required=False)
+    thru_date = DateTimeField(label='Ending Date', initial=now, required=False)
     use_async = forms.BooleanField(label='Run Async', required=False)
 
     def __init__(self, *args, **kwargs):
@@ -141,8 +142,8 @@ class MeterModelCreateForm(forms.ModelForm):
 class CalcMeterSavingsForm(forms.Form):
     meter_id = MeterField(label='Meter', max_length=255, required=True)
     model_id = forms.CharField(label='Model', max_length=255, required=True)
-    from_datetime = forms.DateTimeField(label='From', required=True)
-    to_datetime = forms.DateTimeField(label='To', required=True)
+    from_datetime = DateTimeField(label='From', required=True)
+    to_datetime = DateTimeField(label='To', required=True)
     use_async = forms.BooleanField(label='Run Async', required=False)
 
     def __init__(self, *args, **kwargs):
