@@ -97,8 +97,6 @@ def weather_data_json(request, weather_station_id):
             else:
                 item['temp'] = data.temp_c
             weater_data.append(item)
-
-        return JsonResponse({'tz': tz.tzname(None), 'values': weater_data})
     else:
         data_list = qs.order_by("-as_of_datetime")[:trange]
         for data in data_list:
@@ -112,7 +110,9 @@ def weather_data_json(request, weather_station_id):
                 'temp_f': data.temp_f
             })
 
-        return JsonResponse({'tz': tz.tzname(None), 'values': list(reversed(weater_data))})
+        weater_data = list(reversed(weater_data))
+
+    return JsonResponse({'tz': tz.tzname(None), 'values': weater_data})
 
 
 @login_required()
