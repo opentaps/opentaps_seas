@@ -46,15 +46,24 @@ def weather_data_json(request, weather_station_id):
         logger.warning('No Weather Station found with weather_station_id = %s', weather_station_id)
         return JsonResponse({'error': 'Weather data not found : {}'.format(weather_station_id)}, status=404)
 
+    get_all = False
+    unit_f = True
     trange = 24
     srange = request.GET.get('range')
     if srange:
-        try:
-            trange = int(srange)
-            if trange < 0:
-                trange = -trange
-        except Exception:
-            trange = 24
+        if srange != 'all':
+            try:
+                trange = int(srange)
+                if trange < 0:
+                    trange = -trange
+            except Exception:
+                trange = 24
+        else:
+            get_all = True
+
+    unit = request.GET.get('unit')
+    if unit == 'c':
+        unit_f = False
 
     # Select last <trange> records
     weater_data = []
@@ -77,18 +86,33 @@ def weather_data_json(request, weather_station_id):
         tf = TimezoneFinder()
         tz = utils.parse_timezone(tf.timezone_at(lng=m.longitude, lat=m.latitude))
 
-    for data in qs.order_by("-as_of_datetime")[:trange]:
-        # Prevent adding duplicates
-        dt = datetime_to_string(data.as_of_datetime, tz=tz)
-        if weater_data and dt == weater_data[-1]['datetime']:
-            continue
-        weater_data.append({
-            'datetime': dt,
-            'temp_c': data.temp_c,
-            'temp_f': data.temp_f
-        })
+    data_list = []
+    if get_all:
+        data_list = qs.order_by("as_of_datetime")
+        for data in data_list:
+            dt = datetime_to_string(data.as_of_datetime, tz=tz)
+            item = {'datetime': dt}
+            if unit_f:
+                item['temp'] = data.temp_f
+            else:
+                item['temp'] = data.temp_c
+            weater_data.append(item)
 
-    return JsonResponse({'tz': tz.tzname(None), 'values': list(reversed(weater_data))})
+        return JsonResponse({'tz': tz.tzname(None), 'values': weater_data})
+    else:
+        data_list = qs.order_by("-as_of_datetime")[:trange]
+        for data in data_list:
+            # Prevent adding duplicates
+            dt = datetime_to_string(data.as_of_datetime, tz=tz)
+            if weater_data and dt == weater_data[-1]['datetime']:
+                continue
+            weater_data.append({
+                'datetime': dt,
+                'temp_c': data.temp_c,
+                'temp_f': data.temp_f
+            })
+
+        return JsonResponse({'tz': tz.tzname(None), 'values': list(reversed(weater_data))})
 
 
 @login_required()
