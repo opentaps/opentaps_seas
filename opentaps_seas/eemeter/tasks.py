@@ -51,6 +51,11 @@ def create_meter_model(kwargs):
     thru_date = kwargs.get('thru_date')
     description = kwargs.get('description')
     data = kwargs.get('read_meter_data')
+    fit_cdd = kwargs.get('fit_cdd')
+    fit_intercept_only = kwargs.get('fit_intercept_only')
+    fit_cdd_only = kwargs.get('fit_cdd_only')
+    fit_hdd_only = kwargs.get('fit_hdd_only')
+    fit_cdd_hdd = kwargs.get('fit_cdd_hdd')
     progress_observer = kwargs.get('progress_observer')
 
     logger.info('create_meter_model: %s', kwargs)
@@ -68,21 +73,33 @@ def create_meter_model(kwargs):
     if progress_observer:
         progress_observer.add_progress(description='Building model ...')
 
-    model = utils.get_model_for_freq(data, frequency)
+    model = utils.get_model_for_freq(data,
+                                     frequency,
+                                     fit_cdd=fit_cdd,
+                                     fit_intercept_only=fit_intercept_only,
+                                     fit_cdd_only=fit_cdd_only,
+                                     fit_hdd_only=fit_hdd_only,
+                                     fit_cdd_hdd=fit_cdd_hdd)
 
     if not description:
         description = 'CalTrack {} for Meter {} Ending {}'.format(
             frequency, meter.description or meter.meter_id, data['end'])
 
-    bm = utils.save_model(model,
-                          meter_id=meter.meter_id,
-                          data=data,
-                          frequency=frequency,
-                          description=description,
-                          progress_observer=progress_observer,
-                          from_datetime=data['start'],
-                          thru_datetime=data['end'])
-    return bm
+    try:
+        bm = utils.save_model(model,
+                              meter_id=meter.meter_id,
+                              data=data,
+                              frequency=frequency,
+                              description=description,
+                              progress_observer=progress_observer,
+                              from_datetime=data['start'],
+                              thru_datetime=data['end'])
+        return bm
+    except Exception as e:
+        if progress_observer:
+            progress_observer.set_failure(e)
+        else:
+            raise e
 
 
 @shared_task(bind=True)

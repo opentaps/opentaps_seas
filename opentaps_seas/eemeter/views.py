@@ -24,6 +24,7 @@ from ..core.views.common import WithBreadcrumbsMixin
 from .models import BaselineModel
 from .forms import CalcMeterSavingsForm
 from .forms import MeterModelCreateForm
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -119,7 +120,11 @@ class MeterModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
             self.object = form.save()
             return HttpResponseRedirect(reverse("core:get_task_progress", kwargs={'task_id': self.object.task_id}))
         else:
-            return super().form_valid(form)
+            try:
+                return super().form_valid(form)
+            except Exception as e:
+                messages.add_message(self.request, messages.ERROR, 'Can not create the model: {}'.format(e))
+                return super().form_invalid(form)
 
 
 meter_model_create_view = MeterModelCreateView.as_view()

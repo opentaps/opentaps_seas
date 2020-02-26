@@ -40,6 +40,12 @@ class MeterField(forms.CharField):
 class MeterModelCreateForm(forms.ModelForm):
     meter_id = MeterField(label='Meter', max_length=255, required=False)
     thru_date = DateTimeField(label='Ending Date', initial=now, required=False)
+    fit_cdd = forms.BooleanField(label='Fit CDD', required=False, initial=True)
+    fit_intercept_only = forms.BooleanField(label='Fit Intercept Only', required=False, initial=True)
+    fit_cdd_only = forms.BooleanField(label='Fit CDD Only', required=False, initial=True)
+    fit_hdd_only = forms.BooleanField(label='Fit HDD Only', required=False, initial=True)
+    fit_cdd_hdd = forms.BooleanField(label='Fit CDD HDD', required=False, initial=True,
+                                     help_text='All Fit parameters only applies to Daily model')
     use_async = forms.BooleanField(label='Run Async', required=False)
 
     def __init__(self, *args, **kwargs):

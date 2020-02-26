@@ -265,16 +265,18 @@ def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, fre
     }
 
 
-def get_model_for_freq(data, freq):
+def get_model_for_freq(data, freq, **kwargs):
     if freq == 'hourly':
-        return get_hourly_model(data)
+        return get_hourly_model(data, **kwargs)
     elif freq == 'daily':
-        return get_daily_model(data)
+        return get_daily_model(data, **kwargs)
     else:
         raise Exception("Model frequency must be hourly or daily")
 
 
-def get_daily_model(data):
+def get_daily_model(data, fit_cdd=True, fit_intercept_only=True,
+                    fit_cdd_only=True, fit_hdd_only=True, fit_cdd_hdd=True):
+
     logger.info('get_daily_model: ...')
     # create a design matrix (the input to the model fitting step)
     logger.info('get_daily_model: creating baseline_design_matrix ...')
@@ -286,6 +288,11 @@ def get_daily_model(data):
     logger.info('get_daily_model: building CalTRACK model ...')
     baseline_model = eemeter.fit_caltrack_usage_per_day_model(
         baseline_design_matrix,
+        fit_cdd=fit_cdd,
+        fit_intercept_only=fit_intercept_only,
+        fit_cdd_only=fit_cdd_only,
+        fit_hdd_only=fit_hdd_only,
+        fit_cdd_hdd=fit_cdd_hdd
     )
 
     logger.info('get_daily_model: DONE')
@@ -356,20 +363,30 @@ def save_model(model, meter_id=None, frequency=None, description=None, from_date
         if progress_observer:
             progress_observer.add_progress(description='Plotting model energy signature ...')
         logger.info('save_model: plotting model ...')
-        from matplotlib.figure import Figure
-        from io import BytesIO
-        import base64
+        try:
+            from matplotlib.figure import Figure
+            from io import BytesIO
+            import base64
 
-        fig = Figure(figsize=(10, 4))
-        ax = eemeter.plot_energy_signature(data['meter_data'], data['temperature_data'], figure=fig)
-        model.plot(
-            ax=ax, figure=fig, candidate_alpha=0.02, with_candidates=True, temp_range=(-5, 88)
-        )
-        buf = BytesIO()
-        fig.savefig(buf, format="png")
-        # Embed the result in the html output.
-        plot_data = base64.b64encode(buf.getbuffer()).decode("ascii")
-        logger.info('save_model: plotting model DONE')
+            fig = Figure(figsize=(10, 4))
+            ax = eemeter.plot_energy_signature(data['meter_data'], data['temperature_data'], figure=fig)
+            model.plot(
+                ax=ax, figure=fig, candidate_alpha=0.02, with_candidates=True, temp_range=(-5, 88)
+            )
+            buf = BytesIO()
+            fig.savefig(buf, format="png")
+            # Embed the result in the html output.
+            plot_data = base64.b64encode(buf.getbuffer()).decode("ascii")
+            logger.info('save_model: plotting model DONE')
+        except Exception as e:
+            logger.exception(e)
+            # could be an error during the model generation ..
+            logger.error('Check model warnings: %s', model.warnings)
+            if model.warnings:
+                for w in model.warnings:
+                    if w.qualified_name == 'eemeter.caltrack_daily.select_best_candidate.no_candidates':
+                        raise Exception(w.description)
+
     # persist the given model in the DB
     if progress_observer:
         progress_observer.add_progress(description='Saving model ...')

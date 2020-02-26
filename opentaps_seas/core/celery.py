@@ -78,6 +78,19 @@ class ProgressRecorder(object):
             }
         )
 
+    def set_failure(self, exc):
+        self.task.update_state(
+            state='FAILURE',
+            meta={
+                'extra': self.extra,
+                'current': self.current,
+                'total': self.total,
+                'percent': 100.0,
+                'exc_message': str(exc),
+                'exc_type': str(type(exc))
+            }
+        )
+
     def stop_task(self, current, total, exc):
         self.task.update_state(
             state='FAILURE',
