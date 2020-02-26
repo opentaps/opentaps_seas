@@ -19,17 +19,16 @@ import logging
 from ..models import FinancialTransaction
 from ..models import FinancialTransactionNote
 from ..models import FinancialTransactionFile
-from flatpickr import DateTimePickerInput
+from .widgets import make_custom_datefields
 from django import forms
 
 logger = logging.getLogger(__name__)
 
 
 class FinancialTransactionUpdateForm(forms.ModelForm):
+    formfield_callback = make_custom_datefields
 
     class Meta:
-        date_time_options = {"dateFormat": "Y-m-d H:i:S", "time_24hr": "true", "allowInput": "true",
-                             "enableSeconds": "true", "minuteIncrement": 1}
         model = FinancialTransaction
         fields = [
             "transaction_datetime",
@@ -44,9 +43,6 @@ class FinancialTransactionUpdateForm(forms.ModelForm):
             "meter",
             "source"
             ]
-        widgets = {'transaction_datetime': DateTimePickerInput(options=date_time_options),
-                   'from_datetime': DateTimePickerInput(options=date_time_options),
-                   'thru_datetime': DateTimePickerInput(options=date_time_options)}
 
 
 class FinancialTransactionNoteForm(forms.ModelForm):

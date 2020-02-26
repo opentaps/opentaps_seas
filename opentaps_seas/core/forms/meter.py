@@ -23,7 +23,7 @@ from .. import utils
 from ..models import Meter
 from ..models import MeterHistory
 from ..models import WeatherStation
-from flatpickr import DateTimePickerInput
+from .widgets import make_custom_datefields
 from django import forms
 from greenbutton import parse
 
@@ -129,6 +129,7 @@ class MeterDataUploadForm(forms.Form):
 
 
 class MeterCreateForm(forms.ModelForm):
+    formfield_callback = make_custom_datefields
 
     def __init__(self, *args, **kwargs):
         super(MeterCreateForm, self).__init__(*args, **kwargs)
@@ -178,15 +179,13 @@ class MeterCreateForm(forms.ModelForm):
         return self.instance
 
     class Meta:
-        date_time_options = {"dateFormat": "Y-m-d H:i:S", "time_24hr": "true", "allowInput": "true",
-                             "enableSeconds": "true", "minuteIncrement": 1}
         model = Meter
         fields = ["site", "meter_id", "description", "weather_station", "rate_plan", "from_datetime", "thru_datetime"]
-        widgets = {'from_datetime': DateTimePickerInput(options=date_time_options),
-                   'thru_datetime': DateTimePickerInput(options=date_time_options)}
 
 
 class MeterUpdateForm(forms.ModelForm):
+    formfield_callback = make_custom_datefields
+
     def __init__(self, *args, **kwargs):
         super(MeterUpdateForm, self).__init__(*args, **kwargs)
         self.fields['meter_id'].widget = forms.HiddenInput()
@@ -196,9 +195,5 @@ class MeterUpdateForm(forms.ModelForm):
             self.fields['weather_station'].queryset = WeatherStation.objects.none()
 
     class Meta:
-        date_time_options = {"dateFormat": "Y-m-d H:i:S", "time_24hr": "true", "allowInput": "true",
-                             "enableSeconds": "true", "minuteIncrement": 1}
         model = Meter
         fields = ["meter_id", "description", "weather_station", "rate_plan", "from_datetime", "thru_datetime"]
-        widgets = {'from_datetime': DateTimePickerInput(options=date_time_options),
-                   'thru_datetime': DateTimePickerInput(options=date_time_options)}

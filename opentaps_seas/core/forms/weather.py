@@ -18,6 +18,7 @@
 import logging
 from ..utils import get_weather_history_for_station
 from ..models import WeatherStation
+from .widgets import DateTimeField
 from django import forms
 from django.utils.timezone import now
 
@@ -25,9 +26,10 @@ logger = logging.getLogger(__name__)
 
 
 class WeatherStationFetchDataForm(forms.Form):
+
     weather_station_id = forms.CharField(label='Station')
-    from_date = forms.DateTimeField(label='From Date', required=False)
-    thru_date = forms.DateTimeField(label='Thru Date', initial=now, required=False)
+    from_date = DateTimeField(label='From Date', required=False)
+    thru_date = DateTimeField(label='Thru Date', initial=now, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
