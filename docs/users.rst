@@ -1,5 +1,3 @@
-.. _user_doc:
-
 User Documentation
 ==================
 
