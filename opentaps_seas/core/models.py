@@ -905,6 +905,8 @@ class Meter(models.Model):
         return qs.order_by('from_datetime')
 
     def get_weather_data(self, start=None, end=None):
+        if not self.weather_station:
+            return WeatherHistory.objects.none()
         return query_timeseries(self.weather_station.weatherhistory_set, start=start, end=end)
 
     def write_meter_data_csv(self, output, columns, with_header=True, start=None, end=None, uom=None):
