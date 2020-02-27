@@ -51,10 +51,12 @@ class MeterModelCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MeterModelCreateForm, self).__init__(*args, **kwargs)
         meter_id = self.initial.get('meter_id')
+        self.meter_hidden = False
         if meter_id:
             try:
                 Meter.objects.get(meter_id=meter_id)
                 self.fields['meter_id'].widget = HiddenInput()
+                self.meter_hidden = True
             except Meter.DoesNotExist:
                 logger.error('CalcMeterSavingsForm: Meter not found with id = %s', meter_id)
                 self.initial.pop('meter_id')
@@ -65,18 +67,22 @@ class MeterModelCreateForm(forms.ModelForm):
             return False
         logger.info('MeterModelCreateForm: check is_valid')
 
+        meter_f = 'meter_id' if not self.meter_hidden else None
         meter_id = self.cleaned_data['meter_id']
         frequency = self.cleaned_data['frequency']
         # check meter exists, note meter_id is already required
         if meter_id:
             try:
                 self.meter = Meter.objects.get(meter_id=meter_id)
+                if not self.meter.weather_station:
+                    self.add_error(meter_f, 'The Meter does not have Weather Station set.')
+                    return False
                 thru_date = self.cleaned_data['thru_date']
                 logger.info('MeterModelCreateForm: checking read_meter_data ending in %s', thru_date)
                 self.read_meter_data = utils.read_meter_data(self.meter, freq=frequency, blackout_start_date=thru_date)
             except Meter.DoesNotExist:
                 logger.error('MeterModelCreateForm: Meter not found with id = %s', meter_id)
-                self.add_error('meter_id', 'Meter {} does not exist.'.format(meter_id))
+                self.add_error(meter_f, 'Meter {} does not exist.'.format(meter_id))
                 return False
             except NoBaselineDataError:
                 logger.error('MeterModelCreateForm: Cannot get baseline data from = %s', thru_date)
@@ -157,10 +163,13 @@ class CalcMeterSavingsForm(forms.Form):
         meter = None
         model = None
         meter_id = self.initial.get('meter_id')
+        self.meter_hidden = False
+        self.model_hidden = False
         if meter_id:
             try:
                 meter = Meter.objects.get(meter_id=meter_id)
                 self.fields['meter_id'].widget = HiddenInput()
+                self.meter_hidden = True
             except Meter.DoesNotExist:
                 logger.error('CalcMeterSavingsForm: Meter not found with id = %s', meter_id)
                 self.initial.pop('meter_id')
@@ -169,6 +178,7 @@ class CalcMeterSavingsForm(forms.Form):
             try:
                 model = BaselineModel.objects.get(id=model_id)
                 self.fields['model_id'].widget = HiddenInput()
+                self.model_hidden = True
             except BaselineModel.DoesNotExist:
                 logger.error('CalcMeterSavingsForm: BaselineModel not found with id = %s', model_id)
                 self.initial.pop('model_id')
@@ -193,6 +203,9 @@ class CalcMeterSavingsForm(forms.Form):
             return False
         logger.info('CalcMeterSavingsForm: check is_valid')
 
+        meter_f = 'meter_id' if not self.meter_hidden else None
+        model_f = 'model_id' if not self.model_hidden else None
+
         meter_id = self.cleaned_data['meter_id']
         meter = None
         if meter_id:
@@ -201,7 +214,7 @@ class CalcMeterSavingsForm(forms.Form):
                 meter = Meter.objects.get(meter_id=meter_id)
             except Meter.DoesNotExist:
                 logger.error('CalcMeterSavingsForm: Meter not found with id = %s', meter_id)
-                self.add_error('meter_id', 'Meter {} does not exist.'.format(meter_id))
+                self.add_error(meter_f, 'Meter {} does not exist.'.format(meter_id))
                 return False
 
         model_id = self.cleaned_data['model_id']
@@ -211,10 +224,13 @@ class CalcMeterSavingsForm(forms.Form):
                 BaselineModel.objects.get(id=model_id)
             except BaselineModel.DoesNotExist:
                 logger.error('CalcMeterSavingsForm: BaselineModel not found with id = %s', model_id)
-                self.add_error('model_id', 'BaselineModel {} does not exist.'.format(model_id))
+                self.add_error(model_f, 'BaselineModel {} does not exist.'.format(model_id))
                 return False
 
         if meter:
+            if not meter.weather_station:
+                self.add_error(meter_f, 'The Meter does not have a Weather Station set.')
+                return False
             start = self.cleaned_data['from_datetime']
             end = self.cleaned_data['to_datetime']
             # check there is actually data for the range
