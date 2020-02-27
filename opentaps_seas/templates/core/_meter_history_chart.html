@@ -154,17 +154,7 @@
                     title: 'Download',
                     class: '',
                     click: function(e) {
-                      // Genereate CSV data first
-                      let lines = [];
-                      lines.push('Date/Time,Value (' + chartDegreeUnit + ')');
-                      const chartData = myChart.series[0].data;
-                      for (let i = 0; i < chartData.length; i++) {
-                        let date = new Date(chartData[i].x).toLocaleString()
-                        lines.push(['"', date, '"', ',', chartData[i].y].join(''));
-                      }
-
-                      // Save data as csv file
-                      saveTextAsCsvFile('Meter History.csv', lines.join('\n'));
+                      myChart.downloadAllData()
                     }
                   },
                 ]
@@ -242,6 +232,33 @@
           }
           });
       },
+
+      downloadAllData: function() {
+          url = '{% url 'core:meter_data_json' meter_id %}'
+          if (this.getUrlArgs() && this.getUrlArgs().length > 0) {
+              url += this.getUrlArgs() + "&";
+          } else {
+              url += '?';
+          }
+          url += 'range=all';
+
+          console.log('Fetching all meter chart from ', url);
+          axios.get(url).then(response => {
+              let lines = [];
+              lines.push('Date/Time,Value (' + chartDegreeUnit + ')');
+
+              if (response.data.values) {
+                console.log('Fetching meter chart got ', response.data.values.length);
+                for (let i = 0; i < response.data.values.length; i++) {
+                  let date = new Date(response.data.values[i].datetime).toLocaleString()
+                  lines.push(['"', date, '"', ',', response.data.values[i].value].join(''));
+                }
+              }
+
+              saveTextAsCsvFile('Meter History.csv', lines.join('\n'));
+          });
+      },
+
     }
   })
 })();

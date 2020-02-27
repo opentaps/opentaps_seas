@@ -118,17 +118,7 @@
                     title: 'Download as csv',
                     class: '',
                     click: function(e) {
-                      // Genereate CSV data first
-                      let lines = [];
-                      lines.push('Date/Time,Temperature (' + chartDegreeUnit + ')');
-                      const chartData = myChart.series[0].data;
-                      for (let i = 0; i < chartData.length; i++) {
-                        let date = new Date(chartData[i].x).toLocaleString()
-                        lines.push(['"', date, '"', ',', chartData[i].y].join(''));
-                      }
-
-                      // Save data as csv file
-                      saveTextAsCsvFile('Weather History.csv', lines.join('\n'));
+                      myChart.downloadAllData()
                     }
                   },
                 ]
@@ -200,6 +190,35 @@
             this.series[0].data_c = response.data.values.map(x => { return { y: x.temp_c, x: parse_date(x.datetime).getTime() } } );
             this.series[0].data_f = response.data.values.map(x => { return { y: x.temp_f, x: parse_date(x.datetime).getTime() } } );
           }
+          });
+      },
+
+      downloadAllData: function() {
+          url = '{% url 'core:weather_data_json' weather_station_id %}'
+          if (this.getUrlArgs() && this.getUrlArgs().length > 0) {
+              url += this.getUrlArgs() + "&";
+          } else {
+              url += '?';
+          }
+          url += 'range=all&unit=';
+          if (chartDegreeUnit == '°F') {
+              url += "f";
+          } else {
+              url += "c";
+          }
+          console.log('Fetching all weather data from ', url);
+          axios.get(url).then(response => {
+              let lines = [];
+              lines.push('Date/Time,Temperature (' + chartDegreeUnit + ')');
+
+              if (response.data.values) {
+                console.log('Fetching weather chart got ', response.data.values.length);
+                for (let i = 0; i < response.data.values.length; i++) {
+                  let date = new Date(response.data.values[i].datetime).toLocaleString()
+                  lines.push(['"', date, '"', ',', response.data.values[i].temp].join(''));
+                }
+              }
+              saveTextAsCsvFile('Weather History.csv', lines.join('\n'));
           });
       },
     }

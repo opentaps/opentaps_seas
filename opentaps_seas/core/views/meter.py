@@ -224,35 +224,59 @@ def meter_data_json(request, meter):
         logger.warning('No Meter found with meter_id = %s', meter)
         return JsonResponse({'error': 'Meter data not found : {}'.format(meter)}, status=404)
 
+    get_all = False
     trange = 24
     srange = request.GET.get('range')
     if srange:
-        try:
-            trange = int(srange)
-            if trange < 0:
-                trange = -trange
-        except Exception:
-            trange = 24
+        if srange != 'all':
+            try:
+                trange = int(srange)
+                if trange < 0:
+                    trange = -trange
+            except Exception:
+                trange = 24
+        else:
+            get_all = True
 
     # Select last <trange> records
     meter_data = []
     qs = m.meterhistory_set
     uom = None
-    for data in qs.order_by("-as_of_datetime")[:trange]:
-        # Prevent adding duplicates
-        datetime = datetime_to_string(data.as_of_datetime)
-        if meter_data and datetime == meter_data[-1]['datetime']:
-            continue
-        if not uom:
-            uom = data.uom
-        value = data.value
-        if value and not isnan(value):
-            value = data.uom.convert_amount_to(value, uom)
+    data_list = []
 
-            meter_data.append({
-                'datetime': datetime,
-                'value': value
-            })
+    if get_all:
+        data_list = qs.order_by("as_of_datetime")
+        for data in data_list:
+            datetime = datetime_to_string(data.as_of_datetime)
+            if not uom:
+                uom = data.uom
+            value = data.value
+            if value and not isnan(value):
+                value = data.uom.convert_amount_to(value, uom)
+
+                meter_data.append({
+                    'datetime': datetime,
+                    'value': value
+                })
+    else:
+        data_list = qs.order_by("-as_of_datetime")[:trange]
+        for data in data_list:
+            # Prevent adding duplicates
+            datetime = datetime_to_string(data.as_of_datetime)
+            if meter_data and datetime == meter_data[-1]['datetime']:
+                continue
+            if not uom:
+                uom = data.uom
+            value = data.value
+            if value and not isnan(value):
+                value = data.uom.convert_amount_to(value, uom)
+
+                meter_data.append({
+                    'datetime': datetime,
+                    'value': value
+                })
+
+        meter_data = list(reversed(meter_data))
 
     uom_d = None
     if uom:
@@ -261,7 +285,7 @@ def meter_data_json(request, meter):
             'unit': uom.unit
         }
 
-    return JsonResponse({'uom': uom_d, 'values': list(reversed(meter_data))})
+    return JsonResponse({'uom': uom_d, 'values': meter_data})
 
 
 @login_required()

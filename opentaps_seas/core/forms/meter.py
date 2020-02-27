@@ -24,6 +24,8 @@ from ..models import Meter
 from ..models import MeterHistory
 from ..models import WeatherStation
 from .widgets import make_custom_datefields
+from datetime import timedelta
+from datetime import timezone
 from django import forms
 from greenbutton import parse
 
@@ -83,6 +85,10 @@ class MeterDataUploadForm(forms.Form):
                                 v.duration = int(ir.timePeriod.duration.total_seconds())
                                 v.as_of_datetime = ir.timePeriod.start
                                 v.created_by_user = self.user
+
+                                if up.localTimeParameters.tzOffset is not None:
+                                    tz = timezone(timedelta(seconds=up.localTimeParameters.tzOffset))
+                                    v.as_of_datetime = v.as_of_datetime.replace(tzinfo=tz)
 
                                 if ir.cost is not None:
                                     v.cost = ir.cost
