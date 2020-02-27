@@ -60,11 +60,16 @@ models, which are IPMVP Option C whole building energy use statistical models th
 
 You can click on the "Build a Model" button to build a new model for this meter.  This screen is currently based on input needed for OpenEEMeter models and will ask if you want a daily or hourly model and the
 ending date of the weather and meter readings used to build the model.  CalTrack requires that exactly a full year (no more, no less) of data be used for model estimation, so your model will be built with data 
-from a year before to this ending date.  Once it is built, you will see it in the list of Models below.  Because building a model takes a while, you have the option to run it in the background (async.)
+from a year before to this ending date.  You can also specify the other parameters of your model, and OpenEEMeter will use these parameters to find the best model fit in the end.  
+See https://github.com/openeemeter/eemeter/blob/fc91df2b5fa69125a85b1235d24783c350d5b99a/docs/caltrack_compliance.rst on what the different parameters are.  
+In general, for gas only meters, uncheck the `Fit CDD`, `Fit CDD Only`, and `Fit CDD HDD`, and for electric meters when gas is used for heating, unchecked the `Fit HDD Only`
+and `Fit CDD HDD`. 
+
+Once it is built, you will see it in the list of Models below.  Because building a model takes a while, you have the option to run it in the background (async.)
 
 Clicking on a Model, you will see the following:
 
- * View Details - You can see the actual parameters of the model here
+ * View Details - You can see the actual parameters of the model here.  See https://www.caltrack.org/project-updates/week-six-caltrack-update for an explanation of some of the key statistics.
  * Calculate Production - Calculate the energy produced, as calculated by this model.  (See below.)
  * A graph of the model if you have a daily model.  Currently OpenEEMeter produces graphs for its daily but not hourly models.  
  * History of the energy produced, as calculated by this model.
