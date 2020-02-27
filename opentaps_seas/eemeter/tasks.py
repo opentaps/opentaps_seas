@@ -56,6 +56,12 @@ def create_meter_model(kwargs):
     fit_cdd_only = kwargs.get('fit_cdd_only')
     fit_hdd_only = kwargs.get('fit_hdd_only')
     fit_cdd_hdd = kwargs.get('fit_cdd_hdd')
+    minimum_non_zero_cdd = kwargs.get('minimum_non_zero_cdd')
+    minimum_non_zero_hdd = kwargs.get('minimum_non_zero_hdd')
+    minimum_total_cdd = kwargs.get('minimum_total_cdd')
+    minimum_total_hdd = kwargs.get('minimum_total_hdd')
+    beta_cdd_maximum_p_value = kwargs.get('beta_cdd_maximum_p_value')
+    beta_hdd_maximum_p_value = kwargs.get('beta_hdd_maximum_p_value')
     progress_observer = kwargs.get('progress_observer')
 
     logger.info('create_meter_model: %s', kwargs)
@@ -75,11 +81,18 @@ def create_meter_model(kwargs):
 
     model = utils.get_model_for_freq(data,
                                      frequency,
+                                     minimum_non_zero_cdd=minimum_non_zero_cdd,
+                                     minimum_non_zero_hdd=minimum_non_zero_hdd,
+                                     minimum_total_cdd=minimum_total_cdd,
+                                     minimum_total_hdd=minimum_total_hdd,
+                                     beta_cdd_maximum_p_value=beta_cdd_maximum_p_value,
+                                     beta_hdd_maximum_p_value=beta_hdd_maximum_p_value,
                                      fit_cdd=fit_cdd,
                                      fit_intercept_only=fit_intercept_only,
                                      fit_cdd_only=fit_cdd_only,
                                      fit_hdd_only=fit_hdd_only,
-                                     fit_cdd_hdd=fit_cdd_hdd)
+                                     fit_cdd_hdd=fit_cdd_hdd
+                                     )
 
     if not description:
         description = 'CalTrack {} for Meter {} Ending {}'.format(

@@ -40,12 +40,18 @@ class MeterField(forms.CharField):
 class MeterModelCreateForm(forms.ModelForm):
     meter_id = MeterField(label='Meter', max_length=255, required=False)
     thru_date = DateTimeField(label='Ending Date', initial=now, required=False)
+    minimum_non_zero_cdd = forms.IntegerField(label='Minimum None Zero CDD', required=False, initial=10)
+    minimum_non_zero_hdd = forms.IntegerField(label='Minimum None Zero HDD', required=False, initial=10)
+    minimum_total_cdd = forms.IntegerField(label='Minimum Total CDD', required=False, initial=20)
+    minimum_total_hdd = forms.IntegerField(label='Minimum Total HDD', required=False, initial=20)
+    beta_cdd_maximum_p_value = forms.IntegerField(label='Beta CDD Maximum P-Value', required=False, initial=1)
+    beta_hdd_maximum_p_value = forms.IntegerField(label='Beta HDD Maximum P-Value', required=False, initial=1)
     fit_cdd = forms.BooleanField(label='Fit CDD', required=False, initial=True)
     fit_intercept_only = forms.BooleanField(label='Fit Intercept Only', required=False, initial=True)
     fit_cdd_only = forms.BooleanField(label='Fit CDD Only', required=False, initial=True)
     fit_hdd_only = forms.BooleanField(label='Fit HDD Only', required=False, initial=True)
     fit_cdd_hdd = forms.BooleanField(label='Fit CDD HDD', required=False, initial=True,
-                                     help_text='All Fit parameters only applies to Daily model')
+                                     help_text='All Fit/HDD/CDD parameters only applies to Daily model')
     use_async = forms.BooleanField(label='Run Async', required=False)
 
     def __init__(self, *args, **kwargs):
