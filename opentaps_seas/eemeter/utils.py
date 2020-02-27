@@ -274,18 +274,7 @@ def get_model_for_freq(data, freq, **kwargs):
         raise Exception("Model frequency must be hourly or daily")
 
 
-def get_daily_model(data,
-                    minimum_non_zero_cdd=10,
-                    minimum_non_zero_hdd=10,
-                    minimum_total_cdd=20,
-                    minimum_total_hdd=20,
-                    beta_cdd_maximum_p_value=1,
-                    beta_hdd_maximum_p_value=1,
-                    fit_cdd=True,
-                    fit_intercept_only=True,
-                    fit_cdd_only=True,
-                    fit_hdd_only=True,
-                    fit_cdd_hdd=True):
+def get_daily_model(data, **kwargs):
 
     logger.info('get_daily_model: ...')
     # create a design matrix (the input to the model fitting step)
@@ -298,17 +287,7 @@ def get_daily_model(data,
     logger.info('get_daily_model: building CalTRACK model ...')
     baseline_model = eemeter.fit_caltrack_usage_per_day_model(
         baseline_design_matrix,
-        fit_cdd=fit_cdd,
-        fit_intercept_only=fit_intercept_only,
-        fit_cdd_only=fit_cdd_only,
-        fit_hdd_only=fit_hdd_only,
-        fit_cdd_hdd=fit_cdd_hdd,
-        minimum_non_zero_cdd=minimum_non_zero_cdd,
-        minimum_non_zero_hdd=minimum_non_zero_hdd,
-        minimum_total_cdd=minimum_total_cdd,
-        minimum_total_hdd=minimum_total_hdd,
-        beta_cdd_maximum_p_value=beta_cdd_maximum_p_value,
-        beta_hdd_maximum_p_value=beta_hdd_maximum_p_value
+        **kwargs
     )
 
     logger.info('get_daily_model: DONE')
@@ -370,7 +349,7 @@ def get_hourly_model(data):
 
 
 def save_model(model, meter_id=None, frequency=None, description=None, from_datetime=None,
-               thru_datetime=None, data=None, progress_observer=None):
+               thru_datetime=None, data=None, progress_observer=None, model_params={}):
     plot_data = None
     uom_id = 'energy_kWh'
     if data and data['meter_uom_id']:
@@ -414,6 +393,7 @@ def save_model(model, meter_id=None, frequency=None, description=None, from_date
         from_datetime=from_datetime,
         thru_datetime=thru_datetime,
         description=description,
+        model_params=model_params,
         plot_data=plot_data,
         uom_id=uom_id)
 

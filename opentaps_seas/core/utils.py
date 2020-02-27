@@ -1227,8 +1227,8 @@ def get_weather_history_for_station(weather_station, days_from_today=7, start_da
                             start_date,
                             end_date,
                             read_from_cache=False)
-    logger.info('get_weather_history_for_station: got %s / %s',
-                temp_degC, warnings)
+    logger.info('get_weather_history_for_station: got %s / %s', temp_degC, warnings)
+    WeatherHistory.objects.filter(as_of_datetime__gte=start_date).filter(as_of_datetime__lte=end_date).delete()
     for dt, deg_c in temp_degC.iteritems():
         if dt < start_date:
             continue

@@ -79,6 +79,7 @@ class ProgressRecorder(object):
         )
 
     def set_failure(self, exc):
+        logger.exception(exc)
         self.task.update_state(
             state='FAILURE',
             meta={

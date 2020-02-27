@@ -123,6 +123,7 @@ class MeterModelCreateView(LoginRequiredMixin, ModelBCMixin, CreateView):
             try:
                 return super().form_valid(form)
             except Exception as e:
+                logger.exception(e)
                 messages.add_message(self.request, messages.ERROR, 'Can not create the model: {}'.format(e))
                 return super().form_invalid(form)
 

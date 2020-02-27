@@ -22,6 +22,7 @@ from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import MeterProduction
 from opentaps_seas.core.models import MeterFinancialValue
 from opentaps_seas.core.models import UnitOfMeasure
+from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.db.models import Q
 from django.db.models import AutoField
@@ -64,6 +65,7 @@ class BaselineModel(models.Model):
     last_calc_saving_datetime = DateTimeField(_("Last Calculated Savings Date"), blank=True, null=True)
     plot_data = TextField(null=True, blank=True)
     uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+')
+    model_params = HStoreField(_("Model Parameters"), blank=True, null=True)
 
     def __str__(self):
         return str(self.id)

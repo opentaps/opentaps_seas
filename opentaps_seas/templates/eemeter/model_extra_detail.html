@@ -39,6 +39,10 @@
       </h2>
       {% block inner_content %}
 
+      <p><b>Model parameters:</b>
+        <pre>{{ object.model_params | pprint }}</pre>
+      </p>
+
       <p><b>Model data:</b>
         <pre>{{ object.data | pprint }}</pre>
       </p>
