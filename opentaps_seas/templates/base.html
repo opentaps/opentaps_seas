@@ -76,6 +76,7 @@
     </script>
     <script src="{% static 'js/vuejs-dialog.min.js' %}"></script>
     <script src="{% static 'js/project-vue.js' %}"></script>
+    <script src="{% static 'js/flatpickr.min.js' %}"></script>
 
     {% block css %}
 
@@ -88,10 +89,10 @@
     <link href="{% static 'fontawesome-free-5.10.0-web/css/all.min.css' %}" rel="stylesheet">
 
     <!-- Your stuff: Third-party CSS libraries go here -->
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr@4.5.2/dist/flatpickr.min.css" type="text/css" media="all" rel="stylesheet">
 
     <!-- This file stores project-specific CSS -->
 
+    <link href="{% static 'css/flatpickr.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
     <link href="{% static 'css/vuejs-dialog.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/vue-loading-overlay-3.css' %}" rel="stylesheet">
@@ -183,7 +184,6 @@
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
       <!-- Your stuff: Third-party javascript libraries go here -->
 
-      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr@4.5.2/dist/flatpickr.min.js"></script>
       <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/monim67/django-flatpickr@1.0.0/static/js/django-flatpickr.js"></script>
 
       <!-- place project specific Javascript in this file -->
