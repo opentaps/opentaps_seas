@@ -18,18 +18,123 @@
 import logging
 import json
 import csv
+import solaredge
 from io import TextIOWrapper
 from .. import utils
 from ..models import Meter
 from ..models import MeterHistory
+from ..models import UnitOfMeasure
 from ..models import WeatherStation
 from .widgets import make_custom_datefields
+from .widgets import DateTimeField
+from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from django import forms
+from django.utils.timezone import now
 from greenbutton import parse
 
 logger = logging.getLogger(__name__)
+
+
+class MeterDataSolarEdgeForm(forms.Form):
+    meter = forms.CharField(max_length=255)
+    time_unit = forms.CharField(label='Time Interval', max_length=255, initial='HOUR')
+    from_date = DateTimeField(label='From Date', required=False)
+    to_date = DateTimeField(label='To Date', initial=now, required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        # note the SolarEdge API is limited:
+        #  limited to one year when using timeUnit=DAY (i.e., daily resolution)
+        #  limited to one month when using timeUnit=QUARTER_OF_AN_HOUR or timeUnit=HOUR
+        from_date = self.cleaned_data['from_date']
+        to_date = self.cleaned_data['to_date']
+        if from_date:
+            date_range = to_date - from_date
+            if abs(date_range.days) > 31:
+                self.add_error('from_date', 'The range should not exceed one month.')
+                return False
+        return True
+
+    def save(self, commit=True):
+        meter = self.cleaned_data['meter']
+        time_unit = self.cleaned_data['time_unit']
+        from_date = self.cleaned_data['from_date']
+        to_date = self.cleaned_data['to_date']
+
+        import_errors = False
+        count = 0
+
+        m = Meter.objects.get(meter_id=meter)
+        se_setting = m.solaredgesetting_set.first()
+
+        logger.info('Getting SolarEdge power details for site: %s', se_setting.site_id)
+        se = solaredge.Solaredge(se_setting.api_key)
+        start = from_date.strftime("%Y-%m-%d %H:%M:%S")
+        end = to_date.strftime("%Y-%m-%d %H:%M:%S")
+        logger.info('Getting SolarEdge power details for site: %s from %s to %s with time interval %s',
+                    se_setting.site_id, start, end, time_unit)
+        # get the site timezone
+        tz_str = None
+        site_location = se_setting.site_details.get('location')
+        if site_location and 'timeZone' in site_location:
+            tz_str = site_location['timeZone']
+        tz = utils.parse_timezone(tz_str, 'UTC')
+        from_date = from_date.replace(tzinfo=tz)
+        to_date = to_date.replace(tzinfo=tz)
+        res = se.get_energy_details(se_setting.site_id, start, end, time_unit=time_unit)
+        logger.info('Got SolarEdge power details: %s', res)
+        se_meters = res['energyDetails']['meters']
+        unit = res['energyDetails']['unit']
+        # find the proper UOM, this contains the code
+        uom = UnitOfMeasure.objects.get(code=unit, type='energy')
+        # duration is from the time
+        time_unit = res['energyDetails']['timeUnit']
+        if time_unit == 'HOUR':
+            duration = 3600
+        elif time_unit == 'QUARTER_OF_AN_HOUR':
+            duration = 900
+        elif time_unit == 'DAY':
+            duration = 86400
+        else:
+            import_errors = 'Returned timeUnit not recognized: {}.'.format(time_unit)
+
+        if not import_errors and len(se_meters) > 1:
+            import_errors = 'Returned data has more than one SolarEdge meter, not sure what to do.'
+
+        if not import_errors:
+            # clear old values for the same period
+            MeterHistory.objects.filter(meter=m, as_of_datetime__gte=from_date, as_of_datetime__lte=to_date).delete()
+            se_values = se_meters[0]['values']
+            for item in se_values:
+                value = item.get('value')
+                if value:
+                    date_str = item.get('date')
+                    item_date = datetime.fromisoformat(date_str).replace(tzinfo=tz)
+                    MeterHistory.objects.create(
+                        meter=m,
+                        uom=uom,
+                        source='SolarEdge: {}'.format(se_setting.site_id),
+                        value=value,
+                        duration=duration,
+                        as_of_datetime=item_date,
+                        created_by_user=self.user
+                        )
+                    count = count + 1
+
+            if count == 0:
+                import_errors = 'Nothing to Import'
+
+        if import_errors:
+            return {'import_errors': import_errors}
+        else:
+            return {'imported': count}
 
 
 class MeterDataUploadForm(forms.Form):

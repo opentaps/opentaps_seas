@@ -404,6 +404,9 @@ Vue.component('form-modal', {
               <input v-if="field.type == 'input'" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" v-model="field.value" :placeholder="field.placeholder"></input>
               <input v-if="field.type == 'file'" type="file" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" :accept="field.accept" :placeholder="field.placeholder" @change="filesChange(field, $event.target.name, $event.target.files)"></input>
               <div v-if="!item.__nolabels && field.type == 'display'">$[ field.value ]</div>
+              <select v-if="field.type == 'select'" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" v-model="field.value">
+                <option v-for="opt in field.options">$[ opt ]</option>
+              </select>
               <div v-if="field.type == 'tag'">
               <tag-value-input
                 :csrfmiddlewaretoken="csrfmiddlewaretoken"

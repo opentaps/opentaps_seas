@@ -152,6 +152,7 @@ urlpatterns = [
          view=meter.meter_financial_value_data_json, name="meter_financial_value_data_json"),
     path("meter/json/<path:meter>", view=meter.meter_data_json, name="meter_data_json"),
     path("meter/import/<path:meter>", view=meter.meter_data_import, name="meter_data_import"),
+    path("meter/solaredge_import/<path:meter>", view=meter.meter_solaredge_data_import, name="meter_solaredge_data_import"),
     path("weather_station/json/<path:weather_station_id>", view=weather.weather_data_json, name="weather_data_json"),
     path("weather_station/view/<path:weather_station_id>",
          view=weather.weather_station_detail, name="weather_station_detail"),

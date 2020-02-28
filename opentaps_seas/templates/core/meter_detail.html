@@ -42,7 +42,7 @@
       <br/>
       {% block inner_content %}
       <p>
-        {% include "core/_meter_history_chart.html" with meter_id=object.meter_id %}
+        {% include "core/_meter_history_chart.html" with meter_id=object.meter_id is_solaredge=is_solaredge latest_meter_date=latest_meter_date %}
       </p>
 
       {% if has_equipments %}

@@ -47,6 +47,14 @@
     :csrfmiddlewaretoken="csrfmiddlewaretoken"></upload-form-modal>
 </div>
 
+<div id="solaredge_modal">
+  <solaredge-form-modal
+    title="Download from SolarEdge"
+    usespinner="Y"
+    :url="url"
+    :csrfmiddlewaretoken="csrfmiddlewaretoken"></solaredge-form-modal>
+</div>
+
 <style>
 .apexcharts-toolbar-custom-icon {
   height: 24px;
@@ -88,6 +96,53 @@
       }
     }
   });
+  Vue.component('solaredge-form-modal', {
+    delimiters: ['$[', ']'],
+    extends: Vue.component('form-modal'),
+    data() {
+      return {
+        fields: [
+          { key: 'time_unit', label: 'Interval', value: 'HOUR', type: 'select', options:['HOUR', 'DAY', 'QUARTER_OF_AN_HOUR'] },
+          { key: 'from_date', label: 'From', value: '{% if latest_meter_date %}{{ latest_meter_date }}{% endif %}', type: 'input' },
+          { key: 'to_date', label: 'To', value: '', type: 'input' },
+        ]
+      }
+    },
+    created: function () {
+      console.log('Created solaredge modal ...');
+      eventHub.$on('showModal_solaredge', this.showModal)
+    },
+    methods:{
+      post_show: function(item) {
+        d = new Date();
+        var datestring = d.getFullYear() + "-" +
+                         ("0"+ (d.getMonth()+1)).slice(-2) + "-" +
+                         ("0" + d.getDate()).slice(-2) + " " +
+                         ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":00";
+
+        this.fields[2].value = datestring;
+      },
+      pre_save: function(formData, item) {
+        formData.set('meter', '{{ meter_id }}')
+        if (this.fields[0].value) {
+          formData.append('time_unit', this.fields[0].value);
+        }
+        if (this.fields[1].value) {
+          formData.append('from_date', this.fields[1].value);
+        }
+        if (this.fields[2].value) {
+          formData.append('to_date', this.fields[2].value);
+        }
+      },
+      save_label: function(item) {
+        return 'Download'
+      },
+      post_save: function(response) {
+        console.log('solaredge-form-modal: post_save', response)
+        eventHub.$emit('meter_data_changed', {type: 'uploaded'})
+      }
+    }
+  });
   new Vue({
     name: 'upload_modal',
     el: '#upload_modal',
@@ -95,6 +150,16 @@
       return {
         csrfmiddlewaretoken: CSRF_TOKEN,
         url: '{% url 'core:meter_data_import' meter_id %}',
+      }
+    }
+  });
+  new Vue({
+    name: 'solaredge_modal',
+    el: '#solaredge_modal',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        url: '{% url 'core:meter_solaredge_data_import' meter_id %}',
       }
     }
   });
@@ -139,6 +204,18 @@
                 reset: false,
                 pan: false,
                 customIcons: [
+                {% if is_solaredge %}
+                  {
+                    icon: '<i class="fa fa-cloud-download-alt"></i>',
+                    title: 'Fetch SolarEdge Data',
+                    class: '',
+                    click: function(e) {
+                      // Show form with upload options
+                      console.log('Show solaredge download...');
+                      eventHub.$emit('showModal_solaredge', {})
+                    }
+                  },
+                {% else %}
                   {
                     icon: '<i class="fa fa-upload"></i>',
                     title: 'Upload',
@@ -149,6 +226,7 @@
                       eventHub.$emit('showModal_upload', {})
                     }
                   },
+                {% endif %}
                   {
                     icon: '<i class="fa fa-download"></i>',
                     title: 'Download',

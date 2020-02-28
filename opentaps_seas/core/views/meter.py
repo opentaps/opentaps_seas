@@ -25,6 +25,7 @@ from .. import utils
 from ..forms.meter import MeterCreateForm
 from ..forms.meter import MeterDataUploadForm
 from ..forms.meter import MeterUpdateForm
+from ..forms.meter import MeterDataSolarEdgeForm
 from ..models import date_to_string
 from ..models import datetime_to_string
 from ..models import Entity
@@ -315,6 +316,32 @@ def meter_data_import(request, meter):
         return JsonResponse({'error': 'Only POST methods are supported'})
 
 
+@login_required()
+def meter_solaredge_data_import(request, meter):
+
+    m = Meter.objects.get(meter_id=meter)
+    if not m:
+        logger.warning('No Meter found with meter_id = %s', meter)
+        return JsonResponse({'error': 'Meter data not found : {}'.format(meter)}, status=404)
+
+    if request.method == 'POST':
+        form = MeterDataSolarEdgeForm(request.POST, user=request.user)
+        if form.is_valid():
+            form_results = form.save()
+
+            # an error message
+            import_errors = form_results.get('import_errors')
+
+            if import_errors:
+                return JsonResponse({'errors': import_errors})
+
+            return JsonResponse({'success': 1})
+        else:
+            return JsonResponse({'errors': form.errors})
+    else:
+        return JsonResponse({'error': 'Only POST methods are supported'})
+
+
 class MeterRatePlanDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     model = MeterRatePlan
     slug_field = "rate_plan_id"
@@ -337,19 +364,27 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(MeterDetailView, self).get_context_data(**kwargs)
-        if context['object'] and context['object'].weather_station:
-            # Select last 24 records
-            qs = WeatherHistory.objects.filter(weather_station=context['object'].weather_station)
-            context['has_weather_data'] = qs.count()
+        context['is_solaredge'] = False
+        if context['object']:
+            meter = context['object']
+            if meter.weather_station:
+                # Select last 24 records
+                qs = WeatherHistory.objects.filter(weather_station=meter.weather_station)
+                context['has_weather_data'] = qs.count()
 
-        if context['object'] and context['object'].solaredgesetting_set:
-            qs = context['object'].solaredgesetting_set
-            context['has_equipments'] = qs.count()
-            if context['has_equipments']:
-                equips = []
-                for v in qs.values('entity_id'):
-                    equips.append(EquipmentView.objects.get(entity_id=v['entity_id']))
-                context['equipments'] = equips
+            latest = meter.get_meter_data().last()
+            if latest:
+                context['latest_meter_date'] = latest.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+            if meter.solaredgesetting_set:
+                qs = meter.solaredgesetting_set
+                context['has_equipments'] = qs.count()
+                if context['has_equipments']:
+                    equips = []
+                    for v in qs.values('entity_id'):
+                        equips.append(EquipmentView.objects.get(entity_id=v['entity_id']))
+                        context['is_solaredge'] = True
+                    context['equipments'] = equips
 
         return context
 
