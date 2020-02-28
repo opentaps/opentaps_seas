@@ -292,6 +292,11 @@ input.vs__search:-moz-placeholder {
   padding-top:190px;
 }
 
+.chart-spiner-placeholder {
+  height:256px;
+  padding-top:108px;
+}
+
 .form-control.page-length {
   padding-top:0.175rem;
   padding-bottom:0.175rem;

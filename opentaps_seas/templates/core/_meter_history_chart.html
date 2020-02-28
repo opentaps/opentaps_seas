@@ -20,7 +20,7 @@
 {% load static %}
 
 <div id="meterhistorychart" v-cloak>
-  <div class="card mb-3 border-nmd-0 m-n2 m-md-0">
+  <div class="card mb-3 border-nmd-0 m-n2 m-md-0" v-if="show">
     <div class="card-body p-md-3 p-0 mt-3 mt-md-0">
       <div class="row">
         <div class="col-12">
@@ -36,6 +36,11 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="card mb-3 border-nmd-0 m-n2 m-md-0" v-if="!show" style="min-height: 255px;">
+      <div class="text-center chart-spiner-placeholder">
+        <b-spinner label="Loading..." variant="secondary"></b-spinner>
+      </div>
   </div>
 </div>
 
@@ -191,6 +196,7 @@
     },
     data: function() {
       return {
+        show: true,
         options: {
           chart: {
             id: 'meter-history-chart',
@@ -321,6 +327,7 @@
           url += 'range=all';
 
           console.log('Fetching all meter chart from ', url);
+          this.show = false;
           axios.get(url).then(response => {
               let lines = [];
               lines.push('Date/Time,Value (' + chartDegreeUnit + ')');
@@ -334,6 +341,11 @@
               }
 
               saveTextAsCsvFile('Meter History.csv', lines.join('\n'));
+              this.show = true;
+          })
+          .catch(err => {
+            console.error('Fetching all meter data error :', err)
+            this.show = true;
           });
       },
 
