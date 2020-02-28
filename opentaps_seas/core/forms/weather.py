@@ -34,6 +34,8 @@ class WeatherStationFetchDataForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         weather_station_id = self.initial.get('weather_station_id')
+        if not weather_station_id and self.data:
+            weather_station_id = self.data.get('weather_station_id')
         if weather_station_id:
             try:
                 WeatherStation.objects.get(weather_station_id=weather_station_id)
@@ -70,4 +72,5 @@ class WeatherStationFetchDataForm(forms.Form):
         results = get_weather_history_for_station(ws, start_date=from_date, end_date=thru_date)
         logger.info('WeatherStationFetchDataForm: for WeatherStation %s, from %s to %s got %s',
                     weather_station_id, from_date, thru_date, results)
+
         return results

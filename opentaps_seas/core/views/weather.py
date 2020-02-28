@@ -26,6 +26,7 @@ from ..models import datetime_to_string
 from ..models import WeatherStation
 from ..models import SiteView
 
+from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -33,6 +34,7 @@ from django.http import JsonResponse
 from django.views.generic import DetailView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +162,8 @@ class WeatherStationFetchData(LoginRequiredMixin, WithBreadcrumbsMixin, SingleOb
                     initial_values['weather_station_id'] = ws.weather_station_id
                     if ws.latest_reading:
                         initial_values['from_date'] = ws.latest_reading.as_of_datetime
+                    else:
+                        initial_values['from_date'] = timezone.now() - timedelta(days=30)
                 form_data['initial'] = initial_values
         except Exception as e:
             logging.error(e)
@@ -173,11 +177,21 @@ class WeatherStationFetchData(LoginRequiredMixin, WithBreadcrumbsMixin, SingleOb
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
+        self.object = self.get_object()
+
         if form.is_valid():
+            from_date = form.cleaned_data['from_date']
+            thru_date = form.cleaned_data['thru_date']
+            if from_date and thru_date:
+                if from_date > thru_date:
+                    messages.error(self.request, 'From Date is after Thru Date, cannot fetch data.')
+                    return self.form_invalid(form)
             try:
                 form_results = form.save()
                 if form_results is not None and len(form_results):
                     messages.success(self.request, 'Imported {} temperature records.'.format(len(form_results)))
+                else:
+                    messages.error(self.request, 'Nothing imported.')
             except Exception as e:
                 logging.exception(e)
                 if e.__class__.__name__ == 'UnrecognizedUSAFIDError':
