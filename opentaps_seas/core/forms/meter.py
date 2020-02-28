@@ -53,13 +53,19 @@ class MeterDataSolarEdgeForm(forms.Form):
         # note the SolarEdge API is limited:
         #  limited to one year when using timeUnit=DAY (i.e., daily resolution)
         #  limited to one month when using timeUnit=QUARTER_OF_AN_HOUR or timeUnit=HOUR
+        time_unit = self.cleaned_data['time_unit']
         from_date = self.cleaned_data['from_date']
         to_date = self.cleaned_data['to_date']
         if from_date:
             date_range = to_date - from_date
-            if abs(date_range.days) > 31:
-                self.add_error('from_date', 'The range should not exceed one month.')
-                return False
+            if time_unit == 'DAY':
+                if abs(date_range.days) > 365:
+                    self.add_error('from_date', 'The range should not exceed one year.')
+                    return False
+            else:
+                if abs(date_range.days) > 31:
+                    self.add_error('from_date', 'The range should not exceed one month.')
+                    return False
         return True
 
     def save(self, commit=True):
