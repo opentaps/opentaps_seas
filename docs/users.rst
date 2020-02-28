@@ -67,9 +67,12 @@ Once it is built, you will see it in the list of Models below.  Because building
 
 Clicking on a Model, you will see the following:
 
- * View Details - You can see the actual parameters of the model here.  See https://www.caltrack.org/project-updates/week-six-caltrack-update for an explanation of some of the key statistics.
+ * View Details - You can see the actual parameters of the model here.  See https://www.caltrack.org/project-updates/week-six-caltrack-update for an explanation of some of the key statistics.  See also 
+https://www.caltrack.org/project-updates/week-eight-caltrack-update and https://evo-world.org/en/news-media/m-v-focus/868-m-v-focus-issue-5/1164-why-r2-doesn-t-matter about ASHRAE standards for the CVRMSE
+statistic.
  * Calculate Production - Calculate the energy produced, as calculated by this model.  (See below.)
- * A graph of the model if you have a daily model.  Currently OpenEEMeter produces graphs for its daily but not hourly models.  
+ * A graph of the model if you have a daily model.  Currently OpenEEMeter produces graphs for its daily but not hourly models.  On this graph, the red lines are disqualified or rejected candidate models,
+green lines are qualified model candidates, and the orange line is the chosen model.  
  * History of the energy produced, as calculated by this model.
 
 The Meter Production shows the actual energy saved, or "produced," as calculated by this particular model for this meter.  It is a time series of kWh and calculated in either hourly or daily increments, depending 
