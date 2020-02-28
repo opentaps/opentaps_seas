@@ -42,6 +42,50 @@
     </div>
   </div>
 
+  {% if solaredge %}
+    {% load decamel from core_tags %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5>SolarEdge Site Details</h5>
+        <div class="row m-0">
+          <div class="col-md order-md-first order-last">
+            {% for item, value in solaredge.site_details.items %}
+              {% if value %}
+                {% if item == 'location' %}
+                  <div class="row"><b class="mr-2">Address:</b> {{ solaredge.display_location }}</div>
+                {% elif item == 'primaryModule' %}
+                  <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ solaredge.display_primary_module }}</div>
+                {% elif item == 'publicSettings' %}
+                  <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ solaredge.display_public_settings }}</div>
+                {% elif item == 'uris' %}
+                  {# skip this one #}
+                {% else %}
+                  <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ value }} </div>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if solaredge.meter %}
+              <div class="row"><b class="mr-2">Meter:</b> <a href="{{ solaredge.meter.get_absolute_url }}">{{ solaredge.meter }}</a> </div>
+            {% endif %}
+          </div>
+          {% if solaredge.site_image %}
+          <div class="col ml-md-auto mb-2" style="max-width:250px">
+            <div class="row">
+              <a href="{{ solaredge.site_image.url }}" target="_blank">
+              {% if solaredge.site_thumbnail %}
+                <img src="{{ solaredge.site_thumbnail.url }}" alt="View Image"/>
+              {% else %}
+                View Image
+              {% endif %}
+              </a>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="card mb-3">
     <div class="card-body">
       <div id="dashboard_button">

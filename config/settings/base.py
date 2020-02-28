@@ -127,6 +127,7 @@ THIRD_PARTY_APPS = [
     'filer',
     'mptt',
     'flatpickr',
+    'encrypted_model_fields',
 ]
 LOCAL_APPS = [
     'opentaps_seas.users.apps.UsersAppConfig',
@@ -225,6 +226,8 @@ STATICFILES_FINDERS = [
 MEDIA_ROOT = str(APPS_DIR('media'))
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
+
+THUMBNAIL_DEBUG = True
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -345,6 +348,11 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_ADAPTER = 'opentaps_seas.users.adapters.AccountAdapter'
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 SOCIALACCOUNT_ADAPTER = 'opentaps_seas.users.adapters.SocialAccountAdapter'
+
+# django-encrypted-model-fields
+# ------------------------------------------------------------------------------
+# note, can generate a key with: ./manage.py generate_encryption_key
+FIELD_ENCRYPTION_KEY = get_secret('FIELD_ENCRYPTION_KEY')
 
 
 # Your stuff...

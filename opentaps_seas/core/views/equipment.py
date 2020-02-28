@@ -27,6 +27,7 @@ from ..models import Entity
 from ..models import EquipmentView
 from ..models import PointView
 from ..models import SiteView
+from ..models import SolarEdgeSetting
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -117,6 +118,7 @@ class EquipmentCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
         kwargs = super(EquipmentCreateView, self).get_form_kwargs()
         site = SiteView.objects.get(entity_id=self.kwargs['site'])
         kwargs.update({'site_id': site.object_id})
+        kwargs.update({'user': self.request.user})
         return kwargs
 
 
@@ -193,6 +195,11 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
         try:
             context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
         except SiteView.DoesNotExist:
+            pass
+        # check SolarEdge data
+        try:
+            context['solaredge'] = SolarEdgeSetting.objects.get(entity_id=context['object'].entity_id)
+        except SolarEdgeSetting.DoesNotExist:
             pass
 
         context['data_points'] = PointView.objects.filter(equipment_id=context['object'].object_id).count()

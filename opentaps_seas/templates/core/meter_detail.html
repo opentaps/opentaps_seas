@@ -45,6 +45,10 @@
         {% include "core/_meter_history_chart.html" with meter_id=object.meter_id %}
       </p>
 
+      {% if has_equipments %}
+      <p><b>Equipments:</b> {% for e in equipments %} <a href="{{ e.get_absolute_url }}">{{ e }}</a> {% endfor %}
+      {% endif %}
+
       <p><b>Weather Station:</b> 
         {% if not object.weather_station %}
           n/a

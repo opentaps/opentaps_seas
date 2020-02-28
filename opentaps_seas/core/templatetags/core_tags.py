@@ -15,11 +15,13 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import json
 import warnings
 from django import template
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.template.base import Node
+from django.utils.text import camel_case_to_spaces
 from .. import utils
 
 register = template.Library()
@@ -65,6 +67,36 @@ def time_str(value):
 
 
 @register.filter
+def decamel(value):
+    try:
+        return camel_case_to_spaces(value)
+    except:
+        return value
+
+
+@register.filter
 def qs_order_by(queryset, args):
     args = [x.strip() for x in args.split(',')]
     return queryset.order_by(*args)
+
+
+@register.filter
+def get(d, key):
+    if hasattr(d, 'get'):
+        return d.get(key)
+    else:
+        if isinstance(d, str):
+            # try to json parse it as a dict
+            try:
+                obj = json.loads(d)
+                if obj:
+                    return obj.get(key)
+            except:
+                try:
+                    obj = json.loads(d.replace("'", '"'))
+                    if obj:
+                        return obj.get(key)
+                except:
+                    pass
+
+    return d

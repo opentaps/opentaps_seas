@@ -29,12 +29,25 @@
 
   <div class="card mb-3">
     <div class="card-body">
-      <form method="post">
+      <form method="post" id="equipment_form">
         {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-block alert-error">
+                {% if form_error_title %}<h4 class="alert-heading">{{ form_error_title }}</h4>{% endif %}
+                <ul>
+                    {{ form.non_field_errors|unordered_list }}
+                </ul>
+            </div>
+        {% endif %}
         <input type="hidden" name="bacnet_prefix" id="bacnet_prefix" ref="bacnet_prefix" value="{{ form.bacnet_prefix.initial|default:'' }}"/>
         <input type="hidden" name="device_id" id="device_id" ref="device_id" value="{{ form.device_id.initial|default:'' }}"/>
 
         {{ form.entity_id|as_crispy_field }}
+        {{ form.equipment_type|as_crispy_field }}
+        <div v-cloak v-if="is_solaredge">
+          {{ form.solaredge_api_key|as_crispy_field }}
+          {{ form.solaredge_site_id|as_crispy_field }}
+        </div>
         {{ form.description|as_crispy_field }}
         {{ form.model|as_crispy_field }}
 
@@ -46,5 +59,39 @@
     </div>
   </div>
 </div>
+
+<script>
+(function() {
+  new Vue({
+    name: 'equipment_form',
+    el: '#equipment_form',
+    data() {
+      return {
+        is_solaredge: false
+      }
+    },
+    mounted() {
+      console.log('mounted..');
+      var select_el = this.$el['equipment_type'];
+      if (select_el) {
+        console.log('mounted, found select value', select_el.value);
+        this.is_solaredge = 'SOLAREDGE' == select_el.value;
+        select_el.addEventListener("change", this.changed_select);
+      }
+      if (this.is_solaredge) select_el.value = 'SOLAREDGE';
+      else select_el.value = 'GENERIC';
+    },
+    methods: {
+      changed_select(e) {
+        console.log('changed_select..', e);
+        var select_el = this.$el['equipment_type'];
+        if (select_el) {
+          this.is_solaredge = 'SOLAREDGE' == select_el.value;
+        }
+      }
+    }
+  });
+})();
+</script>
 
 {% endblock content %}

@@ -57,6 +57,12 @@ from django.utils.text import slugify
 logger = logging.getLogger(__name__)
 
 
+def check_boto_config():
+    if not settings.AWS_ACCESS_KEY_ID or not settings.AWS_SECRET_ACCESS_KEY or not settings.AWS_STORAGE_BUCKET_NAME:
+        raise Exception('''AWS configuration is required, check your settings for
+                           AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY and AWS_STORAGE_BUCKET_NAME''')
+
+
 def parse_timezone(tzname, default=None):
     if tzname:
         # accept valid pytz names like US/Pacific

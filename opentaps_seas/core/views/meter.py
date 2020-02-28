@@ -28,6 +28,7 @@ from ..forms.meter import MeterUpdateForm
 from ..models import date_to_string
 from ..models import datetime_to_string
 from ..models import Entity
+from ..models import EquipmentView
 from ..models import Meter
 from ..models import MeterRatePlan
 from ..models import SiteView
@@ -340,6 +341,15 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
             # Select last 24 records
             qs = WeatherHistory.objects.filter(weather_station=context['object'].weather_station)
             context['has_weather_data'] = qs.count()
+
+        if context['object'] and context['object'].solaredgesetting_set:
+            qs = context['object'].solaredgesetting_set
+            context['has_equipments'] = qs.count()
+            if context['has_equipments']:
+                equips = []
+                for v in qs.values('entity_id'):
+                    equips.append(EquipmentView.objects.get(entity_id=v['entity_id']))
+                context['equipments'] = equips
 
         return context
 

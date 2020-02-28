@@ -26,6 +26,7 @@ from functools import lru_cache
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.fields import HStoreField
+from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import connections
 from django.db import models
@@ -51,6 +52,8 @@ from django.utils.timezone import now
 from django.utils.timezone import get_current_timezone
 from django.utils.translation import ugettext_lazy as _
 from enum import Enum
+from encrypted_model_fields.fields import EncryptedCharField
+from filer.fields.image import FilerImageField
 from filer.fields.file import FilerFileField
 from filer.models import Image as FilerFile
 from cratedb.fields import HStoreField as CrateHStoreField
@@ -383,7 +386,10 @@ class EquipmentView(models.Model):
     m_tags = ArrayField(CharField(max_length=255, blank=True, null=True))
 
     def __str__(self):
-        return self.entity_id
+        if self.description:
+            return self.description + (" ({name})".format(name=self.entity_id) if self.entity_id else '')
+        else:
+            return self.entity_id
 
     def as_dict(self):
         return dict(
@@ -880,6 +886,7 @@ class Meter(models.Model):
     description = CharField(_("Description"), max_length=255, blank=True, null=True)
     weather_station = ForeignKey(WeatherStation, null=True, blank=True, on_delete=models.SET_NULL)
     site = ForeignKey(Entity, on_delete=models.CASCADE)
+    equipment = ForeignKey(Entity, on_delete=models.CASCADE, blank=True, null=True, related_name='equipment_meters')
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
     rate_plan = ForeignKey('MeterRatePlan', blank=True, null=True, on_delete=models.DO_NOTHING)
@@ -1331,3 +1338,56 @@ def financial_transaction_note_saved(sender, instance, created, raw, using, **kw
         financial_transaction_id=instance.financial_transaction_id,
         history=change,
         created_by_user=get_current_user_from_stack())
+
+
+class SolarEdgeSetting(models.Model):
+    entity_id = CharField(_("Entity ID"), max_length=255, primary_key=True)
+    meter = ForeignKey(Meter, on_delete=models.DO_NOTHING)
+    site_id = CharField(_("SolarEdge Site ID"), max_length=255)
+    api_key = EncryptedCharField(_("SolarEdge API Key"), max_length=255)
+    site_details = JSONField(_("Site Details"), blank=True, null=True)
+    site_image = FilerImageField(null=True, blank=True, related_name="solaredge_site_image", on_delete=models.CASCADE)
+    site_thumbnail = FilerImageField(null=True, blank=True, related_name="solaredge_site_thumbnail", on_delete=models.CASCADE)
+
+    @property
+    def display_location(self):
+        if self.site_details and self.site_details.get('location'):
+            v = self.site_details.get('location')
+            a = v.get('address')
+            if v.get('address2'):
+                a += ' ' + v.get('address2')
+            if v.get('city'):
+                a += ', ' + v.get('city')
+            if v.get('zip'):
+                a += ', ' + v.get('zip')
+            if v.get('state'):
+                a += ', ' + v.get('state')
+            if v.get('country'):
+                a += ', ' + v.get('country')
+            return a
+
+        return None
+
+    @property
+    def display_primary_module(self):
+        if self.site_details and self.site_details.get('primaryModule'):
+            v = self.site_details.get('primaryModule')
+            a = v.get('modelName')
+            if v.get('manufacturerName'):
+                a += ' manufactured by ' + v.get('manufacturerName')
+            if v.get('maximumPower'):
+                a += ', max power ' + str(v.get('maximumPower'))
+            if v.get('temperatureCoef'):
+                a += ', temperature coefficient ' + str(v.get('temperatureCoef'))
+            return a
+
+        return None
+
+    @property
+    def display_public_settings(self):
+        if self.site_details and self.site_details.get('publicSettings'):
+            v = self.site_details.get('publicSettings')
+            if 'isPublic' in v:
+                return v['isPublic']
+
+        return None
