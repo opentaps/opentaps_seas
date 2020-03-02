@@ -1,23 +1,23 @@
 User Documentation
-==================
+##################
 
 Signing In
-^^^^^^^^^^
+**********
 
 Open your browser and put ``http://your.ip.address.here:8000`` or the URL opentaps SEAS has been set up on.  You should see the initial login screen here,
 or the Sites page if you're already logged in.
 
 
+Main Sections
+*************
+
 Sites
-^^^^^
+=====
 
 A site is a particular building or facility with many different pieces of equipment.  The Sites page lists all the sites you've set up, and you can also add new sites here.  
 
 The map displays all your sites with Google Maps.  You will need to set up your Google API key in secrets.json.  It will display the locations with either a geoStreet
 or geoStreetAddress tag.  If geoStreet is set, it will use geoStreet, geoCity, geoState, geoPostalCode, geoCountry; otherwise it will use geoStreetAddress.
-
-Site
-^^^^
 
 The Site page shows 
 
@@ -38,7 +38,7 @@ The Site page shows
  * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on Topics to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix.  From here you can also create an Equipment for this config.  This is helpful if each BACNet config points to a particular machine, rather than a supervisory controller. 
  
 Meters
-^^^^^^
+======
 
 Each site could be associated with one or more meters, which could be a utility meter or a measuring device to record solar generation, battery charge or discharge, or any other technology’s 
 use or production of energy.  Each Meter is associated with a Weather Station.  We currently use the NOAA ISD weather stations and weather data based on OpenEE Weather.
@@ -67,12 +67,9 @@ Once it is built, you will see it in the list of Models below.  Because building
 
 Clicking on a Model, you will see the following:
 
- * View Details - You can see the actual parameters of the model here.  See https://www.caltrack.org/project-updates/week-six-caltrack-update for an explanation of some of the key statistics.  See also 
-https://www.caltrack.org/project-updates/week-eight-caltrack-update and https://evo-world.org/en/news-media/m-v-focus/868-m-v-focus-issue-5/1164-why-r2-doesn-t-matter about ASHRAE standards for the CVRMSE
-statistic.
+ * View Details - You can see the actual parameters of the model here.  See https://www.caltrack.org/project-updates/week-six-caltrack-update for an explanation of some of the key statistics.  See also https://www.caltrack.org/project-updates/week-eight-caltrack-update and https://evo-world.org/en/news-media/m-v-focus/868-m-v-focus-issue-5/1164-why-r2-doesn-t-matter about ASHRAE standards for the CVRMSE statistic.
  * Calculate Production - Calculate the energy produced, as calculated by this model.  (See below.)
- * A graph of the model if you have a daily model.  Currently OpenEEMeter produces graphs for its daily but not hourly models.  On this graph, the red lines are disqualified or rejected candidate models,
-green lines are qualified model candidates, and the orange line is the chosen model.  
+ * A graph of the model if you have a daily model.  Currently OpenEEMeter produces graphs for its daily but not hourly models.  On this graph, the red lines are disqualified or rejected candidate models, green lines are qualified model candidates, and the orange line is the chosen model.  
  * History of the energy produced, as calculated by this model.
 
 The Meter Production shows the actual energy saved, or "produced," as calculated by this particular model for this meter.  It is a time series of kWh and calculated in either hourly or daily increments, depending 
@@ -83,9 +80,8 @@ Below the Meter Production is a history of the financial value of the energy pro
 Meter's rate plan, even if the particular Model was only active during part of the month.
 
 
-
-Equipment
-^^^^^^^^^
+Equipments
+==========
 
 This page shows an item of equipment, with all its tags.  You can associate an Equipment with a Model (see below.)
 
@@ -104,7 +100,7 @@ embedded dashboard to show up.  The dashboard displays the data points for these
 Below the dashboard are the data points.  Click on any data point to see its historical values.  Below the data points are files and notes associated with this equipment.
 
 Data Points
-^^^^^^^^^^^
+===========
 
 This page shows a data point, with all its tags.  Then it shows the latest value and a graph of the historical data.  If the a Grafana dashboard has been created for this data point,
 there will be a Grafana icon.  Clicking on this icon will open up the Grafana dashboard in a separate browser window.
@@ -149,7 +145,7 @@ and siteRef tags.
 To tag your topics, please see "Tagging Rules" section below.
 
 Tagging Rules
-#############
+-------------
 
 Tagging data points is ultimately very helpful in understanding your data, and tags are required for running services on your data.  However, tagging has always been a very manual and time
 consuming process.  We've tried to help streamline this process by introducing "Tagging Rules", which allow you to create sets of rules that could be used to tag all your topics.  This works
@@ -224,12 +220,12 @@ in tags before and after running the rules.  Each topic would be listed in a row
 You can use the Export and Import features to save your tagging rules as a JSON file download and then upload it again.
 
 Using SQL Scripts
-#################
+^^^^^^^^^^^^^^^^^
 
 Another way to tag your topics is to use a SQL script to update these tags in bulk based on their naming patterns.  See the file ``data/ahu/demo/tag_entities.sql`` for an example of how to do this. 
 
 Topics Report
-#############
+^^^^^^^^^^^^^
 
 To see how you're doing with the tagging, use this report.  It provides you a CSV file of all the topics and their current tags.  
 The topics are in rows and the tags are in columns, and the value will be in the
@@ -238,7 +234,7 @@ cells.  If the tags is a marker tag, there will be an X.
 This CSV file can then be modified and imported back into the system (see above.)  Tags which start with "__" should not be modified, as they will be ignored when you import the CSV file again. 
 
 Exporting Topics
-################
+^^^^^^^^^^^^^^^^
 
 Topics can be exported either to a CSV file like the one used for importing topics or to the VOLTTRON BACNet configuration files.  The CSV file has all the topics and their current tags.  
 The topics are in rows and the tags are in columns, and the value will be in the
