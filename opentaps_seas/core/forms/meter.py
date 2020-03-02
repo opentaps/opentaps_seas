@@ -120,19 +120,20 @@ class MeterDataSolarEdgeForm(forms.Form):
             se_values = se_meters[0]['values']
             for item in se_values:
                 value = item.get('value')
-                if value:
-                    date_str = item.get('date')
-                    item_date = datetime.fromisoformat(date_str).replace(tzinfo=tz)
-                    MeterHistory.objects.create(
-                        meter=m,
-                        uom=uom,
-                        source='SolarEdge: {}'.format(se_setting.site_id),
-                        value=value,
-                        duration=duration,
-                        as_of_datetime=item_date,
-                        created_by_user=self.user
-                        )
-                    count = count + 1
+                if not value:
+                    value = 0
+                date_str = item.get('date')
+                item_date = datetime.fromisoformat(date_str).replace(tzinfo=tz)
+                MeterHistory.objects.create(
+                    meter=m,
+                    uom=uom,
+                    source='SolarEdge: {}'.format(se_setting.site_id),
+                    value=value,
+                    duration=duration,
+                    as_of_datetime=item_date,
+                    created_by_user=self.user
+                    )
+                count = count + 1
 
             if count == 0:
                 import_errors = 'Nothing to Import'
