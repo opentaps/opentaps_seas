@@ -47,6 +47,7 @@
     <script src="{% static 'js/dutils.js' %}"></script>
     <script type="text/javascript">
     dutils.conf.urls = {
+      'get_task_progress_json': '{% url "core:get_task_progress_json" '999' %}'.replace('999', '<id>'),
       'model_list_json': '{% url "core:model_list_json" %}',
       'model_list': '{% url "core:model_list" %}',
       'model_detail': '{% url "core:model_detail" '999' %}'.replace('999', '<id>'),

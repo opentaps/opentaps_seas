@@ -531,6 +531,65 @@ Vue.component('form-modal', {
 
 const STATUS_INITIAL = 0, STATUS_SAVING = 1
 
+Vue.component('task-progress', {
+  delimiters: ['$[', ']'],
+  props: {
+    csrfmiddlewaretoken: String,
+    taskId: String,
+    text: String,
+  },
+  template: `
+  <div class="row row-auto">
+    <div class="mt-2 col col-auto" v-if="!complete">
+      <b-spinner label="Loading..." variant="secondary"></b-spinner>
+    </div>
+    <div class="col">
+      <div><span>$[ description ]</span></div>
+      <div><b-progress :value="value" animated></b-progress></div>
+    </div>
+  </div>
+  `,
+  data() {
+    return {
+      description: this.text,
+      complete: false,
+      value: 0,
+    }
+  },
+  mounted() {
+    this.refresh()
+  },
+  methods: {
+    refresh() {
+      axios.get(dutils.urls.resolve('get_task_progress_json', {id: this.taskId}))
+        .then(x => {
+          x = x.data
+          if (x.info && x.info.description) {
+            this.description = x.info.description
+          }
+          this.complete = x.complete
+          if (this.complete) {
+            this.value = 100
+            setTimeout(()=>{ this.$emit('complete') }, 1000);
+          } else {
+            if (x.progress) {
+              this.value = x.progress.percent
+            }
+            if (x.state && (x.state == 'PROGRESS' || x.state == 'STARTED')) {
+              setTimeout(()=>{ this.refresh() }, 1000);
+            } else if (x.state && (x.state == 'FAILURE')) {
+              this.description = 'Error: ' + x.info.description
+            }
+          }
+        })
+        .catch(err => {
+          console.error('task-progress error :', err)
+          this.description = err
+        });
+    }
+  }
+});
+
 Vue.component('my-datetime', {
   delimiters: ['$[', ']'],
   props: {

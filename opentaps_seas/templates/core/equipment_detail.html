@@ -49,23 +49,33 @@
         <h5>SolarEdge Site Details</h5>
         <div class="row m-0">
           <div class="col-md order-md-first order-last">
-            {% for item, value in solaredge.site_details.items %}
-              {% if value %}
-                {% if item == 'location' %}
-                  <div class="row"><b class="mr-2">Address:</b> {{ solaredge.display_location }}</div>
-                {% elif item == 'primaryModule' %}
-                  <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ solaredge.display_primary_module }}</div>
-                {% elif item == 'publicSettings' %}
-                  <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ solaredge.display_public_settings }}</div>
-                {% elif item == 'uris' %}
-                  {# skip this one #}
-                {% else %}
-                  <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ value }} </div>
+            {% if solaredge_task_id %}
+            <div id="taskprogress">
+              <task-progress :csrfmiddlewaretoken="csrfmiddlewaretoken" text="Fetching data from SolarEdge ..." task-id="{{ solaredge_task_id }}" v-on:complete="reloadPage"><p>Fetching data from SolarEdge ...</p></task-progress>
+            </div>
+            {% else %}
+              {% if solaredge.site_details %}
+                {% for item, value in solaredge.site_details.items %}
+                  {% if value %}
+                    {% if item == 'location' %}
+                      <div class="row"><b class="mr-2">Address:</b> {{ solaredge.display_location }}</div>
+                    {% elif item == 'primaryModule' %}
+                      <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ solaredge.display_primary_module }}</div>
+                    {% elif item == 'publicSettings' %}
+                      <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ solaredge.display_public_settings }}</div>
+                    {% elif item == 'uris' %}
+                      {# skip this one #}
+                    {% else %}
+                      <div class="row"><b class="mr-2">{{ item | decamel | title }}:</b> {{ value }} </div>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                {% if solaredge.meter %}
+                  <div class="row"><b class="mr-2">Meter:</b> <a href="{{ solaredge.meter.get_absolute_url }}">{{ solaredge.meter }}</a> </div>
                 {% endif %}
+              {% else %}
+                <p>SolarEdge data is being fetched ...</p>
               {% endif %}
-            {% endfor %}
-            {% if solaredge.meter %}
-              <div class="row"><b class="mr-2">Meter:</b> <a href="{{ solaredge.meter.get_absolute_url }}">{{ solaredge.meter }}</a> </div>
             {% endif %}
           </div>
           {% if solaredge.site_image %}
@@ -153,6 +163,23 @@
       }
     }
   });
+  {% if solaredge_task_id %}
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#taskprogress',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN
+      }
+    },
+    methods: {
+      reloadPage: function() {
+        console.log('task finished, reloading page')
+        location.reload()
+      }
+    }
+  });
+  {% endif %}
   new Vue({
     delimiters: ['${', '}'],
     el: '#dashboard_button',

@@ -16,9 +16,8 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import requests
 import solaredge
-import tempfile
+from .. import tasks
 from .. import utils
 from ..models import Entity
 from ..models import Meter
@@ -26,11 +25,8 @@ from ..models import ModelView
 from ..models import Tag
 from ..models import SolarEdgeSetting
 from django import forms
-from django.core.files import File
 from django.template.defaultfilters import slugify
 from requests.exceptions import HTTPError
-from filer.models import Image as FilerFile
-from easy_thumbnails.files import get_thumbnailer
 
 logger = logging.getLogger(__name__)
 
@@ -101,51 +97,15 @@ class EquipmentCreateForm(forms.ModelForm):
         self.cleaned_data['entity_id'] = entity_id
 
         # check we can get the SolarEdge data if configured ofr before saving entities..
-        se = None
-        se_details = None
-        site_image = None
-        site_thumbnail = None
         site = Entity.objects.get(kv_tags__id=self.site_id)
+        site_details = {}
         if 'equipment_type' in self.cleaned_data and self.cleaned_data['equipment_type'] == 'SOLAREDGE':
-            se = solaredge.Solaredge(self.cleaned_data['solaredge_api_key'])
-            se_details = se.get_details(self.cleaned_data['solaredge_site_id']).get('details')
-            if not description:
-                description = se_details.get('name')
-            # extract some fields we will need to display later
-            se_uris = se_details.get('uris')
-            if se_uris:
-                se_img = se_uris.get('SITE_IMAGE')
-                if se_img:
-                    # avoid cryptic errors on misconfiguration
-                    utils.check_boto_config()
-                    # note the image will require the api_key parameter
-                    img_url = 'https://monitoringapi.solaredge.com' + se_img
-                    url = img_url + '?api_key=' + self.cleaned_data['solaredge_api_key']
-                    try:
-                        logger.info('Downloading image %s', url)
-                        r = requests.get(url)
-                        with tempfile.TemporaryFile() as temp, tempfile.TemporaryFile() as temp2:
-                            file_name = se_img.split('/')[-1]
-                            logger.info('Saving image %s', file_name)
-                            n = temp.write(r.content)
-                            logger.info('Saved temp %s', n)
-                            n = temp2.write(r.content)
-                            logger.info('Saving temp2 %s', n)
-                            file_obj = File(temp, name=file_name)
-                            site_image = FilerFile.objects.create(owner=self.user,
-                                                                  original_filename=file_name,
-                                                                  file=file_obj)
-                            # note: auto thumbnail would take twice as long to generate so do it here
-                            th = get_thumbnailer(temp2, relative_name=file_name)
-                            th_img = th.get_thumbnail({'size': (250, 250), 'crop': True})
-                            file_obj2 = File(th_img, name=file_name)
-                            site_thumbnail = FilerFile.objects.create(owner=self.user,
-                                                                      original_filename=file_name,
-                                                                      file=file_obj2)
-
-                    except Exception as e:
-                        logger.exception(e)
-                        raise e
+            kwargs = self.cleaned_data.copy()
+            kwargs['entity_id'] = entity_id
+            kwargs['site_id'] = self.site_id
+            kwargs['user'] = self.user
+            async_res = tasks.fetch_solaredge_for_equipment_task.delay(kwargs)
+            site_details['task_id'] = async_res.task_id
 
         equipment = Entity(entity_id=entity_id)
         equipment.add_tag('equip', commit=False)
@@ -179,16 +139,14 @@ class EquipmentCreateForm(forms.ModelForm):
                 meter_id=entity_id,
                 site=site,
                 equipment=equipment,
-                description='SolarEdge: {}'.format(se_details.get('name')))
+                description='SolarEdge: ...')
             # store the solarEdge api kye and siteId, encrypt the key
             SolarEdgeSetting.objects.create(
                 entity_id=entity_id,
                 meter=m,
+                site_details=site_details,
                 site_id=self.cleaned_data['solaredge_site_id'],
-                api_key=self.cleaned_data['solaredge_api_key'],
-                site_details=se_details,
-                site_image=site_image,
-                site_thumbnail=site_thumbnail)
+                api_key=self.cleaned_data['solaredge_api_key'])
 
         self._post_clean()
         return self.instance

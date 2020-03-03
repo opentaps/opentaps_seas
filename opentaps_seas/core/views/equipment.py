@@ -22,6 +22,8 @@ from .common import WithFilesAndNotesAndTagsMixin
 from .common import WithPointBreadcrumbsMixin
 from .point import PointTable
 from .. import utils
+from .. import tasks
+from ..celery import Progress
 from ..forms.equipment import EquipmentCreateForm
 from ..models import Entity
 from ..models import EquipmentView
@@ -198,7 +200,13 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
             pass
         # check SolarEdge data
         try:
-            context['solaredge'] = SolarEdgeSetting.objects.get(entity_id=context['object'].entity_id)
+            se = SolarEdgeSetting.objects.get(entity_id=context['object'].entity_id)
+            context['solaredge'] = se
+            if se.site_details and se.site_details.get('task_id'):
+                # have not fetched the details yet
+                task_id = se.site_details['task_id']
+                context['solaredge_task_id'] = task_id
+                context['solaredge_progress'] = Progress(task_id).get_info()
         except SolarEdgeSetting.DoesNotExist:
             pass
 
