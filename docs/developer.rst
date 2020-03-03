@@ -37,14 +37,14 @@ using the rate plan for the Meter (see below) to calculate the billable energy u
 value of time of use and demand charges.
 
 Parties: People 
----------------
+===============
 
 Parties are the people and organizations in business relationships, such as the customers who use energy or utilities that supply them.  You probably already have an ERP or CRM
 system or a specialized billing system that has all this information.  So instead of implementing it all over again in opentaps SEAS and making you implement an integration, 
 parties are just a "stub" for interfacing with external system.  See the `opentaps_seas/party` directory.
 
 Haystack
---------
+========
 
 Note: Haystack id tag values are set by default to be the same as primary key values, but they do not have to be.
 
