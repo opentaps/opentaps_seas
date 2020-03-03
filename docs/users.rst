@@ -99,6 +99,16 @@ embedded dashboard to show up.  The dashboard displays the data points for these
 
 Below the dashboard are the data points.  Click on any data point to see its historical values.  Below the data points are files and notes associated with this equipment.
 
+SolarEdge Solar Systems
+^^^^^^^^^^^^^^^^^^^^^^^
+
+SolarEdge solar systems are a special type of equipment.  If you choose SolarEdge when you create an equpiment, you will be prompted for the API key and site ID.  You can set up as 
+many different SolarEdge systems as you'd like, each with their own API key, so you can monitor all your customer sites' systems.
+
+opentaps will then create an equipment and a meter for each SolarEdge system.  On the equipment page, it will show you information about the system.  The SolarEdge system equipment
+is like any other equipment at your site, so you can associate files, notes, and tags with it.  On the meter page, it will show
+you the power generated from the system over time.  Instead of the upload icon, there is a cloud icon.  Use this to download more data from SolarEdge.
+
 Data Points
 ===========
 
