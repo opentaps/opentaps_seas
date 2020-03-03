@@ -380,7 +380,7 @@ Vue.component('tag-edit', {
 Vue.component('form-modal', {
   delimiters: ['$[', ']'],
   template: `
-  <transition name="modal" v-if="visible">
+  <transition name="modal" v-if="visible" v-on:after-enter="afterEnter">
     <div class="form-modal modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
@@ -388,7 +388,7 @@ Vue.component('form-modal', {
           <div class="modal-header" v-if="!item.__title">$[ title ] $[ title_name ]</div>
           <div class="modal-header" v-if="item.__title">$[ item.__title ]</div>
 
-          <div class="modal-body">
+          <div ref="body" class="modal-body">
 
             <div class="alert alert-danger" role="alert" v-if="errors.error">
               $[ errors.error ]
@@ -402,6 +402,7 @@ Vue.component('form-modal', {
               <label v-if="!item.__nolabels && field.label" :for="field.key">$[ field.label ]</label>
               <textarea v-if="field.type == 'textarea'" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" rows="3" v-model="field.value" :placeholder="field.placeholder"></textarea>
               <input v-if="field.type == 'input'" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" v-model="field.value" :placeholder="field.placeholder"></input>
+              <input v-if="field.type == 'datetime'" :class="{'datetime':1, 'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" v-model="field.value" :placeholder="field.placeholder"></input>
               <input v-if="field.type == 'file'" type="file" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" :accept="field.accept" :placeholder="field.placeholder" @change="filesChange(field, $event.target.name, $event.target.files)"></input>
               <div v-if="!item.__nolabels && field.type == 'display'">$[ field.value ]</div>
               <select v-if="field.type == 'select'" :class="{'form-control':1, 'is-invalid': errors[field.key]}" :id="field.key" :name="field.key" v-model="field.value">
@@ -460,6 +461,16 @@ Vue.component('form-modal', {
       this.visible = true
       this.errors = {}
       this.post_show(item)
+    },
+    afterEnter: function(e) {
+      // init ellements here
+      console.log('** special init flatpickr', this, this.$refs, this.$refs.body)
+      flatpickr(this.$refs.body.getElementsByClassName('datetime'), {
+            "dateFormat": "Y-m-d H:i:S",
+            "time_24hr": "true",
+            "allowInput": "true",
+            "enableSeconds": "true",
+            "minuteIncrement": 1});
     },
     post_show: function(item) {
       /* placeholder */

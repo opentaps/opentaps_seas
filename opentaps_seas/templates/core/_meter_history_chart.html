@@ -108,8 +108,8 @@
       return {
         fields: [
           { key: 'time_unit', label: 'Interval', value: 'HOUR', type: 'select', options:['HOUR', 'DAY', 'QUARTER_OF_AN_HOUR'] },
-          { key: 'from_date', label: 'From', value: '{% if latest_meter_date %}{{ latest_meter_date }}{% endif %}', type: 'input' },
-          { key: 'to_date', label: 'To', value: '', type: 'input' },
+          { key: 'from_date', label: 'From', value: '{% if latest_meter_date %}{{ latest_meter_date }}{% endif %}', type: 'datetime' },
+          { key: 'to_date', label: 'To', value: '', type: 'datetime' },
         ]
       }
     },
