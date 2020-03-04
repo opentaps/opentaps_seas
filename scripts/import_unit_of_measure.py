@@ -30,6 +30,7 @@ def clean():
         c.execute("DELETE FROM core_meter_financial_value;")
         c.execute("DELETE FROM core_meter_production;")
         c.execute("DELETE FROM core_meter_history;")
+        c.execute("DELETE FROM core_solaredgesetting;")
         c.execute("DELETE FROM core_meter;")
         c.execute("DELETE FROM core_meter_rate_plan;")
         c.execute("DELETE FROM core_weather_history;")
