@@ -127,16 +127,16 @@ def meter_production_data_json(request, meter):
             if meter_data and datetime == meter_data[-1]['datetime']:
                 continue
             value = data.net_value
-            if value and not isnan(value):
-                # logging.info('meter_production_data_json: value %s', value)
-
+            if not value or isnan(value):
+                value = 0
+            else:
                 # convert to our chosen uom
                 value = data.uom.convert_amount_to(value, uom)
 
-                meter_data.append({
-                    'datetime': datetime,
-                    'value': value
-                })
+            meter_data.append({
+                'datetime': datetime,
+                'value': value
+            })
 
     for k in meter_data_map.keys():
         meter_data_map[k] = list(reversed(meter_data_map[k]))
@@ -197,19 +197,19 @@ def meter_financial_value_data_json(request, meter):
             if meter_data and datetime == meter_data[-1]['datetime']:
                 continue
             value = data.amount
-            if value and not isnan(value):
-                # logging.info('meter_production_data_json: value %s', value)
-
+            if not value or isnan(value):
+                value = 0
+            else:
                 # convert to our chosen uom
                 value = data.uom.convert_amount_to(value, uom)
 
-                meter_data.append({
-                    'datetime': datetime,
-                    'thru_datetime': thru_datetime,
-                    'amount': value,
-                    'unit': uom.code,
-                    'symbol': uom.symbol,
-                })
+            meter_data.append({
+                'datetime': datetime,
+                'thru_datetime': thru_datetime,
+                'amount': value,
+                'unit': uom.code,
+                'symbol': uom.symbol,
+            })
 
     for k in meter_data_map.keys():
         meter_data_map[k] = list(reversed(meter_data_map[k]))
@@ -270,13 +270,15 @@ def meter_data_json(request, meter):
             if not uom:
                 uom = data.uom
             value = data.value
-            if value and not isnan(value):
+            if not value or isnan(value):
+                value = 0
+            else:
                 value = data.uom.convert_amount_to(value, uom)
 
-                meter_data.append({
-                    'datetime': datetime,
-                    'value': value
-                })
+            meter_data.append({
+                'datetime': datetime,
+                'value': value
+            })
 
         meter_data = list(reversed(meter_data))
 
