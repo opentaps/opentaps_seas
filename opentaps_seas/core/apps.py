@@ -22,3 +22,6 @@ class CoreAppConfig(AppConfig):
 
     name = "opentaps_seas.core"
     verbose_name = "Core"
+
+    def ready(self):
+        from . import checks
