@@ -253,13 +253,15 @@ def meter_data_json(request, meter):
             if not uom:
                 uom = data.uom
             value = data.value
-            if value and not isnan(value):
+            if not value or isnan(value):
+                value = 0
+            else:
                 value = data.uom.convert_amount_to(value, uom)
 
-                meter_data.append({
-                    'datetime': datetime,
-                    'value': value
-                })
+            meter_data.append({
+                'datetime': datetime,
+                'value': value
+            })
     else:
         data_list = qs.order_by("-as_of_datetime")[:trange]
         for data in data_list:
