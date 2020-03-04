@@ -102,7 +102,8 @@ def fetch_solaredge_for_equipment(kwargs):
                     progress_observer.set_progress(2, 5, description='Downloading data from SolarEdge ...')
                 r = requests.get(url)
                 with tempfile.TemporaryFile() as temp, tempfile.TemporaryFile() as temp2:
-                    progress_observer.set_progress(3, 5, description='Processing data from SolarEdge ...')
+                    if progress_observer:
+                        progress_observer.set_progress(3, 5, description='Processing data from SolarEdge ...')
                     ses = SolarEdgeSetting.objects.get(entity_id=entity_id)
                     meter = Meter.objects.get(meter_id=entity_id)
                     file_name = se_img.split('/')[-1]
@@ -116,7 +117,8 @@ def fetch_solaredge_for_equipment(kwargs):
                                                           original_filename=file_name,
                                                           file=file_obj)
                     # note: auto thumbnail would take twice as long to generate so do it here
-                    progress_observer.set_progress(4, 5, description='Generating thumbnail from SolarEdge ...')
+                    if progress_observer:
+                        progress_observer.set_progress(4, 5, description='Generating thumbnail from SolarEdge ...')
                     th = get_thumbnailer(temp2, relative_name=file_name)
                     th_img = th.get_thumbnail({'size': (250, 250), 'crop': True})
                     file_obj2 = File(th_img, name=file_name)
@@ -131,7 +133,8 @@ def fetch_solaredge_for_equipment(kwargs):
 
                     meter.description = 'SolarEdge: {}'.format(se_details.get('name'))
                     meter.save()
-                    progress_observer.set_progress(5, 5, description='Done.')
+                    if progress_observer:
+                        progress_observer.set_progress(5, 5, description='Done.')
 
             except Exception as e:
                 logger.exception(e)

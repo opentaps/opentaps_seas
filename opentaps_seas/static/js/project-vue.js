@@ -537,10 +537,11 @@ Vue.component('task-progress', {
     csrfmiddlewaretoken: String,
     taskId: String,
     text: String,
+    noSpinner: Boolean
   },
   template: `
   <div class="row row-auto">
-    <div class="mt-2 col col-auto" v-if="!complete">
+    <div class="mt-2 col col-auto" v-if="!complete && !noSpinner">
       <b-spinner label="Loading..." variant="secondary"></b-spinner>
     </div>
     <div class="col">
@@ -562,8 +563,8 @@ Vue.component('task-progress', {
   methods: {
     refresh() {
       axios.get(dutils.urls.resolve('get_task_progress_json', {id: this.taskId}))
+        .then(x => x.data)
         .then(x => {
-          x = x.data
           if (x.info && x.info.description) {
             this.description = x.info.description
           }

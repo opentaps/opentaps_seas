@@ -235,6 +235,47 @@ equipment_site_detail_view = EquipmentSiteDetailView.as_view()
 
 
 @login_required()
+def equipment_fetch_solaredge_details(request, equip):
+    logger.info('equipment_fetch_solaredge_details: equip = %s', equip)
+    equipment = get_object_or_404(EquipmentView, entity_id=equip)
+    se = get_object_or_404(SolarEdgeSetting, entity_id=equip)
+    result = {}
+
+    kwargs = {
+        'user': request.user,
+        'entity_id': equipment.entity_id,
+        'site_id': equipment.site_id,
+        'description': equipment.description,
+        'solaredge_api_key': se.api_key,
+        'solaredge_site_id': se.site_id,
+    }
+    try:
+        async_res = tasks.fetch_solaredge_for_equipment_task.delay(kwargs)
+        logger.info('Started async fetching of solar data', async_res)
+        result['success'] = 'async'
+        result['task_id'] = async_res.task_id
+    except Exception as e:
+        # this could fail if Celery has issues in which case just note it
+        msg = 'Could not start an async job to fetch SolarEdge data'
+        logger.error('%s: %s', msg, e)
+        # here we do it synchronously instead
+        try:
+            ses = tasks.fetch_solaredge_for_equipment(kwargs)
+            result['success'] = 'sync'
+            result['site_details'] = ses.site_details
+            if ses.site_image:
+                result['site_image'] = ses.site_image.url
+            if ses.site_thumbnail:
+                result['site_thumbnail'] = ses.site_thumbnail.url
+        except Exception as e2:
+            msg = 'Could not fetch SolarEdge data'
+            logger.error('%s: %s', msg, e2)
+            result['error'] = msg
+            result['error_details'] = str(e2)
+    return JsonResponse(result)
+
+
+@login_required()
 def equipment_data_points_table(request, equip):
     logger.info('equipment_data_points_table: equip = %s', equip)
     equipment = get_object_or_404(EquipmentView, entity_id=equip)

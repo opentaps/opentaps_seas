@@ -120,6 +120,8 @@ urlpatterns = [
     path("equipment/", view=equipment.equipment_list_view, name="equipment_list"),
     path("equipment/<path:equip>", view=equipment.equipment_detail_view, name="equipment_detail"),
     path("equipment_dashboard/<path:equip>", view=equipment.equipment_dashboard, name="equipment_dashboard"),
+    path("equipment_fetch_solaredge_details/<path:equip>",
+         view=equipment.equipment_fetch_solaredge_details, name="equipment_fetch_solaredge_details"),
     path("equipment_points_table/<path:equip>",
          view=equipment.equipment_data_points_table, name="equipment_data_points_table"),
     path("site/<str:site>/newequipment/", view=equipment.equipment_create_view, name="equipment_create"),

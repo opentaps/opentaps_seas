@@ -104,8 +104,15 @@ class EquipmentCreateForm(forms.ModelForm):
             kwargs['entity_id'] = entity_id
             kwargs['site_id'] = self.site_id
             kwargs['user'] = self.user
-            async_res = tasks.fetch_solaredge_for_equipment_task.delay(kwargs)
-            site_details['task_id'] = async_res.task_id
+            try:
+                async_res = tasks.fetch_solaredge_for_equipment_task.delay(kwargs)
+                logger.info('Started async fetching of solar data', async_res)
+                site_details['task_id'] = async_res.task_id
+            except Exception as e:
+                # this could fail if Celery has issues in which case just note it
+                msg = 'Could not start an async job to fetch SolarEdge data'
+                logger.error('%s: %s', msg, e)
+                site_details['fetchFailed'] = msg
 
         equipment = Entity(entity_id=entity_id)
         equipment.add_tag('equip', commit=False)
@@ -140,7 +147,7 @@ class EquipmentCreateForm(forms.ModelForm):
                 site=site,
                 equipment=equipment,
                 description='SolarEdge: ...')
-            # store the solarEdge api kye and siteId, encrypt the key
+            # store the solarEdge api key and siteId, encrypt the key
             SolarEdgeSetting.objects.create(
                 entity_id=entity_id,
                 meter=m,
