@@ -25,6 +25,7 @@ from .. import utils
 from .. import tasks
 from ..celery import Progress
 from ..forms.equipment import EquipmentCreateForm
+from ..forms.equipment import SolarEdgeUpdateForm
 from ..models import Entity
 from ..models import EquipmentView
 from ..models import PointView
@@ -43,6 +44,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from django.views.generic import DetailView
 from django.views.generic import ListView
+from django.views.generic import UpdateView
 from django_filters import CharFilter
 from django_filters import FilterSet
 from django_filters.views import FilterView
@@ -221,6 +223,45 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
 
 
 equipment_detail_view = EquipmentDetailView.as_view()
+
+
+class EquipmentSolarEdgeEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
+    model = SolarEdgeSetting
+    slug_field = "entity_id"
+    slug_url_kwarg = "equip"
+    template_name = 'core/solaredge_edit.html'
+    form_class = SolarEdgeUpdateForm
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        o = context['object']
+        if o:
+            equip = EquipmentView.objects.get(entity_id=o.entity_id)
+            try:
+                site = SiteView.objects.get(kv_tags__id=equip.site_id)
+                site_desc = site.description or equip.site_id
+                b.append({'url': reverse('core:site_detail', kwargs={'site': site.entity_id}),
+                          'label': 'Site {}'.format(site_desc)})
+            except SiteView.DoesNotExist:
+                pass
+            b.append({'url': reverse('core:equipment_detail', kwargs={'equip': equip.entity_id}),
+                      'label': 'Equipment {}'.format(equip.description)})
+        b.append({'label': 'SolarEdge Settings'})
+        return b
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def get_success_url(self):
+        obj = self.get_object()
+        equip = EquipmentView.objects.get(entity_id=obj.entity_id)
+        return equip.get_absolute_url()
+
+
+equipment_solaredge_edit_view = EquipmentSolarEdgeEditView.as_view()
 
 
 class EquipmentSiteDetailView(EquipmentDetailView):

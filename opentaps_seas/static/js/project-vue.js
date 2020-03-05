@@ -537,7 +537,8 @@ Vue.component('task-progress', {
     csrfmiddlewaretoken: String,
     taskId: String,
     text: String,
-    noSpinner: Boolean
+    noSpinner: Boolean,
+    noStepDescription: Boolean,
   },
   template: `
   <div class="row row-auto">
@@ -565,7 +566,7 @@ Vue.component('task-progress', {
       axios.get(dutils.urls.resolve('get_task_progress_json', {id: this.taskId}))
         .then(x => x.data)
         .then(x => {
-          if (x.info && x.info.description) {
+          if (!this.noStepDescription && x.info && x.info.description) {
             this.description = x.info.description
           }
           this.complete = x.complete

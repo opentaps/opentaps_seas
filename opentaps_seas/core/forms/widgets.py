@@ -61,6 +61,19 @@ class DateField(forms.DateField):
     widget = DateInput
 
 
+class MaskedTextInput(forms.TextInput):
+
+    @classmethod
+    def mask_value(clss, value):
+        if value:
+            return '*' * len(value[:-4]) + value[-4:]
+        return value
+
+    def format_value(self, value):
+        value = super().format_value(value)
+        return MaskedTextInput.mask_value(value)
+
+
 # Note this only work on ModelForms, there just add:
 #    formfield_callback = make_custom_datefields
 # to change all date and date time fields normally made from

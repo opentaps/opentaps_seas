@@ -46,19 +46,27 @@
     {% load decamel from core_tags %}
     <div class="card mb-3">
       <div class="card-body" id="solaredge">
-        <h5 class="pr">SolarEdge Site Details <div class="a-rt"><b-spinner v-if="loading" label="Loading..." variant="secondary"></b-spinner><button v-if="!loading" v-on:click="fetchSolaredgeData" class="btn btn-primary"><i class="fas fa-cloud-download-alt"></i> Get Details</button></div></h5>
+        <h5 class="pr">SolarEdge Site Details <div class="a-rt">
+          <b-spinner v-if="loading" label="Loading..." variant="secondary"></b-spinner>
+          <a href="{% url 'core:equipment_solaredge_edit_view' object.entity_id %}" class="btn btn-primary ml-auto" role="button" v-if="!loading"><i class="fas fa-edit"></i> Edit</a>
+          <button v-if="!loading" v-on:click="fetchSolaredgeData" class="btn btn-primary"><i class="fas fa-cloud-download-alt"></i> Get Details</button>
+        </div></h5>
         <div class="row m-0">
           <div class="col-md order-md-first order-last">
             <div v-cloak v-if="error" class="text-danger">${ error }</div>
             {% if solaredge_task_id %}
             <div>
-              <task-progress :csrfmiddlewaretoken="csrfmiddlewaretoken" text="Fetching data from SolarEdge ..." task-id="{{ solaredge_task_id }}" v-on:complete="reloadPage"><p>Fetching data from SolarEdge ...</p></task-progress>
+              <task-progress no-step-description :csrfmiddlewaretoken="csrfmiddlewaretoken" text="Getting detailed information from SolarEdge.  Please wait." task-id="{{ solaredge_task_id }}" v-on:complete="reloadPage"></task-progress>
             </div>
             {% else %}
               <div v-if="taskId" class="mb-3">
-                <task-progress no-spinner :csrfmiddlewaretoken="csrfmiddlewaretoken" text="Fetching data from SolarEdge ..." :task-id="taskId" v-on:complete="reloadPage"><p>Fetching data from SolarEdge ...</p></task-progress>
+                <task-progress no-spinner no-step-description :csrfmiddlewaretoken="csrfmiddlewaretoken" text="Getting detailed information from SolarEdge.  Please wait." :task-id="taskId" v-on:complete="reloadPage"></task-progress>
               </div>
               {% if solaredge.site_details %}
+                <div class="row mb-3" v-if="loading">Getting detailed information from SolarEdge.  Please wait.</div>
+                {% if solaredge.site_details.fetchFailed %}
+                  <div class="row se_fetchFailed mb-3">Please click on Get Details to get detailed information from SolarEdge.</div>
+                {% endif %}
                 {% for item, value in solaredge.site_details.items %}
                   {% if value %}
                     {% if item == 'location' %}
@@ -68,6 +76,8 @@
                     {% elif item == 'publicSettings' %}
                       <div class="row se_{{item}}"><b class="mr-2">{{ item | decamel | title }}:</b><span>{{ solaredge.display_public_settings }}</span></div>
                     {% elif item == 'uris' %}
+                      {# skip this one #}
+                    {% elif item == 'fetchFailed' %}
                       {# skip this one #}
                     {% else %}
                       <div class="row se_{{item}}"><b class="mr-2">{{ item | decamel | title }}:</b><span>{{ value }}</span></div>

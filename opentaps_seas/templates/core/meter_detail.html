@@ -46,7 +46,7 @@
       </p>
 
       {% if has_equipments %}
-      <p><b>Equipments:</b> {% for e in equipments %} <a href="{{ e.get_absolute_url }}">{{ e }}</a> {% endfor %}
+      <p><b>Equipment{% if equipments|length > 1 %}s{% endif %}:</b> {% for e in equipments %} <a href="{{ e.get_absolute_url }}">{{ e }}</a> {% endfor %}
       {% endif %}
 
       <p><b>Weather Station:</b> 

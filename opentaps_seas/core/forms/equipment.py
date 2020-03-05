@@ -20,15 +20,101 @@ import solaredge
 from .. import tasks
 from .. import utils
 from ..models import Entity
+from ..models import EquipmentView
 from ..models import Meter
 from ..models import ModelView
 from ..models import Tag
 from ..models import SolarEdgeSetting
+from .widgets import MaskedTextInput
 from django import forms
 from django.template.defaultfilters import slugify
 from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
+
+
+class SolarEdgeUpdateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        self.fields['entity_id'].widget = forms.HiddenInput()
+        self.fields['api_key'].widget = MaskedTextInput()
+
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        # when setting a SolarEdge equipment then API key and Site ID are required
+        entity_id = self.cleaned_data['entity_id']
+        ses = SolarEdgeSetting.objects.get(entity_id=entity_id)
+        api_key = self.cleaned_data['api_key']
+        site_id = self.cleaned_data['site_id']
+        logger.info('Got api_key %s and site_id %s', api_key, site_id)
+        # because api_key is masked, compare it to the original
+        if not api_key or MaskedTextInput.mask_value(ses.api_key) == api_key:
+            logger.info('api_key was unchanged')
+            api_key = ses.api_key
+
+        # make sure the API works
+        try:
+            se = solaredge.Solaredge(api_key)
+            se.get_overview(site_id)
+        except HTTPError as e:
+            # Need to check its an 404, 503, 500, 403 etc.
+            logger.exception(e)
+            status_code = e.response.status_code
+            if status_code == 403:
+                self.add_error('api_key', 'Invalid API Key')
+            if status_code == 400:
+                self.add_error('site_id', 'Invalid Site ID')
+            return False
+        except Exception as e:
+            logger.exception(e)
+            self.add_error('api_key', 'Check API Key')
+            self.add_error('site_id', 'Check Site ID')
+            self.add_error(None, 'SolarEdge {} check the API Key and Site ID are correct.'.format(e))
+            return False
+        return True
+
+    def save(self, commit=True):
+        entity_id = self.cleaned_data['entity_id']
+        ses = SolarEdgeSetting.objects.get(entity_id=entity_id)
+        api_key = self.cleaned_data['api_key']
+        site_id = self.cleaned_data['site_id']
+        changed = True
+        if (not api_key or MaskedTextInput.mask_value(ses.api_key) == api_key) and (site_id == ses.site_id):
+            changed = False
+        # if we changed the settings, refetch the data from SolarEdge
+        if changed:
+            ses.api_key = api_key
+            ses.site_id = site_id
+            equipment = EquipmentView.objects.get(entity_id=entity_id)
+            kwargs = {
+                'user': self.user,
+                'entity_id': entity_id,
+                'site_id': equipment.site_id,
+                'description': equipment.description,
+                'solaredge_api_key': api_key,
+                'solaredge_site_id': site_id,
+            }
+            ses.site_details = {}
+            try:
+                async_res = tasks.fetch_solaredge_for_equipment_task.delay(kwargs)
+                logger.info('Started async fetching of solar data..')
+                ses.site_details['task_id'] = async_res.task_id
+            except Exception as e:
+                # this could fail if Celery has issues in which case just note it
+                msg = 'Could not start an async job to fetch SolarEdge data'
+                logger.error('%s: %s', msg, e)
+                ses.site_details['fetchFailed'] = msg
+            ses.save()
+
+        self._post_clean()
+        return ses
+
+    class Meta:
+        model = SolarEdgeSetting
+        fields = ["entity_id", "api_key", "site_id"]
 
 
 class EquipmentCreateForm(forms.ModelForm):
@@ -106,7 +192,7 @@ class EquipmentCreateForm(forms.ModelForm):
             kwargs['user'] = self.user
             try:
                 async_res = tasks.fetch_solaredge_for_equipment_task.delay(kwargs)
-                logger.info('Started async fetching of solar data', async_res)
+                logger.info('Started async fetching of solar data...')
                 site_details['task_id'] = async_res.task_id
             except Exception as e:
                 # this could fail if Celery has issues in which case just note it
