@@ -247,7 +247,8 @@ class ModelAPITests(OpentapsSeasTestCase):
         self.client.post(model_update_url, {'tag': '_test/mytag2'})
 
         # create equipment with created model
-        eq_data = {'entity_id': equipment_id, 'description': 'This is a test equipment', 'model': model_id}
+        eq_data = {'entity_id': equipment_id, 'description': 'This is a test equipment',
+                   'model': model_id, 'equipment_type': 'GENERIC'}
         eq_create_url = reverse('core:equipment_create', kwargs={'site': '@A'})
         self.client.post(eq_create_url, eq_data)
 
@@ -278,7 +279,7 @@ class ModelAPITests(OpentapsSeasTestCase):
         self.client.post(model_update_url, {'tag': '_test/mytag2'})
 
         # create equipment without model
-        eq_data = {'entity_id': equipment_id, 'description': 'This is a test equipment'}
+        eq_data = {'entity_id': equipment_id, 'description': 'This is a test equipment', 'equipment_type': 'GENERIC'}
         eq_create_url = reverse('core:equipment_create', kwargs={'site': '@A'})
         self.client.post(eq_create_url, eq_data)
         # update created equipment's model
