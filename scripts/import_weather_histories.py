@@ -15,7 +15,8 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
-import eeweather
+from eeweather.exceptions import UnrecognizedUSAFIDError
+from eeweather.exceptions import ISDDataNotAvailableError
 from django.db import connections
 from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import WeatherStation
@@ -51,7 +52,7 @@ def import_data(which):
             print('Importing data for {}'.format(weather_station.station_name))
             try:
                 get_weather_history_for_station(weather_station, 30)
-            except eeweather.exceptions.UnrecognizedUSAFIDError:
+            except (UnrecognizedUSAFIDError, ISDDataNotAvailableError):
                 print("-- Cannot get history for weatherstation: {}".format(weather_station.station_name))
 
 
