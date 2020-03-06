@@ -15,6 +15,7 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
 
+import eeweather
 from django.db import connections
 from opentaps_seas.core.models import Meter
 from opentaps_seas.core.models import WeatherStation
@@ -42,9 +43,16 @@ def import_data(which):
     is_demo = which == 'demo'
 
     for meter in Meter.objects.values('weather_station').distinct():
-        weather_station = WeatherStation.objects.get(weather_station_id=meter['weather_station'])
-        print('Importing data for {}'.format(weather_station.station_name))
-        get_weather_history_for_station(weather_station, 30)
+        try:
+            weather_station = WeatherStation.objects.get(weather_station_id=meter['weather_station'])
+        except WeatherStation.DoesNotExist:
+            print("-- Cannot find weather station: {}".format(meter['weather_station']))
+        else:
+            print('Importing data for {}'.format(weather_station.station_name))
+            try:
+                get_weather_history_for_station(weather_station, 30)
+            except eeweather.exceptions.UnrecognizedUSAFIDError:
+                print("-- Cannot get history for weatherstation: {}".format(weather_station.station_name))
 
 
 def print_help():
