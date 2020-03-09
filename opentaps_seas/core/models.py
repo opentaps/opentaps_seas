@@ -1404,6 +1404,7 @@ class MeterRatePlanHistory(models.Model):
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
     created_datetime = DateTimeField(_("Created Date"), default=now)
     created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    meter = ForeignKey(Meter, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'core_meter_rate_plan_history'
