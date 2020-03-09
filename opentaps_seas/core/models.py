@@ -1007,7 +1007,8 @@ class MeterRatePlan(models.Model):
     params = HStoreField(_("Parameters"), blank=True, null=True)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
-    billing_frequency_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+', limit_choices_to={'type': 'time_interval'})
+    billing_frequency_uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+',
+                                       limit_choices_to={'type': 'time_interval'})
     billing_day = IntegerField(_("Billing Day"), default=0)
     source = CharField(_("Source"), max_length=255)
     created_datetime = DateTimeField(_("Created Date"), default=now)
@@ -1347,7 +1348,8 @@ class SolarEdgeSetting(models.Model):
     api_key = EncryptedCharField(_("SolarEdge API Key"), max_length=255)
     site_details = JSONField(_("Site Details"), blank=True, null=True)
     site_image = FilerImageField(null=True, blank=True, related_name="solaredge_site_image", on_delete=models.CASCADE)
-    site_thumbnail = FilerImageField(null=True, blank=True, related_name="solaredge_site_thumbnail", on_delete=models.CASCADE)
+    site_thumbnail = FilerImageField(null=True, blank=True, related_name="solaredge_site_thumbnail",
+                                     on_delete=models.CASCADE)
 
     @property
     def display_location(self):
@@ -1391,3 +1393,17 @@ class SolarEdgeSetting(models.Model):
                 return v['isPublic']
 
         return None
+
+
+class MeterRatePlanHistory(models.Model):
+    rate_plan_history_id = AutoField(_("Rate Plan History ID"), primary_key=True, auto_created=True)
+    rate_plan = ForeignKey(MeterRatePlan, on_delete=models.CASCADE)
+    description = CharField(_("Description"), max_length=255)
+    params = HStoreField(_("Parameters"), blank=True, null=True)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        db_table = 'core_meter_rate_plan_history'

@@ -41,7 +41,6 @@ def seed():
 
 def import_data(which):
     print('Importing {} data...'.format(which))
-    is_demo = which == 'demo'
 
     for meter in Meter.objects.values('weather_station').distinct():
         try:
