@@ -49,7 +49,7 @@
       <p><b>Equipment{% if equipments|length > 1 %}s{% endif %}:</b> {% for e in equipments %} <a href="{{ e.get_absolute_url }}">{{ e }}</a> {% endfor %}
       {% endif %}
 
-      <p><b>Weather Station:</b> 
+      <p><b>Weather Station:</b>
         {% if not object.weather_station %}
           n/a
         {% else %}
@@ -64,14 +64,21 @@
       {% endif %}
 
       <div>
-        <p>
-          <b>Meter Rate Plan:</b> 
-          {% if not object.rate_plan %}
-            n/a
-          {% else %}
-            <a href="{{ object.rate_plan.get_absolute_url }}">{{ object.rate_plan }}</a>
-          {% endif %}
-        </p>
+        <div class="row m-0">
+            <div class="">
+              <b>Meter Rate Plan:</b>
+              {% if not object.rate_plan %}
+                n/a
+              {% else %}
+                <a href="{{ object.rate_plan.get_absolute_url }}">{{ object.rate_plan }}</a>
+              {% endif %}
+            </div>
+            {% if has_openei_plan %}
+                <div class="text-right flex-grow-1">
+                  <a class="btn btn-primary" href="{% url 'core:meter_rate_plan_history' object.meter_id object.rate_plan.rate_plan_id %}">Edit History</a>
+                </div>
+            {% endif %}
+        </div>
       </div>
 
       <div class="form-group d-flex justify-content-around mt-5">

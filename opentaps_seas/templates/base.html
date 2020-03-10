@@ -73,6 +73,8 @@
       'state_list_json': '{% url "core:state_list_json" '999' %}'.replace('999', '<country>'),
       'timezone_list_json': '{% url "core:timezone_list_json" '999' %}'.replace('999', '<geo_id>'),
       'bacnet_prefix_list_json': '{% url "core:bacnet_prefix_list_json" '999' %}'.replace('999', '<site>'),
+      'utility_rates_json': '{% url "core:utility_rates_json" %}',
+      'meter_rate_plan_history' : '{% url "core:meter_rate_plan_history" %}',
     };
     </script>
     <script src="{% static 'js/vuejs-dialog.min.js' %}"></script>

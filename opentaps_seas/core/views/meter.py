@@ -17,11 +17,13 @@
 
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 import logging
 from math import isnan
 
 from .common import WithBreadcrumbsMixin
 from .. import utils
+from .. import pysam_utils
 from ..forms.meter import MeterCreateForm
 from ..forms.meter import MeterDataUploadForm
 from ..forms.meter import MeterUpdateForm
@@ -32,6 +34,7 @@ from ..models import Entity
 from ..models import EquipmentView
 from ..models import Meter
 from ..models import MeterRatePlan
+from ..models import MeterRatePlanHistory
 from ..models import SiteView
 from ..models import UnitOfMeasure
 from ..models import WeatherHistory
@@ -49,6 +52,7 @@ from django.views.generic import DetailView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
 from opentaps_seas.eemeter.models import BaselineModel
+from rest_framework.decorators import api_view
 
 logger = logging.getLogger(__name__)
 
@@ -361,6 +365,65 @@ class MeterRatePlanDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailVi
 meter_rate_plan_detail_view = MeterRatePlanDetailView.as_view()
 
 
+class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListView):
+    model = MeterRatePlanHistory
+    slug_field = "rate_plan_id"
+    slug_url_kwarg = "rate_plan_id"
+
+    def get_context_data(self, **kwargs):
+        context = super(MeterRatePlanHistoryView, self).get_context_data(**kwargs)
+        try:
+            rate_plan = MeterRatePlan.objects.get(rate_plan_id=self.kwargs['rate_plan_id'])
+        except MeterRatePlan.DoesNotExist:
+            pass
+        else:
+            context['rate_plan'] = rate_plan
+
+        context["meter_id"] = self.kwargs['meter_id']
+        return context
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+
+        rate_plan_id = self.kwargs['rate_plan_id']
+        meter_id = self.kwargs['meter_id']
+        return qs.filter(rate_plan_id=rate_plan_id, meter_id=meter_id)
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        meter = None
+        if self.kwargs['meter_id']:
+            try:
+                meter = Meter.objects.get(meter_id=self.kwargs['meter_id'])
+            except Meter.DoesNotExist:
+                pass
+            else:
+                try:
+                    site = SiteView.objects.get(entity_id=meter.site_id)
+                except SiteView.DoesNotExist:
+                    pass
+                else:
+                    label = 'Site'
+                    if site.description:
+                        label = site.description
+                    url = reverse("core:site_detail", kwargs={'site': meter.site_id})
+                    b.append({'url': url, 'label': label})
+
+        if meter:
+            url = reverse("core:meter_detail", kwargs={'meter_id': meter.meter_id})
+            label = 'Meter ' + meter.meter_id
+            if meter.description:
+                label = 'Meter ' + meter.description
+            b.append({'url': url, 'label': label})
+
+        b.append({'label': 'Meter Rate Plan {}'.format(self.kwargs['rate_plan_id'])})
+        return b
+
+
+meter_rate_plan_history_view = MeterRatePlanHistoryView.as_view()
+
+
 class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     model = Meter
     slug_field = "meter_id"
@@ -389,6 +452,9 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                         equips.append(EquipmentView.objects.get(entity_id=v['entity_id']))
                         context['is_solaredge'] = True
                     context['equipments'] = equips
+
+            if meter.rate_plan and meter.rate_plan.source == 'openei.org':
+                context['has_openei_plan'] = True
 
         return context
 
@@ -482,3 +548,98 @@ class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
 
 
 meter_deactivate_view = MeterDeactivateView.as_view()
+
+
+@login_required()
+def utility_rates_json(request):
+    on_date = request.GET.get('on_date')
+    meter_id = request.GET.get('meter_id')
+    country = None
+    address = None
+    if meter_id:
+        try:
+            meter = Meter.objects.get(meter_id=meter_id)
+        except Meter.DoesNotExist:
+            return JsonResponse({'error': 'Meter not found : {}'.format(meter_id)})
+        else:
+            try:
+                site = SiteView.objects.get(entity_id=meter.site_id)
+            except SiteView.DoesNotExist:
+                return JsonResponse({'error': 'Site not found : {}'.format(meter.site_id)})
+            else:
+                # get address
+                if 'geoCountry' in site.kv_tags:
+                    country = site.kv_tags['geoCountry']
+                address = ""
+                if 'geoAddr' in site.kv_tags:
+                    address = site.kv_tags['geoAddr']
+                if 'geoCity' in site.kv_tags:
+                    address += ' ' + site.kv_tags['geoCity']
+
+                if 'geoState' in site.kv_tags:
+                    address += ' ' + site.kv_tags['geoState']
+
+                if 'geoStreet' in site.kv_tags:
+                    address += ' ' + site.kv_tags['geoStreet']
+
+    data = []
+
+    if not country:
+        return JsonResponse({'error': 'Site country not found for meter : {}'.format(meter_id)})
+
+    if not address:
+        return JsonResponse({'error': 'Site address not found for meter : {}'.format(meter_id)})
+
+    on_date = on_date.strip()
+    if len(on_date) > 10:
+        date_object = datetime.strptime(on_date, '%Y-%m-%d %H:%M:%S')
+    else:
+        date_object = datetime.strptime(on_date, '%Y-%m-%d')
+    util_rates = pysam_utils.get_openei_util_rates(date_object, country, address)
+
+    for rate_item in util_rates:
+        data_item = {'value': rate_item['label']}
+        data_item['name'] = pysam_utils.get_openei_util_rate_name(rate_item)
+        data.append(data_item)
+
+    return JsonResponse({'items': data})
+
+
+@login_required()
+@api_view(['GET', 'POST', 'DELETE'])
+def meter_rate_plan_history(request):
+    data = request.data
+    meter_id = data.get('meter_id')
+    rate_plan_id = data.get('rate_plan_id')
+    if request.method == 'POST':
+        page_label = data.get('page_label')
+
+        util_rates = pysam_utils.get_openei_util_rates(page_label=page_label)
+
+        if util_rates and len(util_rates) == 1:
+            util_rate = util_rates[0]
+
+            description = '{} - {}'.format(util_rate['utility'], util_rate['name'])
+            enddate = None
+            if 'enddate' in util_rate.keys():
+                enddate = util_rate['enddate']
+            startdate = datetime.fromtimestamp(util_rate['startdate']).replace(tzinfo=timezone.utc)
+
+            if enddate:
+                enddate = datetime.fromtimestamp(enddate).replace(tzinfo=timezone.utc)
+
+            rph = MeterRatePlanHistory.objects.create(
+                description=description,
+                from_datetime=startdate,
+                thru_datetime=enddate,
+                params=util_rate,
+                meter_id=meter_id,
+                rate_plan_id=rate_plan_id,
+                created_by_user=request.user
+                )
+
+            rph.save()
+
+            return JsonResponse({'success': 1})
+        else:
+            return JsonResponse({'error': 'Cannot get rate data for selected rate plan : {}'.format(page_label)})
