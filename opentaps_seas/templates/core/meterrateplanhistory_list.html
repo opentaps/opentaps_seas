@@ -40,7 +40,7 @@
       <h3>Get Openei Utility Rates:</h3>
       <div class="form-group">
         <label for="onDate">Effective On Date*</label>
-        <b-form-input type="text" class="form-control" id="onDate" placeholder="Input Date" :state="onDateState" v-model="onDate" required></b-form-input>
+        <b-form-input type="text" class="datetime" id="onDate" placeholder="Input Date" :state="onDateState" v-model="onDate" required></b-form-input>
         <b-form-invalid-feedback id="onDate">
             Effective On Date is required
         </b-form-invalid-feedback>
@@ -49,10 +49,6 @@
         <b-button variant="primary" v-on:click.stop.prevent="get_utility_rates()">
           <i class="fa fa-search"></i> Search
         </b-button>
-      </div>
-
-      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
-          ${ errors.error }
       </div>
 
       <div class="mt-3" v-if="rates.length">
@@ -64,6 +60,18 @@
               <i class="fa fa-plus"></i> Add Rate
             </b-button>
           </div>
+      </div>
+
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+          ${ errors.error }
+      </div>
+
+      <div class="mt-3" v-if="meterRatePlans.length">
+        <b-table-lite striped hover :items="meterRatePlans" :fields="fields">
+            <template v-slot:cell(del)="item">
+              <button v-confirm:click.stop.prevent="delete_meter_rate_plan_history(item.index)" class="btn btn-outline-danger btn-sm  ml-1"><i class="fas fa-trash"></i></button>
+            </template>
+        </b-table-lite>
       </div>
 
       {% endblock inner_content %}
@@ -90,18 +98,49 @@
         meterRatePlans: [],
         selectedRate: null,
         meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
-        ratePlanId: {{ rate_plan.rate_plan_id }}
+        ratePlanId: {{ rate_plan.rate_plan_id }},
+        fields: [
+          {
+            key: 'rate_plan_history_id',
+            label: 'ID'
+          },
+          {
+            key: 'description',
+            label: 'Description'
+          },
+          {
+            key: 'from_datetime',
+            label: 'From'
+          },
+          {
+            key: 'thru_datetime',
+            label: 'Thru'
+          },
+          {
+            key: 'del',
+            label: '',
+            'class': 'text-right'
+          },
+        ],
 
       }
     },
     mounted() {
       console.log('mounted..');
+      this. get_meter_rate_plan_history_list();
+      flatpickr(this.$el.getElementsByClassName('datetime'), {
+            "dateFormat": "Y-m-d H:i:S",
+            "time_24hr": "true",
+            "allowInput": "true",
+            "enableTime": "true",
+            "enableSeconds": "true",
+            "minuteIncrement": 1});
     },
     methods: {
       get_utility_rates() {
         console.log('get_utility_rates..');
         this.onDateState = null;
-        this.errors = {'error': null}
+        this.errors = {'error': null};
         if (!this.onDate) {
             this.onDateState = false;
         } else {
@@ -133,7 +172,8 @@
           .then(x => x.data)
           .then(x => {
             if (x.success) {
-              console.log('add_utility_rate, result = ', x)
+              console.log('add_utility_rate, result = ', x);
+              this. get_meter_rate_plan_history_list();
             }
           })
           .catch(err => {
@@ -142,6 +182,53 @@
             this.errors = e;
           });
 
+      },
+      get_meter_rate_plan_history_list() {
+        console.log('get_meter_rate_plan_history_list..');
+        this.errors = {'error': null};
+        url = dutils.urls.resolve('meter_rate_plan_history') + '?meter_id=' + this.meterId + '&rate_plan_id=' + this.ratePlanId;
+        axios.get(url)
+          .then(x => {
+            console.log('get_meter_rate_plan_history_list', x.data);
+            if (x.data.error) {
+                this.errors['error'] = x.data.error;
+            } else if (x.data.items && x.data.items.length > 0) {
+                this.meterRatePlans = x.data.items;
+            } else {
+                this.meterRatePlans = [];
+            }
+          })
+          .catch(err => {
+            console.error('loading meter_rate_plan_history_list error :', err);
+            e = getResponseError(err);
+            this.errors = e;
+          });
+      },
+      delete_meter_rate_plan_history(index) {
+        return {
+          okText: 'Delete',
+          ok: dialog => this.delete_meter_rate_plan_history_cb(dialog, index),
+          message: 'Are you sure?'
+        }
+      },
+      delete_meter_rate_plan_history_cb(dialog, index) {
+        dialog.close();
+        console.log('delete_meter_rate_plan_history_cb, index = ', index);
+        rate_plan_history_id = this.meterRatePlans[index].rate_plan_history_id;
+        url = dutils.urls.resolve('meter_rate_plan_history');
+        axios.delete(url, {data: {rate_plan_history_id: rate_plan_history_id}, headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              console.log('delete_meter_rate_plan_history_cb Done', x);
+              if (x.success) {
+                this. get_meter_rate_plan_history_list();
+              }
+            })
+            .catch(err => {
+              e = getResponseError(err);
+              console.error(e, err);
+              this.errors = e;
+            });
       }
     }
   });

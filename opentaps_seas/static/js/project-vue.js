@@ -469,6 +469,7 @@ Vue.component('form-modal', {
             "dateFormat": "Y-m-d H:i:S",
             "time_24hr": "true",
             "allowInput": "true",
+            "enableTime": "true",
             "enableSeconds": "true",
             "minuteIncrement": 1});
     },

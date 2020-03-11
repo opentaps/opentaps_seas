@@ -608,10 +608,10 @@ def utility_rates_json(request):
 @login_required()
 @api_view(['GET', 'POST', 'DELETE'])
 def meter_rate_plan_history(request):
-    data = request.data
-    meter_id = data.get('meter_id')
-    rate_plan_id = data.get('rate_plan_id')
     if request.method == 'POST':
+        data = request.data
+        meter_id = data.get('meter_id')
+        rate_plan_id = data.get('rate_plan_id')
         page_label = data.get('page_label')
 
         util_rates = pysam_utils.get_openei_util_rates(page_label=page_label)
@@ -643,3 +643,32 @@ def meter_rate_plan_history(request):
             return JsonResponse({'success': 1})
         else:
             return JsonResponse({'error': 'Cannot get rate data for selected rate plan : {}'.format(page_label)})
+    elif request.method == 'GET':
+        meter_id = request.GET.get('meter_id')
+        rate_plan_id = request.GET.get('rate_plan_id')
+        items = MeterRatePlanHistory.objects.filter(meter_id=meter_id,
+                                                    rate_plan_id=rate_plan_id).order_by("-from_datetime")
+        history_items = []
+        for item in items:
+            history_item = {'rate_plan_history_id': item.rate_plan_history_id,
+                            'description': item.description,
+                            'from_datetime': item.from_datetime,
+                            'thru_datetime': item.thru_datetime
+                            }
+
+            history_items.append(history_item)
+
+        return JsonResponse({'items': history_items})
+
+    elif request.method == 'DELETE':
+        data = request.data
+        rate_plan_history_id = data.get('rate_plan_history_id')
+        if rate_plan_history_id:
+            try:
+                rph = MeterRatePlanHistory.objects.get(rate_plan_history_id=rate_plan_history_id)
+                rph.delete()
+                return JsonResponse({'success': 1})
+            except MeterRatePlanHistory.DoesNotExist:
+                return JsonResponse({'error': 'MeterRatePlanHistory not found: {}'.format(rate_plan_history_id)})
+        else:
+            return JsonResponse({'error': 'Rate Plan History ID required'})
