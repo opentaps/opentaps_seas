@@ -145,6 +145,9 @@ def get_openei_util_rates(effective_on_date=None, country=None, address=None, pa
     # Request param
     if settings.OPENEI_API_KEY:
         req_param['api_key'] = settings.OPENEI_API_KEY
+    else:
+        raise NameError('Missing openei API configuration')
+
     req_param['eia'] = '0'
     req_param['sector'] = 'Commercial'
 

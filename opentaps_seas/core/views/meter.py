@@ -595,7 +595,11 @@ def utility_rates_json(request):
         date_object = datetime.strptime(on_date, '%Y-%m-%d %H:%M:%S')
     else:
         date_object = datetime.strptime(on_date, '%Y-%m-%d')
-    util_rates = pysam_utils.get_openei_util_rates(date_object, country, address)
+
+    try:
+        util_rates = pysam_utils.get_openei_util_rates(date_object, country, address)
+    except NameError as e:
+        return JsonResponse({'error': '{}'.format(e)})
 
     for rate_item in util_rates:
         data_item = {'value': rate_item['label']}
@@ -614,7 +618,10 @@ def meter_rate_plan_history(request):
         rate_plan_id = data.get('rate_plan_id')
         page_label = data.get('page_label')
 
-        util_rates = pysam_utils.get_openei_util_rates(page_label=page_label)
+        try:
+            util_rates = pysam_utils.get_openei_util_rates(page_label=page_label)
+        except NameError as e:
+            return JsonResponse({'error': '{}'.format(e)})
 
         if util_rates and len(util_rates) == 1:
             util_rate = util_rates[0]

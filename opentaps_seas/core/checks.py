@@ -22,7 +22,8 @@ from django.core.checks import Warning, register
 @register()
 def check_encryption_key(app_configs, **kwargs):
     errors = []
-    if not settings.FIELD_ENCRYPTION_KEY or settings.FIELD_ENCRYPTION_KEY == '_______PLEASE_______CHANGE______THIS_______=':
+    if not (settings.FIELD_ENCRYPTION_KEY
+            or settings.FIELD_ENCRYPTION_KEY == '_______PLEASE_______CHANGE______THIS_______='):
         errors.append(
             Warning(
                 'Unsecure Enryption Key',
@@ -41,9 +42,25 @@ def check_aws_config(app_configs, **kwargs):
         errors.append(
             Warning(
                 'Missing AWS configuration, file storage will be unavailable',
-                hint='Make sure you set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_STORAGE_BUCKET_NAME in secrets.json',
+                hint='''Make sure you set AWS_ACCESS_KEY_ID,
+                        AWS_SECRET_ACCESS_KEY and AWS_STORAGE_BUCKET_NAME in secrets.json''',
                 obj=settings,
                 id='opentaps_seas.W002',
+            )
+        )
+    return errors
+
+
+@register()
+def check_openei_config(app_configs, **kwargs):
+    errors = []
+    if not settings.OPENEI_API_KEY:
+        errors.append(
+            Warning(
+                'Missing openei API configuration',
+                hint='Make sure you set OPENEI_API_KEY in secrets.json',
+                obj=settings,
+                id='opentaps_seas.W003',
             )
         )
     return errors
