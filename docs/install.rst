@@ -55,6 +55,29 @@ Then initialize your database by running the migrations::
 
     $ python manage.py migrate
 
+Amazon S3
+^^^^^^^^^
+
+Amazon S3 is used to store files and content in the cloud. You need to set up Amazon S3 to store your files.  Get these Amazon S3 access credentials and set them in your `secrets.json` file::
+
+ AWS_ACCESS_KEY_ID
+ AWS_SECRET_ACCESS_KEY
+ AWS_STORAGE_BUCKET_NAME
+
+Google API
+^^^^^^^^^^
+
+Google API is used to map your sites and meters.  You will need to get a Google API key and put it in `secrets.json`::
+
+ GOOGLE_API_KEY
+
+OpenEI API
+^^^^^^^^^^
+
+OpenEI maintains a database of utility rates, which is used to calculate the value of energy savings or production.  You will need to get an API key from https://openei.org/services/api/signup/
+and then put it in ``secrets.json``::
+
+ OPENEI_API_KEY
 
 Encrypted Data
 ^^^^^^^^^^^^^^
@@ -267,15 +290,6 @@ To run the tests, check your test coverage, and generate an HTML coverage report
     $ open nosetests.html
 
 It also could be run with -k (keep test database) option. In that case test database will not be recreated.
-
-Setting Up Amazon S3
-^^^^^^^^^^^^^^^^^^^^
-
-Amazon S3 is used to store files and content in the cloud. You need to set up Amazon S3 to store your files.  Get these Amazon S3 access credentials and set them in your secrets.json file::
-
- AWS_ACCESS_KEY_ID
- AWS_SECRET_ACCESS_KEY
- AWS_STORAGE_BUCKET_NAME
 
 Setting Up Grafana
 ^^^^^^^^^^^^^^^^^^^^
