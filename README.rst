@@ -12,6 +12,7 @@ Included in opentaps SEAS are the following open source projects:
 
  * VOLTTRON for collecting IoT data through industry-standard protocols such as BACNet and MODBUS
  * Green Button for utility meter data 
+ * OpenEI for utility rates
  * Crate time series database for storing data
  * Grafana for visualizing data
  * Haystack for tagging and categorizing data
