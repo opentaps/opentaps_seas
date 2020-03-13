@@ -56,6 +56,16 @@ Then initialize your database by running the migrations::
     $ python manage.py migrate
 
 
+Encrypted Data
+^^^^^^^^^^^^^^
+
+Some data like API keys are encrypted when they are stored in the database.  They require an encryption key, which you can generate with::
+
+    $ python manage.py generate_encryption_key
+
+Then put the encryption key value generated for field `FIELD_ENCRYPTION_KEY` in your `secrets.json` file.
+
+
 Redis
 ^^^^^
 
