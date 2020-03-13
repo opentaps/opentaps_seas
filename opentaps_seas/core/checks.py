@@ -22,12 +22,11 @@ from django.core.checks import Warning, register
 @register()
 def check_encryption_key(app_configs, **kwargs):
     errors = []
-    if not (settings.FIELD_ENCRYPTION_KEY
-            or settings.FIELD_ENCRYPTION_KEY == '_______PLEASE_______CHANGE______THIS_______='):
+    if not settings.FIELD_ENCRYPTION_KEY or settings.FIELD_ENCRYPTION_KEY == '_______PLEASE_______CHANGE______THIS_______=':
         errors.append(
             Warning(
                 'Unsecure Enryption Key',
-                hint='You can generate a key with: "./manage.py generate_encryption_key" then put it in secrets.json',
+                hint='You can generate a key with: "./manage.py generate_encryption_key" then put it in FIELD_ENCRYPTION_KEY in secrets.json',
                 obj=settings,
                 id='opentaps_seas.W001',
             )
