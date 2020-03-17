@@ -45,13 +45,18 @@ use or production of energy.  Each Meter is associated with a Weather Station.  
 When you add a Meter, the UI uses the location of the Site to get the nearest Weather Station, so all Meters at the same Site will have the same Weather Stations.  If you click on a
 Weather Station, you can see detailed information about it and use the Fetch Data button to get historical readings from the station.  
 
-
 A meter could be removed from a site, but it is not deleted.  The meter and weather histories are permanently stored in opentaps for you.
 
-Each meter is also associated with a rate plan, which is used to calculate billing for the meter's readings.  You will be prompted to add this rate plan when you add a new meter.
+Each meter is also associated with a rate plan, which is used to calculate billing for the meter's readings.  You will be prompted to add this rate plan when you add a new meter.  You can choose from a "Simple Rate Plan"
+which is a simple flat rate plan used for demo purposes, or you can choose to get your rate plan from OpenEI's utility rate database.  
 
 When you click through to a meter, you will see its past readings (history).  You can use the up arrow icon to upload the meter history using either a CSV format or the Green Button XML format.  An example of the
 CSV file format could be found in the file ``examples/meter.csv``.  Examples of the Green Button XML file could be found at https://www.energy.gov/downloads/green-button-sample-data-pge     
+
+Below the readings is the meter's weather station, with the latest temperature data.  You can download the temperature data or click through the weather station to see more details about it.
+
+Below the weather station is the rate plan of the meter.  You can click on this to see the history of this meter's rate plan and get more rate data from OpenEI.  You can have different rate plans associated with a meter
+over time for this meter, for example switching from traditional to time of use plans.  Click on one of the plans to see the details from OpenEI.
 
 Below the Meter is a list of Models.  These models are models of energy usage and can be used for Measurement and Verification (M&V) of energy savings.  Currently we're including the OpenEEMeter 
 models, which are IPMVP Option C whole building energy use statistical models that follow the CalTrack 2.0 standard (See https://www.caltrack.org and http://eemeter.openee.io/tutorial.html for more details.)  
