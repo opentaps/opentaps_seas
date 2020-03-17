@@ -127,12 +127,12 @@ def get_openei_util_rate_name(rate_item):
     enddate = None
     if 'enddate' in rate_item.keys():
         enddate = rate_item['enddate']
-    startdate = datetime.fromtimestamp(rate_item['startdate'])
+    startdate = datetime.fromtimestamp(rate_item['startdate']).strftime('%Y-%m-%d')
 
     if not enddate:
         enddate = ""
     else:
-        enddate = datetime.fromtimestamp(enddate)
+        enddate = datetime.fromtimestamp(enddate).strftime('%Y-%m-%d')
 
     name = '{} - {}, {} : {}'.format(rate_item['utility'], rate_item['name'], startdate, enddate)
 

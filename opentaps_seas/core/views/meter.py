@@ -380,6 +380,13 @@ class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListVie
             context['rate_plan'] = rate_plan
 
         context["meter_id"] = self.kwargs['meter_id']
+        try:
+            meter = Meter.objects.get(meter_id=self.kwargs['meter_id'])
+        except Meter.DoesNotExist:
+            pass
+        else:
+            context["meter"] = meter
+
         return context
 
     def get_queryset(self, **kwargs):
@@ -628,17 +635,20 @@ def meter_rate_plan_history(request):
 
             description = '{} - {}'.format(util_rate['utility'], util_rate['name'])
             enddate = None
+            thru_datetime = None
             if 'enddate' in util_rate.keys():
                 enddate = util_rate['enddate']
-            startdate = datetime.fromtimestamp(util_rate['startdate']).replace(tzinfo=timezone.utc)
+            startdate = datetime.fromtimestamp(util_rate['startdate'])
+            from_datetime = datetime(startdate.year, startdate.month, startdate.day, tzinfo=timezone.utc)
 
             if enddate:
-                enddate = datetime.fromtimestamp(enddate).replace(tzinfo=timezone.utc)
+                enddate = datetime.fromtimestamp(enddate)
+                thru_datetime = datetime(enddate.year, enddate.month, enddate.day, 23, 59, 59, tzinfo=timezone.utc)
 
             rph = MeterRatePlanHistory.objects.create(
                 description=description,
-                from_datetime=startdate,
-                thru_datetime=enddate,
+                from_datetime=from_datetime,
+                thru_datetime=thru_datetime,
                 params=util_rate,
                 meter_id=meter_id,
                 rate_plan_id=rate_plan_id,
@@ -679,3 +689,19 @@ def meter_rate_plan_history(request):
                 return JsonResponse({'error': 'MeterRatePlanHistory not found: {}'.format(rate_plan_history_id)})
         else:
             return JsonResponse({'error': 'Rate Plan History ID required'})
+
+
+class MeterRatePlanHistoryDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+    model = MeterRatePlanHistory
+    slug_field = "rate_plan_history_id"
+    slug_url_kwarg = "rate_plan_history_id"
+    template_name = 'core/meter_rate_plan_history_detail.html'
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        b.append({'label': 'Meter Rate Plan History {}'.format(self.kwargs['rate_plan_history_id'])})
+        return b
+
+
+meter_rate_plan_history_detail = MeterRatePlanHistoryDetailView.as_view()

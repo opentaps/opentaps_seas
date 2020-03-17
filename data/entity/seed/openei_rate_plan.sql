@@ -7,13 +7,13 @@ INSERT INTO public.core_meter_rate_plan (
   billing_frequency_uom_id
 )
 select 
-  'Openei Utility Rates' as description,
+  'Get rates from OpenEI' as description,
   now() as from_datetime,
   1 as billing_day,
   'openei.org' as source,
   now() as created_datetime,
   'time_interval_monthly' as billing_frequency_uom_id
 where not exists (
-  select 1 from public.core_meter_rate_plan where description = 'Openei Utility Rates'
+  select 1 from public.core_meter_rate_plan where description = 'Get rates from OpenEI'
 );
 

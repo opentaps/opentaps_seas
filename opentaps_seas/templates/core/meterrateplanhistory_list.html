@@ -29,20 +29,20 @@
 
   <div class="card mb-3" id="rateplanhistory">
     <div class="card-body">
-      {% if rate_plan.description %}
-        <h2>Meter Rate Plan History {{ rate_plan.description }} <span style="font-size: 1rem;">(id: {{ rate_plan.rate_plan_id }})</span></h2>
+      {% if meter.description %}
+        <h2>Meter Rate Plan History {{ meter.description }}</h2>
       {% else %}
         <h2>Meter Rate Plan History {{ rate_plan.rate_plan_id }}</h2>
       {% endif %}
       <br/>
       {% block inner_content %}
 
-      <h3>Get Openei Utility Rates:</h3>
+      <h3>Get Rates from OpenEI Utility Rate Database:</h3>
       <div class="form-group">
-        <label for="onDate">Effective On Date*</label>
+        <label for="onDate">Effective as of Date*</label>
         <b-form-input type="text" class="datetime" id="onDate" placeholder="Input Date" :state="onDateState" v-model="onDate" required></b-form-input>
         <b-form-invalid-feedback id="onDate">
-            Effective On Date is required
+            Effective as of Date is required
         </b-form-invalid-feedback>
       </div>
       <div class="text-right">
@@ -71,6 +71,9 @@
         <b-table-lite striped hover :items="meterRatePlans" :fields="fields">
             <template v-slot:cell(del)="item">
               <button v-confirm:click.stop.prevent="delete_meter_rate_plan_history(item.index)" class="btn btn-outline-danger btn-sm  ml-1"><i class="fas fa-trash"></i></button>
+            </template>
+            <template v-slot:cell(description)="item">
+                <a :href="get_rate_plan_history_url(item)">${ item.item.description }</a>
             </template>
         </b-table-lite>
       </div>
@@ -238,6 +241,9 @@
               console.error(e, err);
               this.errors = e;
             });
+      },
+      get_rate_plan_history_url(item) {
+        return dutils.urls.resolve('meter_rate_plan_history_detail', { rate_plan_history_id: item.item.rate_plan_history_id })
       }
     }
   });

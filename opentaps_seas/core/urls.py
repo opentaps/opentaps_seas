@@ -168,4 +168,6 @@ urlpatterns = [
     path("weather_station.json", view=weather.weather_stations_json, name="weather_stations_json"),
     path("utility_rates.json", view=meter.utility_rates_json, name="utility_rates_json"),
     path("meter_rate_plan_history/", view=meter.meter_rate_plan_history, name="meter_rate_plan_history"),
+    path("meter_rate_plan_history_detail/<str:rate_plan_history_id>", view=meter.meter_rate_plan_history_detail,
+         name="meter_rate_plan_history_detail"),
 ]
