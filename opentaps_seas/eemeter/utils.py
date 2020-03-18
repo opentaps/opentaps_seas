@@ -267,7 +267,7 @@ def read_meter_data(meter, blackout_start_date=None, blackout_end_date=None, fre
 
 def get_model_for_freq(data, freq, **kwargs):
     if freq == 'hourly':
-        return get_hourly_model(data, **kwargs)
+        return get_hourly_model(data)
     elif freq == 'daily':
         return get_daily_model(data, **kwargs)
     else:
