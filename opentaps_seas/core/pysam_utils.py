@@ -55,7 +55,7 @@ def URDBv7_to_ElectricityRates(urdb_response):
                     units = ['kwh', 'kw']
                     if 'unit' in entry.keys():
                         if entry['unit'].lower() not in units:
-                            raise RuntimeError("UtilityRateDatabase error: unrecognized unit in rate structure")
+                            raise Exception("UtilityRateDatabase error: unrecognized unit in rate structure")
                     mat.append([i + 1, j + 1, tier_max, 0.0, rate, sell])
             data[data_name] = mat
 
@@ -184,6 +184,7 @@ def get_openei_util_rates(effective_on_date=None, country=None, address=None, pa
 
 
 def run_calculation(meter_id, year, month=None):
+    hours = [0, 744, 1416, 2160, 2880, 3624, 4344, 5088, 5832, 6552, 7296, 8016]
     pysam_array_length = 8760
     if not month:
         from_datetime = datetime(year, 1, 1, 0, 0, 1)
@@ -198,6 +199,8 @@ def run_calculation(meter_id, year, month=None):
 
     load_data = [0 for i in range(pysam_array_length)]
     counter = 0
+    if month:
+        counter = hours[month-1]
     for row in meter_history:
         load_data[counter] = row.value
         counter += 1
@@ -227,4 +230,7 @@ def run_calculation(meter_id, year, month=None):
 
     model.execute()
 
-    return model.Outputs.year1_monthly_utility_bill_w_sys
+    if not month:
+        return model.Outputs.year1_monthly_utility_bill_w_sys
+    else:
+        return (model.Outputs.year1_monthly_utility_bill_w_sys[month-1],)
