@@ -1400,6 +1400,7 @@ class MeterRatePlanHistory(models.Model):
     rate_plan = ForeignKey(MeterRatePlan, on_delete=models.CASCADE)
     description = CharField(_("Description"), max_length=255)
     params = HStoreField(_("Parameters"), blank=True, null=True)
+    rate_details = JSONField(_("Rate Details"), blank=True, null=True)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
     created_datetime = DateTimeField(_("Created Date"), default=now)

@@ -649,7 +649,7 @@ def meter_rate_plan_history(request):
                 description=description,
                 from_datetime=from_datetime,
                 thru_datetime=thru_datetime,
-                params=util_rate,
+                rate_details=util_rate,
                 meter_id=meter_id,
                 rate_plan_id=rate_plan_id,
                 created_by_user=request.user
