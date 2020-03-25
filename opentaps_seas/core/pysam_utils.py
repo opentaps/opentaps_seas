@@ -1,7 +1,13 @@
 from datetime import datetime
+from calendar import monthrange
+import logging
 import requests
 import PySAM.Utilityrate5 as utility
 from django.conf import settings
+from ..core.models import MeterHistory
+from ..core.models import MeterRatePlanHistory
+
+logger = logging.getLogger(__name__)
 
 URL_OPENEI = 'https://api.openei.org/utility_rates'
 FORMAT = 'json'
@@ -175,3 +181,50 @@ def get_openei_util_rates(effective_on_date=None, country=None, address=None, pa
     data_openei = r.json()
 
     return data_openei['items']
+
+
+def run_calculation(meter_id, year, month=None):
+    pysam_array_length = 8760
+    if not month:
+        from_datetime = datetime(year, 1, 1, 0, 0, 1)
+        thru_datetime = datetime(year, 12, 31, 23, 59, 59)
+    else:
+        last_day = monthrange(year, month)[1]
+        from_datetime = datetime(year, month, 1, 0, 0, 1)
+        thru_datetime = datetime(year, month, last_day, 23, 59, 59)
+
+    meter_history = MeterHistory.objects.filter(meter_id=meter_id, as_of_datetime__gte=from_datetime,
+                                                as_of_datetime__lte=thru_datetime).order_by('as_of_datetime')
+
+    load_data = [0 for i in range(pysam_array_length)]
+    counter = 0
+    for row in meter_history:
+        load_data[counter] = row.value
+        counter += 1
+
+    rate_plan_history = MeterRatePlanHistory.objects.filter(meter_id=meter_id).order_by("from_datetime")
+    if not rate_plan_history:
+        raise Exception("Cannot find MeterRatePlanHistory for meter {}".format(meter_id))
+
+    rate_plan = rate_plan_history[0].rate_details
+
+    model = utility.new()
+    rates = URDBv7_to_ElectricityRates(rate_plan)
+    model.ElectricityRates.assign(rates)
+
+    lifetime_data = dict()
+    lifetime_data['analysis_period'] = 1
+    lifetime_data['system_use_lifetime_output'] = 1
+    lifetime_data['inflation_rate'] = 99
+
+    model.Lifetime.assign(lifetime_data)
+
+    model.SystemOutput.degradation = [99]
+    gen = [0 for i in range(pysam_array_length)]
+
+    model.SystemOutput.gen = gen
+    model.Load.load = load_data
+
+    model.execute()
+
+    return model.Outputs.year1_monthly_utility_bill_w_sys
