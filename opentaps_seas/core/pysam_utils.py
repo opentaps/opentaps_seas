@@ -183,9 +183,32 @@ def get_openei_util_rates(effective_on_date=None, country=None, address=None, pa
     return data_openei['items']
 
 
-def run_calculation(meter_id, year, month=None):
-    hours = [0, 744, 1416, 2160, 2880, 3624, 4344, 5088, 5832, 6552, 7296, 8016]
-    pysam_array_length = 8760
+def get_active_rate_plan_history(meter_id, year, month=None):
+    from_datetime, thru_datetime = get_period(year, month)
+
+    if month:
+        rate_plan_history = MeterRatePlanHistory.objects.raw('''select rate_plan_history_id, from_datetime,
+            thru_datetime, rate_details
+            from {0}
+            where (from_datetime <= %s and (thru_datetime is null or thru_datetime >= %s))
+            and (thru_datetime is null or thru_datetime >= %s)
+            and meter_id = %s
+            order by from_datetime desc '''.format(MeterRatePlanHistory._meta.db_table),
+                                                  [from_datetime, from_datetime, thru_datetime, meter_id])
+    else:
+        rate_plan_history = MeterRatePlanHistory.objects.raw('''select rate_plan_history_id, from_datetime,
+            thru_datetime, rate_details
+            from {0}
+            where (from_datetime <= %s and (thru_datetime is null or thru_datetime >= %s))
+            or (thru_datetime is null or thru_datetime >= %s)
+            and meter_id = %s
+            order by from_datetime desc '''.format(MeterRatePlanHistory._meta.db_table),
+                                                  [from_datetime, from_datetime, thru_datetime, meter_id])
+
+    return rate_plan_history
+
+
+def get_period(year, month=None):
     if not month:
         from_datetime = datetime(year, 1, 1, 0, 0, 1)
         thru_datetime = datetime(year, 12, 31, 23, 59, 59)
@@ -193,6 +216,15 @@ def run_calculation(meter_id, year, month=None):
         last_day = monthrange(year, month)[1]
         from_datetime = datetime(year, month, 1, 0, 0, 1)
         thru_datetime = datetime(year, month, last_day, 23, 59, 59)
+
+    return from_datetime, thru_datetime
+
+
+def run_calculation(meter_id, year, month=None):
+    hours = [0, 744, 1416, 2160, 2880, 3624, 4344, 5088, 5832, 6552, 7296, 8016]
+    pysam_array_length = 8760
+
+    from_datetime, thru_datetime = get_period(year, month)
 
     meter_history = MeterHistory.objects.filter(meter_id=meter_id, as_of_datetime__gte=from_datetime,
                                                 as_of_datetime__lte=thru_datetime).order_by('as_of_datetime')
@@ -205,7 +237,7 @@ def run_calculation(meter_id, year, month=None):
         load_data[counter] = row.value
         counter += 1
 
-    rate_plan_history = MeterRatePlanHistory.objects.filter(meter_id=meter_id).order_by("from_datetime")
+    rate_plan_history = get_active_rate_plan_history(meter_id, year, month)
     if not rate_plan_history:
         raise Exception("Cannot find MeterRatePlanHistory for meter {}".format(meter_id))
 
