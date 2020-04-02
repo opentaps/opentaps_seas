@@ -112,13 +112,16 @@ def URDBv7_to_ElectricityRates(urdb_response):
     try_get_schedule('energyweekdayschedule', 'ur_ec_sched_weekday')
     try_get_schedule('energyweekendschedule', 'ur_ec_sched_weekend')
 
+    data['ur_dc_enable'] = 0
     if 'flatdemandmonths' in urdb_response.keys():
-        data['ur_dc_enable'] = 1
         flat_mat = []
         flat_demand = urdb_response['flatdemandmonths']
         for i in range(12):
             flat_mat.append([i, 1, 1e38, flat_demand[i]])
         data['ur_dc_flat_mat'] = flat_mat
+
+    if 'flatdemandstructure' in urdb_response.keys() and 'demandratestructure' in urdb_response.keys():
+        data['ur_dc_enable'] = 1
 
     try_get_rate_structure('energyratestructure', 'ur_ec_tou_mat')
     try_get_rate_structure4('flatdemandstructure', 'ur_dc_flat_mat')
