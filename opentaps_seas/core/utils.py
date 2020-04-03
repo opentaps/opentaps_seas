@@ -1265,16 +1265,20 @@ def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials
         from_datetime = datetime.utcnow()
         from_datetime -= timedelta(days=365*2)
 
-    rp = MeterRatePlan.objects.create(
-        description='Simple Rate Plan',
-        from_datetime=from_datetime,
-        billing_frequency_uom_id='time_interval_monthly',
-        billing_day=1,
-        params={
-            'flat_rate': 0.2,
-            'currency_uom_id': 'currency_USD',
-            'energy_uom_id': 'energy_kWh'
-            })
+    rate_plans = MeterRatePlan.objects.filter(description='Simple Rate Plan')
+    if not rate_plans:
+        rp = MeterRatePlan.objects.create(
+            description='Simple Rate Plan',
+            from_datetime=from_datetime,
+            billing_frequency_uom_id='time_interval_monthly',
+            billing_day=1,
+            params={
+                'flat_rate': 0.2,
+                'currency_uom_id': 'currency_USD',
+                'energy_uom_id': 'energy_kWh'
+                })
+    else:
+        rp = rate_plans[0]
 
     if not meter.rate_plan:
         meter.rate_plan = rp

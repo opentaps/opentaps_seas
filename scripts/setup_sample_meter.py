@@ -20,6 +20,7 @@ from django.db import connections
 from opentaps_seas.eemeter import utils as eemeter_utils
 from opentaps_seas.core import utils as core_utils
 from opentaps_seas.core.models import FinancialTransaction
+from opentaps_seas.core.models import MeterRatePlan
 from opentaps_seas.party.models import Party
 
 
@@ -98,6 +99,16 @@ def import_data(which):
                 from_datetime=result.from_datetime,
                 thru_datetime=result.thru_datetime
                 )
+
+        # setup a sample meter for site demo-site-2 and calcualte the savings
+        site2, meter2, model2 = eemeter_utils.setup_demo_sample_models('demo-site-2', calc_savings=True)
+        if meter2:
+            rate_plans = MeterRatePlan.objects.filter(source="openei.org")
+            if rate_plans:
+                meter2.rate_plan = rate_plans[0]
+                meter2.save()
+            else:
+                print('Cannot find openei.org Rate Plan')
 
 
 def print_help():

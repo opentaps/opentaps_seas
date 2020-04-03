@@ -14,5 +14,20 @@
             "geoAddr": "1000 Wilshire Blvd Los Angeles,CA"
         },
         "m_tags": ["site", "his"]
+    },
+    {
+        "entity_id": "demo-site-2",
+        "kv_tags": {
+            "id": "demo-site-2",
+            "dis": "Demo Site 2",
+            "tz": "New_York",
+            "geoCountry" : "USA",
+            "geoState": "PA",
+            "geoPostalCode": "19102",
+            "geoCity": "Philadelphia",
+            "geoStreet": "1700 Market St",
+            "geoAddr": "1700 Market St Philadelphia, PA 19102"
+        },
+        "m_tags": ["site", "his"]
     }
 ]}
