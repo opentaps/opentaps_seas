@@ -28,6 +28,7 @@ from .views import tag
 from .views import topic
 from .views import transaction
 from .views import weather
+from .views import utilityapi
 
 from ..eemeter.views import meter_model_calc_saving_view
 from ..eemeter.views import meter_model_create_view
@@ -170,4 +171,7 @@ urlpatterns = [
     path("meter_rate_plan_history/", view=meter.meter_rate_plan_history, name="meter_rate_plan_history"),
     path("meter_rate_plan_history_detail/<str:rate_plan_history_id>", view=meter.meter_rate_plan_history_detail,
          name="meter_rate_plan_history_detail"),
+    path("utilityapi/data_import/<path:meter_id>", view=utilityapi.meter_data_import,
+         name="utilityapi_meter_data_import"),
+    path("utilityapi/meters.json", view=utilityapi.meters, name="utilityapi_meters_json"),
 ]

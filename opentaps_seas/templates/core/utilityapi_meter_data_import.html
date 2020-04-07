@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}UtilityAPI Meter Data Import{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3" id="meterdataimport">
+    <div class="card-body">
+      <h2>UtilityAPI Meter Data Import</h2>
+      <br/>
+      {% block inner_content %}
+
+      <div class="form-group">
+        <label for="customerEmail">Customer Email*</label>
+        <b-form-input type="email" id="customerEmail" placeholder="Input Email" :state="customerEmailState" v-model="customerEmail" required></b-form-input>
+        <b-form-invalid-feedback id="customerEmail">
+            Customer Email is required
+        </b-form-invalid-feedback>
+      </div>
+      <div class="text-right">
+        <b-button v-if="!isSearchDisabled" variant="primary" v-on:click.stop.prevent="get_utilityapi_meters()" :disabled="isSearchDisabled">
+          <i class="fa fa-search"></i> Search Meters
+        </b-button>
+        <b-spinner v-if="isSearchDisabled" variant="secondary"></b-spinner>
+      </div>
+
+      {% endblock inner_content %}
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    name: 'meterdataimport',
+    el: '#meterdataimport',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        customerEmailState: null,
+        customerEmail: null,
+        isSearchDisabled: false,
+        meters: [],
+        selectedMeter: null,
+        errors: {'error': null},
+        meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
+      }
+    },
+
+    mounted() {
+      console.log('mounted..');
+    },
+    methods: {
+      get_utilityapi_meters() {
+          console.log('get_utilityapi_meters..');
+          this.customerEmailState = null;
+          this.errors = {'error': null};
+          if (!this.customerEmail) {
+              this.customerEmailState = false;
+
+          } else {
+              this.isSearchDisabled = true;
+              url = dutils.urls.resolve('utilityapi_meters_json') + '?customer_email=' + this.customerEmail;
+              axios.get(url)
+                .then(x => {
+                  console.log('get_utilityapi_meters', x.data)
+                  if (x.data.error) {
+                      this.errors['error'] = x.data.error;
+                  } else if (!x.data.items || (x.data.items && x.data.items.length == 0)) {
+                      this.errors['error'] = 'There are no utilityapi meters.';
+                  } else {
+                      this.meters = x.data.meters;
+                      this.selectedMeter = this.meters[0].value;
+                  }
+                  this.isSearchDisabled = false;
+                })
+                .catch(err => {
+                  console.error('loading utility rates error :', err);
+                  e = getResponseError(err);
+                  this.errors = e;
+                  this.isSearchDisabled = false;
+                });
+          }
+      }
+    }
+  });
+})();
+</script>
+
+{% endblock content %}

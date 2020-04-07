@@ -147,10 +147,10 @@
         console.log('get_utility_rates..');
         this.onDateState = null;
         this.errors = {'error': null};
-        this.isSearchDisabled = true;
         if (!this.onDate) {
             this.onDateState = false;
         } else {
+            this.isSearchDisabled = true;
             url = dutils.urls.resolve('utility_rates_json') + '?meter_id=' + this.meterId + '&on_date=' + this.onDate;
             axios.get(url)
               .then(x => {
