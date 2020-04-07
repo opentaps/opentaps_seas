@@ -367,18 +367,11 @@ meter_rate_plan_detail_view = MeterRatePlanDetailView.as_view()
 
 class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListView):
     model = MeterRatePlanHistory
-    slug_field = "rate_plan_id"
-    slug_url_kwarg = "rate_plan_id"
+    slug_field = "meter_id"
+    slug_url_kwarg = "meter_id"
 
     def get_context_data(self, **kwargs):
         context = super(MeterRatePlanHistoryView, self).get_context_data(**kwargs)
-        try:
-            rate_plan = MeterRatePlan.objects.get(rate_plan_id=self.kwargs['rate_plan_id'])
-        except MeterRatePlan.DoesNotExist:
-            pass
-        else:
-            context['rate_plan'] = rate_plan
-
         context["meter_id"] = self.kwargs['meter_id']
         try:
             meter = Meter.objects.get(meter_id=self.kwargs['meter_id'])
@@ -392,9 +385,8 @@ class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListVie
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
 
-        rate_plan_id = self.kwargs['rate_plan_id']
         meter_id = self.kwargs['meter_id']
-        return qs.filter(rate_plan_id=rate_plan_id, meter_id=meter_id)
+        return qs.filter(meter_id=meter_id)
 
     def get_breadcrumbs(self, context):
         b = []
@@ -424,7 +416,7 @@ class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListVie
                 label = 'Meter ' + meter.description
             b.append({'url': url, 'label': label})
 
-        b.append({'label': 'Meter Rate Plan {}'.format(self.kwargs['rate_plan_id'])})
+        b.append({'label': 'Meter Rate Plan History'})
         return b
 
 
@@ -460,8 +452,9 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                         context['is_solaredge'] = True
                     context['equipments'] = equips
 
-            if meter.rate_plan and meter.rate_plan.source == 'openei.org':
-                context['has_openei_plan'] = True
+            history_items = MeterRatePlanHistory.objects.filter(meter_id=meter.meter_id).order_by("-from_datetime")
+            if history_items:
+                context['rate_plan_history'] = history_items[0]
 
         return context
 
@@ -613,6 +606,19 @@ def utility_rates_json(request):
         data_item['name'] = pysam_utils.get_openei_util_rate_name(rate_item)
         data.append(data_item)
 
+    # add the rate plans from meter_rate_plan (ie Simple Rate Plan) as an option
+    meter_rate_plans = MeterRatePlan.objects.filter(thru_datetime__isnull=True).order_by('from_datetime')
+    if meter_rate_plans:
+        data_item = {'value': '', 'name': '----------------------------------'}
+        data.append(data_item)
+        for meter_rate_plan in meter_rate_plans:
+            data_item = {'value': 'mrp_' + str(meter_rate_plan.rate_plan_id)}
+            name = meter_rate_plan.description
+            if meter_rate_plan.from_datetime:
+                name += ', ' + meter_rate_plan.from_datetime.strftime('%Y-%m-%d') + ' :'
+            data_item['name'] = name
+            data.append(data_item)
+
     return JsonResponse({'items': data})
 
 
@@ -622,49 +628,67 @@ def meter_rate_plan_history(request):
     if request.method == 'POST':
         data = request.data
         meter_id = data.get('meter_id')
-        rate_plan_id = data.get('rate_plan_id')
+
         page_label = data.get('page_label')
 
-        try:
-            util_rates = pysam_utils.get_openei_util_rates(page_label=page_label)
-        except NameError as e:
-            return JsonResponse({'error': '{}'.format(e)})
+        if page_label.startswith('mrp_'):
+            rate_plan_id = page_label.replace('mrp_', '')
+            try:
+                meter_rate_plan = MeterRatePlan.objects.get(rate_plan_id=rate_plan_id)
+            except MeterRatePlan.DoesNotExist:
+                return JsonResponse({'error': 'MeterRatePlan not found : {}'.format(meter_id)})
+            else:
+                rph = MeterRatePlanHistory.objects.create(
+                    description=meter_rate_plan.description,
+                    from_datetime=meter_rate_plan.from_datetime,
+                    thru_datetime=meter_rate_plan.thru_datetime,
+                    params=meter_rate_plan.params,
+                    meter_id=meter_id,
+                    rate_plan_id=rate_plan_id,
+                    created_by_user=request.user
+                    )
 
-        if util_rates and len(util_rates) == 1:
-            util_rate = util_rates[0]
+                rph.save()
 
-            description = '{} - {}'.format(util_rate['utility'], util_rate['name'])
-            enddate = None
-            thru_datetime = None
-            if 'enddate' in util_rate.keys():
-                enddate = util_rate['enddate']
-            startdate = datetime.fromtimestamp(util_rate['startdate'])
-            from_datetime = datetime(startdate.year, startdate.month, startdate.day, tzinfo=timezone.utc)
-
-            if enddate:
-                enddate = datetime.fromtimestamp(enddate)
-                thru_datetime = datetime(enddate.year, enddate.month, enddate.day, 23, 59, 59, tzinfo=timezone.utc)
-
-            rph = MeterRatePlanHistory.objects.create(
-                description=description,
-                from_datetime=from_datetime,
-                thru_datetime=thru_datetime,
-                rate_details=util_rate,
-                meter_id=meter_id,
-                rate_plan_id=rate_plan_id,
-                created_by_user=request.user
-                )
-
-            rph.save()
-
-            return JsonResponse({'success': 1})
+                return JsonResponse({'success': 1})
         else:
-            return JsonResponse({'error': 'Cannot get rate data for selected rate plan : {}'.format(page_label)})
+            try:
+                util_rates = pysam_utils.get_openei_util_rates(page_label=page_label)
+            except NameError as e:
+                return JsonResponse({'error': '{}'.format(e)})
+
+            if util_rates and len(util_rates) == 1:
+                util_rate = util_rates[0]
+
+                description = '{} - {}'.format(util_rate['utility'], util_rate['name'])
+                enddate = None
+                thru_datetime = None
+                if 'enddate' in util_rate.keys():
+                    enddate = util_rate['enddate']
+                startdate = datetime.fromtimestamp(util_rate['startdate'])
+                from_datetime = datetime(startdate.year, startdate.month, startdate.day, tzinfo=timezone.utc)
+
+                if enddate:
+                    enddate = datetime.fromtimestamp(enddate)
+                    thru_datetime = datetime(enddate.year, enddate.month, enddate.day, 23, 59, 59, tzinfo=timezone.utc)
+
+                rph = MeterRatePlanHistory.objects.create(
+                    description=description,
+                    from_datetime=from_datetime,
+                    thru_datetime=thru_datetime,
+                    rate_details=util_rate,
+                    meter_id=meter_id,
+                    created_by_user=request.user
+                    )
+
+                rph.save()
+
+                return JsonResponse({'success': 1})
+            else:
+                return JsonResponse({'error': 'Cannot get rate data for selected rate plan : {}'.format(page_label)})
     elif request.method == 'GET':
         meter_id = request.GET.get('meter_id')
-        rate_plan_id = request.GET.get('rate_plan_id')
-        items = MeterRatePlanHistory.objects.filter(meter_id=meter_id,
-                                                    rate_plan_id=rate_plan_id).order_by("-from_datetime")
+        items = MeterRatePlanHistory.objects.filter(meter_id=meter_id).order_by("-from_datetime")
         history_items = []
         for item in items:
             history_item = {'rate_plan_history_id': item.rate_plan_history_id,

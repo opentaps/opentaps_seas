@@ -35,6 +35,7 @@ from .models import Meter
 from .models import MeterFinancialValue
 from .models import MeterProduction
 from .models import MeterRatePlan
+from .models import MeterRatePlanHistory
 from .models import ModelView
 from .models import WeatherHistory
 from .models import WeatherStation
@@ -1288,6 +1289,44 @@ def setup_sample_rate_plan(meter, price=0.2, from_datetime=None, calc_financials
         calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
 
     return rp
+
+
+def setup_sample_rate_plan_history(meter, rate_paln_description='Simple Rate Plan',
+                                   from_datetime=None, calc_financials=False):
+
+    rp = None
+    rph = None
+    # make the plan starting 2 years from now unless from_datetime is given
+    if not from_datetime:
+        from_datetime = datetime.utcnow()
+        from_datetime -= timedelta(days=365*2)
+
+    rate_plans = MeterRatePlan.objects.filter(description='Simple Rate Plan').order_by("-from_datetime")
+
+    if rate_plans:
+        rp = rate_plans[0]
+
+    if not rp:
+        logger.error('Cannot find Rate Plan %s', rate_paln_description)
+    else:
+        rp.from_datetime = from_datetime
+        rp.save()
+
+        rph = MeterRatePlanHistory.objects.create(
+                    description=rp.description,
+                    from_datetime=rp.from_datetime,
+                    thru_datetime=rp.thru_datetime,
+                    params=rp.params,
+                    meter_id=meter.meter_id,
+                    rate_plan_id=rp.rate_plan_id
+                    )
+
+        rph.save()
+
+        if calc_financials:
+            calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
+
+    return rp, rph
 
 
 def calc_meter_financial_values(meter_id, rate_plan_id, progress_observer=None):

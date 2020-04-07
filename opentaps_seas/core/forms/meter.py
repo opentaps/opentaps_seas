@@ -276,7 +276,6 @@ class MeterCreateForm(forms.ModelForm):
             meter_id = utils.make_random_id(id_base)
 
         weather_station = self.cleaned_data['weather_station']
-        rate_plan = self.cleaned_data['rate_plan']
         from_datetime = self.cleaned_data['from_datetime']
         thru_datetime = self.cleaned_data['thru_datetime']
 
@@ -285,8 +284,6 @@ class MeterCreateForm(forms.ModelForm):
         meter.description = description
         if weather_station:
             meter.weather_station_id = weather_station.weather_station_id
-        if rate_plan:
-            meter.rate_plan_id = rate_plan.rate_plan_id
         meter.from_datetime = from_datetime
         meter.thru_datetime = thru_datetime
 
@@ -298,7 +295,7 @@ class MeterCreateForm(forms.ModelForm):
 
     class Meta:
         model = Meter
-        fields = ["site", "meter_id", "description", "weather_station", "rate_plan", "from_datetime", "thru_datetime"]
+        fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
 
 
 class MeterUpdateForm(forms.ModelForm):
@@ -314,4 +311,4 @@ class MeterUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Meter
-        fields = ["meter_id", "description", "weather_station", "rate_plan", "from_datetime", "thru_datetime"]
+        fields = ["meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]

@@ -67,17 +67,17 @@
         <div class="row m-0">
             <div class="">
               <b>Meter Rate Plan:</b>
-              {% if not object.rate_plan %}
+              {% if not rate_plan_history %}
                 n/a
               {% else %}
-                <a href="{{ object.rate_plan.get_absolute_url }}">{{ object.rate_plan }}</a>
+                <a href="{% url 'core:meter_rate_plan_history_detail' rate_plan_history.rate_plan_history_id %}"">{{ rate_plan_history.description }}</a>
               {% endif %}
             </div>
-            {% if has_openei_plan %}
-                <div class="text-right flex-grow-1">
-                  <a class="btn btn-primary" href="{% url 'core:meter_rate_plan_history' object.meter_id object.rate_plan.rate_plan_id %}">See History</a>
-                </div>
-            {% endif %}
+
+            <div class="text-right flex-grow-1">
+              <a class="btn btn-primary" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
+            </div>
+
         </div>
       </div>
 

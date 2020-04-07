@@ -33,14 +33,19 @@
         Model {{ object.description|default:"" }}
         {% block add_button %}
         <div class="ml-auto text-nowrap">
-          <a href="{% url 'core:meter_rate_plan_history' object.meter_id object.rate_plan_id %}" role="button" class="btn btn-primary"><i class="fa fa-angle-left mr-2"></i> Back</a>
+          <a href="{% url 'core:meter_rate_plan_history' object.meter_id %}" role="button" class="btn btn-primary"><i class="fa fa-angle-left mr-2"></i> Back</a>
         </div>
         {% endblock add_button %}
       </h2>
       {% block inner_content %}
 
       <p><b>Parameters:</b>
-        <pre>{{ object.rate_details | pprint }}</pre>
+        {% if object and object.params %}
+            <pre>{{ object.params | pprint }}</pre>
+        {% endif %}
+        {% if object and object.rate_details %}
+            <pre>{{ object.rate_details | pprint }}</pre>
+        {% endif %}
       </p>
 
       {% endblock inner_content %}

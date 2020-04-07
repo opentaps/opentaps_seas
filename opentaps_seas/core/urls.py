@@ -95,7 +95,7 @@ urlpatterns = [
     path("meter.json", view=meter.meter_list_json_view, name="meter_list_json"),
     path("newmeter/<str:site_id>", view=meter.meter_create_view, name="meter_create"),
     path("meter_rate_plan/<str:rate_plan_id>", view=meter.meter_rate_plan_detail_view, name="meter_rate_plan_detail"),
-    path("meter_rate_plan_history/<path:meter_id>/<str:rate_plan_id>", view=meter.meter_rate_plan_history_view,
+    path("meter_rate_plan_history/<path:meter_id>", view=meter.meter_rate_plan_history_view,
          name="meter_rate_plan_history"),
     path("meter/edit/<path:meter_id>", view=meter.meter_edit_view, name="meter_edit"),
     path("meter/deactivate/<path:meter_id>", view=meter.meter_deactivate_view, name="meter_deactivate"),

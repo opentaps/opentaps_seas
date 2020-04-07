@@ -20,7 +20,7 @@
 
 {% load static %}
 
-{% block title %}Meter Rate Plan History: {{ rate_plan.rate_plan_id }}{% endblock %}
+{% block title %}Meter Rate Plan History: {{ meter.meter_id }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -32,7 +32,7 @@
       {% if meter.description %}
         <h2>Meter Rate Plan History for {{ meter.description }}</h2>
       {% else %}
-        <h2>Meter Rate Plan History {{ rate_plan.rate_plan_id }}</h2>
+        <h2>Meter Rate Plan History for {{ meter.meter_id }}</h2>
       {% endif %}
       <br/>
       {% block inner_content %}
@@ -102,7 +102,6 @@
         meterRatePlans: [],
         selectedRate: null,
         meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
-        ratePlanId: {{ rate_plan.rate_plan_id }},
         isSearchDisabled: false,
         isAddDisabled: false,
         fields: [
@@ -175,30 +174,35 @@
 
       },
       add_utility_rate() {
-        this.isAddDisabled = true;
+        this.errors = {'error': null};
         url = dutils.urls.resolve('meter_rate_plan_history');
-        data = {meter_id: this.meterId, rate_plan_id: this.ratePlanId, page_label: this.selectedRate}
-        axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
-          .then(x => x.data)
-          .then(x => {
-            if (x.success) {
-              console.log('add_utility_rate, result = ', x);
-              this. get_meter_rate_plan_history_list();
-            }
-            this.isAddDisabled = false;
-          })
-          .catch(err => {
-            e = getResponseError(err);
-            console.error(e, err);
-            this.errors = e;
-            this.isAddDisabled = false;
-          });
-
+        console.log('add_utility_rate: this.selectedRate', this.selectedRate)
+        if (!this.selectedRate) {
+            this.errors = {'error': 'Please, select Rate Plan.'};
+        } else {
+            this.isAddDisabled = true;
+            data = {meter_id: this.meterId, page_label: this.selectedRate}
+            axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+              .then(x => x.data)
+              .then(x => {
+                if (x.success) {
+                  console.log('add_utility_rate, result = ', x);
+                  this. get_meter_rate_plan_history_list();
+                }
+                this.isAddDisabled = false;
+              })
+              .catch(err => {
+                e = getResponseError(err);
+                console.error(e, err);
+                this.errors = e;
+                this.isAddDisabled = false;
+              });
+        }
       },
       get_meter_rate_plan_history_list() {
         console.log('get_meter_rate_plan_history_list..');
         this.errors = {'error': null};
-        url = dutils.urls.resolve('meter_rate_plan_history') + '?meter_id=' + this.meterId + '&rate_plan_id=' + this.ratePlanId;
+        url = dutils.urls.resolve('meter_rate_plan_history') + '?meter_id=' + this.meterId;
         axios.get(url)
           .then(x => {
             console.log('get_meter_rate_plan_history_list', x.data);

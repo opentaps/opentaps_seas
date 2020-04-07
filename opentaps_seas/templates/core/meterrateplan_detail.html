@@ -50,15 +50,6 @@
       <div class="row"><b class="col-sm-2">Parameters:</b> {{ object.params }}</div>
       <div class="row"><b class="col-sm-2">Source:</b> {{ object.source }}</div>
 
-      {% if object.meter_set.exists %}
-        <h3 class="mt-5">Meters</h3>
-        <ul>
-        {% for meter in object.meter_set.all %}
-        <li><a href="{{ meter.get_absolute_url }}">{{ meter }}</a></li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-
       {# <div class="form-group d-flex justify-content-around mt-5"> #}
       {#   <a href="{% url 'core:meter_rate_plan_delete' object.rate_plan_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Delete</a> #}
       {#   <a href="{% url 'core:meter_rate_plan_edit' object.rate_plan_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a> #}

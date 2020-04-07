@@ -61,7 +61,7 @@ def import_data(which):
         # setup a sample meter and calcualte the savings
         site, meter, model = eemeter_utils.setup_demo_sample_models('demo-site-1', calc_savings=True)
         # setup a demo rate plan and calculate the financial values
-        rp = core_utils.setup_sample_rate_plan(meter, price=0.2)
+        rp, _ = core_utils.setup_sample_rate_plan_history(meter, rate_paln_description='Simple Rate Plan')
         results = core_utils.calc_meter_financial_values(meter.meter_id, rp.rate_plan_id)
         # ensure we have parties
         p1 = Party.objects.filter(party_external_id='party1').first()
@@ -102,13 +102,6 @@ def import_data(which):
 
         # setup a sample meter for site demo-site-2 and calcualte the savings
         site2, meter2, model2 = eemeter_utils.setup_demo_sample_models('demo-site-2', calc_savings=True)
-        if meter2:
-            rate_plans = MeterRatePlan.objects.filter(source="openei.org")
-            if rate_plans:
-                meter2.rate_plan = rate_plans[0]
-                meter2.save()
-            else:
-                print('Cannot find openei.org Rate Plan')
 
 
 def print_help():

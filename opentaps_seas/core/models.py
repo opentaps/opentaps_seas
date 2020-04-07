@@ -889,7 +889,6 @@ class Meter(models.Model):
     equipment = ForeignKey(Entity, on_delete=models.CASCADE, blank=True, null=True, related_name='equipment_meters')
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
-    rate_plan = ForeignKey('MeterRatePlan', blank=True, null=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         if self.description:
@@ -1397,7 +1396,7 @@ class SolarEdgeSetting(models.Model):
 
 class MeterRatePlanHistory(models.Model):
     rate_plan_history_id = AutoField(_("Rate Plan History ID"), primary_key=True, auto_created=True)
-    rate_plan = ForeignKey(MeterRatePlan, on_delete=models.CASCADE)
+    rate_plan = ForeignKey('MeterRatePlan', blank=True, null=True, on_delete=models.DO_NOTHING)
     description = CharField(_("Description"), max_length=255)
     params = HStoreField(_("Parameters"), blank=True, null=True)
     rate_details = JSONField(_("Rate Details"), blank=True, null=True)
