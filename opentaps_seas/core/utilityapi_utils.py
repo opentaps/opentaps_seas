@@ -22,6 +22,14 @@ def get_meters(auth_uids=None):
     return data['meters']
 
 
+def get_meter(meter_uid):
+    request_name = 'meters/' + meter_uid
+
+    data = utilityapi_get(request_name)
+
+    return data
+
+
 def utilityapi_get(request_name, params=None):
     url = URL_UTILITYAPI + '/' + request_name
     if params:
@@ -31,7 +39,7 @@ def utilityapi_get(request_name, params=None):
     if settings.UTILITY_API_KEY:
         api_key = settings.UTILITY_API_KEY
     else:
-        raise NameError('Missing utilityapi configuration')
+        raise NameError('Missing UtilityAPI configuration')
 
     headers = {'Authorization': 'Bearer ' + api_key}
 

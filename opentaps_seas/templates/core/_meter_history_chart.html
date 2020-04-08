@@ -218,6 +218,12 @@
                 reset: false,
                 pan: false,
                 customIcons: [
+                {
+                  icon: '<a href="{% url 'core:utilityapi_data_import' meter_id %}">api<a>',
+                  title: 'Import UtilityAPI Data',
+                  class: '',
+
+                },
                 {% if is_solaredge %}
                   {
                     icon: '<i class="fa fa-cloud-download-alt"></i>',

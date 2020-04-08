@@ -171,7 +171,9 @@ urlpatterns = [
     path("meter_rate_plan_history/", view=meter.meter_rate_plan_history, name="meter_rate_plan_history"),
     path("meter_rate_plan_history_detail/<str:rate_plan_history_id>", view=meter.meter_rate_plan_history_detail,
          name="meter_rate_plan_history_detail"),
-    path("utilityapi/data_import/<path:meter_id>", view=utilityapi.meter_data_import,
-         name="utilityapi_meter_data_import"),
+    path("utilityapi/data_import/<path:meter_id>", view=utilityapi.data_import_view,
+         name="utilityapi_data_import"),
     path("utilityapi/meters.json", view=utilityapi.meters, name="utilityapi_meters_json"),
+    path("utilityapi/meter_data_import/<path:meter_id>", view=utilityapi.meter_data_import,
+         name="utilityapi_meter_data_import"),
 ]

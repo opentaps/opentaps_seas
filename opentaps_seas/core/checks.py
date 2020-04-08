@@ -71,7 +71,7 @@ def check_utilityapi_config(app_configs, **kwargs):
     if not settings.UTILITY_API_KEY:
         errors.append(
             Warning(
-                'Missing utilityapi configuration',
+                'Missing UtilityAPI configuration',
                 hint='Make sure you set UTILITY_API_KEY in secrets.json',
                 obj=settings,
                 id='opentaps_seas.W004',

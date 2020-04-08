@@ -76,7 +76,9 @@
       'utility_rates_json': '{% url "core:utility_rates_json" %}',
       'meter_rate_plan_history' : '{% url "core:meter_rate_plan_history" %}',
       'meter_rate_plan_history_detail' : '{% url "core:meter_rate_plan_history_detail" '999' %}'.replace('999', '<rate_plan_history_id>'),
-      'utilityapi_meters_json' : '{% url "core:utilityapi_meters_json" %}'
+      'utilityapi_meters_json' : '{% url "core:utilityapi_meters_json" %}',
+      'utilityapi_meter_data_import' : '{% url "core:utilityapi_meter_data_import" '999' %}'.replace('999', '<meter_id>')
+
     };
     </script>
     <script src="{% static 'js/vuejs-dialog.min.js' %}"></script>
