@@ -27,7 +27,7 @@
 
   {% include "core/_breadcrumbs.html" %}
 
-  <div class="card mb-3" id="meterdataimport">
+  <div class="card mb-3" id="meterdataimport" v-cloak>
     <div class="card-body">
       <h2>UtilityAPI Meter Data Import</h2>
       <br/>
@@ -149,7 +149,11 @@
                         this.errors['error'] = x.error;
                     } else if (x.success) {
                         console.log('import_utilityapi_meter_data, result = ', x);
-                        this.successes = {'success': 'Successfully imported UtilityAPI meter data'};
+                        if (x.message) {
+                            this.successes = {'success': x.message};
+                        } else {
+                            this.successes = {'success': 'Successfully imported UtilityAPI Meter Readings'};
+                        }
                     }
                     this.isImportDisabled = false;
                 })

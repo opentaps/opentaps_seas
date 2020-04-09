@@ -158,21 +158,36 @@ def meter_data_import(request, meter_id):
                 for entry in ibtree.findall('atom:entry/atom:content/espi:IntervalBlock/../..', resources.ns):
                     ib = resources.IntervalBlock(entry, meterReadings=[])
                     interval_blocks.append(ib)
-
+            count = 0
+            count_existing = 0
+            from_datetime = None
+            thru_datetime = None
             for interval_block in interval_blocks:
                 for ir in interval_block.intervalReadings:
-                    v = MeterHistory(meter_id=meter_id, uom_id=reading_type_uom)
-                    v.source = 'utilityapi'
-                    v.value = ir.value
-                    v.duration = int(ir.timePeriod.duration.total_seconds())
-                    v.as_of_datetime = ir.timePeriod.start
-                    v.created_by_user = request.user
-
+                    as_of_datetime = ir.timePeriod.start
                     if tzOffset:
                         tz = timezone(timedelta(seconds=tzOffset))
-                        v.as_of_datetime = v.as_of_datetime.replace(tzinfo=tz)
+                        as_of_datetime = as_of_datetime.replace(tzinfo=tz)
 
-                    v.save()
+                    if not from_datetime:
+                        from_datetime = as_of_datetime
+
+                    thru_datetime = as_of_datetime
+                    mh = MeterHistory.objects.filter(meter_id=meter_id, uom_id=reading_type_uom, source='utilityapi',
+                                                     as_of_datetime=as_of_datetime)
+
+                    if not mh:
+                        v = MeterHistory(meter_id=meter_id, uom_id=reading_type_uom)
+                        v.source = 'utilityapi'
+                        v.value = ir.value
+                        v.duration = int(ir.timePeriod.duration.total_seconds())
+                        v.as_of_datetime = as_of_datetime
+                        v.created_by_user = request.user
+
+                        v.save()
+                        count += 1
+                    else:
+                        count_existing += 1
             try:
                 meter = Meter.objects.get(meter_id=meter_id)
             except Meter.DoesNotExist:
@@ -187,12 +202,30 @@ def meter_data_import(request, meter_id):
                 meter.attributes = attributes
                 meter.save()
 
+            success_message = ''
+            if count > 0:
+                success_message = 'Sucessfully imported {} Meter Readings'.format(count)
+            else:
+                success_message = 'No new Meter Readings imported'
+
+            if from_datetime:
+                success_message += ' in period from {}'.format(from_datetime)
+            if thru_datetime:
+                if not from_datetime:
+                    success_message += ' in period'
+                success_message += ' to {}'.format(thru_datetime)
+
+            if count_existing > 0:
+                tmp = 'Readings'
+                if count_existing == 1:
+                    tmp = 'Reading'
+                success_message += ', {} Meter {} already exists'.format(count_existing, tmp)
+
+            response = JsonResponse({'success': 1, 'message': success_message})
+
+            return response
         else:
             return JsonResponse({'error': 'Cannot get UtilityAPI meter data'})
-
-        response = JsonResponse({'success': 1})
-
-        return response
 
 
 class DataImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
