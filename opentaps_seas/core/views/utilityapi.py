@@ -237,6 +237,13 @@ class DataImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DataImport, self).get_context_data(**kwargs)
         context["meter_id"] = self.kwargs['meter_id']
+        try:
+            meter = Meter.objects.get(meter_id=self.kwargs['meter_id'])
+        except Meter.DoesNotExist:
+            pass
+        else:
+            if meter.attributes and 'utilityapi_meter_uid' in meter.attributes.keys():
+                context["meter_uid"] = meter.attributes['utilityapi_meter_uid']
 
         return context
 

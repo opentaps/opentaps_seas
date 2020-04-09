@@ -40,6 +40,15 @@
         ${ successes.success }
       </div>
 
+      {% if meter_uid %}
+      <div>
+        UtilityAPI meter uid : {{meter_uid}}
+        <b-button variant="primary" v-on:click.stop.prevent="import_utilityapi_meter_data()" :disabled="isImportDisabled">
+          <i class="fa fa-plus"></i> Import Data
+        </b-button>
+        <b-spinner v-if="isImportDisabled" variant="secondary"></b-spinner>
+      </div>
+      {% else %}
       <div class="form-group">
         <label for="customerEmail">Customer Email*</label>
         <b-form-input type="email" id="customerEmail" placeholder="Input Email" :state="customerEmailState" v-model="customerEmail" required></b-form-input>
@@ -66,6 +75,7 @@
             <b-spinner v-if="isImportDisabled" variant="secondary"></b-spinner>
           </div>
       </div>
+      {% endif %}
 
       {% endblock inner_content %}
     </div>
@@ -89,7 +99,7 @@
         isSearchDisabled: false,
         isImportDisabled: false,
         meters: [],
-        selectedMeter: null,
+        selectedMeter: {%if meter_uid %}'{{ meter_uid|safe}}'{%else%}null{%endif%},
         errors: {'error': null},
         successes:  {'success': null},
         meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
