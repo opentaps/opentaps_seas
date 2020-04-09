@@ -145,12 +145,13 @@
               axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
                 .then(x => x.data)
                 .then(x => {
-                  if (x.success) {
-                    console.log('import_utilityapi_meter_data, result = ', x);
-
-                    this.successes = {'success': 'Successfully imported UtilityAPI meter data'};
-                  }
-                  this.isImportDisabled = false;
+                    if (x.error) {
+                        this.errors['error'] = x.error;
+                    } else if (x.success) {
+                        console.log('import_utilityapi_meter_data, result = ', x);
+                        this.successes = {'success': 'Successfully imported UtilityAPI meter data'};
+                    }
+                    this.isImportDisabled = false;
                 })
                 .catch(err => {
                   e = getResponseError(err);

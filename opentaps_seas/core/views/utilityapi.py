@@ -16,10 +16,13 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+from datetime import timedelta
+from datetime import timezone
 
 from .common import WithBreadcrumbsMixin
 from .. import utilityapi_utils
 from ..models import Meter
+from ..models import MeterHistory
 from ..models import SiteView
 
 from django.contrib.auth.decorators import login_required
@@ -28,6 +31,9 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import DetailView
 from rest_framework.decorators import api_view
+from greenbutton import resources
+from greenbutton import enums
+
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +100,79 @@ def meter_data_import(request, meter_id):
         if u_meter:
             authorization_uid = u_meter.get('authorization_uid')
 
+            # 1. UsagePoint
+            usage_point = utilityapi_utils.get_usage_point(authorization_uid, meter_uid)
+
+            local_time_url = None
+            for child in usage_point:
+                if 'link' in child.tag and child.attrib['rel'] == 'related':
+                    if 'LocalTimeParameters' in child.attrib['href']:
+                        local_time_url = child.attrib['href']
+
+            # 2. LocalTimeParameters
+            tzOffset = 0
+            if local_time_url:
+                ltptree = utilityapi_utils.espi_get_by_url(local_time_url)
+                if ltptree:
+                    ltp = resources.LocalTimeParameters(ltptree, usagePoints=[])
+                    if ltp:
+                        tzOffset = ltp.tzOffset
+
+            # 3. MeterReading
+            meter_reading = utilityapi_utils.get_meter_reading(authorization_uid, meter_uid)
+
+            reading_type_url = None
+            interval_block_url = None
+            if meter_reading:
+                meter_reading_entry = meter_reading.find('atom:entry', resources.ns)
+                if meter_reading_entry:
+                    for child in meter_reading_entry:
+                        if 'link' in child.tag and child.attrib['rel'] == 'related':
+                            if 'ReadingType' in child.attrib['href']:
+                                reading_type_url = child.attrib['href']
+                            elif 'IntervalBlock' in child.attrib['href']:
+                                interval_block_url = child.attrib['href']
+
+            if not reading_type_url:
+                return JsonResponse({'error': 'Cannot get meter reading type url'})
+            if not interval_block_url:
+                return JsonResponse({'error': 'Cannot get meter interval block url'})
+
+            # 3.1. ReadingType
+            reading_type = None
+            rttree = utilityapi_utils.espi_get_by_url(reading_type_url)
+            if rttree:
+                reading_type = resources.ReadingType(rttree, meterReadings=[])
+
+            if not reading_type:
+                return JsonResponse({'error': 'Cannot get meter reading type'})
+
+            reading_type_uom = enums.UOM_IDS[reading_type.uom]
+            if not reading_type_uom:
+                return JsonResponse({'error': 'Cannot get meter reading type uom'})
+
+            # 3.2. IntervalBlock
+            interval_blocks = []
+            ibtree = utilityapi_utils.espi_get_by_url(interval_block_url)
+            if ibtree:
+                for entry in ibtree.findall('atom:entry/atom:content/espi:IntervalBlock/../..', resources.ns):
+                    ib = resources.IntervalBlock(entry, meterReadings=[])
+                    interval_blocks.append(ib)
+
+            for interval_block in interval_blocks:
+                for ir in interval_block.intervalReadings:
+                    v = MeterHistory(meter_id=meter_id, uom_id=reading_type_uom)
+                    v.source = 'utilityapi'
+                    v.value = ir.value
+                    v.duration = int(ir.timePeriod.duration.total_seconds())
+                    v.as_of_datetime = ir.timePeriod.start
+                    v.created_by_user = request.user
+
+                    if tzOffset:
+                        tz = timezone(timedelta(seconds=tzOffset))
+                        v.as_of_datetime = v.as_of_datetime.replace(tzinfo=tz)
+
+                    v.save()
             try:
                 meter = Meter.objects.get(meter_id=meter_id)
             except Meter.DoesNotExist:
