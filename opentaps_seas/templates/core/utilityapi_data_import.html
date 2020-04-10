@@ -29,7 +29,11 @@
 
   <div class="card mb-3" id="meterdataimport" v-cloak>
     <div class="card-body">
-      <h2>UtilityAPI Meter Data Import</h2>
+      {% if meter_id %}
+        <h2>UtilityAPI Meter Data Import</h2>
+      {% else %}
+        <h2>UtilityAPI Meters Import</h2>
+      {% endif %}
       <br/>
       {% block inner_content %}
 
@@ -64,6 +68,7 @@
       </div>
 
       <div class="mt-3" v-if="meters.length">
+          {% if meter_id %}
           <label for="utilityapiMeter">UtilityAPI Meters</label>
           <select name="utilityapiMeter" class="select form-control" id="id_utilityapiMeter" v-model="selectedMeter">
             <option v-for="c in meters" :value="c.uid">${ c.description }</option>
@@ -74,6 +79,25 @@
             </b-button>
             <b-spinner v-if="isImportDisabled" variant="secondary"></b-spinner>
           </div>
+          {% else %}
+          <b-form-group label="UtilityAPI Meters">
+              <b-form-checkbox-group
+                id="id_utilityapiMeters"
+                v-model="selectedMeters"
+                :options="meters"
+                name="utilityapiMeters"
+                value-field="uid"
+                text-field="description"
+                stacked
+               ></b-form-checkbox-group>
+          </b-form-group>
+          <div class="mt-3 text-right">
+            <b-button variant="primary" v-on:click.stop.prevent="import_utilityapi_meters()" :disabled="isImportDisabled">
+              <i class="fa fa-plus"></i> Import Meters
+            </b-button>
+            <b-spinner v-if="isImportDisabled" variant="secondary"></b-spinner>
+          </div>
+          {% endif %}
       </div>
       {% endif %}
 
@@ -99,10 +123,12 @@
         isSearchDisabled: false,
         isImportDisabled: false,
         meters: [],
+        selectedMeters: [],
         selectedMeter: {%if meter_uid %}'{{ meter_uid|safe}}'{%else%}null{%endif%},
         errors: {'error': null},
         successes:  {'success': null},
-        meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
+        meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}null{%endif%},
+        siteId: {%if site_id %}'{{ site_id|safe}}'{%else%}null{%endif%},
       }
     },
 
@@ -129,7 +155,14 @@
                       this.errors['error'] = 'Cannot find customer UtilityAPI meters.';
                   } else {
                       this.meters = x.data.meters;
-                      this.selectedMeter = this.meters[0].uid;
+                      if (this.meterId) {
+                          this.selectedMeter = this.meters[0].uid;
+                      } else {
+                          this.selectedMeters = [];
+                          for (var i=0; i<x.data.meters.length; i++) {
+                              this.selectedMeters.push(x.data.meters[i].uid);
+                          }
+                      }
                   }
                   this.isSearchDisabled = false;
                 })
@@ -163,6 +196,40 @@
                             this.successes = {'success': x.message};
                         } else {
                             this.successes = {'success': 'Successfully imported UtilityAPI Meter Readings'};
+                        }
+                    }
+                    this.isImportDisabled = false;
+                })
+                .catch(err => {
+                  e = getResponseError(err);
+                  console.error(e, err);
+                  this.errors = e;
+                  this.isImportDisabled = false;
+                });
+          }
+      },
+      import_utilityapi_meters() {
+          this.errors = {'error': null};
+          this.successes = {'success': null};
+          url = dutils.urls.resolve('utilityapi_meters_data_import', { site_id: this.siteId });
+          console.log('import_utilityapi_meters: this.selectedMeters', this.selectedMeters)
+          console.log('url =', url)
+          if (!this.selectedMeters || !this.selectedMeters.length) {
+              this.errors = {'error': 'Please, select UtilityAPI Meters.'};
+          } else {
+              this.isImportDisabled = true;
+              data = {meter_uids: this.selectedMeters};
+              axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+                .then(x => x.data)
+                .then(x => {
+                    if (x.error) {
+                        this.errors['error'] = x.error;
+                    } else if (x.success) {
+                        console.log('import_utilityapi_meters, result = ', x);
+                        if (x.message) {
+                            this.successes = {'success': x.message};
+                        } else {
+                            this.successes = {'success': 'Successfully imported UtilityAPI Meters and Readings'};
                         }
                     }
                     this.isImportDisabled = false;

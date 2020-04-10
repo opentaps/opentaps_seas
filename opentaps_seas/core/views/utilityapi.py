@@ -16,13 +16,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from datetime import timedelta
-from datetime import timezone
+from datetime import datetime
 
 from .common import WithBreadcrumbsMixin
 from .. import utilityapi_utils
 from ..models import Meter
-from ..models import MeterHistory
+
 from ..models import SiteView
 
 from django.contrib.auth.decorators import login_required
@@ -31,8 +30,6 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import DetailView
 from rest_framework.decorators import api_view
-from greenbutton import resources
-from greenbutton import enums
 
 
 logger = logging.getLogger(__name__)
@@ -92,140 +89,116 @@ def meters(request):
 @api_view(['POST'])
 def meter_data_import(request, meter_id):
     if request.method == 'POST':
+        count = 0
+        count_existing = 0
+        from_datetime = None
+        thru_datetime = None
         data = request.data
         meter_uid = data.get('meter_uid')
 
         u_meter = utilityapi_utils.get_meter(meter_uid)
 
         if u_meter:
-            authorization_uid = u_meter.get('authorization_uid')
-
-            # 1. UsagePoint
-            usage_point = utilityapi_utils.get_usage_point(authorization_uid, meter_uid)
-
-            local_time_url = None
-            for child in usage_point:
-                if 'link' in child.tag and child.attrib['rel'] == 'related':
-                    if 'LocalTimeParameters' in child.attrib['href']:
-                        local_time_url = child.attrib['href']
-
-            # 2. LocalTimeParameters
-            tzOffset = 0
-            if local_time_url:
-                ltptree = utilityapi_utils.espi_get_by_url(local_time_url)
-                if ltptree:
-                    ltp = resources.LocalTimeParameters(ltptree, usagePoints=[])
-                    if ltp:
-                        tzOffset = ltp.tzOffset
-
-            # 3. MeterReading
-            meter_reading = utilityapi_utils.get_meter_reading(authorization_uid, meter_uid)
-
-            reading_type_url = None
-            interval_block_url = None
-            if meter_reading:
-                meter_reading_entry = meter_reading.find('atom:entry', resources.ns)
-                if meter_reading_entry:
-                    for child in meter_reading_entry:
-                        if 'link' in child.tag and child.attrib['rel'] == 'related':
-                            if 'ReadingType' in child.attrib['href']:
-                                reading_type_url = child.attrib['href']
-                            elif 'IntervalBlock' in child.attrib['href']:
-                                interval_block_url = child.attrib['href']
-
-            if not reading_type_url:
-                return JsonResponse({'error': 'Cannot get meter reading type url'})
-            if not interval_block_url:
-                return JsonResponse({'error': 'Cannot get meter interval block url'})
-
-            # 3.1. ReadingType
-            reading_type = None
-            rttree = utilityapi_utils.espi_get_by_url(reading_type_url)
-            if rttree:
-                reading_type = resources.ReadingType(rttree, meterReadings=[])
-
-            if not reading_type:
-                return JsonResponse({'error': 'Cannot get meter reading type'})
-
-            reading_type_uom = enums.UOM_IDS[reading_type.uom]
-            if not reading_type_uom:
-                return JsonResponse({'error': 'Cannot get meter reading type uom'})
-
-            # 3.2. IntervalBlock
-            interval_blocks = []
-            ibtree = utilityapi_utils.espi_get_by_url(interval_block_url)
-            if ibtree:
-                for entry in ibtree.findall('atom:entry/atom:content/espi:IntervalBlock/../..', resources.ns):
-                    ib = resources.IntervalBlock(entry, meterReadings=[])
-                    interval_blocks.append(ib)
-            count = 0
-            count_existing = 0
-            from_datetime = None
-            thru_datetime = None
-            for interval_block in interval_blocks:
-                for ir in interval_block.intervalReadings:
-                    as_of_datetime = ir.timePeriod.start
-                    if tzOffset:
-                        tz = timezone(timedelta(seconds=tzOffset))
-                        as_of_datetime = as_of_datetime.replace(tzinfo=tz)
-
-                    if not from_datetime:
-                        from_datetime = as_of_datetime
-
-                    thru_datetime = as_of_datetime
-                    mh = MeterHistory.objects.filter(meter_id=meter_id, uom_id=reading_type_uom, source='utilityapi',
-                                                     as_of_datetime=as_of_datetime)
-
-                    if not mh:
-                        v = MeterHistory(meter_id=meter_id, uom_id=reading_type_uom)
-                        v.source = 'utilityapi'
-                        v.value = ir.value
-                        v.duration = int(ir.timePeriod.duration.total_seconds())
-                        v.as_of_datetime = as_of_datetime
-                        v.created_by_user = request.user
-
-                        v.save()
-                        count += 1
-                    else:
-                        count_existing += 1
             try:
-                meter = Meter.objects.get(meter_id=meter_id)
-            except Meter.DoesNotExist:
-                logger.warning('Cannot get Meter {}'.format(meter_id))
+                count, count_existing, from_datetime, thru_datetime = utilityapi_utils.import_meter_readings(u_meter, meter_uid, meter_id, request.user)
+            except ValueError as e:
+                return JsonResponse({'error': e})
             else:
-                attributes = meter.attributes
-                if not attributes:
-                    attributes = {}
+                try:
+                    meter = Meter.objects.get(meter_id=meter_id)
+                except Meter.DoesNotExist:
+                    logger.warning('Cannot get Meter {}'.format(meter_id))
+                else:
+                    attributes = meter.attributes
+                    if not attributes:
+                        attributes = {}
 
-                attributes['utilityapi_meter_uid'] = meter_uid
+                    attributes['utilityapi_meter_uid'] = meter_uid
 
-                meter.attributes = attributes
-                meter.save()
+                    meter.attributes = attributes
+                    meter.save()
 
-            success_message = ''
-            if count > 0:
-                success_message = 'Sucessfully imported {} Meter Readings'.format(count)
-            else:
-                success_message = 'No new Meter Readings imported'
+                success_message = ''
+                if count > 0:
+                    success_message = 'Sucessfully imported {} Meter Readings'.format(count)
+                else:
+                    success_message = 'No new Meter Readings imported'
 
-            if from_datetime:
-                success_message += ' in period from {}'.format(from_datetime)
-            if thru_datetime:
-                if not from_datetime:
-                    success_message += ' in period'
-                success_message += ' to {}'.format(thru_datetime)
+                if from_datetime:
+                    success_message += ' in period from {}'.format(from_datetime)
+                if thru_datetime:
+                    if not from_datetime:
+                        success_message += ' in period'
+                    success_message += ' to {}'.format(thru_datetime)
 
-            if count_existing > 0:
-                tmp = 'Readings'
-                if count_existing == 1:
-                    tmp = 'Reading'
-                success_message += ', {} Meter {} already exists'.format(count_existing, tmp)
+                if count_existing > 0:
+                    tmp = 'Readings'
+                    if count_existing == 1:
+                        tmp = 'Reading'
+                    success_message += ', {} Meter {} already exists'.format(count_existing, tmp)
 
-            response = JsonResponse({'success': 1, 'message': success_message})
+                response = JsonResponse({'success': 1, 'message': success_message})
 
-            return response
+                return response
         else:
             return JsonResponse({'error': 'Cannot get UtilityAPI meter data'})
+
+
+@login_required()
+@api_view(['POST'])
+def meters_data_import(request, site_id):
+    if request.method == 'POST':
+        data = request.data
+        meter_uids = data.get('meter_uids')
+
+        new_meter_uids = []
+        for meter_uid in meter_uids:
+            # check if meter with utilityapi uids already exists
+            meter = Meter.objects.filter(site_id=site_id, attributes__utilityapi_meter_uid=meter_uid)
+            if not meter:
+                new_meter_uids.append(meter_uid)
+
+        if not new_meter_uids:
+            return JsonResponse({'error': 'All UtilityAPI meters already imported'})
+
+        count_total = 0
+        count_meters = 0
+        for meter_uid in new_meter_uids:
+            u_meter = utilityapi_utils.get_meter(meter_uid)
+
+            if u_meter:
+                meter_id = site_id + '-uid-' + meter_uid
+                meter = Meter(meter_id=meter_id, site_id=site_id)
+                meter.description = 'UtilityAPI meter ' + meter_uid
+                meter.from_datetime = datetime.now()
+                meter.attributes = {'utilityapi_meter_uid': meter_uid}
+
+                meter.save()
+                try:
+                    count, _, _, _ = utilityapi_utils.import_meter_readings(u_meter, meter_uid,
+                                                                            meter_id, request.user)
+                    count_total += count
+                    count_meters += 1
+                except ValueError as e:
+                    logger.error(e)
+
+        success_message = ''
+        if count_meters > 0:
+            tmp = 'Meters'
+            if count_meters == 1:
+                tmp = 'Meter'
+            success_message = 'Sucessfully imported {} {}'.format(count_meters, tmp)
+            if count_meters > 0:
+                tmp = 'Readings'
+                if count == 1:
+                    tmp = 'Reading'
+                success_message += ' and {} {}'.format(count, tmp)
+        else:
+            success_message = 'No new Meters imported'
+
+        response = JsonResponse({'success': 1, 'message': success_message})
+
+        return response
 
 
 class DataImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
@@ -280,3 +253,37 @@ class DataImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
 
 
 data_import_view = DataImport.as_view()
+
+
+class MetersImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+    model = SiteView
+    slug_field = "entity_id"
+    slug_url_kwarg = "site_id"
+    template_name = 'core/utilityapi_data_import.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MetersImport, self).get_context_data(**kwargs)
+        context["site_id"] = self.kwargs['site_id']
+
+        return context
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        if self.kwargs['site_id']:
+            try:
+                site = SiteView.objects.get(entity_id=self.kwargs['site_id'])
+            except SiteView.DoesNotExist:
+                pass
+            else:
+                label = 'Site'
+                if site.description:
+                    label = site.description
+                url = reverse("core:site_detail", kwargs={'site': self.kwargs['site_id']})
+                b.append({'url': url, 'label': label})
+
+        b.append({'label': 'UtilityAPI Meters Import'})
+        return b
+
+
+meters_import_view = MetersImport.as_view()
