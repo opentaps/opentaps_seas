@@ -219,10 +219,12 @@
                 pan: false,
                 customIcons: [
                 {
-                  icon: '<a href="{% url 'core:utilityapi_data_import' meter_id %}">api<a>',
+                  icon: '<i class="fa fa-plug"></i>',
                   title: 'Import UtilityAPI Data',
                   class: '',
-
+                  click: function(e) {
+                      window.open("{% url 'core:utilityapi_data_import' meter_id %}", "_self");
+                  }
                 },
                 {% if is_solaredge %}
                   {

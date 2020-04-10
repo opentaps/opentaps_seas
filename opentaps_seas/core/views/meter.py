@@ -615,7 +615,7 @@ def utility_rates_json(request):
             data_item = {'value': 'mrp_' + str(meter_rate_plan.rate_plan_id)}
             name = meter_rate_plan.description
             if meter_rate_plan.from_datetime:
-                name += ', ' + meter_rate_plan.from_datetime.strftime('%Y-%m-%d') + ' :'
+                name += ' (from ' + meter_rate_plan.from_datetime.strftime('%Y-%m-%d') + ')'
             data_item['name'] = name
             data.append(data_item)
 
