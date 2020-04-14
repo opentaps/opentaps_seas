@@ -323,4 +323,4 @@ class MeterRatePlanHistoryUpdateForm(forms.ModelForm):
 
     class Meta:
         model = MeterRatePlanHistory
-        fields = ["rate_plan_history_id", "thru_datetime"]
+        fields = ["rate_plan_history_id", "description", "from_datetime", "thru_datetime"]
