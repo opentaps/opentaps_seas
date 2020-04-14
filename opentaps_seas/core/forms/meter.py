@@ -23,6 +23,7 @@ from io import TextIOWrapper
 from .. import utils
 from ..models import Meter
 from ..models import MeterHistory
+from ..models import MeterRatePlanHistory
 from ..models import UnitOfMeasure
 from ..models import WeatherStation
 from .widgets import make_custom_datefields
@@ -312,3 +313,14 @@ class MeterUpdateForm(forms.ModelForm):
     class Meta:
         model = Meter
         fields = ["meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
+
+
+class MeterRatePlanHistoryUpdateForm(forms.ModelForm):
+    formfield_callback = make_custom_datefields
+
+    def __init__(self, *args, **kwargs):
+        super(MeterRatePlanHistoryUpdateForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = MeterRatePlanHistory
+        fields = ["rate_plan_history_id", "thru_datetime"]

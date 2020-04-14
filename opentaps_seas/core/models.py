@@ -1407,5 +1407,8 @@ class MeterRatePlanHistory(models.Model):
     created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     meter = ForeignKey(Meter, on_delete=models.CASCADE)
 
+    def get_absolute_url(self):
+        return reverse("core:meter_rate_plan_history", kwargs={"meter_id": self.meter_id})
+
     class Meta:
         db_table = 'core_meter_rate_plan_history'

@@ -28,6 +28,7 @@ from ..forms.meter import MeterCreateForm
 from ..forms.meter import MeterDataUploadForm
 from ..forms.meter import MeterUpdateForm
 from ..forms.meter import MeterDataSolarEdgeForm
+from ..forms.meter import MeterRatePlanHistoryUpdateForm
 from ..models import date_to_string
 from ..models import datetime_to_string
 from ..models import Entity
@@ -729,3 +730,25 @@ class MeterRatePlanHistoryDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, D
 
 
 meter_rate_plan_history_detail = MeterRatePlanHistoryDetailView.as_view()
+
+
+class MeterRatePlanHistoryEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
+    model = MeterRatePlanHistory
+    slug_field = "rate_plan_history_id"
+    slug_url_kwarg = "rate_plan_history_id"
+    template_name = 'core/meter_rate_plan_history_edit.html'
+    form_class = MeterRatePlanHistoryUpdateForm
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        b.append({'label': 'Meter Rate Plan History {}'.format(self.kwargs['rate_plan_history_id'])})
+        return b
+
+    def get_success_url(self):
+        obj = self.get_object()
+        mrph = MeterRatePlanHistory.objects.get(rate_plan_history_id=obj.rate_plan_history_id)
+        return mrph.get_absolute_url()
+
+
+meter_rate_plan_history_edit = MeterRatePlanHistoryEditView.as_view()

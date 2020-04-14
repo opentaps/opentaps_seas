@@ -20,7 +20,7 @@
 
 {% load static %}
 
-{% block title %}Model: {{ object.meter.description }} {{ object.model_class }}{% endblock %}
+{% block title %} {{ object.meter.description }} {{ object.model_class }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -30,7 +30,7 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="d-flex">
-        Model {{ object.description|default:"" }}
+        {{ object.description|default:"" }}
         {% block add_button %}
         <div class="ml-auto text-nowrap">
           <a href="{% url 'core:meter_rate_plan_history' object.meter_id %}" role="button" class="btn btn-primary"><i class="fa fa-angle-left mr-2"></i> Back</a>
