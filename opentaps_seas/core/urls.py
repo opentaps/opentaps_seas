@@ -180,6 +180,8 @@ urlpatterns = [
     path("utilityapi/meters.json", view=utilityapi.meters, name="utilityapi_meters_json"),
     path("utilityapi/meter_data_import/<path:meter_id>", view=utilityapi.meter_data_import,
          name="utilityapi_meter_data_import"),
+    path("utilityapi/meter_bills_import/<path:meter_id>", view=utilityapi.meter_bills_import,
+         name="utilityapi_meter_bills_import"),
     path("utilityapi/meters_data_import/<path:site_id>", view=utilityapi.meters_data_import,
          name="utilityapi_meters_data_import"),
 ]

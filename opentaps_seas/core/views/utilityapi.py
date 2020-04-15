@@ -146,6 +146,54 @@ def meter_data_import(request, meter_id):
 
 @login_required()
 @api_view(['POST'])
+def meter_bills_import(request, meter_id):
+    if request.method == 'POST':
+        try:
+            meter = Meter.objects.get(meter_id=meter_id)
+        except Meter.DoesNotExist:
+            return JsonResponse({'error': 'Meter not found : {}'.format(meter_id)}, status=404)
+
+        meter_uid = meter.attributes.get('utilityapi_meter_uid')
+        if not meter_uid:
+            return JsonResponse({'error': 'Meter {} does not have a utilityapi_meter_uid'.format(meter_id)}, status=400)
+
+        u_bills = utilityapi_utils.get_bills(meter_uid)
+
+        if u_bills:
+            try:
+                results, count_existing, from_datetime, thru_datetime = utilityapi_utils.import_meter_bills(u_bills, meter_uid, meter_id, request.user)
+            except ValueError as e:
+                return JsonResponse({'error': e})
+            else:
+                success_message = ''
+                count = len(results)
+                if count > 0:
+                    success_message = 'Sucessfully imported {} Meter Bill Entries'.format(count)
+                else:
+                    success_message = 'No new Meter Bill Entries imported'
+
+                if from_datetime:
+                    success_message += ' in period from {}'.format(from_datetime)
+                if thru_datetime:
+                    if not from_datetime:
+                        success_message += ' in period'
+                    success_message += ' to {}'.format(thru_datetime)
+
+                if count_existing > 0:
+                    tmp = 'Bill Entries'
+                    if count_existing == 1:
+                        tmp = 'Bill Entriy'
+                    success_message += ', {} Meter {} already exists'.format(count_existing, tmp)
+
+                response = JsonResponse({'success': 1, 'message': success_message})
+
+                return response
+        else:
+            return JsonResponse({'error': 'Cannot get UtilityAPI meter bills data'})
+
+
+@login_required()
+@api_view(['POST'])
 def meters_data_import(request, site_id):
     if request.method == 'POST':
         data = request.data

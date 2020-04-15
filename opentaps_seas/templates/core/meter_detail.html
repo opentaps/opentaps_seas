@@ -63,23 +63,39 @@
       </p>
       {% endif %}
 
-      <div>
-        <div class="row m-0">
-            <div class="">
-              <b>Meter Rate Plan:</b>
-              {% if not rate_plan_history %}
-                n/a
-              {% else %}
-                <a href="{% url 'core:meter_rate_plan_history_detail' rate_plan_history.rate_plan_history_id %}"">{{ rate_plan_history.description }}</a>
-              {% endif %}
-            </div>
+      <div class="row m-0 mb-2">
+        <div>
+          <b>Meter Rate Plan:</b>
+          {% if not rate_plan_history %}
+            n/a
+          {% else %}
+            <a href="{% url 'core:meter_rate_plan_history_detail' rate_plan_history.rate_plan_history_id %}">{{ rate_plan_history.description }}</a>
+          {% endif %}
+        </div>
 
-            <div class="text-right flex-grow-1">
-              <a class="btn btn-primary" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
-            </div>
-
+        <div class="text-right flex-grow-1">
+          <a class="btn btn-primary btn-sm" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
         </div>
       </div>
+
+      {% if meter.attributes.utilityapi_meter_uid %}
+      <div class="row m-0 mb-2" id="utilityapi_meter_bill">
+        <div>
+          <b>Meter Utility API Id:</b> {{ meter.attributes.utilityapi_meter_uid }}
+          <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">${ errors.error }
+            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="alert alert-success mt-3" role="alert" v-if="success">${ success }
+            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+        </div>
+
+        <div class="text-right flex-grow-1">
+          <b-spinner v-if="loading" variant="secondary"></b-spinner>
+          <button v-if="!loading" v-on:click="get_bills" class="btn btn-primary btn-sm"><i class="fas fa-cloud-download-alt"></i> Get Bills</button>
+        </div>
+      </div>
+      {% endif %}
 
       <div class="form-group d-flex justify-content-around mt-5">
         <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
@@ -138,4 +154,54 @@
   {% endblock after_content %}
 
 </div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    name: 'utilityapi_meter_bill',
+    el: '#utilityapi_meter_bill',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        loading: false,
+        success: false,
+        errors: {'error': null},
+      }
+    },
+    mounted() {
+    },
+    methods: {
+      close_alert() {
+        this.success = false;
+        this.errors = {'error': null};
+      },
+      get_bills() {
+        this.errors = {'error': null};
+        url = dutils.urls.resolve('utilityapi_meter_bills_import', {meter_id: '{{object.meter_id}}' });
+        console.log('get_bills for {{object.meter_id}} ...')
+        this.loading = true;
+        this.success = false;
+        axios.post(url, {}, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+          .then(x => x.data)
+          .then(x => {
+            if (x.success) {
+              console.log('get_bills, result = ', x);
+              this.success = x.message;
+            }
+            this.loading = false;
+          })
+          .catch(err => {
+            e = getResponseError(err);
+            console.error(e, err);
+            this.errors = e;
+            this.loading = false;
+          });
+      }
+    }
+  });
+})();
+</script>
 {% endblock content %}

@@ -4,6 +4,7 @@ from datetime import timedelta
 from datetime import timezone
 
 from ..core.models import MeterHistory
+from ..core.models import MeterFinancialValue
 
 import xml.etree.ElementTree as ET
 from django.conf import settings
@@ -32,11 +33,11 @@ def get_meters(auth_uids=None):
 
 
 def get_meter(meter_uid):
-    request_name = 'meters/' + meter_uid
+    return utilityapi_get('meters/' + meter_uid)
 
-    data = utilityapi_get(request_name)
 
-    return data
+def get_bills(meter_uid):
+    return utilityapi_get('bills?meters=' + meter_uid)
 
 
 def utilityapi_get(request_name, params=None):
@@ -182,3 +183,62 @@ def import_meter_readings(u_meter, meter_uid, meter_id, user):
                 count_existing += 1
 
     return count, count_existing, from_datetime, thru_datetime
+
+
+def import_meter_bills(u_bills, meter_uid, meter_id, user):
+    count_existing = 0
+    from_datetime = None
+    thru_datetime = None
+
+    currency_uom_id = 'currency_USD'
+    # collect created MeterFinancialValues
+    results = []
+
+    bills = u_bills.get('bills', [])
+    for bill in bills:
+        uid = bill.get('uid')
+        ref = {'meter_uid': meter_uid, 'uid': uid}
+        # CLeanup any previous entries we had for the same reference (meter/bill ids)
+        existing = MeterFinancialValue.objects.filter(meter_id=meter_id, meter_production_reference=ref)
+        count_existing = count_existing + existing.count()
+        existing.delete()
+        # base = bill.get('base', {})
+        line_items = bill.get('line_items', [])
+        # the bill period and volume and cost
+        # eg: '2020-02-29T16:00:00.000000-08:00'
+        #  bill_start_date = base.get('bill_start_date')
+        #  bill_end_date = base.get('bill_end_date')
+        #  bill_total_cost = base.get('bill_total_cost')
+        #  bill_total_volume = base.get('bill_total_volume')
+        # eg: 'kwh'
+        #  bill_total_unit = base.get('bill_total_unit')
+
+        # NOTE: those numbers do not necessarily match the line items dates (?)
+        for line in line_items:
+            l_cost = line.get('cost')
+            l_name = line.get('name')
+            l_start = line.get('start')
+            l_end = line.get('end')
+            # l_unit = line.get('unit')
+            # l_volume = line.get('volume')
+            # Record those as MeterFinancialValues
+            m = MeterFinancialValue.objects.create(
+                    meter_id=meter_id,
+                    from_datetime=l_start,
+                    thru_datetime=l_end,
+                    source=l_name,
+                    meter_production_type='UtilityApi Bill',
+                    meter_production_reference=ref,
+                    amount=l_cost,
+                    uom_id=currency_uom_id,
+                    created_by_user=user
+                    )
+            # auto convert the types (like date from string to date objects)
+            m.refresh_from_db()
+            results.append(m)
+            if not from_datetime or from_datetime > m.from_datetime:
+                from_datetime = m.from_datetime
+            if not thru_datetime or thru_datetime < m.thru_datetime:
+                thru_datetime = m.thru_datetime
+
+    return results, count_existing, from_datetime, thru_datetime
