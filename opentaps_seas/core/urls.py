@@ -184,4 +184,5 @@ urlpatterns = [
          name="utilityapi_meter_bills_import"),
     path("utilityapi/meters_data_import/<path:site_id>", view=utilityapi.meters_data_import,
          name="utilityapi_meters_data_import"),
+    path("uom.json", view=common.uom_list_json_view, name="uom_list_json"),
 ]

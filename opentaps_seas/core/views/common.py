@@ -21,6 +21,7 @@ from .. import utils
 from ..celery import Progress
 from ..models import Geo
 from ..models import TimeZone
+from ..models import UnitOfMeasure
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -237,3 +238,18 @@ get_task_progress = GetTaskProgressView.as_view()
 def get_task_progress_json(request, task_id):
     progress = Progress(task_id)
     return HttpResponse(json.dumps(progress.get_info()), content_type='application/json')
+
+
+class UOMListJsonView(LoginRequiredMixin, ListView):
+    model = UnitOfMeasure
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.order_by(Lower('description'))
+
+    def render_to_response(self, context, **response_kwargs):
+        data = list(context['object_list'].values('uom_id', 'description', 'type'))
+        return JsonResponse({'items': data})
+
+
+uom_list_json_view = UOMListJsonView.as_view()

@@ -147,6 +147,7 @@ class MeterDataSolarEdgeForm(forms.Form):
 
 class MeterDataUploadForm(forms.Form):
     meter = forms.CharField(max_length=255)
+    uom = forms.CharField(max_length=255)
     meter_data = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv,.xml'}))
 
     def __init__(self, *args, **kwargs):
@@ -155,6 +156,7 @@ class MeterDataUploadForm(forms.Form):
 
     def save(self, commit=True):
         meter = self.cleaned_data['meter']
+        uom = self.cleaned_data['uom']
         meter_data = self.cleaned_data['meter_data']
         file_name = str(meter_data)
 
@@ -162,7 +164,7 @@ class MeterDataUploadForm(forms.Form):
         count = 0
 
         if file_name.endswith('.csv'):
-            import_errors, count = self.import_csv(meter, meter_data)
+            import_errors, count = self.import_csv(meter, meter_data, uom)
         elif file_name.endswith('.xml'):
             import_errors, count = self.import_xml(meter, meter_data)
         else:
@@ -213,7 +215,7 @@ class MeterDataUploadForm(forms.Form):
 
         return import_errors, count
 
-    def import_csv(self, meter, meter_data):
+    def import_csv(self, meter, meter_data, uom_id=None):
         fcsv = TextIOWrapper(meter_data.file, encoding=meter_data.charset if meter_data.charset else 'utf-8')
 
         import_errors = False
@@ -228,8 +230,8 @@ class MeterDataUploadForm(forms.Form):
                 import_errors = "Cannot parse CSV file."
             else:
                 logger.info('MeterDataUploadForm: importing Meter CSV Data ...')
-                # assume all data is in kwh for now
-                uom_id = 'energy_kWh'
+                if not uom_id:
+                    uom_id = 'energy_kWh'
                 # assume all data duration 1 hour for now
                 duration = 3600
                 if records:
