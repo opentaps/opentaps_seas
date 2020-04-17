@@ -40,6 +40,10 @@ def get_bills(meter_uid):
     return utilityapi_get('bills?meters=' + meter_uid)
 
 
+def create_form(customer_email):
+    return utilityapi_post('forms', {'customer_email': customer_email})
+
+
 def utilityapi_get(request_name, params=None):
     url = URL_UTILITYAPI + '/' + request_name
     if params:
@@ -47,6 +51,16 @@ def utilityapi_get(request_name, params=None):
 
     headers = prepare_headers()
     r = requests.get(url, headers=headers)
+
+    utilityapi_data = r.json()
+    return utilityapi_data
+
+
+def utilityapi_post(request_name, data=None):
+    url = URL_UTILITYAPI + '/' + request_name
+
+    headers = prepare_headers()
+    r = requests.post(url, headers=headers, json=data)
 
     utilityapi_data = r.json()
     return utilityapi_data

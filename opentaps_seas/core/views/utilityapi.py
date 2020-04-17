@@ -79,7 +79,8 @@ def meters(request):
                 return JsonResponse({'meters': meters})
 
             else:
-                return JsonResponse({'error': 'Cannot get UtilityAPI authorizations', 'error_code': 1})
+                msg = 'Cannot get UtilityAPI authorizations. Please try another email or create Authorization form.'
+                return JsonResponse({'error_code': 1, 'error': msg})
 
         else:
             return JsonResponse({'error': 'Customer Email is required'})
@@ -335,3 +336,28 @@ class MetersImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
 
 
 meters_import_view = MetersImport.as_view()
+
+
+@login_required()
+@api_view(['POST'])
+def create_form(request):
+    if request.method == 'POST':
+        data = request.data
+        customer_email = data.get('customer_email')
+
+        authorization_form = utilityapi_utils.create_form(customer_email)
+
+        if authorization_form:
+            auth_form = {}
+            if not authorization_form.get('error'):
+                if authorization_form.get('uid') and authorization_form.get('url'):
+                    auth_form['uid'] = authorization_form.get('uid')
+                    auth_form['url'] = authorization_form.get('url')
+
+                    return JsonResponse({'success': 1, 'auth_form': auth_form})
+                else:
+                    return JsonResponse({'error': 'Cannot get UtilityAPI authorization form url'})
+            else:
+                return JsonResponse({'error': 'Cannot create UtilityAPI authorization form'})
+        else:
+            return JsonResponse({'error': 'Cannot create UtilityAPI authorization form'})
