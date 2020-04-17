@@ -121,9 +121,9 @@
     data() {
       return {
         fields: [
-          { key: 'meter_data', value: '', type: 'file', accept: '.csv' },
+          { key: 'meter_data', value: '', type: 'file', accept: '.xml' },
         ],
-        selectedFileType: 'csv',
+        selectedFileType: 'xml',
         uoms: [],
         currentUom: {value: 'energy_kWh', label: 'energy_kWh'},
       }
@@ -150,10 +150,10 @@
         eventHub.$emit('meter_data_changed', {type: 'uploaded'})
       },
       post_show: function(item) {
-        this.selectedFileType = 'csv';
+        this.selectedFileType = 'xml';
         this.changeFileType(this.selectedFileType);
         this.currentUom = {value: 'energy_kWh', label: 'energy_kWh'};
-        axios.get('{% url 'core:uom_list_json' %}')
+        axios.get("{% url 'core:uom_restricted_list_json' 'energy_' %}")
           .then(x => x.data.items)
           .then(x => {
             for (var i=0;i<x.length;i++) {

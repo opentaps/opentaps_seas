@@ -185,4 +185,5 @@ urlpatterns = [
     path("utilityapi/meters_data_import/<path:site_id>", view=utilityapi.meters_data_import,
          name="utilityapi_meters_data_import"),
     path("uom.json", view=common.uom_list_json_view, name="uom_list_json"),
+    path("uom.json/<str:restricted>", view=common.uom_list_json_view, name="uom_restricted_list_json"),
 ]

@@ -245,6 +245,10 @@ class UOMListJsonView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
+
+        restricted = self.kwargs['restricted']
+        if restricted:
+            qs = qs.filter(uom_id__istartswith=restricted)
         return qs.order_by(Lower('description'))
 
     def render_to_response(self, context, **response_kwargs):
