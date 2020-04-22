@@ -307,6 +307,12 @@ input.vs__search:-moz-placeholder {
 .topics-table thead {
     color: #007bff;
 }
+th[align="left"] {
+  text-align: left;
+}
+th[align="right"] {
+  text-align: right;
+}
 
 @media (min-width: 576px) {
   .border-sm-0 {

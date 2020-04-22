@@ -943,6 +943,10 @@ class Meter(models.Model):
         qs = FinancialTransaction.objects.filter(meter_id=self.meter_id)
         return qs.order_by('-transaction_datetime')
 
+    def financial_values(self):
+        qs = MeterFinancialValue.objects.filter(meter_id=self.meter_id)
+        return qs.order_by('-from_datetime')
+
     @property
     def latest_reading(self):
         return self.meterhistory_set.order_by('-as_of_datetime').first()
@@ -1143,6 +1147,9 @@ class MeterFinancialValue(models.Model):
     source = CharField(_("Source"), max_length=255)
     created_datetime = DateTimeField(_("Created Date"), default=now)
     created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def get_absolute_url(self):
+        return reverse("core:meter_financial_value_detail", kwargs={"meter": self.meter_id, "meter_value_id": self.meter_value_id})
 
     class Meta:
         db_table = 'core_meter_financial_value'

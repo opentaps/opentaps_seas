@@ -150,6 +150,11 @@
           </div>
         </div>
       </div>
+
+      {% if object.financial_values.exists %}
+        {% url 'core:meter_financial_values_table' object.meter_id as meter_financial_values_url %}
+        {% include "core/_ajax_table.html" with title="Financial Values" name="financial_values" table_url=meter_financial_values_url %}
+      {% endif %}
     {% endif %}
   {% endblock after_content %}
 

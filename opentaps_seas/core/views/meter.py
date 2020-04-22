@@ -34,6 +34,8 @@ from ..models import datetime_to_string
 from ..models import Entity
 from ..models import EquipmentView
 from ..models import Meter
+from ..models import MeterFinancialValue
+from ..models import MeterFinancialValueItem
 from ..models import MeterRatePlan
 from ..models import MeterRatePlanHistory
 from ..models import SiteView
@@ -45,17 +47,97 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import JsonResponse
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import CreateView
 from django.views.generic import DeleteView
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
+from django_tables2 import Column
+from django_tables2 import Table
+from django_tables2.config import RequestConfig
+from django_tables2.views import SingleTableMixin
 from opentaps_seas.eemeter.models import BaselineModel
 from rest_framework.decorators import api_view
 
 logger = logging.getLogger(__name__)
+
+
+class MeterFinancialValueTable(Table):
+    meter_value_id = Column(verbose_name='ID', linkify=lambda record: record.get_absolute_url())
+    amount = Column(attrs={'th': {'align': 'right'}, 'td': {'align': 'right'}})
+    meter = Column(linkify=True)
+
+    def render_amount(self, record):
+        return "{} {}".format(record.uom.symbol, record.amount)
+
+    class Meta:
+        attrs = {"style": "font-size:small"}
+        model = MeterFinancialValue
+        fields = (
+            'from_datetime',
+            'thru_datetime',
+            'source',
+            'amount',
+            'meter'
+            )
+        order_by = '-from_datetime'
+
+
+@login_required()
+def meter_financial_values_table(request, meter):
+    s = get_object_or_404(Meter, meter_id=meter)
+    rc = RequestConfig(request, paginate={"per_page": 10})
+    table = rc.configure(MeterFinancialValueTable(s.financial_values()))
+    return HttpResponse(table.as_html(request))
+
+
+class MeterFinancialValueItemTable(Table):
+    amount = Column(attrs={'th': {'align': 'right'}, 'td': {'align': 'right'}})
+
+    def render_amount(self, record):
+        return "{} {}".format(record.uom.symbol, record.amount)
+
+    class Meta:
+        attrs = {"style": "font-size:small"}
+        model = MeterFinancialValueItem
+        fields = (
+            'from_datetime',
+            'thru_datetime',
+            'description',
+            'amount'
+            )
+        order_by = '-from_datetime'
+
+
+@login_required()
+def meter_financial_value_items_table(request, meter_value_id):
+    s = get_object_or_404(MeterFinancialValue, meter_value_id=meter_value_id)
+    rc = RequestConfig(request, paginate={"per_page": 10})
+    table = rc.configure(MeterFinancialValueItemTable(s.meterfinancialvalueitem_set))
+    return HttpResponse(table.as_html(request))
+
+
+class MeterFinancialValueDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+    model = MeterFinancialValue
+    slug_field = "meter_value_id"
+    slug_url_kwarg = "meter_value_id"
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        if self.kwargs['meter']:
+            b.append({
+                'url': reverse('core:meter_detail', kwargs={"meter_id": self.kwargs['meter']}),
+                'label': 'Meter {}'.format(self.kwargs['meter'])})
+        b.append({'label': 'Meter Financial Value {}'.format(self.kwargs['meter_value_id'])})
+        return b
+
+
+meter_financial_value_detail = MeterFinancialValueDetailView.as_view()
 
 
 class MeterListJsonView(LoginRequiredMixin, ListView):
