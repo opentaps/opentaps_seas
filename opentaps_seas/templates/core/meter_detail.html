@@ -37,7 +37,16 @@
       {% if object.description %}
         <h2>Meter {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.meter_id }})</span></h2>
       {% else %}
-        <h2>Meter {{ object.meter_id }}</h2>
+        <h2>
+          <div class="row m-0">
+            <div>Meter {{ object.meter_id }}</div>
+            {% if newmeter %}
+            <div class="text-right flex-grow-1">
+              <a class="btn btn-primary" href="{% url 'core:utilityapi_meters_import' site_id %}"><i class="fa fa-plus"></i> Add from UtilityAPI</a>
+            </div>
+            {% endif %}
+          </div>
+        </h2>
       {% endif %}
       <br/>
       {% block inner_content %}

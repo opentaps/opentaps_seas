@@ -20,7 +20,13 @@
 
 {% load static %}
 
-{% block title %}UtilityAPI Meter Data Import{% endblock %}
+{% block title %}
+{% if meter_id %}
+  Import Data from UtilityAPI Meter
+{% else %}
+  Add Meter from UtilityAPI
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -30,9 +36,9 @@
   <div class="card mb-3" id="meterdataimport" v-cloak>
     <div class="card-body">
       {% if meter_id %}
-        <h2>UtilityAPI Meter Data Import</h2>
+        <h2>Import Data from UtilityAPI Meter</h2>
       {% else %}
-        <h2>UtilityAPI Meters Import</h2>
+        <h2>Add Meter from UtilityAPI</h2>
       {% endif %}
       <br/>
       {% block inner_content %}
@@ -72,8 +78,11 @@
         <b-spinner v-if="isSearchDisabled" variant="secondary"></b-spinner>
       </div>
 
-      <div v-if="authUrl" class="alert alert-success mt-3" role="alert">
-          UtilityAPI authorization form successfully created. Please, use this link <a :href="authUrl" target="_blank">to confirm authorization</a>.
+      <div v-if="authUrl">
+        <div class="alert alert-success mt-3" role="alert">
+          UtilityAPI authorization form successfully created. Please send this <a :href="authUrl" target="_blank">link</a> to your customer to confirm authorization.
+        </div>
+        <div class="alert alert-secondary mt-3" role="alert">${ authUrl }</div>
       </div>
 
       <div class="mt-3" v-if="meters.length">
@@ -102,7 +111,7 @@
           </b-form-group>
           <div class="mt-3 text-right">
             <b-button variant="primary" v-on:click.stop.prevent="import_utilityapi_meters()" :disabled="isImportDisabled">
-              <i class="fa fa-plus"></i> Import Meters
+              <i class="fa fa-plus"></i> Add Meters
             </b-button>
             <b-spinner v-if="isImportDisabled" variant="secondary"></b-spinner>
           </div>
