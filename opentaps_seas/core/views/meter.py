@@ -509,6 +509,7 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
         context = super(MeterCreateView, self).get_context_data(**kwargs)
         # add the parent Site Id
         context['site_id'] = self.kwargs['site_id']
+        context['newmeter'] = True
 
         return context
 

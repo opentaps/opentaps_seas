@@ -79,7 +79,8 @@ def meters(request):
                 return JsonResponse({'meters': meters})
 
             else:
-                msg = 'Cannot get UtilityAPI authorizations. Please try another email or create Authorization form.'
+                msg = '''No UtilityAPI authorization found for this email address.
+                          Please try another email or create an authorization form.'''
                 return JsonResponse({'error_code': 1, 'error': msg})
 
         else:
@@ -297,7 +298,7 @@ class DataImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                 label = 'Meter ' + meter.description
             b.append({'url': url, 'label': label})
 
-        b.append({'label': 'UtilityAPI Meter Data Import'})
+        b.append({'label': 'Import Data from UtilityAPI Meter'})
         return b
 
 
@@ -331,7 +332,7 @@ class MetersImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                 url = reverse("core:site_detail", kwargs={'site': self.kwargs['site_id']})
                 b.append({'url': url, 'label': label})
 
-        b.append({'label': 'UtilityAPI Meters Import'})
+        b.append({'label': 'Add Meter from UtilityAPI'})
         return b
 
 
