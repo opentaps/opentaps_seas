@@ -1148,6 +1148,21 @@ class MeterFinancialValue(models.Model):
         db_table = 'core_meter_financial_value'
 
 
+class MeterFinancialValueItem(models.Model):
+    meter_value_item_id = AutoField(_("Meter Value Item ID"), primary_key=True, auto_created=True)
+    meter_value = ForeignKey(MeterFinancialValue, on_delete=models.CASCADE)
+    from_datetime = DateTimeField(_("From Date"), default=now)
+    thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
+    amount = FloatField(_("Amount"), null=True)
+    uom = ForeignKey(UnitOfMeasure, related_name='+', on_delete=models.DO_NOTHING)
+    description = CharField(_("Description"), max_length=255, blank=True, null=True)
+    created_datetime = DateTimeField(_("Created Date"), default=now)
+    created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        db_table = 'core_meter_financial_value_item'
+
+
 class SiteWeatherStations(models.Model):
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     weather_station = ForeignKey(WeatherStation, on_delete=models.CASCADE)
