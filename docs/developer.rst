@@ -43,6 +43,16 @@ Parties are the people and organizations in business relationships, such as the 
 system or a specialized billing system that has all this information.  So instead of implementing it all over again in opentaps SEAS and making you implement an integration, 
 parties are just a "stub" for interfacing with external system.  See the `opentaps_seas/party` directory.
 
+UtilityAPI
+==========
+
+UtilityAPI is a paid service that gets meter readings and utility bills from your customers.  It is compatible with the utilities on https://support.utilityapi.com/hc/en-us/articles/229667647-What-Utilities-Does-UtilityAPI-Cover-
+
+If your customer is served by one of these utilities, you will need to get them to grant you permission to access their account.  This requires setting up an authorization form
+with UtilityAPI and sending them a link to the form.  (See https://support.utilityapi.com/hc/en-us/articles/235404307-Three-Steps-To-Getting-Energy-Data)
+
+Once they have authorized your access, this meter is in your account.  You can then search for the customer by email address.
+
 Haystack
 ========
 

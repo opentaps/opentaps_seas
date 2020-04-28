@@ -79,6 +79,13 @@ and then put it in ``secrets.json``::
 
  OPENEI_API_KEY
 
+UtilityAPI
+^^^^^^^^^^
+
+UtilityAPI is a service that allows you to get meter readings and utility bills from customers.  Once you've set up an account and gotten an API key, put it in ``secrets.json``::
+
+  UTILITY_API_KEY 
+
 Encrypted Data
 ^^^^^^^^^^^^^^
 
