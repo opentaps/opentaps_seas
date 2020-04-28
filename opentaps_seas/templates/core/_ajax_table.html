@@ -19,8 +19,8 @@
 
 
 {% block content %}
-<div class="card mb-3">
-  <div class="card-body" id="{{ name }}_table"  @click="override_click">
+<div v-cloak class="card mb-3" id="{{ name }}_table" {% if hide_empty %} v-show="hasData" {% endif %}>
+  <div class="card-body" @click="override_click">
     <loading :active.sync="isLoading" :is-full-page="false"></loading>
     {% if title %}<h3>{{ title }}</h3>{% endif %}
     <div id="table" ref="table">Loading ...</div>
@@ -34,11 +34,15 @@
     el: '#{{ name }}_table',
     data() {
       return {
+        hasData: false,
         isLoading: false
       }
     },
+    created: function () {
+      eventHub.$on('{{ name }}_table_refresh', this.fetchData)
+    },
     mounted() {
-      this.fetchData();
+      this.fetchData()
     },
     methods: {
       override_click(e) {
@@ -61,6 +65,7 @@
         axios.get(url).then(response => {
           console.log('Fetching {{ name }} table got ', response);
           this.$refs.table.innerHTML = response.data;
+          if (this.$refs.table.getElementsByTagName('tr').length > 1) this.hasData = true;
           this.isLoading = false;
         });
       },

@@ -59,7 +59,6 @@ from django.views.generic import UpdateView
 from django_tables2 import Column
 from django_tables2 import Table
 from django_tables2.config import RequestConfig
-from django_tables2.views import SingleTableMixin
 from opentaps_seas.eemeter.models import BaselineModel
 from rest_framework.decorators import api_view
 
@@ -67,9 +66,8 @@ logger = logging.getLogger(__name__)
 
 
 class MeterFinancialValueTable(Table):
-    meter_value_id = Column(verbose_name='ID', linkify=lambda record: record.get_absolute_url())
+    meter_value_id = Column(verbose_name='#', linkify=lambda record: record.get_absolute_url())
     amount = Column(attrs={'th': {'align': 'right'}, 'td': {'align': 'right'}})
-    meter = Column(linkify=True)
 
     def render_amount(self, record):
         return "{} {}".format(record.uom.symbol, record.amount)
@@ -78,11 +76,11 @@ class MeterFinancialValueTable(Table):
         attrs = {"style": "font-size:small"}
         model = MeterFinancialValue
         fields = (
+            'meter_value_id',
             'from_datetime',
             'thru_datetime',
             'source',
-            'amount',
-            'meter'
+            'amount'
             )
         order_by = '-from_datetime'
 
