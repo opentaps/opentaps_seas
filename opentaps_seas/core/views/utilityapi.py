@@ -20,8 +20,10 @@ from datetime import datetime
 
 from .common import WithBreadcrumbsMixin
 from .. import utilityapi_utils
+from .. import utils
 from ..models import Meter
 from ..models import MeterHistory
+from ..models import Entity
 
 from ..models import SiteView
 
@@ -201,6 +203,7 @@ def meters_data_import(request, site_id):
     if request.method == 'POST':
         data = request.data
         meter_uids = data.get('meter_uids')
+        weather_station_id = data.get('weather_station_id')
 
         new_meter_uids = []
         for meter_uid in meter_uids:
@@ -223,6 +226,8 @@ def meters_data_import(request, site_id):
                 meter.description = 'UtilityAPI meter ' + meter_uid
                 meter.from_datetime = datetime.now()
                 meter.attributes = {'utilityapi_meter_uid': meter_uid}
+                if weather_station_id:
+                    meter.weather_station_id = weather_station_id
 
                 meter.save()
                 try:
@@ -275,6 +280,7 @@ class DataImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                     last_timestamp = mh.as_of_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
         context["last_timestamp"] = last_timestamp
+
         return context
 
     def get_breadcrumbs(self, context):
@@ -321,6 +327,15 @@ class MetersImport(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(MetersImport, self).get_context_data(**kwargs)
         context["site_id"] = self.kwargs['site_id']
+
+        try:
+            site = Entity.objects.get(entity_id=self.kwargs['site_id'])
+        except SiteView.DoesNotExist:
+            pass
+        else:
+            weather_station = utils.get_default_weather_station_for_site(site)
+            if weather_station:
+                context['weather_station_id'] = weather_station.weather_station_id
 
         return context
 

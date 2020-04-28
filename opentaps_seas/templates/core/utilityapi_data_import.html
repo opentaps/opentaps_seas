@@ -113,6 +113,12 @@
                 stacked
                ></b-form-checkbox-group>
           </b-form-group>
+          <div class="mt-3" v-if="weatherStations.length">
+              <label for="weatherStation">Weather Station</label>
+              <select name="weatherStation" class="select form-control" id="id_weatherStation" v-model="selectedWeatherStation">
+                <option v-for="c in weatherStations" :value="c.id">${ c.value }</option>
+              </select>
+          </div>
           <div class="mt-3 text-right">
             <b-button variant="primary" v-on:click.stop.prevent="import_utilityapi_meters()" :disabled="isImportDisabled">
               <i class="fa fa-plus"></i> Add Meters
@@ -146,6 +152,8 @@
         isSearchDisabled: false,
         isImportDisabled: false,
         showAuthButton: false,
+        weatherStations: [],
+        selectedWeatherStation: {%if weather_station_id %}'{{ weather_station_id|safe}}'{%else%}null{%endif%},
         meters: [],
         selectedMeters: [],
         selectedMeter: {%if meter_uid %}'{{ meter_uid|safe}}'{%else%}null{%endif%},
@@ -192,6 +200,7 @@
                               this.selectedMeters.push(x.data.meters[i].uid);
                           }
                       }
+                      this.get_weather_stations();
                   }
                   this.isSearchDisabled = false;
                 })
@@ -247,7 +256,7 @@
               this.errors = {'error': 'Please, select UtilityAPI Meters.'};
           } else {
               this.isImportDisabled = true;
-              data = {meter_uids: this.selectedMeters};
+              data = {meter_uids: this.selectedMeters, weather_station_id: this.selectedWeatherStation};
               axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
                 .then(x => x.data)
                 .then(x => {
@@ -307,6 +316,28 @@
                   this.isSearchDisabled = false;
                 });
           }
+      },
+      get_weather_stations() {
+          console.log('get_weather_stations..');
+          this.errors = {'error': null};
+          this.weatherStations = [];
+          url = dutils.urls.resolve('weather_stations_json');
+          axios.get(url)
+            .then(x => {
+              console.log('get_weather_stations', x.data.items)
+              if (x.data.error) {
+                  this.errors['error'] = x.data.error;
+              } else if (!x.data.items || (x.data.items && x.data.items == 0)) {
+                  this.errors['error'] = 'Cannot get weather stations list.';
+              } else {
+                  this.weatherStations = x.data.items;
+              }
+            })
+            .catch(err => {
+              console.error('get_weather_stations error :', err);
+              e = getResponseError(err);
+              this.errors = e;
+            });
       }
     }
   });
