@@ -1,18 +1,18 @@
 User Documentation
-##################
+==================
 
 Signing In
-**********
+-------------
 
 Open your browser and put ``http://your.ip.address.here:8000`` or the URL opentaps SEAS has been set up on.  You should see the initial login screen here,
 or the Sites page if you're already logged in.
 
 
 Main Sections
-*************
+==================
 
 Sites
-=====
+-------------
 
 A site is a particular building or facility with many different pieces of equipment.  The Sites page lists all the sites you've set up, and you can also add new sites here.  
 
@@ -38,7 +38,7 @@ The Site page shows
  * BACNet configs imported from VOLTTRON (see Topics below.)  Each config is listed by the prefix, and you can click on Topics to view the topics (data points) of this prefix or Export to export them again.  Click on Run Rules to run a rule set (see below) to apply tags for topics of this prefix.  From here you can also create an Equipment for this config.  This is helpful if each BACNet config points to a particular machine, rather than a supervisory controller. 
  
 Meters
-======
+-------------
 
 Each site could be associated with one or more meters, which could be a utility meter or a measuring device to record solar generation, battery charge or discharge, or any other technology’s 
 use or production of energy.  Each Meter is associated with a Weather Station.  We currently use the NOAA ISD weather stations and weather data based on OpenEE Weather.
@@ -58,8 +58,7 @@ which is a simple flat rate plan used for demo purposes, or you can choose to ge
 When you click through to a meter, you will see its past readings (history).  Above the readings are three buttons:
 
  * You can use the powerplug button to get the latest meter readings from UtilityAPI. If the meter was not set up as a UtilityAPI meter, you can do it here.    
- * You can use the up arrow icon to upload the meter history using either a CSV format or the Green Button XML format.  An example of the
-CSV file format could be found in the file ``examples/meter.csv``.  Examples of the Green Button XML file could be found at https://www.energy.gov/downloads/green-button-sample-data-pge  
+ * You can use the up arrow icon to upload the meter history using either a CSV format or the Green Button XML format.  An example of the CSV file format could be found in the file ``examples/meter.csv``.  Examples of the Green Button XML file could be found at https://www.energy.gov/downloads/green-button-sample-data-pge  
  * You can use the down arrow to download the meter readings in a CSV format. 
 
 Below the readings is the meter's weather station, with the latest temperature data.  You can download the temperature data or click through the weather station to see more details about it.
@@ -98,7 +97,7 @@ Meter's rate plan, even if the particular Model was only active during part of t
 
 
 Equipments
-==========
+-------------
 
 This page shows an item of equipment, with all its tags.  You can associate an Equipment with a Model (see below.)
 
@@ -117,7 +116,7 @@ embedded dashboard to show up.  The dashboard displays the data points for these
 Below the dashboard are the data points.  Click on any data point to see its historical values.  Below the data points are files and notes associated with this equipment.
 
 SolarEdge Solar Systems
-^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 SolarEdge solar systems are a special type of equipment.  If you choose SolarEdge when you create an equpiment, you will be prompted for the API key and site ID.  You can set up as 
 many different SolarEdge systems as you'd like, each with their own API key, so you can monitor all your customer sites' systems.
@@ -128,7 +127,7 @@ is like any other equipment at your site, so you can associate files, notes, and
 you the power generated from the system over time.  Instead of the upload icon, there is a cloud icon.  Use this to download more data from SolarEdge.
 
 Data Points
-===========
+-------------
 
 This page shows a data point, with all its tags.  Then it shows the latest value and a graph of the historical data.  If the a Grafana dashboard has been created for this data point,
 there will be a Grafana icon.  Clicking on this icon will open up the Grafana dashboard in a separate browser window.
@@ -137,7 +136,7 @@ Below are the files and notes for this data point.
 
 
 Topics
-======
+-------------
 
 This page shows a list of the topics that are in the time series database.  By default, it will show the object name, present value, and units from BACNet to help you determine what
 the topics are.  You can customize which values are displayed for your topics by clicking on the gear box icon to the right.  This will bring up a menu for configuring the display:
@@ -248,12 +247,12 @@ in tags before and after running the rules.  Each topic would be listed in a row
 You can use the Export and Import features to save your tagging rules as a JSON file download and then upload it again.
 
 Using SQL Scripts
-^^^^^^^^^^^^^^^^^
+-----------------
 
 Another way to tag your topics is to use a SQL script to update these tags in bulk based on their naming patterns.  See the file ``data/ahu/demo/tag_entities.sql`` for an example of how to do this. 
 
 Topics Report
-^^^^^^^^^^^^^
+-------------
 
 To see how you're doing with the tagging, use this report.  It provides you a CSV file of all the topics and their current tags.  
 The topics are in rows and the tags are in columns, and the value will be in the
@@ -262,7 +261,7 @@ cells.  If the tags is a marker tag, there will be an X.
 This CSV file can then be modified and imported back into the system (see above.)  Tags which start with "__" should not be modified, as they will be ignored when you import the CSV file again. 
 
 Exporting Topics
-^^^^^^^^^^^^^^^^
+----------------
 
 Topics can be exported either to a CSV file like the one used for importing topics or to the VOLTTRON BACNet configuration files.  The CSV file has all the topics and their current tags.  
 The topics are in rows and the tags are in columns, and the value will be in the
@@ -285,7 +284,7 @@ Interval set", then you will get a CSV and JSON file combination for all the oth
 on site VOLTTRON instance. 
 
 Transactions
-============
+-------------
 
 Transactions are payments for the energy produced.  They are automatically created from metered energy production or savings and are related to the specific site, meter, and M&V model.
 Once created, they can be in a variety of statuses, such as 
@@ -303,7 +302,7 @@ With each transaction, you can associate files, documents, and notes as part of 
 Transactions related to a particular site or meter are also displayed when you view that site or meter.
 
 Models
-======
+-------------
 
 Models are standard templates of tags, content, and notes.  They can be used to standardize tags, content, and notes for commoonly used equipment.  If you put tags, files or links, and notes 
 on a Model, and then tag the Equipment of a Site as that Model, the Equipment gets all the tags, files, links, and notes of your Model.  This is a one time inheritance: If you change them on 
@@ -321,7 +320,7 @@ deeply as you want.  When you create a new Model, you can choose any other Model
 You can duplicate a Model, which creates a copy of the original Model with all the same tags.  
 
 Tags
-====
+-------------
 
 Tags are for any metadata information.  They could be your custom tags or the tags from Project Haystack.  By default, the Project Haystack 3.0 tags are loaded as part of the seed data.  There are also
 some other tags which are not part of the Haystack standard, but which are useful to opentaps SEAS.  They are loaded from a separate tag seed data file.
