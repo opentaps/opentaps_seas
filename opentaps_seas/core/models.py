@@ -888,6 +888,7 @@ class Meter(models.Model):
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     equipment = ForeignKey(Entity, on_delete=models.CASCADE, blank=True, null=True, related_name='equipment_meters')
     attributes = HStoreField(_("Attributes"), blank=True, null=True)
+    utility_number = IntegerField(_("Utility"), blank=True, null=True)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
 

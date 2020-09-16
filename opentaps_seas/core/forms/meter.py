@@ -271,6 +271,7 @@ class MeterCreateForm(forms.ModelForm):
         description = self.cleaned_data['description']
         meter_id = self.cleaned_data['meter_id']
         site = self.cleaned_data['site']
+        utility_number = self.cleaned_data['utility_number']
 
         if not meter_id or meter_id == '':
             id_base = site.entity_id
@@ -289,6 +290,8 @@ class MeterCreateForm(forms.ModelForm):
             meter.weather_station_id = weather_station.weather_station_id
         meter.from_datetime = from_datetime
         meter.thru_datetime = thru_datetime
+        if utility_number:
+            meter.utility_number = utility_number
 
         meter.save()
         self.instance = Meter.objects.get(meter_id=meter_id)
@@ -298,7 +301,8 @@ class MeterCreateForm(forms.ModelForm):
 
     class Meta:
         model = Meter
-        fields = ["site", "meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
+        fields = ["site", "meter_id", "description", "utility_number",
+                  "weather_station", "from_datetime", "thru_datetime"]
 
 
 class MeterUpdateForm(forms.ModelForm):
@@ -314,7 +318,7 @@ class MeterUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Meter
-        fields = ["meter_id", "description", "weather_station", "from_datetime", "thru_datetime"]
+        fields = ["meter_id", "description", "utility_number", "weather_station", "from_datetime", "thru_datetime"]
 
 
 class MeterRatePlanHistoryUpdateForm(forms.ModelForm):

@@ -48,6 +48,9 @@
           </div>
         </h2>
       {% endif %}
+      {% if object.utility_number %}
+        <h3>Utility {{ object.utility_number }}</h3>
+      {% endif %}
       <br/>
       {% block inner_content %}
       <p>
