@@ -336,9 +336,9 @@ particular machine::
 
  $ vctl config get economizer  devices/econ_demo/building_a/rtu1#@Econ-Demo-A-RTU1
 
-The configurations you get here will match what you see for the economizer agent in the VOLTTRON tab of opentaps SEAS user interface.
+The configurations you get here will match what you see for the economizer agent in the Config/VOLTTRON tab of opentaps SEAS user interface.
 
-Once everything is set up, you can start the VOLTTRON application agent, either from the VOLTTRON tab of opentaps SEAS, or from VOLTTRON.  The output data will be stored
+Once everything is set up, you can start the VOLTTRON application agent, either from the Config/VOLTTRON tab of opentaps SEAS, or from VOLTTRON.  The output data will be stored
 as topics in Crate.  opentaps SEAS will automatically create data points for all your configured output as data points associated with the equipment.
 
 REST API

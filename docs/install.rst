@@ -164,7 +164,7 @@ Now edit your ``secrets.json`` file and put in the username, password, and ip ad
 
 Verify the following: 
  * Your VOLTTRON instance is there with at http://VOLTTRON.central.ip.address:8080/vc/jsonrpc  You should see a response
- * Go to the VOLTTRON tab of opentaps SEAS web interface.  It should show you the agents that are running in VOLTTRON.  You should see a VOLTTRON central agent and a VOLTTRON central platform agent running.
+ * Go to the Config/VOLTTRON tab of opentaps SEAS web interface.  It should show you the agents that are running in VOLTTRON.  You should see a VOLTTRON central agent and a VOLTTRON central platform agent running.
 
 
 Crate
