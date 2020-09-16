@@ -129,26 +129,27 @@
             <li class="nav-item {% if 'core:site_' in request.resolver_match.view_name %}active{% endif %}">
               <a class="nav-link" href="{% url 'core:site_list' %}">{% trans "Sites" %} {% if 'core:site_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
             </li>
-            <li class="nav-item {% if 'core:topic' in request.resolver_match.view_name %}active{% endif %}">
-              <a class="nav-link" href="{% url 'core:topic_list' %}">{% trans "Topics" %} {% if 'core:topic' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
-            </li>
             <li class="nav-item {% if 'core:transaction' in request.resolver_match.view_name %}active{% endif %}">
               <a class="nav-link" href="{% url 'core:transaction_list' %}">{% trans "Transactions" %} {% if 'core:transaction' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
-            </li>
-            <li class="nav-item {% if 'core:model_' in request.resolver_match.view_name %}active{% endif %}">
-              <a class="nav-link" href="{% url 'core:model_list' %}">{% trans "Models" %} {% if 'core:model_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
-            </li>
-            <li class="nav-item {% if 'core:tag_' in request.resolver_match.view_name %}active{% endif %}">
-              <a class="nav-link" href="{% url 'core:tag_list' %}">{% trans "Tags" %} {% if 'core:tag_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
-            </li>
-            <li class="nav-item {% if 'volttron:' in request.resolver_match.view_name %}active{% endif %}">
-              <a class="nav-link" href="{% url 'volttron:default' %}">{% trans "VOLTTRON" %} {% if 'core:tag_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
             </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item {% if 'users:detail' == request.resolver_match.view_name %}active{% endif %}">
                 {# URL provided by django-allauth/account/urls.py #}
                 <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
               </li>
+            {% endif %}
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Config</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{% url 'core:topic_list' %}">{% trans "Topics" %} {% if 'core:topic' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'core:model_list' %}">{% trans "Models" %} {% if 'core:model_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'core:tag_list' %}">{% trans "Tags" %} {% if 'core:tag_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'volttron:default' %}">{% trans "VOLTTRON" %} {% if 'core:tag_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+              </div>
+            </li>
+
+            {% if request.user.is_authenticated %}
               <li class="nav-item {% if 'account_logout' == request.resolver_match.view_name %}active{% endif %}">
                 {# URL provided by django-allauth/account/urls.py #}
                 <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
