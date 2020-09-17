@@ -43,7 +43,7 @@ var pathsConfig = function (appName) {
 var paths = pathsConfig();
 
 ////////////////////////////////
-		//Tasks//
+	//Tasks//
 ////////////////////////////////
 
 // Styles autoprefixing and minification
