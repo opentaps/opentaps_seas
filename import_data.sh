@@ -17,7 +17,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 # script first argument should be one of
-# entity|geo|tag|tagrule|timezone|unit_of_measure|weather_station or all_data
+# entity|geo|tag|tagrule|timezone|unit_of_measure|weather_station|utility or all_data
 # other arguments are what python script expected, i.e.
 # [all|seed|demo] [clean] [run_rules] [ahu_no_point]
 # [tsdemo] to import time series data demo from data/ahu/demo
@@ -58,6 +58,7 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_unit_of_measure --script-args $ARGS
     python manage.py runscript import_weather_stations --script-args $ARGS
     python manage.py runscript import_entities --script-args $ARGS
+    python manage.py runscript import_utilities --script-args $ARGS
     python manage.py runscript import_timezones --script-args $ARGS
     python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_tagrules --script-args $ARGS
@@ -91,6 +92,9 @@ else
     fi
     if [ "$1" == "weather_history" ]; then
         python manage.py runscript import_weather_histories --script-args $ARGS
+    fi
+    if [ "$1" == "utility" ]; then
+        python manage.py runscript import_utilities --script-args $ARGS
     fi
     if [ "$1" == "sample_meter" ]; then
         python manage.py runscript setup_sample_meter --script-args $ARGS

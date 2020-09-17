@@ -1,0 +1,2967 @@
+Utility Number,Utility Name,State,country,Division_type,Division_id
+34,City of Abbeville - (SC),SC,US,NERC_REGION,SERC
+59,City of Abbeville - (LA),LA,US,NERC_REGION,SERC
+84,A & N Electric Coop,VA,US,NERC_REGION,RFC
+87,City of Ada - (MN),MN,US,NERC_REGION,MRO
+97,Adams Electric Coop,IL,US,NERC_REGION,SERC
+113,"Agway Energy Services, LLC",NY,US,NERC_REGION,NPCC
+118,"Adams Rural Electric Coop, Inc",OH,US,NERC_REGION,RFC
+122,Village of Arcade - (NY),NY,US,NERC_REGION,NPCC
+149,City of Afton- (IA),IA,US,NERC_REGION,MRO
+150,Adrian Public Utilities Comm,MN,US,NERC_REGION,MRO
+155,Agralite Electric Coop,MN,US,NERC_REGION,MRO
+157,Town of Advance - (IN),IN,US,NERC_REGION,RFC
+162,Aiken Electric Coop Inc,SC,US,NERC_REGION,SERC
+176,Ajo Improvement Co,AZ,US,NERC_REGION,WECC
+182,City of Akron - (IA),IA,US,NERC_REGION,MRO
+183,Village of Akron - (NY),NY,US,NERC_REGION,NPCC
+191,Alamo Power District No 3,NV,US,NERC_REGION,WECC
+192,Akiachak Native Community Electric,AK,US,NERC_REGION,AK
+195,Alabama Power Co,AL,US,NERC_REGION,SERC
+198,City of Alton,IA,US,NERC_REGION,MRO
+201,City of Alachua - (FL),FL,US,NERC_REGION,FRCC
+202,Town of Black Creek - (NC),NC,US,NERC_REGION,SERC
+213,Alaska Electric Light&Power Co,AK,US,NERC_REGION,AK
+219,Alaska Power and Telephone Co,WA,US,NERC_REGION,AK
+221,"Alaska Village Elec Coop, Inc",AK,US,NERC_REGION,AK
+229,City of Albany - (IL),IL,US,NERC_REGION,RFC
+230,Albany Utility Board,GA,US,NERC_REGION,SERC
+232,City of Albemarle - (NC),NC,US,NERC_REGION,SERC
+240,Albemarle Electric Member Corp,NC,US,NERC_REGION,SERC
+241,Albertville Municipal Utilities Board,AL,US,NERC_REGION,SERC
+244,City of Albion - (ID),ID,US,NERC_REGION,WECC
+261,AGC Division of APG Inc,PA,US,NERC_REGION,RFC
+282,Village of Arcadia - (OH),OH,US,NERC_REGION,RFC
+289,City of Alexander City,AL,US,NERC_REGION,SERC
+295,City of Alexandria - (MN),MN,US,NERC_REGION,MRO
+296,"Alfalfa Electric Coop, Inc",OK,US,NERC_REGION,SPP
+298,City of Alexandria - (LA),LA,US,NERC_REGION,SERC
+305,Alger-Delta Coop Electric Assn,MI,US,NERC_REGION,MISO
+307,Algoma Utility Comm,WI,US,NERC_REGION,MISO
+308,City of Acworth - (GA),GA,US,NERC_REGION,SERC
+309,City of Algona - (IA),IA,US,NERC_REGION,MRO
+329,"Allamakee-Clayton El Coop, Inc",IA,US,NERC_REGION,MRO
+343,AEP Generating Company,OH,US,NERC_REGION,RFC
+367,City of Alliance- (NE),NE,US,NERC_REGION,MRO
+385,City of Alma - (KS),KS,US,NERC_REGION,SSP
+392,Alpena Power Co,MI,US,NERC_REGION,RFC
+405,City of Alta - (IA),IA,US,NERC_REGION,MRO
+406,City of Altamont - (IL),IL,US,NERC_REGION,RFC
+407,Altamaha Electric Member Corp,GA,US,NERC_REGION,SERC
+408,City of Altamont - (KS),KS,US,NERC_REGION,SPP
+416,City of Altus - (OK),OK,US,NERC_REGION,MRO
+471,Amana Society Service Co,IA,US,NERC_REGION,MRO
+482,City of Alvarado - (MN),MN,US,NERC_REGION,MRO
+540,BP Energy Company,TX,US,NERC_REGION,TRE
+554,City of Ames - (IA),IA,US,NERC_REGION,MRO
+560,City of Amherst- (OH),OH,US,NERC_REGION,RFC
+562,Amicalola Electric Member Corp,GA,US,NERC_REGION,SERC
+571,City of Amory,MS,US,NERC_REGION,SERC
+577,City of Alcoa Utilities,TN,US,NERC_REGION,SERC
+588,Anadarko Public Works Authority,OK,US,NERC_REGION,SPP
+590,City of Anaheim - (CA),CA,US,NERC_REGION,WECC
+599,Anchorage Municipal Light and Power,AK,US,NERC_REGION,AK
+659,American Transmission Co,WI,US,NERC_REGION,
+661,Village of Andover - (NY),NY,US,NERC_REGION,NPCC
+669,Village of Angelica - (NY),NY,US,NERC_REGION,NPCC
+689,Connexus Energy,MN,US,NERC_REGION,MRO
+690,City of Bardstown - (KY),KY,US,NERC_REGION,RFC
+691,City of Anoka,MN,US,NERC_REGION,MRO
+694,Anza Electric Coop Inc,CA,US,NERC_REGION,WECC
+695,City of Ansley - (NE),NE,US,NERC_REGION,MRO
+700,City of Anthon - (IA),IA,US,NERC_REGION,MRO
+701,City of Anthony - (KS),KS,US,NERC_REGION,SPP
+712,Arkansas River Power Authority,CO,US,NERC_REGION,WECC
+719,Town of Apex- (NC),NC,US,NERC_REGION,SERC
+723,City of Aplington,IA,US,NERC_REGION,MRO
+727,Appalachian Electric Coop,TN,US,NERC_REGION,SERC
+737,Aguila Irrigation District,AZ,US,NERC_REGION,WECC
+752,City of Arapahoe - (NE),NE,US,NERC_REGION,
+765,City of Arcadia - (WI),WI,US,NERC_REGION,MRO
+768,City of Arcanum - (OH),OH,US,NERC_REGION,RFC
+789,Town of Argos,IN,US,NERC_REGION,RFC
+792,City of Argyle - (WI),WI,US,NERC_REGION,MRO
+798,Arizona Power Authority,AZ,US,NERC_REGION,WECC
+807,Arkansas Electric Coop Corp,AR,US,NERC_REGION,SPP
+814,Entergy Arkansas LLC,AR,US,NERC_REGION,SERC
+817,Arkansas Valley Elec Coop Corp,AR,US,NERC_REGION,SERC
+828,City of Arlington - (MN),MN,US,NERC_REGION,MRO
+831,City of Arlington - (SD),SD,US,NERC_REGION,MRO
+871,Village of Arnold - (NE),NE,US,NERC_REGION,MRO
+887,"Arrowhead Electric Coop, Inc",MN,US,NERC_REGION,MRO
+902,Town of Ashburnham - (MA),MA,US,NERC_REGION,NPCC
+906,Town of Ashland,NH,US,NERC_REGION,NPCC
+907,City of Ashland - (OR),OR,US,NERC_REGION,WECC
+911,City of Ashland - (KS),KS,US,NERC_REGION,SPP
+918,City of Aspen- (CO),CO,US,NERC_REGION,WECC
+944,City of Athens - (AL),AL,US,NERC_REGION,SERC
+947,Athens Utility Board,TN,US,NERC_REGION,SERC
+963,Atlantic City Electric Co,NJ,US,NERC_REGION,RFC
+965,Atlantic Municipal Utilities,IA,US,NERC_REGION,MRO
+970,Homefield Energy,TX,US,NERC_REGION,RFC
+993,Auburn Board of Public Works,NE,US,NERC_REGION,MRO
+994,City of Auburn - (IN),IN,US,NERC_REGION,RFC
+995,City of Auburn - (IA),IA,US,NERC_REGION,MRO
+998,City of Augusta - (KS),KS,US,NERC_REGION,SPP
+1000,City of Augusta - (AR),AR,US,NERC_REGION,SERC
+1002,City of Aurelia - (IA),IA,US,NERC_REGION,MRO
+1004,City of Aurora - (SD),SD,US,NERC_REGION,MRO
+1015,Austin Energy,TX,US,NERC_REGION,TRE
+1024,City of Ava - (MO),MO,US,NERC_REGION,SERC
+1028,Town of Avilla - (IN),IN,US,NERC_REGION,RFC
+1033,City of Axtell - (KS),KS,US,NERC_REGION,SPP
+1046,City of Aztec - (NM),NM,US,NERC_REGION,WECC
+1050,City of Azusa,CA,US,NERC_REGION,WECC
+1062,BARC Electric Coop Inc,VA,US,NERC_REGION,SERC
+1080,City of Badger - (SD),SD,US,NERC_REGION,MRO
+1101,Bagley Public Utilities Comm,MN,US,NERC_REGION,MRO
+1119,Town of Bainbridge - (IN),IN,US,NERC_REGION,RFC
+1148,City of Baldwin City- (KS),KS,US,NERC_REGION,SPP
+1149,Baldwin County El Member Corp,AL,US,NERC_REGION,SERC
+1167,Baltimore Gas & Electric Co,MD,US,NERC_REGION,RFC
+1169,Bailey County Elec Coop Assn,TX,US,NERC_REGION,SPP
+1170,Bamberg Board of Public Works,SC,US,NERC_REGION,SERC
+1172,Bancroft Municipal Utilities,IA,US,NERC_REGION,MRO
+1175,"Bandera Electric Coop, Inc",TX,US,NERC_REGION,TRE
+1179,Versant Power,ME,US,NERC_REGION,NPCC
+1181,Village of Bangor - (WI),WI,US,NERC_REGION,MRO
+1192,City of Banning - (CA),CA,US,NERC_REGION,WECC
+1196,Village of Baraga - (MI),MI,US,NERC_REGION,MISO
+1201,Barbourville Utility Comm,KY,US,NERC_REGION,RFC
+1205,City of Bardwell - (KY),KY,US,NERC_REGION,RFC
+1208,Town of Bargersville - (IN),IN,US,NERC_REGION,RFC
+1232,City of Barnesville - (GA),GA,US,NERC_REGION,SERC
+1233,City of Barnesville - (MN),MN,US,NERC_REGION,MRO
+1251,Barron Electric Coop,WI,US,NERC_REGION,MRO
+1273,"Bartlett Electric Coop, Inc",TX,US,NERC_REGION,TRE
+1276,"Barrow Utils & Elec Coop, Inc",AK,US,NERC_REGION,AK
+1278,City of Barron - (WI),WI,US,NERC_REGION,MRO
+1279,Barry Electric Coop,MO,US,NERC_REGION,SERC
+1283,Bartholomew County Rural E M C,IN,US,NERC_REGION,RFC
+1299,"Barton Village, Inc",VT,US,NERC_REGION,NPCC
+1300,City of Bartow - (FL),FL,US,NERC_REGION,FRCC
+1301,"Barton County Elec Coop, Inc",MO,US,NERC_REGION,SERC
+1307,Basin Electric Power Coop,ND,US,NERC_REGION,SPP
+1324,City of Bastrop - (TX),TX,US,NERC_REGION,TRE
+1325,City of Batavia - (IL),IL,US,NERC_REGION,RFC
+1326,Village of Bartley - (NE),NE,US,NERC_REGION,MRO
+1343,Bath Electric Gas & Water,NY,US,NERC_REGION,NPCC
+1346,City of Battle Creek- (NE),NE,US,NERC_REGION,SPP
+1353,City of Baudette - (MN),MN,US,NERC_REGION,MRO
+1366,City of Bay City - (MI),MI,US,NERC_REGION,RFC
+1367,"Bayfield Electric Coop, Inc",WI,US,NERC_REGION,MRO
+1374,City of Bayard - (NE),NE,US,NERC_REGION,MRO
+1386,Village of Beach City - (OH),OH,US,NERC_REGION,RFC
+1387,City of Benham,KY,US,NERC_REGION,RFC
+1417,"Beartooth Electric Coop, Inc",MT,US,NERC_REGION,WECC
+1427,City of Beatrice - (NE),NE,US,NERC_REGION,SPP
+1434,Beaver City Corporation,UT,US,NERC_REGION,WECC
+1435,City of Beaver City - (NE),NE,US,NERC_REGION,MRO
+1456,Town of Bedford - (VA),VA,US,NERC_REGION,RFC
+1458,"Beauregard Electric Coop, Inc",LA,US,NERC_REGION,SERC
+1494,Town of Belhaven - (NC),NC,US,NERC_REGION,SERC
+1512,City of Belleville - (KS),KS,US,NERC_REGION,MRO
+1515,City of Bellevue - (IA),IA,US,NERC_REGION,MRO
+1519,City of Bellville - (TX),TX,US,NERC_REGION,TRE ERCOT
+1522,Village of Belmont - (WI),WI,US,NERC_REGION,
+1523,Town of Belmont - (MA),MA,US,NERC_REGION,NPCC
+1525,City of Beloit - (KS),KS,US,NERC_REGION,SPP
+1554,City of Benkelman - (NE),NE,US,NERC_REGION,MRO
+1566,City of Bennettsville - (SC),SC,US,NERC_REGION,SERC
+1571,Town of Benson - (NC),NC,US,NERC_REGION,SERC
+1572,Badger Power Marketing Authority,WI,US,NERC_REGION,RFC
+1573,City of Benson - (MN),MN,US,NERC_REGION,MRO
+1579,PUD No 1 of Benton County,WA,US,NERC_REGION,WECC
+1581,City of Benton - (AR),AR,US,NERC_REGION,SERC
+1582,City of Benton - (KY),KY,US,NERC_REGION,SERC
+1585,Village of Benton - (WI),WI,US,NERC_REGION,RFC
+1586,City of Bentonville - (AR),AR,US,NERC_REGION,SPP
+1601,City of Beresford,SD,US,NERC_REGION,MRO
+1604,Village of Bergen - (NY),NY,US,NERC_REGION,NPCC
+1611,"Messer Energy Services, Inc.",NJ,US,NERC_REGION,RFC
+1613,Berkeley Electric Coop Inc,SC,US,NERC_REGION,SERC
+1615,Town of Berlin - (MD),MD,US,NERC_REGION,RFC
+1618,Borough of Berlin - (PA),PA,US,NERC_REGION,RFC
+1625,Benton Rural Electric Assn,WA,US,NERC_REGION,WECC
+1640,City of Bessemer Utilities,AL,US,NERC_REGION,SERC
+1647,City of Bethany - (MO),MO,US,NERC_REGION,RFC
+1648,Village of Bethany - (IL),IL,US,NERC_REGION,RFC
+1650,Village of Bethel - (OH),OH,US,NERC_REGION,RFC
+1671,Big Flat Electric Coop Inc,MT,US,NERC_REGION,WECC
+1675,Big Horn Rural Electric Co,WY,US,NERC_REGION,WECC
+1677,Village of Bloomdale - (OH),OH,US,NERC_REGION,RFC
+1683,"Big Horn County Elec Coop, Inc",MT,US,NERC_REGION,WECC
+1692,Big Rivers Electric Corp,KY,US,NERC_REGION,SERC
+1698,City of Big Stone City - (SD),SD,US,NERC_REGION,MRO
+1708,Big Sandy Rural Elec Coop Corp,KY,US,NERC_REGION,RFC
+1723,"Big Bend Electric Coop, Inc",WA,US,NERC_REGION,WECC
+1726,City of Blue Mound - (KS),KS,US,NERC_REGION,SPP
+1736,Blachly-Lane County Coop El Assn,OR,US,NERC_REGION,WECC
+1738,Bonneville Power Administration,OR,US,NERC_REGION,WECC
+1763,"Black River Electric Coop, Inc - (SC)",SC,US,NERC_REGION,SERC
+1764,Black Diamond Power Co,WV,US,NERC_REGION,RFC
+1765,Village of Black Earth - (WI),WI,US,NERC_REGION,RFC
+1769,"Black Hills Electric Coop, Inc",SD,US,NERC_REGION,WECC
+1775,Black River Electric Coop - (MO),MO,US,NERC_REGION,SERC
+1776,City of Black River Falls,WI,US,NERC_REGION,MISO
+1779,Town of Basin - (WY),WY,US,NERC_REGION,WECC
+1780,Black Warrior Elec Member Corp,AL,US,NERC_REGION,SERC
+1795,Town of Blackstone - (VA),VA,US,NERC_REGION,SERC
+1800,City of Blackwell - (OK),OK,US,NERC_REGION,MRO
+1823,Borough of Blakely - (PA),PA,US,NERC_REGION,RFC
+1826,City of Blakely - (GA),GA,US,NERC_REGION,SERC
+1839,City of Blanding - (UT),UT,US,NERC_REGION,WECC
+1871,City of Blooming Prairie - (MN),MN,US,NERC_REGION,MRO
+1876,City of Blountstown - (FL),FL,US,NERC_REGION,SERC
+1883,Blue Earth Light & Water,MN,US,NERC_REGION,MRO
+1884,BENCO Electric Cooperative,MN,US,NERC_REGION,MRO
+1886,Blue Grass Energy Coop Corp,KY,US,NERC_REGION,RFC
+1889,Blue Ridge Elec Member Corp - (NC),NC,US,NERC_REGION,SERC
+1890,Blue Ridge Electric Coop Inc - (SC),SC,US,NERC_REGION,SERC
+1892,"Bluebonnet Electric Coop, Inc",TX,US,NERC_REGION,TRE
+1896,City of Bluffton - (IN),IN,US,NERC_REGION,RFC
+1898,"Bon Homme Yankton El Assn, Inc",SD,US,NERC_REGION,MRO
+1913,City of Boerne,TX,US,NERC_REGION,TRE
+1936,Bolivar Energy Authority,TN,US,NERC_REGION,SERC
+1955,City of Bridgeport Utilities - (NE),NE,US,NERC_REGION,MRO
+1956,City of Bonners Ferry,ID,US,NERC_REGION,WECC
+1968,Boone Valley Electric Coop,IA,US,NERC_REGION,MRO
+1970,Village of Boonville - (NY),NY,US,NERC_REGION,NPCC
+1987,Town of Bostic - (NC),NC,US,NERC_REGION,SERC
+1997,City of Boscobel - (WI),WI,US,NERC_REGION,MISO
+2001,Boone Electric Coop,MO,US,NERC_REGION,SERC
+2008,City of Boulder City - (NV),NV,US,NERC_REGION,WECC
+2010,City of Bountiful,UT,US,NERC_REGION,WECC
+2054,City of Bowling Green - (OH),OH,US,NERC_REGION,RFC
+2064,Town of Boyce,LA,US,NERC_REGION,SPP
+2086,Town of Boylston - (MA),MA,US,NERC_REGION,NPCC
+2128,Village of Bradner - (OH),OH,US,NERC_REGION,RFC
+2135,City of Brady - (TX),TX,US,NERC_REGION,TRE
+2138,Brainerd Public Utilities,MN,US,NERC_REGION,MRO
+2144,Town of Braintree - (MA),MA,US,NERC_REGION,NPCC
+2152,Powerex Corporation,CN,US,NERC_REGION,WECC
+2172,Brazos Electric Power Coop Inc,TX,US,NERC_REGION,TRE
+2182,City of Breckenridge- (MN),MN,US,NERC_REGION,MRO
+2183,City of Breda - (IA),IA,US,NERC_REGION,MRO
+2188,City of Breese - (IL),IL,US,NERC_REGION,RFC
+2192,Bremen Electric Light & Power Co,IN,US,NERC_REGION,RFC
+2194,City of Brenham - (TX),TX,US,NERC_REGION,TRE
+2206,City of Brewster - (MN),MN,US,NERC_REGION,MRO
+2210,City of Bridgeport - (TX),TX,US,NERC_REGION,TRE
+2212,"Broad River Electric Coop, Inc",SC,US,NERC_REGION,SERC
+2215,"Bridger Valley Elec Assn, Inc",WY,US,NERC_REGION,WECC
+2220,Brigham City Corporation,UT,US,NERC_REGION,WECC
+2236,Town of Brinson - (GA),GA,US,NERC_REGION,SERC
+2247,City of Bristol - (TN),TN,US,NERC_REGION,SERC
+2248,Bristol Virginia Utilities,VA,US,NERC_REGION,SERC
+2268,Town of Braman - (OK),OK,US,NERC_REGION,SPP
+2270,City of Bronson,KS,US,NERC_REGION,SPP
+2272,Village of Brocton - (NY),NY,US,NERC_REGION,NPCC
+2273,Brodhead Water & Lighting Comm,WI,US,NERC_REGION,MISO
+2277,City of Broken Bow - (NE),NE,US,NERC_REGION,MRO
+2285,City of Brookings - (SD),SD,US,NERC_REGION,MRO
+2287,City of Brooklyn - (IA),IA,US,NERC_REGION,MRO
+2304,Town of Brookston - (IN),IN,US,NERC_REGION,RFC
+2316,Brown County Rural Elec Assn,MN,US,NERC_REGION,MRO
+2354,Brown-Atchison E C A Inc,KS,US,NERC_REGION,SPP
+2394,Burke-Divide Electric Coop Inc,ND,US,NERC_REGION,MRO
+2409,Brownsville Public Utilities Board,TX,US,NERC_REGION,TRE
+2412,City of Brownton - (MN),MN,US,NERC_REGION,MRO
+2423,City of Brundidge - (AL),AL,US,NERC_REGION,SERC
+2439,City of Bryan - (OH),OH,US,NERC_REGION,RFC
+2442,City of Bryan - (TX),TX,US,NERC_REGION,TRE
+2448,City of Bryant - (SD),SD,US,NERC_REGION,MRO
+2469,Buckeye Water C&D District,AZ,US,NERC_REGION,WECC
+2481,Cargill Power Markets LLC,MN,US,NERC_REGION,MRO
+2485,City of Buffalo - (MN),MN,US,NERC_REGION,MRO
+2487,City of Buford,GA,US,NERC_REGION,SERC
+2491,City of Buhl - (MN),MN,US,NERC_REGION,MRO
+2502,"Buckeye Rural Elec Coop, Inc",OH,US,NERC_REGION,RFC
+2507,City of Burbank Water and Power,CA,US,NERC_REGION,WECC
+2534,City of Burke - (SD),SD,US,NERC_REGION,MRO
+2545,City of Burley - (ID),ID,US,NERC_REGION,WECC
+2547,City of Burlingame - (KS),KS,US,NERC_REGION,SPP
+2550,City of Burlington - (CO),CO,US,NERC_REGION,WECC
+2551,City of Burlington - (KS),KS,US,NERC_REGION,SPP
+2559,City of Burnet - (TX),TX,US,NERC_REGION,TRE
+2600,City of Burt,IA,US,NERC_REGION,MRO
+2609,City of Burwell - (NE),NE,US,NERC_REGION,MRO
+2633,City of Bushnell - (FL),FL,US,NERC_REGION,FRCC
+2634,City of Bushnell - (IL),IL,US,NERC_REGION,RFC
+2641,"Butler Rural El Coop Assn, Inc - (KS)",KS,US,NERC_REGION,SPP
+2643,Butler Public Power District - (NE),NE,US,NERC_REGION,MRO
+2647,City of Butler - (MO),MO,US,NERC_REGION,SPP
+2650,Borough of Butler - (NJ),NJ,US,NERC_REGION,RFC
+2651,Butler Rural Electric Coop Inc - (OH),OH,US,NERC_REGION,RFC
+2652,Butler County Rural Elec Coop - (IA),IA,US,NERC_REGION,MRO
+2655,"Butte Electric Coop, Inc",SD,US,NERC_REGION,MRO
+2678,C & L Electric Coop Corp,AR,US,NERC_REGION,SPP
+2726,City of Cabool - (MO),MO,US,NERC_REGION,SERC
+2759,Village of Cadott - (WI),WI,US,NERC_REGION,MRO
+2773,City of Cairo - (GA),GA,US,NERC_REGION,SERC
+2774,CMS Electric Coop Inc,KS,US,NERC_REGION,SPP
+2776,Cairo Public Utility Company,IL,US,NERC_REGION,RFC
+2800,City of Caldwell,TX,US,NERC_REGION,SERC
+2809,City of Callender - (IA),IA,US,NERC_REGION,MRO
+2810,City of Caledonia - (MN),MN,US,NERC_REGION,MRO
+2812,City of Calhoun - (GA),GA,US,NERC_REGION,SERC
+2830,Calpine Power America LLC,TX,US,NERC_REGION,TRE
+2851,City of California - (MO),MO,US,NERC_REGION,RFC
+2857,Calpine Energy Services LP,TX,US,NERC_REGION,
+2888,City of Cambridge - (NE),NE,US,NERC_REGION,MRO
+2890,City of Camden,SC,US,NERC_REGION,SERC
+2900,City of Cameron,MO,US,NERC_REGION,SERC
+2910,City of Camilla,GA,US,NERC_REGION,SERC
+2911,"Canadian Valley Elec Coop, Inc",OK,US,NERC_REGION,SPP
+2931,Village of Campbell - (NE),NE,US,NERC_REGION,MRO
+2955,Canby Utility Board,OR,US,NERC_REGION,WECC
+2960,"Caney Fork Electric Coop, Inc",TN,US,NERC_REGION,SERC
+2961,"Caney Valley El Coop Assn, Inc",KS,US,NERC_REGION,SPP
+2964,Cannelton Utilities,IN,US,NERC_REGION,RFC
+2974,Canton Municipal Utilities,MS,US,NERC_REGION,SERC
+2985,"Capital Electric Coop, Inc",ND,US,NERC_REGION,MRO
+2986,"Cam Wal Electric Coop, Inc",SD,US,NERC_REGION,MRO
+2998,"Carbon Power & Light, Inc",WY,US,NERC_REGION,WECC
+3008,Village of Carey - (OH),OH,US,NERC_REGION,RFC
+3029,City of Carlisle- (IA),IA,US,NERC_REGION,MRO
+3037,City of Carlyle - (IL),IL,US,NERC_REGION,RFC
+3040,City of Carmi - (IL),IL,US,NERC_REGION,RFC
+3076,"Carroll Electric Coop, Inc - (OH)",OH,US,NERC_REGION,RFC
+3081,Carroll Electric Member Corp - (GA),GA,US,NERC_REGION,SERC
+3093,Carroll Electric Coop Corp - (AR),AR,US,NERC_REGION,SPP
+3107,Carteret-Craven El Member Corp,NC,US,NERC_REGION,SERC
+3108,City of Cartersville - (GA),GA,US,NERC_REGION,SERC
+3111,Cass Electric Coop,IA,US,NERC_REGION,MRO
+3113,City of Carthage - (MO),MO,US,NERC_REGION,SPP
+3136,City of Cascade Locks - (OR),OR,US,NERC_REGION,WECC
+3137,Cascade Municipal Utilities,IA,US,NERC_REGION,MRO
+3153,City of Casey - (IL),IL,US,NERC_REGION,RFC
+3164,Village of Castile - (NY),NY,US,NERC_REGION,NPCC
+3168,City of Castroville - (TX),TX,US,NERC_REGION,TRE
+3170,Borough of Catawissa,PA,US,NERC_REGION,RFC
+3186,City of Cavalier - (ND),ND,US,NERC_REGION,MRO
+3191,City of Cawker City - (KS),KS,US,NERC_REGION,SPP
+3205,Cedar-Knox Public Power Dist,NE,US,NERC_REGION,MRO
+3208,Cedarburg Light & Water Comm,WI,US,NERC_REGION,MISO
+3216,City of Celina - (OH),OH,US,NERC_REGION,RFC
+3222,Central Alabama Electric Coop,AL,US,NERC_REGION,SERC
+3226,"Central Rural Electric Cooperative, Inc",OK,US,NERC_REGION,
+3227,City of Center - (CO),CO,US,NERC_REGION,WECC
+3230,Town of Centerville - (IN),IN,US,NERC_REGION,RFC
+3235,City of Central City,NE,US,NERC_REGION,MRO
+3236,"Central Electric Coop, Inc - (SD)",SD,US,NERC_REGION,MRO
+3240,Central Electric Coop Inc - (OR),OR,US,NERC_REGION,
+3242,Central Electric Power Coop - (MO),MO,US,NERC_REGION,SERC
+3245,"Central Florida Elec Coop, Inc",FL,US,NERC_REGION,FRCC
+3248,Central Georgia El Member Corp,GA,US,NERC_REGION,SERC
+3250,Central Electric Membership Corp. - (NC),NC,US,NERC_REGION,SERC
+3255,California Dept. of Water Resources,CA,US,NERC_REGION,WECC
+3258,Central Iowa Power Cooperative,IA,US,NERC_REGION,MRO
+3264,Central Lincoln People's Ut Dt,OR,US,NERC_REGION,WECC
+3265,Cleco Power LLC,LA,US,NERC_REGION,SPP
+3271,Central Nebraska Pub P&I Dist,NE,US,NERC_REGION,MRO
+3273,"Central New Mexico El Coop, Inc",NM,US,NERC_REGION,WECC
+3278,AEP Texas Central Company,OK,US,NERC_REGION,TRE
+3279,"Central Power Elec Coop, Inc",ND,US,NERC_REGION,MRO
+3282,"Central Texas Elec Coop, Inc",TX,US,NERC_REGION,
+3287,"Central Valley Elec Coop, Inc",NM,US,NERC_REGION,SPP
+3291,Central Virginia Electric Coop,VA,US,NERC_REGION,SERC
+3293,Central Wisconsin Elec Coop,WI,US,NERC_REGION,MRO
+3295,City of Centralia - (WA),WA,US,NERC_REGION,WECC
+3296,City of Centralia - (MO),MO,US,NERC_REGION,SERC
+3314,"Chariton Valley Elec Coop, Inc",IA,US,NERC_REGION,SERC
+3315,"Charles Mix Electric Assn, Inc",SD,US,NERC_REGION,MRO
+3323,Town of Chalmers - (IN),IN,US,NERC_REGION,RFC
+3329,Borough of Chambersburg,PA,US,NERC_REGION,RFC
+3355,City of Chanute,KS,US,NERC_REGION,SPP
+3356,City of Ceylon - (MN),MN,US,NERC_REGION,MRO
+3366,City of Chapman - (KS),KS,US,NERC_REGION,SPP
+3373,City of Chappell - (NE),NE,US,NERC_REGION,MRO
+3384,City of Charlevoix - (MI),MI,US,NERC_REGION,
+3400,City of Chaska - (MN),MN,US,NERC_REGION,MRO
+3405,Village of Chatham - (IL),IL,US,NERC_REGION,MRO
+3413,PUD No 1 of Chelan County,WA,US,NERC_REGION,WECC
+3415,Village of Chelsea - (MI),MI,US,NERC_REGION,RFC
+3420,City of Cheney - (WA),WA,US,NERC_REGION,WECC
+3421,City of Chignik - (AK),AK,US,NERC_REGION,AK
+3435,"Cherry-Todd Electric Coop, Inc",SD,US,NERC_REGION,MRO
+3436,Cherryland Electric Coop Inc,MI,US,NERC_REGION,RFC
+3437,City of Cherryville - (NC),NC,US,NERC_REGION,SERC
+3445,Village of Chester - (NE),NE,US,NERC_REGION,MRO
+3447,Town of Chester,MA,US,NERC_REGION,NPCC
+3454,City of Chetopa - (KS),KS,US,NERC_REGION,SPP
+3459,City of Chewelah,WA,US,NERC_REGION,WECC
+3461,Cheyenne Light Fuel & Power d/b/a Black,SD,US,NERC_REGION,WECC
+3465,Chitina Electric Inc,AK,US,NERC_REGION,AK
+3470,Cherokee County Elec Coop Assn,TX,US,NERC_REGION,TRE
+3475,City of Chickamauga,GA,US,NERC_REGION,SERC
+3477,City of Chicopee - (MA),MA,US,NERC_REGION,NPCC
+3478,Cimarron Electric Coop,OK,US,NERC_REGION,SPP
+3486,Chillicothe Municipal Utils,MO,US,NERC_REGION,SPP
+3498,Chippewa Valley Electric Coop,WI,US,NERC_REGION,MRO
+3502,"Choctawhatche Elec Coop, Inc",FL,US,NERC_REGION,SERC
+3519,Central Minnesota Municipal Power Agency,MN,US,NERC_REGION,MRO
+3522,Chugach Electric Assn Inc,AK,US,NERC_REGION,AK
+3525,Village of Churchville - (NY),NY,US,NERC_REGION,NPCC
+3527,Choctaw Electric Coop Inc,OK,US,NERC_REGION,SPP
+3535,City of Cimarron - (KS),KS,US,NERC_REGION,SPP
+3597,Citizens Electric Co - (PA),PA,US,NERC_REGION,RFC
+3600,Citizens Electric Corporation - (MO),MO,US,NERC_REGION,SERC
+3601,Boston Energy Trading and Marketing LLC,MA,US,NERC_REGION,
+3633,City of McLaughlin - (SD),SD,US,NERC_REGION,MRO
+3634,City of Nixa - (MO),MO,US,NERC_REGION,SPP
+3641,"Claiborne Electric Coop, Inc",LA,US,NERC_REGION,SERC
+3644,PUD No 1 of Clallam County,WA,US,NERC_REGION,WECC
+3647,City of Claremore,OK,US,NERC_REGION,SPP
+3660,PUD No 1 of Clark County - (WA),WA,US,NERC_REGION,WECC
+3701,Clark Electric Coop - (WI),WI,US,NERC_REGION,MRO
+3702,Clarksdale Public Utilities,MS,US,NERC_REGION,SERC
+3705,Clarksville Light & Water Co,AR,US,NERC_REGION,SPP
+3710,City of Clay Center - (KS),KS,US,NERC_REGION,SPP
+3712,Clay County Electric Coop Corp,AR,US,NERC_REGION,SERC
+3716,Clay-Union Electric Corp,SD,US,NERC_REGION,MRO
+3722,Clarke Electric Coop Inc - (IA),IA,US,NERC_REGION,
+3726,Clay Electric Coop Inc,IL,US,NERC_REGION,RFC
+3731,Town of Clayton,NC,US,NERC_REGION,SERC
+3732,Town of Clayton,DE,US,NERC_REGION,RFC
+3735,City of Colman - (SD),SD,US,NERC_REGION,MRO
+3739,Clearwater Power Company,ID,US,NERC_REGION,WECC
+3755,Cleveland Electric Illum Co,OH,US,NERC_REGION,RFC
+3757,"Clay Electric Cooperative, Inc",FL,US,NERC_REGION,FRCC
+3762,City of Cleveland - (OH),OH,US,NERC_REGION,RFC
+3764,Clearwater-Polk Elec Coop Inc,MN,US,NERC_REGION,MRO
+3774,City of Clewiston,FL,US,NERC_REGION,FRCC
+3806,"Clinton County Elec Coop, Inc",IL,US,NERC_REGION,RFC
+3814,City of Clintonville - (WI),WI,US,NERC_REGION,MRO
+3815,Town of Coatesville - (IN),IN,US,NERC_REGION,RFC
+3824,Clyde Light & Power,OH,US,NERC_REGION,RFC
+3828,Cloverland Electric Co-op,MI,US,NERC_REGION,RFC
+3839,Coahoma Electric Power Assn,MS,US,NERC_REGION,SERC
+3841,Coast Electric Power Assn,MS,US,NERC_REGION,SERC
+3843,Coastal Electric Member Corp,GA,US,NERC_REGION,SERC
+3844,"Coastal Electric Coop, Inc",SC,US,NERC_REGION,SERC
+3850,"Codington-Clark Elec Coop, Inc",SD,US,NERC_REGION,MRO
+3881,City of Cody,WY,US,NERC_REGION,WECC
+3892,City of Coffeyville - (KS),KS,US,NERC_REGION,SPP
+3900,City of Coggon - (IA),IA,US,NERC_REGION,MRO
+3913,City of Colby - (KS),KS,US,NERC_REGION,MRO
+3915,Coldwater Board of Public Util,MI,US,NERC_REGION,RFC
+3916,Cobb Electric Membership Corp,GA,US,NERC_REGION,SERC
+3938,"Coleman County Elec Coop, Inc",TX,US,NERC_REGION,TRE
+3939,City of College Park - (GA),GA,US,NERC_REGION,SERC
+3940,City of College Station - (TX),TX,US,NERC_REGION,TRE
+3957,City of Collins - (MS),MS,US,NERC_REGION,SERC
+3986,City of Collinsville - (OK),OK,US,NERC_REGION,SPP
+3989,City of Colorado Springs - (CO),CO,US,NERC_REGION,WECC
+3990,Colorado River Indian Irr Proj,AZ,US,NERC_REGION,WECC
+3991,CMS Energy Resource Management,MI,US,NERC_REGION,RFC
+4005,"Columbia Basin Elec Cooperative, Inc",OR,US,NERC_REGION,WECC
+4007,City of Columbia City - (IN),IN,US,NERC_REGION,RFC
+4008,Columbia Power Coop Assn Inc,OR,US,NERC_REGION,WECC
+4040,Calhoun County Elec Coop Assn,IA,US,NERC_REGION,MRO
+4041,"Columbia Rural Elec Assn, Inc",WA,US,NERC_REGION,WECC
+4045,City of Columbia - (MO),MO,US,NERC_REGION,SERC
+4063,Co-Mo Electric Coop Inc,MO,US,NERC_REGION,SERC
+4065,City of Columbus - (OH),OH,US,NERC_REGION,RFC
+4068,City of Columbus - (MS),MS,US,NERC_REGION,SERC
+4071,"Columbus Electric Coop, Inc",NM,US,NERC_REGION,WECC
+4073,City of Columbus - (WI),WI,US,NERC_REGION,MISO
+4078,City of Comanche - (OK),OK,US,NERC_REGION,SPP
+4091,City of Commerce - (GA),GA,US,NERC_REGION,SERC
+4100,"Commerce Energy, Inc.",CA,US,NERC_REGION,WECC
+4110,Commonwealth Edison Co,IL,US,NERC_REGION,RFC
+4117,Community Electric Coop,VA,US,NERC_REGION,SERC
+4146,Concho Valley Elec Coop Inc,TX,US,NERC_REGION,TRE
+4150,City of Concord - (NC),NC,US,NERC_REGION,SERC
+4153,"Concordia Electric Coop, Inc",LA,US,NERC_REGION,SERC
+4160,Callaway Electric Cooperative,MO,US,NERC_REGION,SERC
+4166,"CECG Maine, LLC",MD,US,NERC_REGION,RFC
+4176,Connecticut Light & Power Co,CT,US,NERC_REGION,NPCC
+4180,Connecticut Mun Elec Engy Coop,CT,US,NERC_REGION,NPCC
+4237,Consolidated Electric Coop,MO,US,NERC_REGION,SERC
+4247,Consolidated Water Power Co,WI,US,NERC_REGION,RFC
+4254,Consumers Energy Co,MI,US,NERC_REGION,RFC
+4262,Cooke County Elec Coop Assn,TX,US,NERC_REGION,TRE
+4265,Continental Divide El Coop Inc,NM,US,NERC_REGION,WECC
+4280,Conway Corporation,AR,US,NERC_REGION,SERC
+4295,Comanche County Elec Coop Assn,TX,US,NERC_REGION,TRE
+4296,"Cookson Hills Elec Coop, Inc",OK,US,NERC_REGION,SPP
+4304,City of Corwith - (IA),IA,US,NERC_REGION,MRO
+4305,City of Coon Rapids,IA,US,NERC_REGION,MRO
+4317,"Coos-Curry Electric Coop, Inc",OR,US,NERC_REGION,WECC
+4319,Copan Public Works Authority,OK,US,NERC_REGION,SPP
+4329,"Copper Valley Elec Assn, Inc",AK,US,NERC_REGION,AK
+4341,Corbin City Utilities Comm,KY,US,NERC_REGION,RFC
+4344,City of New Cordell - (OK),OK,US,NERC_REGION,SPP
+4346,Cooperative L&P Assn Lake County,MN,US,NERC_REGION,MRO
+4356,Colorado River Comm of Nevada,NV,US,NERC_REGION,WECC
+4362,Corn Belt Energy Corporation,IL,US,NERC_REGION,RFC
+4363,Corn Belt Power Coop,IA,US,NERC_REGION,MRO
+4365,Town of Cornelius - (NC),NC,US,NERC_REGION,SERC
+4369,City of Cornell,WI,US,NERC_REGION,RFC
+4373,Cornhusker Public Power Dist,NE,US,NERC_REGION,MRO
+4375,City of Corning - (IA),IA,US,NERC_REGION,MRO
+4390,City of Corona - (CA),CA,US,NERC_REGION,WECC
+4410,"Shell Energy North America (US), L.P.",TX,US,NERC_REGION,TRE
+4414,City of Coulee Dam - (WA),WA,US,NERC_REGION,WECC
+4429,City of Covington - (IN),IN,US,NERC_REGION,RFC
+4430,"Covington Electric Coop, Inc",AL,US,NERC_REGION,SERC
+4432,Coweta-Fayette El Member Corp,GA,US,NERC_REGION,SERC
+4433,City of Covington - (GA),GA,US,NERC_REGION,SERC
+4437,City of Covington - (TN),TN,US,NERC_REGION,SERC
+4442,PUD No 1 of Cowlitz County,WA,US,NERC_REGION,WECC
+4459,Cozad Board of Public Works,NE,US,NERC_REGION,MRO
+4486,Town of Crane - (IN),IN,US,NERC_REGION,RFC
+4508,"Crawfordsville Elec, Lgt & Pwr",IN,US,NERC_REGION,RFC
+4509,Craighead Electric Coop Corp,AR,US,NERC_REGION,SERC
+4524,"Crawford Electric Coop, Inc",MO,US,NERC_REGION,SERC
+4527,City of Crete,NE,US,NERC_REGION,MRO
+4538,Crisp County Power Comm,GA,US,NERC_REGION,SERC
+4562,City of Croswell - (MI),MI,US,NERC_REGION,RFC
+4577,Crow Wing Cooperative Power & Light Comp,MN,US,NERC_REGION,MRO
+4604,City of Crystal Falls,MI,US,NERC_REGION,MISO
+4607,City of Cuba City,WI,US,NERC_REGION,MISO
+4610,City of Cuero - (TX),TX,US,NERC_REGION,TRE
+4618,"Cullman Electric Coop, Inc",AL,US,NERC_REGION,SERC
+4619,Town of Culpeper- (VA),VA,US,NERC_REGION,SERC
+4622,"Cumberland Valley Electric, Inc.",KY,US,NERC_REGION,SERC
+4632,Cuming County Public Pwr Dist,NE,US,NERC_REGION,
+4661,City of Curtis - (NE),NE,US,NERC_REGION,MRO
+4667,City of Cushing - (OK),OK,US,NERC_REGION,SPP
+4671,Custer Public Power District,NE,US,NERC_REGION,MRO
+4675,Cuivre River Electric Coop Inc,MO,US,NERC_REGION,SERC
+4683,City of Cuyahoga Falls - (OH),OH,US,NERC_REGION,RFC
+4685,Village of Cygnet - (OH),OH,US,NERC_REGION,RFC
+4704,"DS&O Electric Cooperative, Inc.",KS,US,NERC_REGION,SPP
+4715,Dahlberg Light & Power Co,WI,US,NERC_REGION,MRO
+4716,Dairyland Power Coop,WI,US,NERC_REGION,MRO
+4717,Dakota Valley Elec Coop Inc,ND,US,NERC_REGION,MRO
+4720,Dakota Energy Coop Inc,SD,US,NERC_REGION,SPP
+4725,City of Custar,OH,US,NERC_REGION,RFC
+4739,Town of Dallas - (NC),NC,US,NERC_REGION,SERC
+4743,"Consumers Power, Inc",OR,US,NERC_REGION,WECC
+4744,Dalton Utilities,GA,US,NERC_REGION,SERC
+4791,City of Danville - (IA),IA,US,NERC_REGION,MRO
+4792,Village of Daggett - (MI),MI,US,NERC_REGION,RFC
+4794,City of Danville - (VA),VA,US,NERC_REGION,RFC
+4796,"Darke Rural Electric Coop, Inc",OH,US,NERC_REGION,RFC
+4799,Darlington Light & Power Co,IN,US,NERC_REGION,RFC
+4836,City of David City,NE,US,NERC_REGION,MRO
+4848,Daviess Martin County R E M C,IN,US,NERC_REGION,RFC
+4911,Dawson Power District,NE,US,NERC_REGION,MRO
+4919,City of Dayton - (IA),IA,US,NERC_REGION,MRO
+4934,Village of De Witt - (NE),NE,US,NERC_REGION,MRO
+4939,"Deaf Smith Electric Coop, Inc",TX,US,NERC_REGION,SPP
+4958,Decatur Utilities,AL,US,NERC_REGION,SERC
+4960,Decatur County Rural E M C,IN,US,NERC_REGION,RFC
+4975,Deep East Texas Elec Coop Inc,TX,US,NERC_REGION,TRE
+4981,City of Deaver - (WY),WY,US,NERC_REGION,WECC
+5015,Delano Municipal Utilities,MN,US,NERC_REGION,MRO
+5021,Delaware County Elec Coop Inc,NY,US,NERC_REGION,NPCC
+5036,City of Delta - (CO),CO,US,NERC_REGION,WECC
+5056,City of Denison - (IA),IA,US,NERC_REGION,MRO
+5063,City of Denton - (TX),TX,US,NERC_REGION,TRE
+5076,City of Denver - (IA),IA,US,NERC_REGION,MRO
+5078,"Denton County Elec Coop, Inc",TX,US,NERC_REGION,TRE
+5086,Delta Montrose Electric Assn,CO,US,NERC_REGION,WECC
+5096,Village of Deshler - (OH),OH,US,NERC_REGION,RFC
+5097,City of Deshler - (NE),NE,US,NERC_REGION,MRO
+5109,DTE Electric Company,MI,US,NERC_REGION,RFC
+5111,City of Detroit Lakes - (MN),MN,US,NERC_REGION,MRO
+5155,City of Dike,IA,US,NERC_REGION,MRO
+5175,Dixie Electric Power Assn,MS,US,NERC_REGION,SERC
+5202,Dixie Electric Membership Corp,LA,US,NERC_REGION,SERC
+5204,Dixie Electric Coop,AL,US,NERC_REGION,SERC
+5236,City of Doerun - (GA),GA,US,NERC_REGION,SERC
+5325,City of Douglas,GA,US,NERC_REGION,SERC
+5326,PUD No 1 of Douglas County,WA,US,NERC_REGION,WECC
+5327,Douglas Electric Coop - (OR),OR,US,NERC_REGION,WECC
+5328,"Douglas Electric Coop, Inc",SD,US,NERC_REGION,MRO
+5334,"Doniphan Elec Coop Assn, Inc",KS,US,NERC_REGION,SPP
+5335,City of Dover - (DE),DE,US,NERC_REGION,RFC
+5336,City of Dover - (OH),OH,US,NERC_REGION,RFC
+5343,City of Dowagiac,MI,US,NERC_REGION,RFC
+5350,Village of Dorchester - (NE),NE,US,NERC_REGION,MRO
+5354,City of Drain - (OR),OR,US,NERC_REGION,WECC
+5372,Town of Drexel - (NC),NC,US,NERC_REGION,SERC
+5392,Dublin Municipal Electric Util,IN,US,NERC_REGION,RFC
+5394,Dubois Rural Electric Coop Inc,IN,US,NERC_REGION,RFC
+5399,Duck River Elec Member Corp,TN,US,NERC_REGION,SERC
+5402,City of Due West - (SC),SC,US,NERC_REGION,SERC
+5417,Dunn County Electric Coop,WI,US,NERC_REGION,MRO
+5429,City of Duncan - (OK),OK,US,NERC_REGION,SPP
+5438,"Duncan Valley Elec Coop, Inc",AZ,US,NERC_REGION,WECC
+5470,ConocoPhillips Company,TX,US,NERC_REGION,
+5480,Town of Danvers,MA,US,NERC_REGION,NPCC
+5487,Duquesne Light Co,PA,US,NERC_REGION,RFC
+5518,City of Dysart - (IA),IA,US,NERC_REGION,MRO
+5529,City of Durant - (IA),IA,US,NERC_REGION,MRO
+5531,Enerstar Power Corp,IL,US,NERC_REGION,RFC
+5535,Egyptian Electric Coop Assn,IL,US,NERC_REGION,RFC
+5551,City of Eagle River - (WI),WI,US,NERC_REGION,MISO
+5552,"East River Elec Pwr Coop, Inc",SD,US,NERC_REGION,MRO
+5563,City of Earlville - (IA),IA,US,NERC_REGION,MRO
+5574,East Central Energy,MN,US,NERC_REGION,MRO
+5575,City of East Grand Forks - (MN),MN,US,NERC_REGION,MRO
+5580,"East Kentucky Power Coop, Inc",KY,US,NERC_REGION,SERC
+5582,City of East Point - (GA),GA,US,NERC_REGION,SERC
+5583,City of Easton - (MO),MO,US,NERC_REGION,SERC
+5584,East End Mutual Elec Co Ltd,ID,US,NERC_REGION,WECC
+5585,Eastern Illinois Elec Coop,IL,US,NERC_REGION,RFC
+5588,East-Central Iowa Rural Elec Coop,IA,US,NERC_REGION,RFC
+5598,East Central Oklahoma Elec Coop Inc,OK,US,NERC_REGION,SPP
+5605,Eastern Iowa Light & Power Coop,IA,US,NERC_REGION,MRO
+5609,Eastern Maine Electric Coop,ME,US,NERC_REGION,NPCC
+5625,Easton Utilities Comm,MD,US,NERC_REGION,RFC
+5630,City of Eaton Rapids - (MI),MI,US,NERC_REGION,RFC
+5631,Town of Eatonville - (WA),WA,US,NERC_REGION,WECC
+5632,Eau Claire Electric Coop,WI,US,NERC_REGION,MRO
+5644,"Edisto Electric Coop, Inc",SC,US,NERC_REGION,SERC
+5653,Village of Edgerton - (OH),OH,US,NERC_REGION,RFC
+5655,Edinburgh Municipal Utilities,IN,US,NERC_REGION,RFC
+5656,Edgecombe-Martin County E M C,NC,US,NERC_REGION,SERC
+5661,City of Edmond - (OK),OK,US,NERC_REGION,SPP
+5686,City of El Dorado Springs - (MO),MO,US,NERC_REGION,RFC
+5692,City of Eitzen - (MN),MN,US,NERC_REGION,MRO
+5701,El Paso Electric Co,TX,US,NERC_REGION,WECC
+5703,Empire Natural Gas Corporation,NY,US,NERC_REGION,RFC
+5721,City of Elfin Cove - (AK),AK,US,NERC_REGION,AK
+5728,City of Elba - (AL),AL,US,NERC_REGION,SERC
+5729,Electrical Dist No8 Maricopa,AZ,US,NERC_REGION,WECC
+5730,City of Elberton,GA,US,NERC_REGION,SERC
+5732,City of Elbow Lake - (MN),MN,US,NERC_REGION,MRO
+5741,City of Eldorado - (OK),OK,US,NERC_REGION,SPP
+5742,Eldridge City Utilities,IA,US,NERC_REGION,MRO
+5744,City of Electra - (TX),TX,US,NERC_REGION,SPP
+5748,Electric Energy Inc,IL,US,NERC_REGION,SERC
+5752,Village of Eldorado - (OH),OH,US,NERC_REGION,RFC
+5760,City of Elizabeth City - (NC),NC,US,NERC_REGION,SERC
+5771,City of Elk Point,SD,US,NERC_REGION,MRO
+5773,City of Elk River,MN,US,NERC_REGION,MRO
+5777,City of Elkhorn - (WI),WI,US,NERC_REGION,RFC
+5780,Elkhorn Rural Public Pwr Dist,NE,US,NERC_REGION,SPP
+5794,Town of Elkton,VA,US,NERC_REGION,SERC
+5795,City of Elsmore - (KS),KS,US,NERC_REGION,SPP
+5796,City of Ellaville,GA,US,NERC_REGION,SERC
+5802,City of Ellinwood - (KS),KS,US,NERC_REGION,SPP
+5827,City of Ellsworth - (IA),IA,US,NERC_REGION,MRO
+5828,Borough of Ellwood City - (PA),PA,US,NERC_REGION,RFC
+5832,Elmhurst Mutual Power & Light Co,WA,US,NERC_REGION,WECC
+5833,Village of Elmore - (OH),OH,US,NERC_REGION,RFC
+5834,City of Elroy - (WI),WI,US,NERC_REGION,MRO
+5841,City of Ely - (MN),MN,US,NERC_REGION,MRO
+5850,City of Emerson - (NE),NE,US,NERC_REGION,MRO
+5860,Empire District Electric Co,MO,US,NERC_REGION,SPP
+5875,Village of Endicott - (NY),NY,US,NERC_REGION,NPCC
+5880,"Energy Coop of New York, Inc",NY,US,NERC_REGION,NPCC
+5896,Town of Enfield - (NC),NC,US,NERC_REGION,SERC
+5915,Village of Enosburg Falls - (VT),VT,US,NERC_REGION,NPCC
+5927,Village of Endicott - (NE),NE,US,NERC_REGION,MRO
+5928,Town of Etna Green,IN,US,NERC_REGION,RFC
+5929,"Fairfield Electric Coop, Inc",SC,US,NERC_REGION,SERC
+5930,Village of Fairport - (NY),NY,US,NERC_REGION,NPCC
+5935,Borough of Ephrata - (PA),PA,US,NERC_REGION,RFC
+5945,City of Erath - (LA),LA,US,NERC_REGION,SERC
+5953,"Entergy Solutions, Ltd",TX,US,NERC_REGION,NPCC
+5957,City of Erie - (KS),KS,US,NERC_REGION,SPP
+5961,Town of Erwin - (TN),TN,US,NERC_REGION,SERC
+5964,"Escambia River Elec Coop, Inc",FL,US,NERC_REGION,SERC
+5969,City of Escondido - (CA),CA,US,NERC_REGION,WECC
+5995,City of Estelline - (SD),SD,US,NERC_REGION,MRO
+5997,Town of Estes Park,CO,US,NERC_REGION,WECC
+5998,City of Estherville - (IA),IA,US,NERC_REGION,MRO
+6008,City of Etowah,TN,US,NERC_REGION,SERC
+6019,City of Eudora - (KS),KS,US,NERC_REGION,
+6022,City of Eugene - (OR),OR,US,NERC_REGION,WECC
+6043,City of Evansville,WI,US,NERC_REGION,MISO
+6052,City of Evergreen - (AL),AL,US,NERC_REGION,SERC
+6112,"Farmers Electric Coop, Inc - (IA)",IA,US,NERC_REGION,RFC
+6127,City of Fairbank - (IA),IA,US,NERC_REGION,MRO
+6130,City of Fairburn - (GA),GA,US,NERC_REGION,SERC
+6132,City of Fairbury,NE,US,NERC_REGION,MRO
+6136,Village of Fairmont - (NE),NE,US,NERC_REGION,MRO
+6138,City of Fairfax - (MN),MN,US,NERC_REGION,MRO
+6141,City of Fairfield- (IL),IL,US,NERC_REGION,RFC
+6145,City of Fairhope - (AL),AL,US,NERC_REGION,SERC
+6149,City of Ellensburg - (WA),WA,US,NERC_REGION,WECC
+6151,Fairmont Public Utilities Comm,MN,US,NERC_REGION,MRO
+6152,City of Fairview - (OK),OK,US,NERC_REGION,MRO
+6154,Fairview City Corporation,UT,US,NERC_REGION,WECC
+6155,"Farmers Electric Company, Ltd - (ID)",ID,US,NERC_REGION,WECC
+6157,City of Faith - (SD),SD,US,NERC_REGION,MRO
+6169,Fall River Rural Elec Coop Inc,ID,US,NERC_REGION,WECC
+6172,City of Fallon - (NV),NV,US,NERC_REGION,WECC
+6173,Fannin County Electric Coop,TX,US,NERC_REGION,TRE
+6175,City of Falls City - (NE),NE,US,NERC_REGION,MRO
+6178,City of Falmouth - (KY),KY,US,NERC_REGION,RFC
+6181,"Farmers Electric Coop, Inc - (MO)",MO,US,NERC_REGION,SERC
+6182,"Farmers Electric Coop, Inc - (TX)",TX,US,NERC_REGION,TRE
+6183,"Fayette Electric Coop, Inc",TX,US,NERC_REGION,TRE
+6192,City of Farmer City - (IL),IL,US,NERC_REGION,RFC
+6194,Farmers Rural Electric Coop Corp - (KY),KY,US,NERC_REGION,RFC
+6203,City of Farmersville - (TX),TX,US,NERC_REGION,
+6204,City of Farmington - (NM),NM,US,NERC_REGION,WECC
+6206,Farmers Electric Coop Corp - (AR),AR,US,NERC_REGION,SERC
+6207,Farmington River Power Company,CT,US,NERC_REGION,NPCC
+6209,Town of Farmville - (NC),NC,US,NERC_REGION,SERC
+6210,City of Farnhamville - (IA),IA,US,NERC_REGION,MRO
+6231,City of Fayette - (MO),MO,US,NERC_REGION,RFC
+6235,Fayetteville Public Works Commission,NC,US,NERC_REGION,SERC
+6258,Federated Rural Electric Assn,MN,US,NERC_REGION,MRO
+6272,"FEM Electric Assn, Inc",SD,US,NERC_REGION,
+6274,City of Fennimore - (WI),WI,US,NERC_REGION,MRO
+6276,Town of Ferdinand - (IN),IN,US,NERC_REGION,RFC
+6297,PUD No 1 of Ferry County,WA,US,NERC_REGION,
+6316,Fillmore City Corporation,UT,US,NERC_REGION,WECC
+6335,"Firelands Electric Coop, Inc",OH,US,NERC_REGION,RFC
+6342,First Electric Coop Corp,AR,US,NERC_REGION,SERC
+6369,Fishers Island Utility Co Inc,NY,US,NERC_REGION,NPCC
+6380,Fitzgerald Wtr Lgt & Bond Comm,GA,US,NERC_REGION,SERC
+6389,Energy Harbor Generation LLC,OH,US,NERC_REGION,RFC
+6390,City of Flandreau,SD,US,NERC_REGION,MRO
+6395,Flathead Electric Coop Inc,MT,US,NERC_REGION,WECC
+6396,City of Flatonia - (TX),TX,US,NERC_REGION,TRE
+6411,Flint Electric Membership Corp,GA,US,NERC_REGION,SERC
+6417,City of Flora - (IL),IL,US,NERC_REGION,
+6418,Town of Fleming - (CO),CO,US,NERC_REGION,WECC
+6424,Florence Utility Comm,WI,US,NERC_REGION,MISO
+6427,City of Floresville,TX,US,NERC_REGION,TRE
+6431,"Flint Hills Rural E C A, Inc",KS,US,NERC_REGION,SPP
+6442,Fleming-Mason Energy Coop Inc,KY,US,NERC_REGION,RFC
+6443,"Florida Keys El Coop Assn, Inc",FL,US,NERC_REGION,FRCC
+6452,Florida Power & Light Co,FL,US,NERC_REGION,FRCC
+6458,Energy Harbor Corp.,OH,US,NERC_REGION,RFC
+6491,Foley Board of Utilities,AL,US,NERC_REGION,SERC
+6496,City of Fonda - (IA),IA,US,NERC_REGION,MRO
+6501,City of Fontanelle - (IA),IA,US,NERC_REGION,MRO
+6509,Town of Fort Laramie- (WY),WY,US,NERC_REGION,WECC
+6567,Florida Municipal Power Agency,FL,US,NERC_REGION,SERC
+6579,City of Forest City- (IA),IA,US,NERC_REGION,MRO
+6580,Town of Forest City,NC,US,NERC_REGION,SERC
+6582,City of Forest Grove,OR,US,NERC_REGION,WECC
+6598,City of Forsyth - (GA),GA,US,NERC_REGION,SERC
+6604,City of Fort Collins - (CO),CO,US,NERC_REGION,WECC
+6608,Fort Loudoun Electric Coop,TN,US,NERC_REGION,SERC
+6609,City of Fort Meade - (FL),FL,US,NERC_REGION,FRCC
+6610,City of Fort Morgan,CO,US,NERC_REGION,WECC
+6611,Fort Belknap Electric Coop Inc,TX,US,NERC_REGION,TRE
+6612,Fort Payne Improvement Authority,AL,US,NERC_REGION,SERC
+6613,Town of Fountain - (NC),NC,US,NERC_REGION,SERC
+6615,City of Fort Pierre - (SD),SD,US,NERC_REGION,MRO
+6616,Fort Pierce Utilities Authority,FL,US,NERC_REGION,SERC
+6617,Fort Valley Utility Comm,GA,US,NERC_REGION,SERC
+6618,Town of Fort Supply - (OK),OK,US,NERC_REGION,SPP
+6627,City of Fosston - (MN),MN,US,NERC_REGION,MRO
+6638,City of Fountain,CO,US,NERC_REGION,WECC
+6640,Four County Elec Member Corp,NC,US,NERC_REGION,SERC
+6641,4-County Electric Power Assn,MS,US,NERC_REGION,SERC
+6707,City of Frankfort - (IN),IN,US,NERC_REGION,RFC
+6708,City of Frankfort - (KY),KY,US,NERC_REGION,SERC
+6709,Easley Combined Utility System,SC,US,NERC_REGION,SERC
+6710,Town of Edenton - (NC),NC,US,NERC_REGION,SERC
+6715,City of Franklin - (VA),VA,US,NERC_REGION,SERC
+6716,PUD No 1 of Franklin County,WA,US,NERC_REGION,WECC
+6718,City of Franklin - (KY),KY,US,NERC_REGION,SERC
+6722,Franklin Rural Electric Coop - (IA),IA,US,NERC_REGION,MRO
+6723,City of Franklin - (NE),NE,US,NERC_REGION,MRO
+6735,Town of Frankton - (IN),IN,US,NERC_REGION,RFC
+6750,City of Frederick - (OK),OK,US,NERC_REGION,MRO
+6752,Town of Frederick - (CO),CO,US,NERC_REGION,WECC
+6753,City of Fredonia - (AZ),AZ,US,NERC_REGION,WECC
+6758,City of Fredericksburg - (TX),TX,US,NERC_REGION,TRE
+6759,City of Fredericksburg - (IA),IA,US,NERC_REGION,MRO
+6761,City of Fredericktown - (MO),MO,US,NERC_REGION,SPP
+6762,City of Fredonia - (KS),KS,US,NERC_REGION,SPP
+6764,Village of Freeburg - (IL),IL,US,NERC_REGION,RFC
+6775,Village of Freeport - (NY),NY,US,NERC_REGION,NPCC
+6779,City of Fremont - (NE),NE,US,NERC_REGION,MRO
+6780,Town of Fremont - (NC),NC,US,NERC_REGION,SERC
+6784,French Broad Elec Member Corp,NC,US,NERC_REGION,SERC
+6793,City of Friend - (NE),NE,US,NERC_REGION,MRO
+6803,Town of Front Royal,VA,US,NERC_REGION,SERC
+6804,Frontier Power Company,OH,US,NERC_REGION,RFC
+6839,City of Fulton - (MO),MO,US,NERC_REGION,SERC
+6840,City of Fulton - (KY),KY,US,NERC_REGION,SERC
+6848,Fulton County Rural E M C,IN,US,NERC_REGION,RFC
+6866,"G & K, Inc",AK,US,NERC_REGION,AK
+6894,City of Gaffney - (SC),SC,US,NERC_REGION,SERC
+6896,City of Galt,MO,US,NERC_REGION,RFC
+6907,City of Greendale,IN,US,NERC_REGION,RFC
+6909,Gainesville Regional Utilities,FL,US,NERC_REGION,FRCC
+6914,City of Galion,OH,US,NERC_REGION,MRO
+6915,Galena Electric Utility,AK,US,NERC_REGION,AK
+6924,City of Gallatin - (MO),MO,US,NERC_REGION,RFC
+6931,City of Galva - (KS),KS,US,NERC_REGION,SPP
+6941,City of Garden City,KS,US,NERC_REGION,SPP
+6949,City of Gardner - (KS),KS,US,NERC_REGION,SPP
+6950,Garland Light & Power Company,WY,US,NERC_REGION,WECC
+6957,"Garkane Energy Coop, Inc",UT,US,NERC_REGION,WECC
+6958,City of Garland - (TX),TX,US,NERC_REGION,TRE
+6965,City of Garnett - (KS),KS,US,NERC_REGION,SPP
+6970,City of Garrett,IN,US,NERC_REGION,RFC
+6993,City of Gas City - (IN),IN,US,NERC_REGION,RFC
+7004,"Buckeye Power, Inc",OH,US,NERC_REGION,RFC
+7024,Gascosage Electric Coop,MO,US,NERC_REGION,SERC
+7027,City of Gastonia - (NC),NC,US,NERC_REGION,SERC
+7048,City of Geary - (OK),OK,US,NERC_REGION,MRO
+7095,City of Geneseo - (IL),IL,US,NERC_REGION,RFC
+7096,City of Geneva- (IL),IL,US,NERC_REGION,RFC
+7100,Village of Genoa - (OH),OH,US,NERC_REGION,RFC
+7128,City of Georgetown - (SC),SC,US,NERC_REGION,SERC
+7129,City of Georgetown - (TX),TX,US,NERC_REGION,TRE
+7130,Town of Georgetown - (MA),MA,US,NERC_REGION,NPCC
+7131,Village of Georgetown - (OH),OH,US,NERC_REGION,RFC
+7140,Georgia Power Co,GA,US,NERC_REGION,SERC
+7184,City of Giddings - (TX),TX,US,NERC_REGION,TRE
+7194,City of Gilbert,MN,US,NERC_REGION,MRO
+7197,Georgia Transmission Corp,GA,US,NERC_REGION,SERC
+7222,City of Gillette - (WY),WY,US,NERC_REGION,WECC
+7249,City of Giltner - (NE),NE,US,NERC_REGION,MRO
+7256,Borough of Girard - (PA),PA,US,NERC_REGION,RFC
+7257,City of Girard - (KS),KS,US,NERC_REGION,MRO
+7262,"Glacier Electric Coop, Inc",MT,US,NERC_REGION,WECC
+7264,"Glades Electric Coop, Inc",FL,US,NERC_REGION,FRCC
+7265,City of Gladstone,MI,US,NERC_REGION,MISO
+7269,City of Glasco - (KS),KS,US,NERC_REGION,
+7279,"NextEra Energy Services, LLC",TX,US,NERC_REGION,TRE
+7287,City of Glen Elder - (KS),KS,US,NERC_REGION,SPP
+7292,Glencoe Light & Power Comm,MN,US,NERC_REGION,MRO
+7294,City of Glendale - (CA),CA,US,NERC_REGION,WECC
+7295,City of Glidden - (IA),IA,US,NERC_REGION,MRO
+7300,City of Glenwood Springs - (CO),CO,US,NERC_REGION,WECC
+7303,Raccoon Valley Electric Cooperative,IA,US,NERC_REGION,MRO
+7311,Village of Glouster - (OH),OH,US,NERC_REGION,RFC
+7318,"Goldenwest Electric Coop, Inc",MT,US,NERC_REGION,WECC
+7349,"Golden Spread Electric Cooperative, Inc",TX,US,NERC_REGION,SPP
+7353,Golden Valley Elec Assn Inc,AK,US,NERC_REGION,AK
+7359,Borough of Goldsboro - (PA),PA,US,NERC_REGION,RFC
+7368,City of Goldthwaite - (TX),TX,US,NERC_REGION,TRE
+7370,City of Gonzales - (TX),TX,US,NERC_REGION,TRE
+7374,City of Goodland - (KS),KS,US,NERC_REGION,SPP
+7411,City of Gothenburg - (NE),NE,US,NERC_REGION,MRO
+7424,Gowrie Municipal Utilities,IA,US,NERC_REGION,MRO
+7441,Goltry Public Works Authority,OK,US,NERC_REGION,SPP
+7442,Grafton Electric - (IA),IA,US,NERC_REGION,MRO
+7443,City of Graettinger - (IA),IA,US,NERC_REGION,MRO
+7445,Village of Grafton - (OH),OH,US,NERC_REGION,RFC
+7450,Grady Electric Membership Corp,GA,US,NERC_REGION,SERC
+7456,Graham County Electric Coop Inc,AZ,US,NERC_REGION,WECC
+7460,Goodhue County Coop Elec Assn,MN,US,NERC_REGION,MRO
+7478,Town of Granada - (CO),CO,US,NERC_REGION,WECC
+7480,City of Granbury - (TX),TX,US,NERC_REGION,TRE
+7484,"Grand Electric Coop, Inc",SD,US,NERC_REGION,MRO
+7485,City of Grant - (NE),NE,US,NERC_REGION,
+7486,City of Grand Junction - (IA),IA,US,NERC_REGION,MRO
+7487,City of Grand Marais - (MN),MN,US,NERC_REGION,MRO
+7490,Grand River Dam Authority,OK,US,NERC_REGION,SPP
+7494,City of Granite Falls - (MN),MN,US,NERC_REGION,MRO
+7496,Town of Granite Falls - (NC),NC,US,NERC_REGION,SERC
+7501,City of Granite - (OK),OK,US,NERC_REGION,MRO
+7515,City of Grantville - (GA),GA,US,NERC_REGION,SERC
+7548,PUD No 1 of Grays Harbor County,WA,US,NERC_REGION,WECC
+7554,Green Mountain Energy Company,TX,US,NERC_REGION,TRE
+7558,Grayson Rural Electric Coop Corp,KY,US,NERC_REGION,ECAR
+7559,"Grayson-Collin Elec Coop, Inc",TX,US,NERC_REGION,TRE
+7561,"Greenbelt Electric Coop, Inc",TX,US,NERC_REGION,SPP
+7563,Grand Valley Power,CO,US,NERC_REGION,WECC
+7570,Great River Energy,MN,US,NERC_REGION,MRO
+7593,City of Green Cove Springs,FL,US,NERC_REGION,FRCC
+7600,Village of Green Island - (NY),NY,US,NERC_REGION,NPCC
+7601,Green Mountain Power Corp,VT,US,NERC_REGION,NPCC
+7624,Village of Greene - (NY),NY,US,NERC_REGION,NPCC
+7626,City of Greenfield - (IA),IA,US,NERC_REGION,MRO
+7627,City of Greenfield - (IN),IN,US,NERC_REGION,RFC
+7633,Village of Greenup - (IL),IL,US,NERC_REGION,RFC
+7634,City of Greenville - (TX),TX,US,NERC_REGION,TRE
+7639,Greenville Utilities Comm,NC,US,NERC_REGION,SERC
+7643,Village of Greenwich - (OH),OH,US,NERC_REGION,RFC
+7646,Greenwood CPW,SC,US,NERC_REGION,SERC
+7650,Village of Greenwood - (NE),NE,US,NERC_REGION,MRO
+7651,Greenwood Utilities Comm,MS,US,NERC_REGION,SERC
+7654,Greer Commission of Public Wks,SC,US,NERC_REGION,SERC
+7665,Village of Gresham - (WI),WI,US,NERC_REGION,RFC
+7679,City of Griffin - (GA),GA,US,NERC_REGION,SERC
+7712,City of Groton - (SD),SD,US,NERC_REGION,MRO
+7713,Village of Groton - (NY),NY,US,NERC_REGION,NPCC
+7715,Town of Groton - (MA),MA,US,NERC_REGION,NPCC
+7719,Borough of Grove City - (PA),PA,US,NERC_REGION,RFC
+7720,"Grundy Electric Coop, Inc",MO,US,NERC_REGION,SERC
+7723,Town of Groveland - (MA),MA,US,NERC_REGION,NPCC
+7732,City of Grove City,MN,US,NERC_REGION,MRO
+7743,Grundy Center Mun Light & Power,IA,US,NERC_REGION,MRO
+7750,Guthrie County Rural E C A,IA,US,NERC_REGION,MRO
+7751,Guadalupe Blanco River Authority,TX,US,NERC_REGION,TRE
+7752,Guadalupe Valley Elec Coop Inc,TX,US,NERC_REGION,TRE
+7759,Town of Guernsey - (WY),WY,US,NERC_REGION,WECC
+7760,Town of Gueydan,LA,US,NERC_REGION,SPP
+7785,"Gulf Coast Electric Coop, Inc",FL,US,NERC_REGION,SERC
+7787,Gunnison County Elec Assn.,CO,US,NERC_REGION,WECC
+7801,Gulf Power Co,FL,US,NERC_REGION,SERC
+7826,City of Gunnison - (CO),CO,US,NERC_REGION,WECC
+7827,Guntersville Electric Board,AL,US,NERC_REGION,SERC
+7864,Grundy County Rural Elec Coop,IA,US,NERC_REGION,MRO
+7870,H-D Electric Coop Inc,SD,US,NERC_REGION,SPP
+7887,Habersham Electric Membership Corp,GA,US,NERC_REGION,SERC
+7891,Guernsey-Muskingum El Coop Inc,OH,US,NERC_REGION,RFC
+7908,Hagerstown Light Department,MD,US,NERC_REGION,RFC
+7958,City of Hallettsville - (TX),TX,US,NERC_REGION,TRE
+7969,City of Halstad - (MN),MN,US,NERC_REGION,MRO
+7977,City of Hamilton - (OH),OH,US,NERC_REGION,RFC
+7978,Halifax Electric Member Corp,NC,US,NERC_REGION,
+7979,Hamilton County Elec Coop Assn,TX,US,NERC_REGION,TRE
+7995,Village of Hamilton - (NY),NY,US,NERC_REGION,NPCC
+7996,Town of Hamilton - (NC),NC,US,NERC_REGION,SERC
+8000,NineStar Connect,IN,US,NERC_REGION,RFC
+8034,Hancock-Wood Electric Coop Inc,OH,US,NERC_REGION,RFC
+8055,City of Hannibal - (MO),MO,US,NERC_REGION,SERC
+8063,Village of Hampton - (NE),NE,US,NERC_REGION,MRO
+8083,City of Harbor Springs - (MI),MI,US,NERC_REGION,RFC
+8104,Town of Hardwick,VT,US,NERC_REGION,NPCC
+8122,Harlan Municipal Utilities - (IA),IA,US,NERC_REGION,MRO
+8139,Harquahala Valley Pwr District,AZ,US,NERC_REGION,WECC
+8179,Harrison County Rural E M C,IN,US,NERC_REGION,RFC
+8192,"Harrison Rural Elec Assn, Inc",WV,US,NERC_REGION,RFC
+8198,City of Harrisonburg - (VA),VA,US,NERC_REGION,SERC
+8199,City of Harrisonville - (MO),MO,US,NERC_REGION,SPP
+8205,City of Hart Hydro - (MI),MI,US,NERC_REGION,RFC
+8209,City of Hartford - (AL),AL,US,NERC_REGION,SERC
+8210,Hart Electric Member Corp,GA,US,NERC_REGION,SERC
+8212,Hartford Electric,WI,US,NERC_REGION,MISO
+8226,City of Hartselle,AL,US,NERC_REGION,SERC
+8240,Village of Haskins - (OH),OH,US,NERC_REGION,RFC
+8245,City of Hastings - (NE),NE,US,NERC_REGION,MRO
+8254,Borough of Hatfield- (PA),PA,US,NERC_REGION,RFC
+8276,Havana Power & Light Company,FL,US,NERC_REGION,FRCC
+8279,City of Haven - (KS),KS,US,NERC_REGION,SPP
+8283,Harrison County Rrl Elec Coop,IA,US,NERC_REGION,MRO
+8287,Hawaii Electric Light Co Inc,HI,US,NERC_REGION,HI
+8288,City of Hawarden - (IA),IA,US,NERC_REGION,MRO
+8307,Hawley Public Utilities Comm,MN,US,NERC_REGION,MRO
+8311,Town of Haxtun - (CO),CO,US,NERC_REGION,WECC
+8319,Heartland Power Coop,IA,US,NERC_REGION,MRO
+8333,Haywood Electric Member Corp,NC,US,NERC_REGION,SERC
+8359,City of Hearne - (TX),TX,US,NERC_REGION,TRE
+8366,Heber Light & Power Company,UT,US,NERC_REGION,WECC
+8375,City of Hebron - (NE),NE,US,NERC_REGION,MRO
+8379,City of Hecla,SD,US,NERC_REGION,MRO
+8428,City of Helper - (UT),UT,US,NERC_REGION,WECC
+8430,Village of Hemingford - (NE),NE,US,NERC_REGION,MRO
+8432,City of Hemphill - (TX),TX,US,NERC_REGION,SERC
+8447,Hendricks County Rural E M C,IN,US,NERC_REGION,RFC
+8449,Henderson City Utility Comm,KY,US,NERC_REGION,SERC
+8459,City of Henning - (MN),MN,US,NERC_REGION,MRO
+8466,Henry County Rural E M C,IN,US,NERC_REGION,RFC
+8493,City of Hermann,MO,US,NERC_REGION,SERC
+8497,City of Herndon,KS,US,NERC_REGION,SPP
+8515,City of Hermiston,OR,US,NERC_REGION,WECC
+8517,City of Hertford - (NC),NC,US,NERC_REGION,SERC
+8532,City of Heyburn - (ID),ID,US,NERC_REGION,WECC
+8543,Hibbing Public Utilities Comm,MN,US,NERC_REGION,MRO
+8548,City of Hickman,KY,US,NERC_REGION,SERC
+8566,High Plains Power Inc,WY,US,NERC_REGION,WECC
+8567,City of Higginsville - (MO),MO,US,NERC_REGION,SPP
+8570,Highline Electric Assn,CO,US,NERC_REGION,WECC
+8571,Town of High Point,NC,US,NERC_REGION,SERC
+8573,City of Highland,IL,US,NERC_REGION,SERC
+8579,City of Highlands - (NC),NC,US,NERC_REGION,SERC
+8599,City of Hill City,KS,US,NERC_REGION,SPP
+8610,City of Hinton,IA,US,NERC_REGION,MRO
+8620,"HILCO Electric Cooperative, Inc.",TX,US,NERC_REGION,TRE
+8628,City of Hillsboro - (ND),ND,US,NERC_REGION,MRO
+8629,City of Hillsboro - (KS),KS,US,NERC_REGION,SPP
+8631,Hillsdale Board of Public Wks,MI,US,NERC_REGION,RFC
+8632,"Hill County Electric Coop, Inc",MT,US,NERC_REGION,WECC
+8677,Town of Hobgood,NC,US,NERC_REGION,SERC
+8698,City of Hogansville - (GA),GA,US,NERC_REGION,SERC
+8700,Hohokam Irr & Drain Dist,AZ,US,NERC_REGION,WECC
+8703,City of Hoisington - (KS),KS,US,NERC_REGION,SPP
+8714,Town of Holden - (UT),UT,US,NERC_REGION,WECC
+8715,Town of Holden - (MA),MA,US,NERC_REGION,NPCC
+8717,City of Holdrege,NE,US,NERC_REGION,MRO
+8723,City of Holland,MI,US,NERC_REGION,RFC
+8733,Village of Holley - (NY),NY,US,NERC_REGION,NPCC
+8748,City of Holly Springs,MS,US,NERC_REGION,SERC
+8751,Town of Holly - (CO),CO,US,NERC_REGION,WECC
+8761,Holmes-Wayne Electric Coop Inc,OH,US,NERC_REGION,RFC
+8764,"Holston Electric Coop, Inc",TN,US,NERC_REGION,SERC
+8770,City of Holton - (KS),KS,US,NERC_REGION,SPP
+8773,"Holy Cross Electric Assn, Inc",CO,US,NERC_REGION,WECC
+8774,City of Holyoke - (MA),MA,US,NERC_REGION,NPCC
+8777,City of Holyoke - (CO),CO,US,NERC_REGION,WECC
+8780,"Fox Islands Electric Coop, Inc",ME,US,NERC_REGION,NPCC
+8781,City of Holyrood - (KS),KS,US,NERC_REGION,SPP
+8786,Horry Electric Coop Inc,SC,US,NERC_REGION,SERC
+8795,City of Homestead - (FL),FL,US,NERC_REGION,FRCC
+8796,City of Hingham - (MA),MA,US,NERC_REGION,NPCC
+8797,Hull Municipal Light Plant,MA,US,NERC_REGION,NPCC
+8824,M J M Electric Cooperative Inc,IL,US,NERC_REGION,RFC
+8825,Town of Hookerton - (NC),NC,US,NERC_REGION,SERC
+8826,Hooversville Boro Elec Lgt Co,PA,US,NERC_REGION,RFC
+8830,Hood River Electric Coop,OR,US,NERC_REGION,WECC
+8840,City of Hope,AR,US,NERC_REGION,SPP
+8846,City of Hopkinsville,KY,US,NERC_REGION,SERC
+8847,City of Hopkinton - (IA),IA,US,NERC_REGION,MRO
+8871,City of Horton - (KS),KS,US,NERC_REGION,SPP
+8883,Houlton Water Company,ME,US,NERC_REGION,NPCC
+8884,Terrebonne Parish Consol Gov't,LA,US,NERC_REGION,SPP
+8896,City of Houston - (MO),MO,US,NERC_REGION,SERC
+8898,Houston County Elec Coop Inc,TX,US,NERC_REGION,TRE
+8901,CenterPoint Energy,TX,US,NERC_REGION,TRE
+8911,Howard Electric Coop,MO,US,NERC_REGION,SERC
+8919,City of Howard - (SD),SD,US,NERC_REGION,MRO
+8924,Howard Greeley Rural P P D,NE,US,NERC_REGION,MRO
+8934,"Howell-Oregon Elec Coop, Inc",MO,US,NERC_REGION,SERC
+8949,City of Hubbard,OH,US,NERC_REGION,RFC
+8966,Hudson Municipal Electric Utility,IA,US,NERC_REGION,MRO
+8972,City of Hudson - (OH),OH,US,NERC_REGION,RFC
+8973,Town of Hudson - (MA),MA,US,NERC_REGION,NPCC
+9000,Hughes Power & Light Co,AK,US,NERC_REGION,AK
+9011,City of Hugoton - (KS),KS,US,NERC_REGION,SPP
+9022,City of Hubbell- (NE),NE,US,NERC_REGION,MRO
+9023,City of Humboldt,TN,US,NERC_REGION,SERC
+9025,City of Hunnewell - (MO),MO,US,NERC_REGION,SERC
+9067,City of Hope,ND,US,NERC_REGION,MRO
+9087,Town of Huntersville - (NC),NC,US,NERC_REGION,SERC
+9088,City of Huntingburg - (IN),IN,US,NERC_REGION,RFC
+9096,City of Lafayette - (LA),LA,US,NERC_REGION,SPP
+9124,Hustisford Utilities,WI,US,NERC_REGION,MISO
+9128,Hurricane City Power,UT,US,NERC_REGION,WECC
+9130,Hutchinson Utilities Comm,MN,US,NERC_REGION,MRO
+9163,Hyrum City Corporation,UT,US,NERC_REGION,WECC
+9186,"Idaho County L&P Coop Assn, Inc",ID,US,NERC_REGION,WECC
+9187,City of Idaho Falls - (ID),ID,US,NERC_REGION,WECC
+9188,"I-N-N Electric Coop, Inc",AK,US,NERC_REGION,AK
+9191,Idaho Power Co,ID,US,NERC_REGION,WECC
+9192,Igiugig Electric Company,AK,US,NERC_REGION,AK
+9200,Village of Ilion - (NY),NY,US,NERC_REGION,NPCC
+9209,Illinois Rural Electric Coop,IL,US,NERC_REGION,RFC
+9216,Imperial Irrigation District,CA,US,NERC_REGION,WECC
+9217,City of Imperial,NE,US,NERC_REGION,MRO
+9230,City of Independence - (IA),IA,US,NERC_REGION,MISO
+9231,City of Independence - (MO),MO,US,NERC_REGION,SPP
+9234,Indiana Municipal Power Agency,IN,US,NERC_REGION,RFC
+9246,"Indian Electric Coop, Inc",OK,US,NERC_REGION,SPP
+9267,"Hoosier Energy R E C, Inc",IN,US,NERC_REGION,RFC
+9269,Indiana-Kentucky Electric Corp,OH,US,NERC_REGION,RFC
+9273,Indianapolis Power & Light Co,IN,US,NERC_REGION,RFC
+9274,City of Indianola - (NE),NE,US,NERC_REGION,MRO
+9275,Indianola Municipal Utilities,IA,US,NERC_REGION,MRO
+9286,Illinois Municipal Elec Agency,IL,US,NERC_REGION,SERC
+9292,Inter County Energy Coop Corp,KY,US,NERC_REGION,RFC
+9324,Indiana Michigan Power Co,IN,US,NERC_REGION,RFC
+9331,Intercounty Electric Coop Assn,MO,US,NERC_REGION,SERC
+9336,Intermountain Rural Elec Assn,CO,US,NERC_REGION,WECC
+9417,Interstate Power and Light Co,IA,US,NERC_REGION,MRO
+9418,City of Iola - (KS),KS,US,NERC_REGION,SPP
+9422,J-A-C Electric Coop Inc,TX,US,NERC_REGION,TRE
+9425,Iowa Lakes Electric Coop,IA,US,NERC_REGION,MRO
+9431,Irwin Electric Membership Corp,GA,US,NERC_REGION,SERC
+9442,Town of Ipswich - (MA),MA,US,NERC_REGION,NPCC
+9463,City of Isabel - (KS),KS,US,NERC_REGION,SPP
+9475,Itasca-Mantrap Co-op Electrical Assn,MN,US,NERC_REGION,MRO
+9572,Village of Jackson Center - (OH),OH,US,NERC_REGION,RFC
+9573,City of Jackson - (GA),GA,US,NERC_REGION,SERC
+9575,Jackson Energy Coop Corp - (KY),KY,US,NERC_REGION,SERC
+9576,Jackson County Rural E M C - (IN),IN,US,NERC_REGION,RFC
+9590,"Jackson Electric Coop, Inc - (TX)",TX,US,NERC_REGION,TRE
+9598,City of Jackson - (OH),OH,US,NERC_REGION,RFC
+9599,City of Jackson - (MN),MN,US,NERC_REGION,MRO
+9601,Jackson Electric Member Corp - (GA),GA,US,NERC_REGION,SERC
+9603,City of Jackson - (MO),MO,US,NERC_REGION,RFC
+9605,Jackson Purchase Energy Corporation,KY,US,NERC_REGION,SERC
+9610,Village of Jacksonville - (VT),VT,US,NERC_REGION,NPCC
+9613,City of Lebanon - (IN),IN,US,NERC_REGION,RFC
+9616,Beaches Energy Services,FL,US,NERC_REGION,SERC
+9617,JEA,FL,US,NERC_REGION,FRCC
+9645,Jamestown Board of Public Util,NY,US,NERC_REGION,NPCC
+9646,Town of Jamestown - (IN),IN,US,NERC_REGION,RFC
+9650,City of Janesville - (MN),MN,US,NERC_REGION,MRO
+9664,City of Jasper - (TX),TX,US,NERC_REGION,SERC
+9665,Jasper County Rural E M C,IN,US,NERC_REGION,RFC
+9666,Jay County Rural E M C,IN,US,NERC_REGION,RFC
+9667,City of Jasper - (IN),IN,US,NERC_REGION,RFC
+9668,"Jasper-Newton Elec Coop, Inc",TX,US,NERC_REGION,MRO
+9682,"Jefferson Davis Elec Coop, Inc",LA,US,NERC_REGION,SERC
+9689,Jefferson Electric Member Corp,GA,US,NERC_REGION,SERC
+9699,"Jemez Mountains Elec Coop, Inc",NM,US,NERC_REGION,WECC
+9732,City of Jetmore,KS,US,NERC_REGION,SPP
+9734,City of Jewett City - (CT),CT,US,NERC_REGION,NPCC
+9739,Joe Wheeler Elec Member Corp,AL,US,NERC_REGION,SERC
+9750,"Jo-Carroll Energy, Inc",IL,US,NERC_REGION,MRO
+9778,Johnson County Rural E M C,IN,US,NERC_REGION,RFC
+9806,Village of Johnson - (VT),VT,US,NERC_REGION,NPCC
+9832,Kuiggluum Kallugvia,AK,US,NERC_REGION,AK
+9837,Jones-Onslow Elec Member Corp,NC,US,NERC_REGION,SERC
+9879,City Water and Light Plant,AR,US,NERC_REGION,SPP
+9922,Jump River Electric Coop Inc,WI,US,NERC_REGION,MRO
+9928,City of Julesburg - (CO),CO,US,NERC_REGION,WECC
+9936,Juneau Utility Comm,WI,US,NERC_REGION,MISO
+9949,Just Energy,CN,US,NERC_REGION,
+9961,Kansas Electric Power Coop Inc,KS,US,NERC_REGION,MRO
+9964,Kenergy Corp,KY,US,NERC_REGION,
+9973,City of Kahoka,MO,US,NERC_REGION,RFC
+9979,KAMO Electric Coop Inc,OK,US,NERC_REGION,SPP
+9991,Kandiyohi Power Coop,MN,US,NERC_REGION,MRO
+9996,City of Kansas City - (KS),KS,US,NERC_REGION,SPP
+9999,Kankakee Valley Rural E M C,IN,US,NERC_REGION,RFC
+10005,"Evergy Kansas South, Inc",KS,US,NERC_REGION,SPP
+10019,FreeState Electric Coop,KS,US,NERC_REGION,SPP
+10025,City of Kaplan - (LA),LA,US,NERC_REGION,SERC
+10035,Kansas Municipal Energy Agency,KS,US,NERC_REGION,SPP
+10037,City of Kasota - (MN),MN,US,NERC_REGION,
+10040,City of Kasson,MN,US,NERC_REGION,MRO
+10056,City of Kaukauna,WI,US,NERC_REGION,MISO
+10063,Kaysville City Corporation,UT,US,NERC_REGION,WECC
+10065,KBR Rural Public Power District,NE,US,NERC_REGION,MRO
+10066,K C Electric Association,CO,US,NERC_REGION,WECC
+10071,Kauai Island Utility Cooperative,HI,US,NERC_REGION,HICC
+10089,Keewatin Public Utilities,MN,US,NERC_REGION,MRO
+10144,Kennebunk Light & Power Dist,ME,US,NERC_REGION,NPCC
+10152,City of Kennett - (MO),MO,US,NERC_REGION,SPP
+10153,KEM Electric Coop Inc,ND,US,NERC_REGION,MRO
+10170,"Kiamichi Electric Coop, Inc",OK,US,NERC_REGION,SPP
+10172,City of Marathon - (IA),IA,US,NERC_REGION,MRO
+10179,Kenyon Municipal Utilities,MN,US,NERC_REGION,MRO
+10181,Keosauqua Municipal Light & Pwr,IA,US,NERC_REGION,SERC
+10210,Ketchikan Public Utilities,AK,US,NERC_REGION,AK
+10226,"Utility Board of the City of Key West, F",FL,US,NERC_REGION,
+10229,City of Hickman - (NE),NE,US,NERC_REGION,MRO
+10243,City of Kiel - (WI),WI,US,NERC_REGION,RFC
+10260,City of Kimball - (NE),NE,US,NERC_REGION,WECC
+10265,City of Kimballton - (IA),IA,US,NERC_REGION,MRO
+10320,City of Kingfisher - (OK),OK,US,NERC_REGION,MRO
+10321,City of Kingman - (KS),KS,US,NERC_REGION,SPP
+10324,City of Kings Mountain - (NC),NC,US,NERC_REGION,SERC
+10326,PUD No 1 of Kittitas County,WA,US,NERC_REGION,WECC
+10329,"Kingsbury Electric Coop, Inc",SD,US,NERC_REGION,MRO
+10331,Kingsport Power Co,OH,US,NERC_REGION,RFC
+10345,City of Kinston - (NC),NC,US,NERC_REGION,SERC
+10351,City of Kiowa - (KS),KS,US,NERC_REGION,SPP
+10359,Kirbyville Light & Power Co,TX,US,NERC_REGION,SERC
+10370,City of Kirkwood - (MO),MO,US,NERC_REGION,RFC
+10376,Kissimmee Utility Authority,FL,US,NERC_REGION,FRCC
+10393,PUD No 1 of Klickitat County,WA,US,NERC_REGION,WECC
+10407,Town of Knightstown - (IN),IN,US,NERC_REGION,
+10433,Kodiak Electric Assn Inc,AK,US,NERC_REGION,AK
+10447,City of Kosciusko - (MS),MS,US,NERC_REGION,SERC
+10448,Kosciusko County Rural E M C,IN,US,NERC_REGION,RFC
+10451,Kotzebue Electric Assn Inc,AK,US,NERC_REGION,AK
+10455,Kokhanok Village Council,AK,US,NERC_REGION,AK
+10494,Borough of Kutztown - (PA),PA,US,NERC_REGION,RFC
+10508,Village of L'Anse - (MI),MI,US,NERC_REGION,MISO
+10525,La Farge Municipal Electric Co,WI,US,NERC_REGION,MRO
+10532,City of La Grange - (TX),TX,US,NERC_REGION,TRE
+10533,City of La Harpe - (KS),KS,US,NERC_REGION,SPP
+10538,City of La Plata - (MO),MO,US,NERC_REGION,SERC
+10539,"La Plata Electric Assn, Inc",CO,US,NERC_REGION,WECC
+10542,La Porte City Utilities,IA,US,NERC_REGION,MRO
+10550,McCook Public Power District,NE,US,NERC_REGION,SPP
+10558,"LaCreek Electric Assn, Inc",SD,US,NERC_REGION,MRO
+10559,City of La Crosse - (KS),KS,US,NERC_REGION,SPP
+10562,Lagrange County Rural E M C,IN,US,NERC_REGION,RFC
+10568,Town of Ladoga - (IN),IN,US,NERC_REGION,RFC
+10570,City of Lafayette - (AL),AL,US,NERC_REGION,SERC
+10571,City of LaFayette - (GA),GA,US,NERC_REGION,SERC
+10573,Village of Hildreth - (NE),NE,US,NERC_REGION,MRO
+10574,L & O Power Co-operative,IA,US,NERC_REGION,MRO
+10585,City of La Grange - (GA),GA,US,NERC_REGION,SERC
+10586,Town of La Grange - (NC),NC,US,NERC_REGION,SERC
+10595,City of Lake City - (MN),MN,US,NERC_REGION,MRO
+10596,City of Lake Crystal - (MN),MN,US,NERC_REGION,MRO
+10599,"Lake Region Electric Coop, Inc - (OK)",OK,US,NERC_REGION,SPP
+10603,"Laclede Electric Coop, Inc",MO,US,NERC_REGION,SERC
+10605,Lake Mills Light & Water,WI,US,NERC_REGION,MISO
+10606,City of Lake Mills,IA,US,NERC_REGION,MRO
+10608,City of Lake Park - (IA),IA,US,NERC_REGION,MRO
+10609,City of Lake Park - (MN),MN,US,NERC_REGION,MRO
+10610,"Lake Placid Village, Inc - (NY)",NY,US,NERC_REGION,NPCC
+10616,Village of Lakeview - (OH),OH,US,NERC_REGION,RFC
+10617,City of Lake View - (IA),IA,US,NERC_REGION,MRO
+10618,Lake Region Electric Cooperative - (MN),MN,US,NERC_REGION,MRO
+10620,City of Lake Worth - (FL),FL,US,NERC_REGION,SERC
+10622,City of Lakefield - (MN),MN,US,NERC_REGION,MRO
+10623,City of Lakeland - (FL),FL,US,NERC_REGION,FRCC
+10624,Southern Rivers Energy,GA,US,NERC_REGION,SERC
+10625,"Lamb County Electric Coop, Inc",TX,US,NERC_REGION,SPP
+10627,Lakeview Light & Power,WA,US,NERC_REGION,WECC
+10628,City of Lakin - (KS),KS,US,NERC_REGION,SPP
+10629,City of Lakota - (ND),ND,US,NERC_REGION,MRO
+10632,"Lake Region Electric Assn, Inc - (SD)",SD,US,NERC_REGION,MRO
+10633,City of Lamar - (CO),CO,US,NERC_REGION,WECC
+10649,Lamar County Elec Coop Assn,TX,US,NERC_REGION,TRE
+10650,City of Lamoni - (IA),IA,US,NERC_REGION,MRO
+10656,City of Lampasas - (TX),TX,US,NERC_REGION,TRE
+10668,Licking Rural Electric Inc,OH,US,NERC_REGION,RFC
+10669,Town of Landis - (NC),NC,US,NERC_REGION,SERC
+10681,Lane Electric Coop Inc,OR,US,NERC_REGION,WECC
+10685,Lanesboro Public Utility Comm,MN,US,NERC_REGION,MRO
+10687,City of Lanett - (AL),AL,US,NERC_REGION,SERC
+10697,Lake Country Power,MN,US,NERC_REGION,MRO
+10704,City of Lansing - (MI),MI,US,NERC_REGION,RFC
+10713,City of Larned - (KS),KS,US,NERC_REGION,SPP
+10716,City of Larsen Bay - (AK),AK,US,NERC_REGION,AK
+10728,"Lane-Scott Electric Coop, Inc",KS,US,NERC_REGION,SPP
+10730,City of Las Animas - (CO),CO,US,NERC_REGION,WECC
+10760,City of Laurel - (NE),NE,US,NERC_REGION,MRO
+10767,City of Linneus - (MO),MO,US,NERC_REGION,RFC
+10769,City of Laurens - (IA),IA,US,NERC_REGION,MRO
+10770,City of Laurinburg - (NC),NC,US,NERC_REGION,SERC
+10776,Borough of Lavallette - (NJ),NJ,US,NERC_REGION,RFC
+10777,Town of Laverne - (OK),OK,US,NERC_REGION,MRO
+10784,City of Lawler - (IA),IA,US,NERC_REGION,MRO
+10798,Lawrenceburg Municipal Utils,IN,US,NERC_REGION,RFC
+10799,City of Lawrenceburg,TN,US,NERC_REGION,SERC
+10800,City of Lawrenceville - (GA),GA,US,NERC_REGION,SERC
+10814,City of Le Sueur - (MN),MN,US,NERC_REGION,MRO
+10817,"Lea County Electric Coop, Inc",NM,US,NERC_REGION,SPP
+10830,City of Lebanon - (OH),OH,US,NERC_REGION,RFC
+10832,City of Lebanon - (MO),MO,US,NERC_REGION,SERC
+10857,"Lee County Electric Coop, Inc",FL,US,NERC_REGION,FRCC
+10868,City of Leesburg - (FL),FL,US,NERC_REGION,FRCC
+10879,Lehi City Corporation,UT,US,NERC_REGION,WECC
+10882,Borough of Lehighton - (PA),PA,US,NERC_REGION,RFC
+10892,City of Leland - (MS),MS,US,NERC_REGION,SERC
+10908,City of Lenox - (IA),IA,US,NERC_REGION,RFC
+10935,City of Lewes - (DE),DE,US,NERC_REGION,RFC
+10944,PUD No 1 of Lewis County,WA,US,NERC_REGION,WECC
+10959,Borough of Lewisberry - (PA),PA,US,NERC_REGION,RFC
+10960,City of Lewisburg - (TN),TN,US,NERC_REGION,SERC
+10962,Lewis County Rural E C A,MO,US,NERC_REGION,SERC
+10966,City of Lexington - (NC),NC,US,NERC_REGION,SERC
+10967,City of Lexington - (NE),NE,US,NERC_REGION,MRO
+10969,City of Lexington - (TX),TX,US,NERC_REGION,TRE
+10970,City of Lexington - (OK),OK,US,NERC_REGION,MRO
+10977,City of Liberal - (MO),MO,US,NERC_REGION,RFC
+10978,Levan Town Corporation - (UT),UT,US,NERC_REGION,WECC
+11011,Licking Valley Rural E C C,KY,US,NERC_REGION,RFC
+11014,"Lighthouse Electric Coop, Inc",TX,US,NERC_REGION,SPP
+11017,City of Lincoln Center - (KS),KS,US,NERC_REGION,SPP
+11018,Lincoln Electric System,NE,US,NERC_REGION,MRO
+11019,Little River Electric Coop Inc,SC,US,NERC_REGION,SERC
+11021,Lincoln County Power Dist No 1,NV,US,NERC_REGION,WECC
+11022,"Lincoln Electric Coop, Inc",MT,US,NERC_REGION,WECC
+11035,City of Lincolnton - (NC),NC,US,NERC_REGION,SERC
+11040,City of Lindsborg - (KS),KS,US,NERC_REGION,SPP
+11053,Linn County REC,IA,US,NERC_REGION,MRO
+11055,City of Linton - (IN),IN,US,NERC_REGION,RFC
+11058,City of Lindsay - (OK),OK,US,NERC_REGION,SPP
+11064,Litchfield Public Utilities,MN,US,NERC_REGION,MRO
+11083,Village of Little Valley - (NY),NY,US,NERC_REGION,NPCC
+11085,Town of Littleton - (MA),MA,US,NERC_REGION,NPCC
+11093,City of Livermore- (IA),IA,US,NERC_REGION,MRO
+11099,Town of Lingle - (WY),WY,US,NERC_REGION,WECC
+11103,City of Llano - (TX),TX,US,NERC_REGION,TRE
+11118,Lockhart Power Co,SC,US,NERC_REGION,SERC
+11119,City of Lockhart - (TX),TX,US,NERC_REGION,TRE
+11122,City of Lodgepole - (NE),NE,US,NERC_REGION,MRO
+11124,City of Lodi - (CA),CA,US,NERC_REGION,WECC
+11126,Village of Lodi - (OH),OH,US,NERC_REGION,RFC
+11135,City of Logan - (UT),UT,US,NERC_REGION,WECC
+11141,City of Long Grove - (IA),IA,US,NERC_REGION,MRO
+11142,City of Logansport - (IN),IN,US,NERC_REGION,RFC
+11148,City of Lompoc - (CA),CA,US,NERC_REGION,WECC
+11187,City of Longmont,CO,US,NERC_REGION,WECC
+11196,Town of Littleton - (NH),NH,US,NERC_REGION,NPCC
+11200,"Lorain-Medina R E C, Inc",OH,US,NERC_REGION,RFC
+11203,Logan County Coop Power & Light,OH,US,NERC_REGION,RFC
+11204,Los Alamos County,NM,US,NERC_REGION,WECC
+11205,Town of Lucama - (NC),NC,US,NERC_REGION,SERC
+11206,City of Mulberry - (KS),KS,US,NERC_REGION,SPP
+11207,City of Muscotah,KS,US,NERC_REGION,
+11208,Los Angeles Department of Water & Power,CA,US,NERC_REGION,WECC
+11211,Lost River Electric Coop Inc,ID,US,NERC_REGION,WECC
+11228,Town of Louisburg - (NC),NC,US,NERC_REGION,SERC
+11235,Lafayette Public Power Authority,LA,US,NERC_REGION,SPP
+11241,Entergy Louisiana LLC,LA,US,NERC_REGION,SERC
+11247,Louisville Electric System,MS,US,NERC_REGION,SERC
+11250,Loup Valleys Rural P P D,NE,US,NERC_REGION,MRO
+11251,Loup River Public Power Dist,NE,US,NERC_REGION,MRO
+11256,City of Loveland - (CO),CO,US,NERC_REGION,WECC
+11268,City of Lowell - (MI),MI,US,NERC_REGION,RFC
+11269,Lower Colorado River Authority,TX,US,NERC_REGION,TRE
+11272,"Lower Yellowstone R E A, Inc",MT,US,NERC_REGION,SPP
+11273,Lower Valley Energy Inc,WY,US,NERC_REGION,WECC
+11291,Lumbee River Elec Member Corp,NC,US,NERC_REGION,SERC
+11292,City of Lubbock - (TX),TX,US,NERC_REGION,SPP
+11296,Village of Lucas - (OH),OH,US,NERC_REGION,RFC
+11298,Lyon Rural Electric Coop,IA,US,NERC_REGION,MRO
+11299,City of Lucas- (KS),KS,US,NERC_REGION,SPP
+11305,Village of Ludlow - (VT),VT,US,NERC_REGION,NPCC
+11316,City of Luling - (TX),TX,US,NERC_REGION,TRE
+11318,City of Lumberton - (NC),NC,US,NERC_REGION,SERC
+11330,Town of Lusk - (WY),WY,US,NERC_REGION,WECC
+11334,"Lyon-Coffey Electric Cooperative, Inc.",KS,US,NERC_REGION,SPP
+11345,"Lyon-Lincoln Electric Cooperative, Inc.",MN,US,NERC_REGION,MRO
+11346,Village of Lyman - (NE),NE,US,NERC_REGION,MRO
+11355,"Lynches River Elec Coop, Inc",SC,US,NERC_REGION,SERC
+11359,Village of Lyndonville - (VT),VT,US,NERC_REGION,NPCC
+11360,Town of MacClesfield - (NC),NC,US,NERC_REGION,SERC
+11364,"Lyntegar Electric Coop, Inc",TX,US,NERC_REGION,SPP
+11372,City of Lyons - (NE),NE,US,NERC_REGION,MRO
+11376,Town of Lyons - (CO),CO,US,NERC_REGION,WECC
+11380,M & A Electric Power Coop,MO,US,NERC_REGION,SERC
+11424,City of Mabel - (MN),MN,US,NERC_REGION,MRO
+11458,City of Macon - (MS),MS,US,NERC_REGION,SERC
+11460,City of Macon - (MO),MO,US,NERC_REGION,SERC
+11463,Macon Electric Coop,MO,US,NERC_REGION,SERC
+11475,City of Madison - (SD),SD,US,NERC_REGION,MRO
+11477,Town of Madison - (ME),ME,US,NERC_REGION,NPCC
+11479,Madison Gas & Electric Co,WI,US,NERC_REGION,RFC
+11481,City of Madison - (NE),NE,US,NERC_REGION,MRO
+11482,City of Madison - (MN),MN,US,NERC_REGION,MRO
+11488,Madisonville Municipal Utils,KY,US,NERC_REGION,RFC
+11501,Magic Valley Electric Coop Inc,TX,US,NERC_REGION,TRE
+11515,Town of Maiden - (NC),NC,US,NERC_REGION,SERC
+11519,Magnolia Electric Power Assn,MS,US,NERC_REGION,SERC
+11521,"Maine Electric Power Co, Inc",ME,US,NERC_REGION,NPCC
+11540,City of Malden - (MO),MO,US,NERC_REGION,SPP
+11541,City of Manitou - (OK),OK,US,NERC_REGION,SPP
+11560,City of Manassas - (VA),VA,US,NERC_REGION,
+11566,City of Mangum - (OK),OK,US,NERC_REGION,MRO
+11568,Town of Manilla - (IA),IA,US,NERC_REGION,MRO
+11571,Manitowoc Public Utilities,WI,US,NERC_REGION,MRO
+11578,Town of Mannford - (OK),OK,US,NERC_REGION,SPP
+11581,City of Manning,IA,US,NERC_REGION,MRO
+11587,City of Mansfield - (GA),GA,US,NERC_REGION,SERC
+11588,City of Manti - (UT),UT,US,NERC_REGION,WECC
+11589,"Harney Electric Coop, Inc",OR,US,NERC_REGION,WECC
+11609,City of Mapleton- (IA),IA,US,NERC_REGION,MRO
+11611,City of Maquoketa - (IA),IA,US,NERC_REGION,MISO
+11618,Village of Marathon - (NY),NY,US,NERC_REGION,NPCC
+11624,City of Marblehead - (MA),MA,US,NERC_REGION,NPCC
+11626,City of Marceline - (MO),MO,US,NERC_REGION,SPP
+11643,Marias River Electric Coop Inc,MT,US,NERC_REGION,WECC
+11646,City of Marietta - (GA),GA,US,NERC_REGION,SERC
+11658,City of Marion - (KS),KS,US,NERC_REGION,SPP
+11691,City of Marlow - (OK),OK,US,NERC_REGION,SPP
+11693,"Marlboro Electric Coop, Inc",SC,US,NERC_REGION,SERC
+11701,City of Marquette - (MI),MI,US,NERC_REGION,RFC
+11713,City of Marshall - (MI),MI,US,NERC_REGION,RFC
+11714,Marshall-De Kalb Electric Coop,AL,US,NERC_REGION,SERC
+11731,City of Marshall - (MN),MN,US,NERC_REGION,MRO
+11732,City of Marshall - (MO),MO,US,NERC_REGION,SPP
+11736,City of Marshall - (IL),IL,US,NERC_REGION,RFC
+11740,City of Marshfield - (WI),WI,US,NERC_REGION,MRO
+11767,Marshall County Rural E M C,IN,US,NERC_REGION,RFC
+11788,Consumers Energy,IA,US,NERC_REGION,MRO
+11789,Maryville Utilities,TN,US,NERC_REGION,SERC
+11790,City of Mascoutah - (IL),IL,US,NERC_REGION,RFC
+11793,City of Mason - (TX),TX,US,NERC_REGION,TRE
+11804,Massachusetts Electric Co,NY,US,NERC_REGION,NPCC
+11806,Massachusetts Mun Wholes Electric Co,MA,US,NERC_REGION,NPCC
+11811,Town of Massena - (NY),NY,US,NERC_REGION,NPCC
+11824,Matanuska Electric Assn Inc,AK,US,NERC_REGION,AK
+11833,Municipal Energy Agency of MS,MS,US,NERC_REGION,SERC
+11843,Maui Electric Co Ltd,HI,US,NERC_REGION,HI
+11844,Matinicus Plantation Elec Co,ME,US,NERC_REGION,NPCC
+11871,City of Mayfield Plant Board,KY,US,NERC_REGION,SERC
+11892,Village of Mayville - (NY),NY,US,NERC_REGION,
+11895,Village of Mazomanie - (WI),WI,US,NERC_REGION,MRO
+11910,McLeod Cooperative Power Assn,MN,US,NERC_REGION,MRO
+11965,City of McCleary - (WA),WA,US,NERC_REGION,WECC
+11989,McCone Electric Coop Inc,MT,US,NERC_REGION,WECC
+12006,Town of McCormick - (SC),SC,US,NERC_REGION,SERC
+12070,McDonough Power Coop,IL,US,NERC_REGION,RFC
+12087,McKenzie Electric Coop Inc,ND,US,NERC_REGION,MRO
+12090,"McLean Electric Coop, Inc",ND,US,NERC_REGION,MRO
+12114,City of McGregor- (IA),IA,US,NERC_REGION,MRO
+12119,McGrath Light & Power Co,AK,US,NERC_REGION,AK
+12167,City of McLeansboro - (IL),IL,US,NERC_REGION,RFC
+12186,McMinnville Electric System,TN,US,NERC_REGION,SERC
+12187,City of McMinnville - (OR),OR,US,NERC_REGION,WECC
+12191,McMullen Valley Water C&D Dist,AZ,US,NERC_REGION,WECC
+12199,Montana-Dakota Utilities Co,ND,US,NERC_REGION,MRO
+12208,City of McPherson - (KS),KS,US,NERC_REGION,MRO
+12260,Mecklenburg Electric Cooperative,VA,US,NERC_REGION,SERC
+12265,City of Medford - (WI),WI,US,NERC_REGION,MRO
+12268,"Medina Electric Coop, Inc",TX,US,NERC_REGION,TRE
+12286,Melrose Public Utilities,MN,US,NERC_REGION,MRO
+12289,Meadow Town Corporation,UT,US,NERC_REGION,WECC
+12292,City of Meadville - (MO),MO,US,NERC_REGION,SPP
+12294,City of Memphis - (MO),MO,US,NERC_REGION,
+12296,Town of Merrimac - (MA),MA,US,NERC_REGION,NPCC
+12298,City of Menasha - (WI),WI,US,NERC_REGION,MISO
+12301,Nodak Electric Coop Inc,ND,US,NERC_REGION,MRO
+12302,City of Mendon - (OH),OH,US,NERC_REGION,RFC
+12323,Miami Power Corporation,OH,US,NERC_REGION,RFC
+12336,Village of Merrillan - (WI),WI,US,NERC_REGION,MRO
+12341,MidAmerican Energy Co,IA,US,NERC_REGION,
+12351,City of Mesa - (AZ),AZ,US,NERC_REGION,WECC
+12377,Midwest Energy Cooperative,MI,US,NERC_REGION,RFC
+12385,Metlakatla Power & Light,AK,US,NERC_REGION,ASCC
+12388,City of Metropolis - (IL),IL,US,NERC_REGION,
+12390,Metropolitan Edison Co,OH,US,NERC_REGION,RFC
+12395,Menard Electric Coop,IL,US,NERC_REGION,RFC
+12397,Metropolitan Water District of S CA,CA,US,NERC_REGION,WECC
+12406,Miami-Cass County Rural E M C,IN,US,NERC_REGION,RFC
+12408,City of Miami - (OK),OK,US,NERC_REGION,SPP
+12439,"Midstate Electric Coop, Inc",OR,US,NERC_REGION,WECC
+12450,Midland Power Coop,IA,US,NERC_REGION,
+12452,Mid-South Electric Coop Assn,TX,US,NERC_REGION,TRE
+12462,Mid-Carolina Electric Coop Inc,SC,US,NERC_REGION,SERC
+12463,"Mid-Yellowstone Elec Coop, Inc",MT,US,NERC_REGION,WECC
+12465,"System Energy Resources, Inc",MS,US,NERC_REGION,SERC
+12472,Middle Georgia El Member Corp,GA,US,NERC_REGION,SERC
+12473,Town of Middleborough - (MA),MA,US,NERC_REGION,NPCC
+12474,Borough of Middletown - (PA),PA,US,NERC_REGION,RFC
+12476,Town of Middletown - (IN),IN,US,NERC_REGION,RFC
+12477,Town of Middleton,MA,US,NERC_REGION,NPCC
+12478,Town of Middletown - (DE),DE,US,NERC_REGION,RFC
+12485,Middle Kuskokwim Elec Coop Inc,AK,US,NERC_REGION,AK
+12515,"Midwest Electric, Inc",OH,US,NERC_REGION,RFC
+12523,Borough of Mifflinburg - (PA),PA,US,NERC_REGION,RFC
+12524,Midwest Energy Inc,KS,US,NERC_REGION,SPP
+12531,City of Milan - (MO),MO,US,NERC_REGION,SPP
+12532,City of Milan,TN,US,NERC_REGION,SERC
+12533,Village of Milan - (OH),OH,US,NERC_REGION,RFC
+12539,Midwest Electric Member Corp,NE,US,NERC_REGION,MRO
+12540,City of Milford - (DE),DE,US,NERC_REGION,RFC
+12541,City of Milford - (IA),IA,US,NERC_REGION,MRO
+12546,Mille Lacs Energy Cooperative,MN,US,NERC_REGION,MRO
+12580,City of Miller - (SD),SD,US,NERC_REGION,MRO
+12615,City of Milton-Freewater- (OR),OR,US,NERC_REGION,WECC
+12625,City of Minden - (LA),LA,US,NERC_REGION,SPP
+12626,City of Minden - (NE),NE,US,NERC_REGION,MRO
+12627,City of Mindenmines - (MO),MO,US,NERC_REGION,SPP
+12642,Maquoketa Valley Rrl Elec Coop,IA,US,NERC_REGION,RFC
+12647,"ALLETE, Inc.",MN,US,NERC_REGION,MRO
+12651,Minnesota Valley Electric Coop,MN,US,NERC_REGION,MRO
+12658,"Minnkota Power Coop, Inc",ND,US,NERC_REGION,MRO
+12660,Village of Minster - (OH),OH,US,NERC_REGION,RFC
+12667,Minnesota Municipal Power Agny,MN,US,NERC_REGION,MRO
+12674,City of Mishawaka,IN,US,NERC_REGION,RFC
+12681,Mississippi County Electric Co,AR,US,NERC_REGION,SERC
+12685,Entergy Mississippi LLC,MS,US,NERC_REGION,SERC
+12686,Mississippi Power Co,MS,US,NERC_REGION,SERC
+12692,"Missoula Electric Coop, Inc",MT,US,NERC_REGION,WECC
+12698,Evergy Missouri West,MO,US,NERC_REGION,SPP
+12700,Missouri Rural Electric Coop,MO,US,NERC_REGION,SERC
+12706,Mitchell Electric Member Corp,GA,US,NERC_REGION,SERC
+12710,Missouri Basin Muni Power Agny,SD,US,NERC_REGION,MRO
+12717,City of Mitchell - (NE),NE,US,NERC_REGION,MRO
+12744,Modern Electric Water Company,WA,US,NERC_REGION,WECC
+12745,Modesto Irrigation District,CA,US,NERC_REGION,WECC
+12759,Mohawk Municipal Comm,NY,US,NERC_REGION,NPCC
+12782,City of Monett - (MO),MO,US,NERC_REGION,SPP
+12789,City of Monmouth - (OR),OR,US,NERC_REGION,WECC
+12796,Monongahela Power Co,PA,US,NERC_REGION,RFC
+12797,City of Monroe - (UT),UT,US,NERC_REGION,WECC
+12800,City of Monroe - (GA),GA,US,NERC_REGION,SERC
+12801,City of Monroe - (NC),NC,US,NERC_REGION,SERC
+12802,City of Monroe City - (MO),MO,US,NERC_REGION,SERC
+12807,Michigan South Central Power Agency,MI,US,NERC_REGION,RFC
+12811,Village of Monroeville - (OH),OH,US,NERC_REGION,RFC
+12817,Mont Alto Borough,PA,US,NERC_REGION,RFC
+12825,NorthWestern Energy LLC - (MT),MT,US,NERC_REGION,WECC
+12838,City of Montezuma - (KS),KS,US,NERC_REGION,SPP
+12839,City of Montezuma - (IA),IA,US,NERC_REGION,MRO
+12840,Town of Montezuma - (IN),IN,US,NERC_REGION,RFC
+12851,City of Monticello - (GA),GA,US,NERC_REGION,SERC
+12860,Morgan County Rural Elec Assn,CO,US,NERC_REGION,WECC
+12861,Village of Montpelier - (OH),OH,US,NERC_REGION,RFC
+12866,Moon Lake Electric Assn Inc,UT,US,NERC_REGION,WECC
+12892,City of Mooreland - (OK),OK,US,NERC_REGION,SPP
+12894,City of Moorhead - (MN),MN,US,NERC_REGION,MRO
+12896,City of Morrill - (KS),KS,US,NERC_REGION,SPP
+12897,Moose Lake Water & Light Comm,MN,US,NERC_REGION,MRO
+12899,Mor-Gran-Sou Electric Coop Inc,ND,US,NERC_REGION,MRO
+12900,City of Mora - (MN),MN,US,NERC_REGION,MRO
+12901,Mora-San Miguel Elec Coop,NM,US,NERC_REGION,WECC
+12909,City of Moran - (KS),KS,US,NERC_REGION,SPP
+12915,Moreau-Grand Electric Coop Inc,SD,US,NERC_REGION,MRO
+12917,Morgan Stanley Capital Grp Inc,NY,US,NERC_REGION,NPCC
+12919,Morenci Water and Electric,AZ,US,NERC_REGION,WECC
+12927,Morgan City - (LA),LA,US,NERC_REGION,SPP
+12929,South Central Indiana REMC,IN,US,NERC_REGION,RFC
+12944,City of Morganton - (NC),NC,US,NERC_REGION,SERC
+12952,Village of Morrill - (NE),NE,US,NERC_REGION,MRO
+12988,City of Morristown - (TN),TN,US,NERC_REGION,SERC
+12989,Village of Morrisville - (VT),VT,US,NERC_REGION,NPCC
+12990,Consolidated Electric Coop Inc,OH,US,NERC_REGION,RFC
+13026,City of Moultrie - (GA),GA,US,NERC_REGION,SERC
+13027,"Mountain Electric Coop, Inc",TN,US,NERC_REGION,SERC
+13029,City of Moundridge - (KS),KS,US,NERC_REGION,SPP
+13032,Mt Carmel Public Utility Co,IL,US,NERC_REGION,SERC
+13033,City of Mount Dora - (FL),FL,US,NERC_REGION,FRCC
+13035,City of Mount Hope - (KS),KS,US,NERC_REGION,SPP
+13036,Village of Mt. Horeb - (WI),WI,US,NERC_REGION,MISO
+13037,City of Mt Pleasant - (UT),UT,US,NERC_REGION,WECC
+13038,City of Mt Pleasant - (IA),IA,US,NERC_REGION,MRO
+13039,City of Mt Pleasant - (TN),TN,US,NERC_REGION,SERC
+13040,City of Mount Vernon - (MO),MO,US,NERC_REGION,SPP
+13044,City of Mountain Iron - (MN),MN,US,NERC_REGION,MRO
+13048,City of Mountain Lake - (MN),MN,US,NERC_REGION,MRO
+13058,"Mountain View Elec Assn, Inc",CO,US,NERC_REGION,WECC
+13073,"Mt Wheeler Power, Inc",NV,US,NERC_REGION,WECC
+13090,Village of Mullen - (NE),NE,US,NERC_REGION,MRO
+13095,City of Mulvane - (KS),KS,US,NERC_REGION,SPP
+13100,Municipal Electric Authority,GA,US,NERC_REGION,SERC
+13137,City of Murray - (UT),UT,US,NERC_REGION,WECC
+13143,Board of Water Electric & Communications,IA,US,NERC_REGION,MRO
+13144,City of Muscle Shoals,AL,US,NERC_REGION,SERC
+13145,Village of Muscoda - (WI),WI,US,NERC_REGION,MISO
+13149,City of Needles - (CA),CA,US,NERC_REGION,WECC
+13190,"N W Electric Power Coop, Inc",MO,US,NERC_REGION,SERC
+13196,Northern Plains Electric Coop,ND,US,NERC_REGION,MRO
+13205,"New Enterprise R E C, Inc",PA,US,NERC_REGION,RFC
+13206,Nantucket Electric Co,MA,US,NERC_REGION,NPCC
+13208,City of Naperville - (IL),IL,US,NERC_REGION,RFC
+13209,City of Napoleon - (OH),OH,US,NERC_REGION,RFC
+13214,The Narragansett Electric Co,RI,US,NERC_REGION,NPCC
+13227,Natchez Trace Elec Power Assn,MS,US,NERC_REGION,SERC
+13228,City of Natchitoches,LA,US,NERC_REGION,SPP
+13233,City of Neligh - (NE),NE,US,NERC_REGION,MRO
+13286,New Hampton Village Precinct,NH,US,NERC_REGION,NPCC
+13292,Norris Electric Coop,IL,US,NERC_REGION,RFC
+13314,Navajo Tribal Utility Authority,AZ,US,NERC_REGION,WECC
+13318,"Navopache Electric Coop, Inc",AZ,US,NERC_REGION,WECC
+13332,"Navarro County Elec Coop, Inc",TX,US,NERC_REGION,TRE
+13334,City of Nebraska City,NE,US,NERC_REGION,MRO
+13337,Nebraska Public Power District,NE,US,NERC_REGION,MRO
+13352,City of Negaunee,MI,US,NERC_REGION,MISO
+13374,"Constellation NewEnergy, Inc",MD,US,NERC_REGION,NPCC
+13375,City of Nelson - (NE),NE,US,NERC_REGION,MRO
+13380,City of Neodesha - (KS),KS,US,NERC_REGION,SPP
+13382,City of Neola - (IA),IA,US,NERC_REGION,MRO
+13386,"Nemaha-Marshall E C A, Inc",KS,US,NERC_REGION,SPP
+13387,"Nespelem Valley Elec Coop, Inc",WA,US,NERC_REGION,WECC
+13388,Nephi City Corporation,UT,US,NERC_REGION,WECC
+13402,Nevada Irrigation District,CA,US,NERC_REGION,WECC
+13407,Nevada Power Co,NV,US,NERC_REGION,WECC
+13416,City of New Bern - (NC),NC,US,NERC_REGION,SERC
+13418,City of New Braunfels - (TX),TX,US,NERC_REGION,TRE
+13423,Town of New Carlisle- (IN),IN,US,NERC_REGION,RFO
+13424,New Castle Municipal Serv Comm,DE,US,NERC_REGION,RFC
+13433,New England Power Company,MA,US,NERC_REGION,NPCC
+13437,City of Newbern,TN,US,NERC_REGION,SERC
+13438,Village of New Glarus - (WI),WI,US,NERC_REGION,MISO
+13444,City of New Hampton - (IA),IA,US,NERC_REGION,MRO
+13448,City of New Holstein - (WI),WI,US,NERC_REGION,MISO
+13464,Village of New Knoxville - (OH),OH,US,NERC_REGION,RFC
+13465,City of Nielsville - (MN),MN,US,NERC_REGION,MRO
+13466,City of New Lisbon,WI,US,NERC_REGION,MRO
+13468,New London Municipal Utilities,IA,US,NERC_REGION,MRO
+13470,City of New Madrid - (MO),MO,US,NERC_REGION,SERC
+13471,City of New Martinsville - (WV),WV,US,NERC_REGION,RFC
+13478,"Entergy New Orleans, LLC",LA,US,NERC_REGION,SERC
+13480,New Prague Utilities Comm,MN,US,NERC_REGION,MRO
+13481,City of New Richmond,WI,US,NERC_REGION,MISO
+13482,New River Light & Power Co,NC,US,NERC_REGION,SERC
+13485,New Smyrna Beach City of,FL,US,NERC_REGION,FRCC
+13488,New Ulm Public Utilities Comm,MN,US,NERC_REGION,MRO
+13489,Borough of New Wilmington - (PA),PA,US,NERC_REGION,RFC
+13495,City of Newfolden - (MN),MN,US,NERC_REGION,MRO
+13519,City of Newark - (DE),DE,US,NERC_REGION,RFC
+13520,"New-Mac Electric Coop, Inc",MO,US,NERC_REGION,SERC
+13523,City of Newberry - (SC),SC,US,NERC_REGION,SERC
+13524,"Newberry Electric Coop, Inc",SC,US,NERC_REGION,SERC
+13525,Newberry Water & Light Board,MI,US,NERC_REGION,RFC
+13530,City of Newkirk - (OK),OK,US,NERC_REGION,SPP
+13539,New York Mun Power Agency,NY,US,NERC_REGION,NPCC
+13547,"Newnan Wtr, Sewer & Light Comm",GA,US,NERC_REGION,SERC
+13560,City of Newton - (IL),IL,US,NERC_REGION,RFC
+13561,City of Newton - (NC),NC,US,NERC_REGION,SERC
+13563,City of Newton Falls - (OH),OH,US,NERC_REGION,RFC
+13566,Newton County Rural E M C,IN,US,NERC_REGION,RFC
+13570,Ninnescah Rural E C A Inc,KS,US,NERC_REGION,SPP
+13573,Niagara Mohawk Power Corp.,NY,US,NERC_REGION,NPCC
+13577,City of Nicholasville - (KY),KY,US,NERC_REGION,RFC
+13602,City of Niles - (OH),OH,US,NERC_REGION,RFC
+13603,City of Newton - (TX),TX,US,NERC_REGION,SERC
+13604,City of Niles - (MI),MI,US,NERC_REGION,RFC
+13610,Niobrara Valley El Member Corp,NE,US,NERC_REGION,MRO
+13630,North Carolina Mun Power Agny #1,NC,US,NERC_REGION,SERC
+13640,Northern Virginia Elec Coop,VA,US,NERC_REGION,SERC
+13642,Nome Joint Utility Systems,AK,US,NERC_REGION,AK
+13647,Noble County R E M C,IN,US,NERC_REGION,RFC
+13651,Nolin Rural Electric Coop Corp,KY,US,NERC_REGION,RFC
+13669,North Alabama Electric Coop,AL,US,NERC_REGION,SERC
+13675,Nishnabotna Valley R E C,IA,US,NERC_REGION,MRO
+13676,"North Arkansas Elec Coop, Inc",AR,US,NERC_REGION,SPP
+13679,Town of North Attleborough - (MA),MA,US,NERC_REGION,NPCC
+13681,North Branch Water & Light Comm,MN,US,NERC_REGION,MRO
+13683,North Carolina El Member Corp,NC,US,NERC_REGION,SERC
+13684,Nobles Cooperative Electric,MN,US,NERC_REGION,MRO
+13685,"Niobrara Electric Assn, Inc",WY,US,NERC_REGION,WECC
+13687,North Carolina Eastern M P A,NC,US,NERC_REGION,SERC
+13690,North Central MO Elec Coop Inc,MO,US,NERC_REGION,SERC
+13693,"North Central Elec Coop, Inc",OH,US,NERC_REGION,RFC
+13694,"North Central Elec Coop, Inc",ND,US,NERC_REGION,SPP
+13697,North Central Power Co Inc,WI,US,NERC_REGION,MRO
+13698,North Central Public Pwr Dist,NE,US,NERC_REGION,MRO
+13700,North Itasca Electric Coop Inc,MN,US,NERC_REGION,MRO
+13704,"North Western Elec Coop, Inc",OH,US,NERC_REGION,RFC
+13716,North Georgia Elec Member Corp,GA,US,NERC_REGION,SERC
+13718,City of North Little Rock - (AR),AR,US,NERC_REGION,SERC
+13725,City of North Platte,NE,US,NERC_REGION,MRO
+13726,North Shore Towers Apts Inc,NY,US,NERC_REGION,
+13730,City of North St Paul - (MN),MN,US,NERC_REGION,MRO
+13731,"North Star Electric Coop, Inc",MN,US,NERC_REGION,MRO
+13734,Northeast Oklahoma Electric Co,OK,US,NERC_REGION,SPP
+13735,Northcentral Mississippi E P A,MS,US,NERC_REGION,SERC
+13738,Northeast Missouri El Pwr Coop,MO,US,NERC_REGION,SERC
+13739,Northeast Power,NE,US,NERC_REGION,MRO
+13749,"NorVal Electric Cooperative, Inc",MT,US,NERC_REGION,SPP
+13750,"Northern Electric Coop, Inc",SD,US,NERC_REGION,MRO
+13756,Northern Indiana Pub Serv Co,IN,US,NERC_REGION,RFC
+13757,North Plains Electric Coop Inc,TX,US,NERC_REGION,SPP
+13758,"Northern Lights, Inc",ID,US,NERC_REGION,WECC
+13762,"Northern Neck Elec Coop, Inc",VA,US,NERC_REGION,SERC
+13777,Northern Rio Arriba E Coop Inc,NM,US,NERC_REGION,WECC
+13780,Northern States Power Co,MN,US,NERC_REGION,MRO
+13782,City of New Ross - (IN),IN,US,NERC_REGION,RFC
+13783,Northeast Louisiana Power Coop Inc.,LA,US,NERC_REGION,SERC
+13789,Village of Northfield - (VT),VT,US,NERC_REGION,NPCC
+13798,Northwest Iowa Power Coop,IA,US,NERC_REGION,MRO
+13799,Prairie Land Electric Coop Inc,KS,US,NERC_REGION,SPP
+13805,Northwest Rural Pub Pwr Dist,NE,US,NERC_REGION,WECC
+13807,Northwestern Electric Coop Inc - (OK),OK,US,NERC_REGION,SPP
+13809,NorthWestern Energy - (SD),SD,US,NERC_REGION,MRO
+13815,Northwestern Wisconsin Elec Co,WI,US,NERC_REGION,MRO
+13819,City of Norton,KS,US,NERC_REGION,SPP
+13825,Norwalk Third Taxing District,CT,US,NERC_REGION,NPCC
+13826,City of Norway,MI,US,NERC_REGION,MISO
+13830,Nueces Electric Cooperative,TX,US,NERC_REGION,TRE
+13831,City of Norwich - (CT),CT,US,NERC_REGION,NPCC
+13838,"Northfork Electric Coop, Inc",OK,US,NERC_REGION,SPP
+13853,Oahe Electric Coop Inc,SD,US,NERC_REGION,SPP
+13870,"Nushagak Electric Coop, Inc",AK,US,NERC_REGION,AK
+13932,Village of Oak Harbor - (OH),OH,US,NERC_REGION,RFC
+13934,Ocmulgee Electric Member Corp,GA,US,NERC_REGION,SERC
+13935,Oakdale&South San Joaquin Irrigation D.,CA,US,NERC_REGION,
+13936,Oakdale Electric Coop,WI,US,NERC_REGION,MRO
+13949,City of Oberlin - (OH),OH,US,NERC_REGION,RFC
+13950,Village of Obetz - (OH),OH,US,NERC_REGION,RFC
+13955,City of Ocala,FL,US,NERC_REGION,FRCC
+13961,Ocotillo Water Conserv. Dist.,AZ,US,NERC_REGION,WECC
+13962,Oconee Electric Member Corp,GA,US,NERC_REGION,SERC
+13963,Oconomowoc Utilities,WI,US,NERC_REGION,MISO
+13964,Oconto Electric Cooperative,WI,US,NERC_REGION,RFC
+13965,Oconto Falls Water & Light Comm,WI,US,NERC_REGION,MISO
+13966,City of Olustee,OK,US,NERC_REGION,SPP
+13971,City of Odessa - (MO),MO,US,NERC_REGION,SPP
+13990,City of Ogden - (IA),IA,US,NERC_REGION,MRO
+13993,City of Oglesby - (IL),IL,US,NERC_REGION,RFC
+13994,Oglethorpe Power Corporation,GA,US,NERC_REGION,SERC
+13997,Village of Ohio City - (OH),OH,US,NERC_REGION,RFC
+13998,Ohio Edison Co,OH,US,NERC_REGION,RFC
+14012,"Ohop Mutual Light Company, Inc",WA,US,NERC_REGION,WECC
+14022,Town of Oak City - (UT),UT,US,NERC_REGION,WECC
+14055,PUD No 1 of Okanogan County,WA,US,NERC_REGION,WECC
+14057,Okeene Public Works Authority,OK,US,NERC_REGION,MRO
+14062,Oklahoma Electric Coop Inc,OK,US,NERC_REGION,SPP
+14063,Oklahoma Gas & Electric Co,OK,US,NERC_REGION,SPP
+14074,"Okanogan County Elec Coop, Inc",WA,US,NERC_REGION,WECC
+14077,Oklahoma Municipal Power Authority,OK,US,NERC_REGION,MRO
+14078,City of Okolona,MS,US,NERC_REGION,SERC
+14103,City of Olive Hill - (KY),KY,US,NERC_REGION,RFC
+14107,City of Olivia - (MN),MN,US,NERC_REGION,MRO
+14109,"Oregon Trail El Cons Coop, Inc",OR,US,NERC_REGION,WECC
+14124,Borough of Olyphant - (PA),PA,US,NERC_REGION,RFC
+14127,Omaha Public Power District,NE,US,NERC_REGION,MRO
+14132,City of Onawa - (IA),IA,US,NERC_REGION,MRO
+14138,City of Onida - (SD),SD,US,NERC_REGION,MRO
+14146,City of Opelika - (AL),AL,US,NERC_REGION,SERC
+14151,City of Opp - (AL),AL,US,NERC_REGION,SERC
+14154,Orange & Rockland Utils Inc,NY,US,NERC_REGION,NPCC
+14156,Ontonagon County R E A,MI,US,NERC_REGION,RFC
+14159,City of Orange City - (IA),IA,US,NERC_REGION,MRO
+14160,Orange County Rural E M C,IN,US,NERC_REGION,RFC
+14166,City of Orient - (IA),IA,US,NERC_REGION,
+14170,Orcas Power & Light Coop,WA,US,NERC_REGION,WECC
+14172,City of Ord - (NE),NE,US,NERC_REGION,MRO
+14175,"Tri-County Electric Coop, Inc (SC)",SC,US,NERC_REGION,SERC
+14176,City of Orlando - (OK),OK,US,NERC_REGION,SPP
+14178,"P K M Electric Coop, Inc",MN,US,NERC_REGION,MRO
+14191,South Feather Water and Power Agency,CA,US,NERC_REGION,WECC
+14192,Osage Valley Elec Coop Assn,MO,US,NERC_REGION,SERC
+14194,City of Orrville - (OH),OH,US,NERC_REGION,RFC
+14196,City of Ortonville - (MN),MN,US,NERC_REGION,MRO
+14198,Price Municipal Corporation,UT,US,NERC_REGION,WECC
+14199,City of Osage City - (KS),KS,US,NERC_REGION,SPP
+14201,City of Osage - (IA),IA,US,NERC_REGION,MRO
+14202,"Osceola Electric Coop, Inc",IA,US,NERC_REGION,SPP
+14203,City of Osawatomie - (KS),KS,US,NERC_REGION,SPP
+14214,City of Osborne - (KS),KS,US,NERC_REGION,SPP
+14216,City of Osceola - (AR),AR,US,NERC_REGION,SERC
+14224,Otero County Electric Coop Inc,NM,US,NERC_REGION,WECC
+14229,City of Ottawa - (KS),KS,US,NERC_REGION,SPP
+14232,Otter Tail Power Co,MN,US,NERC_REGION,MRO
+14234,City of Ouzinkie - (AK),AK,US,NERC_REGION,AK
+14238,Ouachita Electric Coop Corp,AR,US,NERC_REGION,SERC
+14245,Overton Power District No 5,NV,US,NERC_REGION,WECC
+14251,Owen Electric Coop Inc,KY,US,NERC_REGION,
+14261,Village of Orleans - (VT),VT,US,NERC_REGION,NPCC
+14267,"Otsego Electric Coop, Inc",NY,US,NERC_REGION,NPCC
+14268,City of Owensboro - (KY),KY,US,NERC_REGION,SERC
+14275,City of Oxford - (MS),MS,US,NERC_REGION,SERC
+14276,City of Oxford - (KS),KS,US,NERC_REGION,SPP
+14277,Village of Oxford - (NE),NE,US,NERC_REGION,MRO
+14285,Ozark Border Electric Coop,MO,US,NERC_REGION,SERC
+14288,Ozark Electric Coop Inc - (MO),MO,US,NERC_REGION,SERC
+14289,Ozarks Electric Coop Corp - (AR),AR,US,NERC_REGION,SPP
+14323,Pacific Northwest Generating Coop,OR,US,NERC_REGION,WECC
+14324,PUD No 2 of Pacific County,WA,US,NERC_REGION,WECC
+14328,Pacific Gas & Electric Co.,CA,US,NERC_REGION,WECC
+14349,Avangrid Renewables,OR,US,NERC_REGION,WECC
+14371,City of Paducah - (KY),KY,US,NERC_REGION,SERC
+14373,Page Utility Enterprises,AZ,US,NERC_REGION,WECC
+14381,City of Painesville,OH,US,NERC_REGION,RFC
+14398,Palmetto Electric Coop Inc,SC,US,NERC_REGION,SERC
+14400,City of Palmyra - (MO),MO,US,NERC_REGION,SERC
+14401,City of Palo Alto - (CA),CA,US,NERC_REGION,WECC
+14424,"Panola-Harrison Elec Coop, Inc",TX,US,NERC_REGION,SPP
+14426,Panhandle Rural El Member Assn,NE,US,NERC_REGION,WECC
+14433,City of Panora - (IA),IA,US,NERC_REGION,MRO
+14435,Town of Paoli,IN,US,NERC_REGION,RFC
+14443,Town of Paragonah - (UT),UT,US,NERC_REGION,WECC
+14446,Paragould Light & Water Comm,AR,US,NERC_REGION,SPP
+14451,Village of Pardeeville - (WI),WI,US,NERC_REGION,RFC
+14456,City of Paris - (MO),MO,US,NERC_REGION,SERC
+14459,City of Paris - (KY),KY,US,NERC_REGION,SERC
+14460,City of Paris - (AR),AR,US,NERC_REGION,SPP
+14468,People's Cooperative Services,MN,US,NERC_REGION,MRO
+14471,Parke County Rural E M C,IN,US,NERC_REGION,RFC
+14472,Borough of Park Ridge - (NJ),NJ,US,NERC_REGION,RFC
+14474,City of Park River - (ND),ND,US,NERC_REGION,MRO
+14489,City of Parker - (SD),SD,US,NERC_REGION,MRO
+14500,Park Electric Coop Inc,MT,US,NERC_REGION,
+14505,Parkland Light & Water Company,WA,US,NERC_REGION,WECC
+14512,Parowan City Corporation,UT,US,NERC_REGION,WECC
+14534,City of Pasadena - (CA),CA,US,NERC_REGION,WECC
+14537,Pascoag Utility District,RI,US,NERC_REGION,NPCC
+14543,Tohono O'Odham Utility Authority,AZ,US,NERC_REGION,WECC
+14557,"Pee Dee Electric Coop, Inc",SC,US,NERC_REGION,SERC
+14563,Pearl River Valley El Pwr Assn,MS,US,NERC_REGION,SERC
+14577,City of Paullina - (IA),IA,US,NERC_REGION,MRO
+14581,Village of Paw Paw - (MI),MI,US,NERC_REGION,RFC
+14582,City of Pawhuska - (OK),OK,US,NERC_REGION,MRO
+14585,Town of Paxton - (MA),MA,US,NERC_REGION,NPCC
+14599,"Paulding-Putman Elec Coop, Inc",OH,US,NERC_REGION,RFC
+14600,Payson City Corporation,UT,US,NERC_REGION,WECC
+14602,Pea River Electric Coop,AL,US,NERC_REGION,SERC
+14605,City of Peabody - (MA),MA,US,NERC_REGION,NPCC
+14606,"Peace River Electric Coop, Inc",FL,US,NERC_REGION,FRCC
+14610,Orlando Utilities Comm,FL,US,NERC_REGION,
+14624,PUD No 2 of Grant County,WA,US,NERC_REGION,WECC
+14626,"Pedernales Electric Coop, Inc",TX,US,NERC_REGION,TRE
+14645,City of Pella - (IA),IA,US,NERC_REGION,MRO
+14648,Borough of Pemberton - (NJ),NJ,US,NERC_REGION,RFC
+14649,Planters Electric Member Corp,GA,US,NERC_REGION,SERC
+14650,Village of Pemberville - (OH),OH,US,NERC_REGION,RFC
+14653,PUD No 1 of Pend Oreille County,WA,US,NERC_REGION,WECC
+14656,City of Pender - (NE),NE,US,NERC_REGION,MRO
+14659,Town of Pendleton - (IN),IN,US,NERC_REGION,RFC
+14668,Peninsula Light Company,WA,US,NERC_REGION,WECC
+14711,Pennsylvania Electric Co,OH,US,NERC_REGION,RFC
+14715,PPL Electric Utilities Corp,PA,US,NERC_REGION,RFC
+14716,Pennsylvania Power Co,OH,US,NERC_REGION,RFC
+14717,Pee Dee Electric Member Corp,NC,US,NERC_REGION,SERC
+14771,PUD No 1 of Asotin County,WA,US,NERC_REGION,WECC
+14775,People's Electric Cooperative,OK,US,NERC_REGION,SPP
+14792,Borough of Perkasie - (PA),PA,US,NERC_REGION,RFC
+14806,City of Perry - (MO),MO,US,NERC_REGION,SERC
+14829,City of Perry - (OK),OK,US,NERC_REGION,SPP
+14839,City of Peru - (IN),IN,US,NERC_REGION,RFC
+14840,City of Peru - (IL),IL,US,NERC_REGION,RFC
+14841,City of Peterson - (MN),MN,US,NERC_REGION,MRO
+14856,Petersburg Borough - (AK),AK,US,NERC_REGION,AK
+14857,Pitt & Greene Elec Member Corp,NC,US,NERC_REGION,SERC
+14864,Petit Jean Electric Coop Corp,AR,US,NERC_REGION,SERC
+14867,City of Petoskey - (MI),MI,US,NERC_REGION,RFC
+14945,Village of Philadelphia - (NY),NY,US,NERC_REGION,NPCC
+14947,City of Philadelphia - (MS),MS,US,NERC_REGION,SERC
+14954,Philippi Municipal Electric,WV,US,NERC_REGION,RFC
+14999,"Pilot Power Group, LLC",CA,US,NERC_REGION,
+15016,Pickwick Electric Coop,TN,US,NERC_REGION,SERC
+15022,City of Piedmont - (AL),AL,US,NERC_REGION,SERC
+15028,Piedmont Municipal Power Agny,SC,US,NERC_REGION,SERC
+15034,Pierce-Pepin Coop Services,WI,US,NERC_REGION,MRO
+15039,City of Pierce - (NE),NE,US,NERC_REGION,MRO
+15040,City of Pierre - (SD),SD,US,NERC_REGION,MRO
+15043,City of Piggott - (AR),AR,US,NERC_REGION,SPP
+15045,Pike County Light & Power Co,NY,US,NERC_REGION,NPCC
+15046,Town of Pikeville - (NC),NC,US,NERC_REGION,SERC
+15048,Electrical Dist No2 Pinal County,AZ,US,NERC_REGION,WECC
+15049,Electrical Dist No4 Pinal County,AZ,US,NERC_REGION,WECC
+15051,City of Pine Bluffs - (WY),WY,US,NERC_REGION,WECC
+15054,"Pioneer Rural Elec Coop, Inc - (OH)",OH,US,NERC_REGION,RFC
+15058,Town of Pinetops - (NC),NC,US,NERC_REGION,SERC
+15062,Town of Pineville - (NC),NC,US,NERC_REGION,SERC
+15072,Village of Pioneer - (OH),OH,US,NERC_REGION,RFC
+15073,"Pioneer Electric Coop, Inc - (KS)",KS,US,NERC_REGION,SPP
+15075,City of Pioche - (NV),NV,US,NERC_REGION,WECC
+15095,City of Piqua - (OH),OH,US,NERC_REGION,RFC
+15104,Borough of Pitcairn - (PA),PA,US,NERC_REGION,RFC
+15116,Town of Pittsboro - (IN),IN,US,NERC_REGION,RFC
+15127,Placer County Water Agency,CA,US,NERC_REGION,WECC
+15134,City of Plankinton - (SD),SD,US,NERC_REGION,MRO
+15137,City of Plaquemine - (LA),LA,US,NERC_REGION,SPP
+15143,Platte River Power Authority,CO,US,NERC_REGION,WECC
+15145,City of Plattsburgh - (NY),NY,US,NERC_REGION,NPCC
+15159,City of Plymouth - (WI),WI,US,NERC_REGION,MISO
+15175,Pointe Coupee Elec Member Corp,LA,US,NERC_REGION,SERC
+15180,City of Pocahontas - (IA),IA,US,NERC_REGION,MRO
+15188,Polk County Rural Pub Pwr Dist,NE,US,NERC_REGION,MRO
+15201,City of Pomona - (KS),KS,US,NERC_REGION,SPP
+15202,City of Ponca City - (OK),OK,US,NERC_REGION,SPP
+15203,Village of Plymouth - (OH),OH,US,NERC_REGION,RFC
+15229,City of Poplar Bluff - (MO),MO,US,NERC_REGION,SPP
+15231,City of Port Angeles - (WA),WA,US,NERC_REGION,WECC
+15246,City of Portland - (MI),MI,US,NERC_REGION,RFC
+15248,Portland General Electric Co,OR,US,NERC_REGION,WECC
+15257,"Poudre Valley REA, Inc",CO,US,NERC_REGION,WECC
+15263,The Potomac Edison Company,PA,US,NERC_REGION,RFC
+15270,Potomac Electric Power Co,DC,US,NERC_REGION,RFC
+15291,Prairie Energy Coop,IA,US,NERC_REGION,MRO
+15294,City of Powell - (WY),WY,US,NERC_REGION,WECC
+15296,New York Power Authority,NY,US,NERC_REGION,NPCC
+15297,City of Plummer - (ID),ID,US,NERC_REGION,WECC
+15308,Plumas-Sierra Rural Elec Coop,CA,US,NERC_REGION,WECC
+15311,Prague Public Works Authority,OK,US,NERC_REGION,SPP
+15312,Village of Prairie Du Sac - (WI),WI,US,NERC_REGION,MISO
+15321,City of Pratt- (KS),KS,US,NERC_REGION,SPP
+15327,PUD No 1 of Wahkiakum County,WA,US,NERC_REGION,WECC
+15334,Prentiss County Elec Pwr Assn,MS,US,NERC_REGION,SERC
+15336,City of Prescott - (KS),KS,US,NERC_REGION,SPP
+15340,Presque Isle Elec & Gas Coop,MI,US,NERC_REGION,RFC
+15344,Polk-Burnett Electric Coop,WI,US,NERC_REGION,MRO
+15346,Village of Polk - (NE),NE,US,NERC_REGION,MRO
+15348,Preston Public Utilities Comm,MN,US,NERC_REGION,MRO
+15349,City of Preston,IA,US,NERC_REGION,MISO
+15352,Village of Prague - (NE),NE,US,NERC_REGION,MRO
+15356,Price Electric Coop Inc,WI,US,NERC_REGION,MRO
+15371,Town of Princeton - (MA),MA,US,NERC_REGION,NPCC
+15377,City of Primghar - (IA),IA,US,NERC_REGION,MRO
+15385,City of Princeton - (WI),WI,US,NERC_REGION,RFC
+15386,City of Princeton - (KY),KY,US,NERC_REGION,SERC
+15387,Princeton Public Utils Comm,MN,US,NERC_REGION,MRO
+15388,City of Princeton - (IL),IL,US,NERC_REGION,SERC
+15410,Prince George Electric Coop,VA,US,NERC_REGION,SERC
+15419,PUD No 3 of Mason County,WA,US,NERC_REGION,
+15433,Town of Prosperity - (SC),SC,US,NERC_REGION,SERC
+15443,City of Providence - (KY),KY,US,NERC_REGION,RFC
+15444,Provo City Corp,UT,US,NERC_REGION,WECC
+15460,Proctor Public Utilities Comm,MN,US,NERC_REGION,MRO
+15462,City of Pryor - (OK),OK,US,NERC_REGION,SPP
+15466,Public Service Co of Colorado,CO,US,NERC_REGION,WECC
+15472,Public Service Co of NH,NH,US,NERC_REGION,NPCC
+15473,Public Service Co of NM,NM,US,NERC_REGION,WECC
+15474,Public Service Co of Oklahoma,OK,US,NERC_REGION,SPP
+15500,Puget Sound Energy Inc,WA,US,NERC_REGION,WECC
+15507,City of Pulaski - (TN),TN,US,NERC_REGION,SERC
+15515,City of Purcell - (OK),OK,US,NERC_REGION,MRO
+15541,Borough of Quakertown - (PA),PA,US,NERC_REGION,RFC
+15566,City of Quincy - (FL),FL,US,NERC_REGION,FRCC
+15573,City of Quitman,GA,US,NERC_REGION,SERC
+15619,City of Radford - (VA),VA,US,NERC_REGION,RFC
+15621,"Radiant Electric Coop, Inc",KS,US,NERC_REGION,SPP
+15665,City of Randall - (MN),MN,US,NERC_REGION,MRO
+15671,Randolph Electric Member Corp,NC,US,NERC_REGION,SERC
+15672,Ralls County Electric Coop,MO,US,NERC_REGION,SERC
+15674,City of Randolph - (NE),NE,US,NERC_REGION,MRO
+15686,Village of Rantoul - (IL),IL,US,NERC_REGION,RFC
+15700,Rayle Electric Membership Corp,GA,US,NERC_REGION,SERC
+15711,Rainbow Energy Marketing Corp,ND,US,NERC_REGION,MRO
+15728,City of Rayne - (LA),LA,US,NERC_REGION,SERC
+15746,Red River Valley Rrl Elec Assn,OK,US,NERC_REGION,SPP
+15748,Town of Reading - (MA),MA,US,NERC_REGION,NPCC
+15750,Redwood Electric Coop,MN,US,NERC_REGION,MRO
+15751,City of Readlyn - (IA),IA,US,NERC_REGION,MRO
+15772,City of Red Bud - (IL),IL,US,NERC_REGION,RFC
+15773,City of Red Cloud - (NE),NE,US,NERC_REGION,MRO
+15776,Reedy Creek Improvement Dist,FL,US,NERC_REGION,FRCC
+15778,Town of Red Springs - (NC),NC,US,NERC_REGION,SERC
+15783,City of Redding - (CA),CA,US,NERC_REGION,WECC
+15787,Redlands Water & Power Company,CO,US,NERC_REGION,WECC
+15793,Redwood Falls Public Util Comm,MN,US,NERC_REGION,MRO
+15804,Reedsburg Utility Comm,WI,US,NERC_REGION,MISO
+15811,"Rich Mountain Elec Coop, Inc",AR,US,NERC_REGION,SERC
+15845,Renville-Sibley Coop Pwr Assn,MN,US,NERC_REGION,MRO
+15846,City of Remsen - (IA),IA,US,NERC_REGION,MRO
+15847,Reliant Energy Retail Services,TX,US,NERC_REGION,TRE
+15860,City of Rensselaer - (IN),IN,US,NERC_REGION,RFC
+15862,City of Renwick - (IA),IA,US,NERC_REGION,MRO
+15865,Village of Republic - (OH),OH,US,NERC_REGION,RFC
+15923,City of Pond Creek - (OK),OK,US,NERC_REGION,SPP
+15938,Rice Lake Utilities,WI,US,NERC_REGION,MRO
+15943,City of Rich Hill - (MO),MO,US,NERC_REGION,SPP
+15978,City of Richland Center - (WI),WI,US,NERC_REGION,MISO
+15979,City of Richland - (WA),WA,US,NERC_REGION,WECC
+15981,City of Richland - (MO),MO,US,NERC_REGION,SERC
+15982,Town of Richlands - (VA),VA,US,NERC_REGION,RFC
+15983,Richland Electric Coop,WI,US,NERC_REGION,MRO
+15989,City of Richmond - (IN),IN,US,NERC_REGION,RFC
+15991,Village of Richmondville - (NY),NY,US,NERC_REGION,NPCC
+16022,Village of Reynolds - (NE),NE,US,NERC_REGION,MRO
+16057,"Rio Grande Electric Coop, Inc",TX,US,NERC_REGION,TRE
+16060,Riverland Energy Cooperative,WI,US,NERC_REGION,MRO
+16062,Village of Ripley - (OH),OH,US,NERC_REGION,RFC
+16063,"Rita Blanca Electric Coop, Inc",TX,US,NERC_REGION,SPP
+16068,City of Rising Sun - (IN),IN,US,NERC_REGION,RFC
+16082,City of River Falls,WI,US,NERC_REGION,MISO
+16092,Village of Riverton - (IL),IL,US,NERC_REGION,
+16105,City of Riverdale - (ND),ND,US,NERC_REGION,MRO
+16135,City of Robinson - (KS),KS,US,NERC_REGION,SPP
+16140,City of Robertsdale,AL,US,NERC_REGION,SERC
+16146,"Navasota Valley Elec Coop, Inc",TX,US,NERC_REGION,TRE
+16164,Roosevelt Public Power Dist,NE,US,NERC_REGION,WECC
+16177,"Robison Energy, LLC",NY,US,NERC_REGION,NY
+16179,Rochelle Municipal Utilities,IL,US,NERC_REGION,RFC
+16181,Rochester Public Utilities,MN,US,NERC_REGION,MRO
+16183,Rochester Gas & Electric Corp,NY,US,NERC_REGION,NPCC
+16195,City of Rock Hill - (SC),SC,US,NERC_REGION,SERC
+16196,Rock Energy Cooperative,WI,US,NERC_REGION,MRO
+16198,City of Rock Falls - (IL),IL,US,NERC_REGION,RFC
+16206,Rock Rapids Municipal Utility,IA,US,NERC_REGION,MRO
+16211,City of Rockford- (IA),IA,US,NERC_REGION,MRO
+16213,Rockland Electric Co,NY,US,NERC_REGION,NPCC
+16217,Village of Rockville Centre - (NY),NY,US,NERC_REGION,NPCC
+16226,City of Rocky Mount - (NC),NC,US,NERC_REGION,
+16259,City of Rolla - (MO),MO,US,NERC_REGION,SERC
+16267,Rolling Hills Electric Coop,KS,US,NERC_REGION,SPP
+16269,City of Roodhouse - (IL),IL,US,NERC_REGION,RFC
+16273,Roosevelt Irrigation District,AZ,US,NERC_REGION,WECC
+16284,"Roseau Electric Coop, Inc",MN,US,NERC_REGION,MRO
+16285,City of Roseau - (MN),MN,US,NERC_REGION,MRO
+16286,Rosebud Electric Coop Inc,SD,US,NERC_REGION,MRO
+16295,City of Roseville - (CA),CA,US,NERC_REGION,WECC
+16377,Town of Rowley - (MA),MA,US,NERC_REGION,NPCC
+16382,"Rural Electric Coop, Inc",OK,US,NERC_REGION,SPP
+16416,City of Rupert - (ID),ID,US,NERC_REGION,WECC
+16420,Rural Electric Conven Coop,IL,US,NERC_REGION,RFC
+16427,City of Rushford - (MN),MN,US,NERC_REGION,MRO
+16438,City of Russell - (MA),MA,US,NERC_REGION,NPCC
+16440,City of Russell - (KS),KS,US,NERC_REGION,SPP
+16443,Rushmore Electric Pwr Coop Inc,SD,US,NERC_REGION,MRO
+16451,City of Rushmore - (MN),MN,US,NERC_REGION,MRO
+16459,City of Russellville - (KY),KY,US,NERC_REGION,SERC
+16461,"Rusk County Electric Coop, Inc",TX,US,NERC_REGION,SPP
+16463,City of Ruston - (LA),LA,US,NERC_REGION,SERC
+16487,Town of Ryan - (OK),OK,US,NERC_REGION,SPP
+16496,Rutherford Elec Member Corp,NC,US,NERC_REGION,SERC
+16511,Sac-Osage Electric Coop Inc,MO,US,NERC_REGION,SERC
+16518,City of Sabetha - (KS),KS,US,NERC_REGION,SPP
+16528,City of Sabula - (IA),IA,US,NERC_REGION,MRO
+16537,Safe Harbor Water Power Corp,PA,US,NERC_REGION,RFC
+16538,City of Safford - (AZ),AZ,US,NERC_REGION,WECC
+16549,City of Salamanca - (NY),NY,US,NERC_REGION,NPCC
+16555,Salem Electric - (OR),OR,US,NERC_REGION,WECC
+16557,Salem City Corporation - (UT),UT,US,NERC_REGION,WECC
+16558,City of Salem - (VA),VA,US,NERC_REGION,RFC
+16560,City of Salisbury - (MO),MO,US,NERC_REGION,SPP
+16561,City of Sallisaw - (OK),OK,US,NERC_REGION,SPP
+16565,Salmon River Electric Coop Inc,ID,US,NERC_REGION,WECC
+16572,Salt River Project,AZ,US,NERC_REGION,WECC
+16587,Salt River Electric Coop Corp,KY,US,NERC_REGION,RFC
+16603,"San Luis Valley R E C, Inc",CO,US,NERC_REGION,WECC
+16606,"Santee Electric Coop, Inc",SC,US,NERC_REGION,
+16609,San Diego Gas & Electric Co,CA,US,NERC_REGION,WECC
+16610,City of Scribner - (NE),NE,US,NERC_REGION,MRO
+16611,Access Energy Coop,IA,US,NERC_REGION,SERC
+16612,City & County of San Francisco,CA,US,NERC_REGION,WECC
+16613,Sam Houston Electric Coop Inc,TX,US,NERC_REGION,SERC
+16616,"San Isabel Electric Assn, Inc",CO,US,NERC_REGION,WECC
+16622,"San Miguel Power Assn, Inc",CO,US,NERC_REGION,WECC
+16624,"San Miguel Electric Coop, Inc",TX,US,NERC_REGION,TRE
+16627,San Patricio Electric Coop Inc,TX,US,NERC_REGION,TRE
+16628,City of Sanborn - (IA),IA,US,NERC_REGION,MRO
+16629,Sand Mountain Electric Coop,AL,US,NERC_REGION,SERC
+16637,City of Sandersville - (GA),GA,US,NERC_REGION,SERC
+16638,"San Bernard Electric Coop, Inc",TX,US,NERC_REGION,TRE
+16647,City of Sanger - (TX),TX,US,NERC_REGION,TRE
+16648,City of Santa Clara - (UT),UT,US,NERC_REGION,WECC
+16649,Sangre De Cristo Elec Assn Inc,CO,US,NERC_REGION,WECC
+16655,City of Santa Clara - (CA),CA,US,NERC_REGION,WECC
+16667,City of Sargent - (NE),NE,US,NERC_REGION,MRO
+16674,Satilla Rural Elec Member Corporation,GA,US,NERC_REGION,SERC
+16679,City of Sauk Centre - (MN),MN,US,NERC_REGION,MRO
+16680,Village of Sauk City - (WI),WI,US,NERC_REGION,RFC
+16740,Scenic Rivers Energy Coop,WI,US,NERC_REGION,MRO
+16751,Three Rivers Electric Coop,MO,US,NERC_REGION,SERC
+16759,"Sheridan Electric Coop, Inc",MT,US,NERC_REGION,MRO
+16765,City of Schulenburg - (TX),TX,US,NERC_REGION,TRE
+16778,City of Schuyler - (NE),NE,US,NERC_REGION,MRO
+16780,Borough of Schuylkill Haven - (PA),PA,US,NERC_REGION,RFC
+16788,Town of Scotland Neck - (NC),NC,US,NERC_REGION,SERC
+16805,SEMO Electric Cooperative,MO,US,NERC_REGION,SERC
+16821,Sam Rayburn Municipal Pwr Agny,TX,US,NERC_REGION,SERC
+16829,City of Scottsboro,AL,US,NERC_REGION,SERC
+16830,City of Scottsburg - (IN),IN,US,NERC_REGION,RFC
+16840,"Calpine Energy Solutions, LLC",CA,US,NERC_REGION,WECC
+16845,Village of Shickley - (NE),NE,US,NERC_REGION,MRO
+16851,SE-MA-NO Electric Coop,MO,US,NERC_REGION,SERC
+16853,Borough of St Clair - (PA),PA,US,NERC_REGION,RFC
+16854,"Heartland Rural Elec Coop, Inc",KS,US,NERC_REGION,SPP
+16865,Sawnee Electric Membership Corporation,GA,US,NERC_REGION,SERC
+16873,City of Sebewaing - (MI),MI,US,NERC_REGION,RFC
+16900,City of Seguin - (TX),TX,US,NERC_REGION,TRE
+16914,Town of Selma - (NC),NC,US,NERC_REGION,SERC
+16920,Sedgwick County El Coop Assn Inc,KS,US,NERC_REGION,SPP
+16921,City of Seneca - (SC),SC,US,NERC_REGION,SERC
+16922,City of Seneca - (KS),KS,US,NERC_REGION,SPP
+16932,City of Sergeant Bluff - (IA),IA,US,NERC_REGION,MRO
+16951,Seville Board of Public Affairs,OH,US,NERC_REGION,RFC
+16953,City of Seward - (NE),NE,US,NERC_REGION,MRO
+16959,City of Seymour - (MO),MO,US,NERC_REGION,SERC
+16961,City of Seymour - (TX),TX,US,NERC_REGION,TRE
+16971,Shakopee Public Utilities Comm,MN,US,NERC_REGION,MRO
+16988,City of Sharon Springs - (KS),KS,US,NERC_REGION,SPP
+16992,City of Stanton - (IA),IA,US,NERC_REGION,RFC
+17004,Town of Sharpsburg - (NC),NC,US,NERC_REGION,SERC
+17008,Sharyland Utilities LP,TX,US,NERC_REGION,
+17011,Shawano Municipal Utilities,WI,US,NERC_REGION,RFC
+17028,City of Sheboygan Falls - (WI),WI,US,NERC_REGION,RFC
+17037,City of Shelby - (NC),NC,US,NERC_REGION,SERC
+17038,RushShelby Energy,IN,US,NERC_REGION,RFC
+17040,"Shelby Electric Coop, Inc",IL,US,NERC_REGION,RFC
+17043,City of Shelby - (OH),OH,US,NERC_REGION,RFC
+17044,"Shelby Energy Co-op, Inc",KY,US,NERC_REGION,SERC
+17045,City of Sharon- (ND),ND,US,NERC_REGION,MRO
+17046,City of Shelby - (IA),IA,US,NERC_REGION,MRO
+17066,Shenandoah Valley Elec Coop,VA,US,NERC_REGION,SERC
+17074,City of Shelly - (MN),MN,US,NERC_REGION,MRO
+17079,Village of Sherburne - (NY),NY,US,NERC_REGION,NPCC
+17085,City of Sherrill - (NY),NY,US,NERC_REGION,NPCC
+17098,Village of Shiloh - (OH),OH,US,NERC_REGION,RFC
+17101,City of Shiner - (TX),TX,US,NERC_REGION,TRE
+17106,Sho-Me Power Electric Coop,MO,US,NERC_REGION,SERC
+17127,Town of Shrewsbury - (MA),MA,US,NERC_REGION,NPCC
+17130,City of Shullsburg - (WI),WI,US,NERC_REGION,RFC
+17141,City of Sibley - (IA),IA,US,NERC_REGION,MRO
+17149,City of Sidney - (NE),NE,US,NERC_REGION,WECC
+17166,Sierra Pacific Power Co,NV,US,NERC_REGION,WECC
+17177,City of Sikeston - (MO),MO,US,NERC_REGION,SPP
+17184,City of Siloam Springs - (AR),AR,US,NERC_REGION,SPP
+17186,Village of Silver Springs - (NY),NY,US,NERC_REGION,NPCC
+17252,Singing River Elec Cooperative,MS,US,NERC_REGION,SERC
+17260,North West Rural Electric Coop,IA,US,NERC_REGION,MRO
+17261,Slope Electric Coop Inc,ND,US,NERC_REGION,MRO
+17264,City of Sioux Center,IA,US,NERC_REGION,MRO
+17265,City of Sioux Falls - (SD),SD,US,NERC_REGION,MRO
+17267,Sioux Valley SW Elec Coop,SD,US,NERC_REGION,MRO
+17271,City & Borough of Sitka - (AK),AK,US,NERC_REGION,AK
+17279,PUD No 1 of Skamania Co,WA,US,NERC_REGION,
+17286,City of Skiatook - (OK),OK,US,NERC_REGION,SPP
+17290,Slash Pine Elec Member Corp,GA,US,NERC_REGION,SERC
+17312,City of Slater - (MO),MO,US,NERC_REGION,SPP
+17337,Borough of Smethport - (PA),PA,US,NERC_REGION,RFC
+17451,Town of Smithfield - (NC),NC,US,NERC_REGION,SERC
+17452,City of Smithville - (TN),TN,US,NERC_REGION,SERC
+17453,City of Smithville - (TX),TX,US,NERC_REGION,TRE
+17457,Town of Smyrna - (DE),DE,US,NERC_REGION,RFC
+17470,PUD 1 of Snohomish County,WA,US,NERC_REGION,WECC
+17492,"Socorro Electric Coop, Inc",NM,US,NERC_REGION,WECC
+17493,City of Soda Springs - (ID),ID,US,NERC_REGION,WECC
+17497,City of Snyder - (NE),NE,US,NERC_REGION,MRO
+17512,Village of Solvay - (NY),NY,US,NERC_REGION,NPCC
+17513,Southern California P P A,CA,US,NERC_REGION,WECC
+17534,"South Alabama Elec Coop, Inc",AL,US,NERC_REGION,SERC
+17539,"Dominion Energy South Carolina, Inc",SC,US,NERC_REGION,SERC
+17540,"South Central Ark El Coop, Inc",AR,US,NERC_REGION,SERC
+17543,South Carolina Public Service Authority,SC,US,NERC_REGION,SERC
+17548,South Central Public Pwr Dist,NE,US,NERC_REGION,SPP
+17549,South Jersey Energy Company,NJ,US,NERC_REGION,RFC
+17550,South Central Electric Assn,MN,US,NERC_REGION,MRO
+17553,Town of South Coffeyville - (OK),OK,US,NERC_REGION,SPP
+17560,Town of South Hadley - (MA),MA,US,NERC_REGION,NPCC
+17561,South Plains Electric Coop Inc,TX,US,NERC_REGION,TRE
+17562,City of South Haven - (MI),MI,US,NERC_REGION,RFC
+17564,South Kentucky Rural E C C,KY,US,NERC_REGION,SERC
+17565,South Louisiana Elec Coop Assn,LA,US,NERC_REGION,SERC
+17568,Cooperative Energy,MS,US,NERC_REGION,SERC
+17569,City of South Norwalk - (CT),CT,US,NERC_REGION,NPCC
+17572,South River Elec Member Corp,NC,US,NERC_REGION,SERC
+17577,City of South Sioux City,NE,US,NERC_REGION,MRO
+17583,"South Texas Electric Coop, Inc",TX,US,NERC_REGION,TRE
+17585,"Southeastern IL Elec Coop, Inc",IL,US,NERC_REGION,RFC
+17588,South Vienna Corporation,OH,US,NERC_REGION,
+17593,"Southeast Electric Coop, Inc",MT,US,NERC_REGION,WECC
+17599,Southeastern Indiana R E M C,IN,US,NERC_REGION,RFC
+17603,Southeastern Electric Coop Inc - (OK),OK,US,NERC_REGION,SPP
+17622,Southern Electric Gen Co,AL,US,NERC_REGION,SERC
+17631,Southern Illinois Elec Coop,IL,US,NERC_REGION,RFC
+17632,Southern Illinois Power Coop,IL,US,NERC_REGION,SERC
+17633,Southern Indiana Gas & Elec Co,IN,US,NERC_REGION,RFC
+17637,Southern Maryland Elec Coop Inc,MD,US,NERC_REGION,RFC
+17642,Southern Public Power District,NE,US,NERC_REGION,MRO
+17643,"Southern Iowa Elec Coop, Inc",IA,US,NERC_REGION,SERC
+17646,"Southern Pine Elec Coop, Inc",AL,US,NERC_REGION,SERC
+17647,Southern Pine Electric Cooperative,MS,US,NERC_REGION,SERC
+17668,City of Southport - (NC),NC,US,NERC_REGION,SERC
+17671,Southwest Arkansas E C C,TX,US,NERC_REGION,SERC
+17681,Southwest Rural Elec Assn Inc,OK,US,NERC_REGION,SPP
+17683,Southwest Mississippi E P A,MS,US,NERC_REGION,SERC
+17684,Southwest Louisiana E M C,LA,US,NERC_REGION,SERC
+17692,Southwest Public Power Dist,NE,US,NERC_REGION,MRO
+17693,"Southwest Texas Elec Coop, Inc",TX,US,NERC_REGION,TRE
+17694,Southwest Tennessee E M C,TN,US,NERC_REGION,SERC
+17697,Southwestern Electric Coop Inc - (IL),IL,US,NERC_REGION,SERC
+17698,Southwestern Electric Power Co,OK,US,NERC_REGION,SPP
+17710,"Spark Energy, LP",TX,US,NERC_REGION,TRE
+17716,Southwestern Power Administration,OK,US,NERC_REGION,SPP
+17718,Southwestern Public Service Co,TX,US,NERC_REGION,SPP
+17727,Village of Spalding - (NE),NE,US,NERC_REGION,MRO
+17732,Spanish Fork City Corporation,UT,US,NERC_REGION,WECC
+17783,City of Spencer - (IA),IA,US,NERC_REGION,MRO
+17787,City of Spencer - (NE),NE,US,NERC_REGION,MRO
+17790,Town of Spiceland - (IN),IN,US,NERC_REGION,RFC
+17802,Town of Spiro - (OK),OK,US,NERC_REGION,SPP
+17811,City of Spooner - (WI),WI,US,NERC_REGION,MRO
+17824,Spring Valley Pub Utils Comm,MN,US,NERC_REGION,MRO
+17826,"Springer Electric Coop, Inc",NM,US,NERC_REGION,WECC
+17827,Town of Springer - (NM),NM,US,NERC_REGION,SPP
+17828,City of Springfield - (IL),IL,US,NERC_REGION,SERC
+17829,City of Springfield - (TN),TN,US,NERC_REGION,SERC
+17832,Snapping Shoals El Member Corp,GA,US,NERC_REGION,SERC
+17833,City Utilities of Springfield - (MO),MO,US,NERC_REGION,
+17834,City of Springfield - (CO),CO,US,NERC_REGION,WECC
+17838,"Spoon River Electric Coop, Inc",IL,US,NERC_REGION,RFC
+17839,City of Springfield - (OR),OR,US,NERC_REGION,WECC
+17844,Spring City Corporation,UT,US,NERC_REGION,WECC
+17845,City of Springville - (UT),UT,US,NERC_REGION,WECC
+17846,Village of Springville - (NY),NY,US,NERC_REGION,NPCC
+17858,Square Butte Electric Coop,ND,US,NERC_REGION,MRO
+17860,City of St Charles - (IL),IL,US,NERC_REGION,RFC
+17862,City of St Charles - (MN),MN,US,NERC_REGION,MRO
+17865,City of St Clairsville - (OH),OH,US,NERC_REGION,RFC
+17868,St Croix Electric Coop,WI,US,NERC_REGION,MRO
+17872,City of St Francis - (KS),KS,US,NERC_REGION,SPP
+17874,City of St George,UT,US,NERC_REGION,WECC
+17876,City of St James - (MN),MN,US,NERC_REGION,MRO
+17877,City of St James - (MO),MO,US,NERC_REGION,SPP
+17879,City of St. John - (KS),KS,US,NERC_REGION,SPP
+17886,City of St Louis - (MI),MI,US,NERC_REGION,RFC
+17891,City of St Marys - (OH),OH,US,NERC_REGION,RFC
+17894,City of St Marys - (KS),KS,US,NERC_REGION,SPP
+17896,City of Shasta Lake - (CA),CA,US,NERC_REGION,WECC
+17898,City of Saint Paul,AK,US,NERC_REGION,AK
+17899,City of St Paul - (NE),NE,US,NERC_REGION,MRO
+17979,Stanton County Public Pwr Dist,NE,US,NERC_REGION,SPP
+17981,Town of Stantonsburg - (NC),NC,US,NERC_REGION,SERC
+17983,City of Staples- (MN),MN,US,NERC_REGION,MRO
+18004,City of Starke - (FL),FL,US,NERC_REGION,FRCC
+18019,Stearns Cooperative Elec Assn,MN,US,NERC_REGION,MRO
+18022,City of Statesville - (NC),NC,US,NERC_REGION,SERC
+18045,City of Steelville,MO,US,NERC_REGION,SERC
+18047,Steele-Waseca Cooperative Electric,MN,US,NERC_REGION,MRO
+18051,Town of Steilacoom,WA,US,NERC_REGION,WECC
+18063,City of Stephen - (MN),MN,US,NERC_REGION,MRO
+18074,City of Stephenson - (MI),MI,US,NERC_REGION,RFC
+18085,South Central Power Company,OH,US,NERC_REGION,RFC
+18086,City of Sterling - (KS),KS,US,NERC_REGION,SPP
+18100,Steuben County Rural E M C,IN,US,NERC_REGION,RFC
+18102,"Steuben Rural Elec Coop, Inc",NY,US,NERC_REGION,NPCC
+18125,Stillwater Utilities Authority,OK,US,NERC_REGION,SPP
+18126,City of Stilwell - (OK),OK,US,NERC_REGION,SPP
+18129,City of Stratton - (NE),NE,US,NERC_REGION,MRO
+18137,City of Stockton - (KS),KS,US,NERC_REGION,SPP
+18177,City of Story City - (IA),IA,US,NERC_REGION,MRO
+18181,City of Stoughton - (WI),WI,US,NERC_REGION,MISO
+18193,Direct Energy Business,PA,US,NERC_REGION,RFC
+18199,"Swisher Electric Coop, Inc",TX,US,NERC_REGION,SPP
+18200,Village of Stratford - (WI),WI,US,NERC_REGION,RFC
+18201,City of Stratford - (IA),IA,US,NERC_REGION,MRO
+18203,Tallapoosa River Elec Coop Inc,AL,US,NERC_REGION,SERC
+18204,City of Strawberry Point,IA,US,NERC_REGION,MRO
+18205,Strawberry Water Users Assn,UT,US,NERC_REGION,WECC
+18206,Strawberry Electric Serv Dist,UT,US,NERC_REGION,WECC
+18217,City of Stromsburg - (NE),NE,US,NERC_REGION,MRO
+18230,City of Stuart - (NE),NE,US,NERC_REGION,MRO
+18231,City of Stuart - (IA),IA,US,NERC_REGION,MRO
+18249,City of Sturgeon Bay - (WI),WI,US,NERC_REGION,MISO
+18250,Town of Straughn - (IN),IN,US,NERC_REGION,RFC
+18252,City of Sturgis,MI,US,NERC_REGION,RFC
+18260,Surprise Valley Electrification,CA,US,NERC_REGION,WECC
+18273,City of Sullivan - (MO),MO,US,NERC_REGION,SERC
+18277,City of Sullivan - (IL),IL,US,NERC_REGION,RFC
+18282,City of Sumas - (WA),WA,US,NERC_REGION,WSCC
+18284,Borough of Summerhill - (PA),PA,US,NERC_REGION,RFC
+18301,City of Sumner - (IA),IA,US,NERC_REGION,MRO
+18304,"Sumter Electric Coop, Inc",FL,US,NERC_REGION,FRCC
+18305,Sumter Electric Member Corp,GA,US,NERC_REGION,SERC
+18312,Sun Prairie Utilities,WI,US,NERC_REGION,MISO
+18316,"Sumner-Cowley Elec Coop, Inc",KS,US,NERC_REGION,SPP
+18336,Superior Water and Light Co,WI,US,NERC_REGION,MRO
+18339,Surry-Yadkin Elec Member Corp,NC,US,NERC_REGION,SERC
+18354,City of Sutton - (NE),NE,US,NERC_REGION,MRO
+18360,Suwannee Valley Elec Coop Inc,FL,US,NERC_REGION,FRCC
+18371,Village of Swanton - (VT),VT,US,NERC_REGION,NPCC
+18383,Taylor Electric Coop - (WI),WI,US,NERC_REGION,MRO
+18393,Village of Sycamore - (OH),OH,US,NERC_REGION,RFC
+18395,Sylacauga Utilities Board,AL,US,NERC_REGION,SERC
+18397,City of Sylvania - (GA),GA,US,NERC_REGION,SERC
+18401,"Sun River Electric Coop, Inc",MT,US,NERC_REGION,WECC
+18403,City of Sylvester - (GA),GA,US,NERC_REGION,SERC
+18408,City of Syracuse - (NE),NE,US,NERC_REGION,MRO
+18433,Tahlequah Public Works Authority,OK,US,NERC_REGION,SPP
+18445,City of Tallahassee - (FL),FL,US,NERC_REGION,FRCC
+18446,T I P Rural Electric Coop,IA,US,NERC_REGION,MRO
+18448,Tanner Electric Coop,WA,US,NERC_REGION,WECC
+18449,"Talquin Electric Coop, Inc",FL,US,NERC_REGION,FRCC
+18454,Tampa Electric Co,FL,US,NERC_REGION,FRCC
+18456,Borough of Tarentum - (PA),PA,US,NERC_REGION,RFC
+18466,Town of Tarboro - (NC),NC,US,NERC_REGION,SERC
+18472,City of Tarrant,AL,US,NERC_REGION,SERC
+18474,Tanana Power Co Inc,AK,US,NERC_REGION,AK
+18476,"Tara Energy, LLC",TX,US,NERC_REGION,
+18480,Tatitlek Electric Utility,AK,US,NERC_REGION,AK
+18488,City of Taunton,MA,US,NERC_REGION,NPCC
+18498,Taylor County Rural E C C,KY,US,NERC_REGION,RFC
+18499,Three Notch Elec Member Corp,GA,US,NERC_REGION,SERC
+18524,Tecumseh Utility Authority,OK,US,NERC_REGION,SPP
+18525,City of Tecumseh,NE,US,NERC_REGION,
+18538,City of Tell City - (IN),IN,US,NERC_REGION,RFC
+18541,City of Tenakee Springs - (AK),AK,US,NERC_REGION,AK
+18546,Town of Templeton - (MA),MA,US,NERC_REGION,NPCC
+18589,"Rayburn Country Elec Coop, Inc",TX,US,NERC_REGION,TRE
+18642,Tennessee Valley Authority,TN,US,NERC_REGION,SERC
+18643,Tennessee Valley Electric Coop,TN,US,NERC_REGION,SERC
+18715,Texas Municipal Power Agency,TX,US,NERC_REGION,TRE
+18805,Town of Thatcher- (AZ),AZ,US,NERC_REGION,WECC
+18806,City of Thayer - (MO),MO,US,NERC_REGION,SERC
+18813,Village of Theresa - (NY),NY,US,NERC_REGION,NPCC
+18820,City of Thief River Falls,MN,US,NERC_REGION,MRO
+18847,City of Thomaston - (GA),GA,US,NERC_REGION,SERC
+18848,City of Thomasville - (GA),GA,US,NERC_REGION,SERC
+18887,City of Thorntown - (IN),IN,US,NERC_REGION,RFC
+18895,Thumb Electric Coop of Mich,MI,US,NERC_REGION,5-MISE
+18901,Thurmont Municipal Light Co,MD,US,NERC_REGION,RFC
+18917,Tillamook Peoples Utility Dist,OR,US,NERC_REGION,WECC
+18940,Tipmont Rural Elec Member Corp,IN,US,NERC_REGION,RFC
+18941,City of Tipp City - (OH),OH,US,NERC_REGION,RFC
+18942,Tipton Municipal Electric Util,IN,US,NERC_REGION,RFC
+18943,Tippah Electric Power Assn,MS,US,NERC_REGION,SERC
+18944,Village of Tontogany - (OH),OH,US,NERC_REGION,RFC
+18945,City of Toronto - (KS),KS,US,NERC_REGION,SPP
+18947,City of Tipton - (IA),IA,US,NERC_REGION,MRO
+18951,Tishomingo County E P A,MS,US,NERC_REGION,SERC
+18954,City of Trenton - (NE),NE,US,NERC_REGION,MRO
+18955,"Tri-County Electric Coop, Inc (IL)",IL,US,NERC_REGION,RFC
+18956,Tri-County Elec Member Corp (GA),GA,US,NERC_REGION,SERC
+18957,Tri-County Elec Member Corp (NC),NC,US,NERC_REGION,SERC
+18959,City of Troy - (KS),KS,US,NERC_REGION,SPP
+18961,Twin County Electric Pwr Assn,MS,US,NERC_REGION,SERC
+18962,Twin Valley Electric Coop Inc,KS,US,NERC_REGION,SPP
+18963,"Inside Passage Elec Coop, Inc",AK,US,NERC_REGION,AK
+18976,Trinity Valley Elec Coop Inc,TX,US,NERC_REGION,
+18995,Tenaska Power Services,TX,US,NERC_REGION,TRE
+18997,The Toledo Edison Co,OH,US,NERC_REGION,RFC
+19007,Tombigbee Electric Power Assn,MS,US,NERC_REGION,SERC
+19022,Tongue River Electric Coop Inc,MT,US,NERC_REGION,WECC
+19025,City of Tonkawa - (OK),OK,US,NERC_REGION,
+19027,"Tombigbee Electric Coop, Inc",AL,US,NERC_REGION,SERC
+19032,City of Torrington - (WY),WY,US,NERC_REGION,WECC
+19048,Toledo Bend Project Joint Oper,TX,US,NERC_REGION,SERC
+19060,"Traverse Electric Coop, Inc",MN,US,NERC_REGION,MRO
+19062,City of Traer - (IA),IA,US,NERC_REGION,MRO
+19090,"ENGIE Energy Marketing NA, Inc",TX,US,NERC_REGION,TRE
+19096,TransAlta Energy Marketing (U.S.) Inc.,WA,US,NERC_REGION,WECC
+19107,ENGIE Resources LLC,TX,US,NERC_REGION,TRE
+19114,Village of Trempealeau - (WI),WI,US,NERC_REGION,RFC
+19119,"TransCanada Power Marketing, Ltd.",MA,US,NERC_REGION,NPCC
+19125,City of Traverse City - (MI),MI,US,NERC_REGION,RFC
+19126,"TriEagle Energy, L.P.",TX,US,NERC_REGION,TRE
+19149,City of Trenton - (TN),TN,US,NERC_REGION,SERC
+19150,Trenton Municipal Utilities - (MO),MO,US,NERC_REGION,SPP
+19154,Tri-State Electric Member Corp,GA,US,NERC_REGION,SERC
+19156,Powder River Energy Corp,WY,US,NERC_REGION,WECC
+19157,MiEnergy Cooperative,MN,US,NERC_REGION,MRO
+19158,Tri-County Electric Coop Assn (MO),MO,US,NERC_REGION,SERC
+19159,"Tri-County Electric Coop, Inc (TX)",TX,US,NERC_REGION,TRE
+19160,"Tri-County Electric Coop, Inc (OK)",OK,US,NERC_REGION,SPP
+19161,"Tri-County Electric Coop, Inc (FL)",FL,US,NERC_REGION,FRCC
+19174,Tuolumne County Pub Power Agny,CA,US,NERC_REGION,WECC
+19176,"Tricounty Rural Elec Coop, Inc",OH,US,NERC_REGION,RFC
+19189,Trico Electric Cooperative Inc,AZ,US,NERC_REGION,WECC
+19204,City of Trinidad - (CO),CO,US,NERC_REGION,WECC
+19219,Diverse Power Incorporated,GA,US,NERC_REGION,SERC
+19225,City of Troy - (AL),AL,US,NERC_REGION,SERC
+19227,City of Troy - (IN),IN,US,NERC_REGION,RFC
+19229,Truckee Donner P U D,CA,US,NERC_REGION,WECC
+19236,City of Troy - (MT),MT,US,NERC_REGION,WECC
+19237,Truman Public Utilities Comm,MN,US,NERC_REGION,MRO
+19246,City of Truth or Consequences - (NM),NM,US,NERC_REGION,WECC
+19267,Tuntutuliak Comm Services Assn,AK,US,NERC_REGION,AK
+19274,Village of Tupper Lake - (NY),NY,US,NERC_REGION,NPCC
+19277,TDX North Slope Generating Co,AK,US,NERC_REGION,AK
+19281,Turlock Irrigation District,CA,US,NERC_REGION,WECC
+19293,Southeastern Electric Coop Inc - (SD),SD,US,NERC_REGION,MRO
+19307,City of Tuscumbia,AL,US,NERC_REGION,SERC
+19308,City of Tuskegee,AL,US,NERC_REGION,SERC
+19321,City of Two Harbors- (MN),MN,US,NERC_REGION,MRO
+19324,Two Rivers Water & Light,WI,US,NERC_REGION,MISO
+19325,Umatilla Electric Coop Assn,OR,US,NERC_REGION,WECC
+19327,"TXU Energy Retail Co, LLC",TX,US,NERC_REGION,
+19332,City of Tyler - (MN),MN,US,NERC_REGION,MRO
+19344,City of Udall - (KS),KS,US,NERC_REGION,SPP
+19389,Upper Missouri G&T El Coop Inc,MT,US,NERC_REGION,MRO
+19390,"UGI Utilities, Inc",PA,US,NERC_REGION,RFC
+19396,Tri-County Electric Coop (MI),MI,US,NERC_REGION,RFC
+19397,City of Ukiah - (CA),CA,US,NERC_REGION,WECC
+19430,City of Union City,TN,US,NERC_REGION,SERC
+19431,City of Union - (SC),SC,US,NERC_REGION,SERC
+19435,Union Electric Membership Corp - (NC),NC,US,NERC_REGION,SERC
+19437,Western Iowa Power Coop,IA,US,NERC_REGION,MRO
+19445,"Southern Indiana R E C, Inc",IN,US,NERC_REGION,RFC
+19454,City of Unalaska - (AK),AK,US,NERC_REGION,AK
+19474,City of Unionville - (MO),MO,US,NERC_REGION,SERC
+19490,United Electric Coop Service Inc - (TX),TX,US,NERC_REGION,TRE
+19493,Union County Electric Coop Inc,SD,US,NERC_REGION,MRO
+19499,"United Power, Inc",CO,US,NERC_REGION,WECC
+19501,"Union Rural Electric Coop, Inc",OH,US,NERC_REGION,RFC
+19502,"United Electric Co-op, Inc - (ID)",ID,US,NERC_REGION,WECC
+19545,"Black Hills Power, Inc. d/b/a",SD,US,NERC_REGION,WECC
+19547,Hawaiian Electric Co Inc,HI,US,NERC_REGION,HI
+19579,Upshur Rural Elec Coop Corp,TX,US,NERC_REGION,SPP
+19581,Upson Elec Member Corp,GA,US,NERC_REGION,SERC
+19604,USBIA-San Carlos Project,AZ,US,NERC_REGION,WECC
+19667,Utilities Dist-Western IN REMC,IN,US,NERC_REGION,RFC
+19677,City of Valentine - (NE),NE,US,NERC_REGION,MRO
+19687,City of Valley City,ND,US,NERC_REGION,MRO
+19702,Van Buren Light & Power Dist,ME,US,NERC_REGION,NPCC
+19716,City of Vanceburg,KY,US,NERC_REGION,RFC
+19719,City of Yale - (OK),OK,US,NERC_REGION,SPP
+19722,City of Vandalia - (MO),MO,US,NERC_REGION,SERC
+19728,"UNS Electric, Inc",AZ,US,NERC_REGION,WECC
+19771,Town of Veedersburg - (IN),IN,US,NERC_REGION,RFC
+19780,Vermont Public Power Supply Authority,VT,US,NERC_REGION,NPCC
+19784,Vera Irrigation District #15,WA,US,NERC_REGION,WECC
+19785,Verdigris Valley Elec Coop Inc,OK,US,NERC_REGION,SPP
+19788,City of Vermillion - (SD),SD,US,NERC_REGION,MRO
+19790,Verendrye Electric Coop Inc,ND,US,NERC_REGION,MRO
+19791,"Vermont Electric Cooperative, Inc",VT,US,NERC_REGION,NPCC
+19792,"Vermont Electric Power Co, Inc",VT,US,NERC_REGION,NPCC
+19798,City of Vernon,CA,US,NERC_REGION,WECC
+19805,Village of Versailles - (OH),OH,US,NERC_REGION,RFC
+19806,"Victoria Electric Coop, Inc",TX,US,NERC_REGION,TRE
+19813,Vernon Electric Coop,WI,US,NERC_REGION,RFC
+19820,Victory Electric Coop Assn Inc,KS,US,NERC_REGION,SPP
+19828,Town of Vidalia - (LA),LA,US,NERC_REGION,SPP
+19840,"Valley Electric Assn, Inc",NV,US,NERC_REGION,WECC
+19843,City of Villisca - (IA),IA,US,NERC_REGION,MRO
+19856,City of Vineland - (NJ),NJ,US,NERC_REGION,RFC
+19865,City of Vinton - (IA),IA,US,NERC_REGION,MRO
+19866,Town of Vinton - (LA),LA,US,NERC_REGION,SERC
+19867,Village of Viola - (WI),WI,US,NERC_REGION,MRO
+19869,Vinton Public Power Authority,LA,US,NERC_REGION,SERC
+19876,Virginia Electric & Power Co,VA,US,NERC_REGION,SERC
+19882,Virginia Tech Electric Service,VA,US,NERC_REGION,RFC
+19883,City of Virginia - (MN),MN,US,NERC_REGION,MRO
+19885,Virginia Mun Elec Assn No 1,VA,US,NERC_REGION,SERC
+19896,City of Volga - (SD),SD,US,NERC_REGION,MRO
+19947,City of Wadena - (MN),MN,US,NERC_REGION,MRO
+19950,Vermont Electric Trans Co Inc,VT,US,NERC_REGION,NPCC
+19951,City of Wadsworth - (OH),OH,US,NERC_REGION,RFC
+19968,City of Wahoo - (NE),NE,US,NERC_REGION,SPP
+19974,Town of Wake Forest - (NC),NC,US,NERC_REGION,SERC
+19978,Town of Wakefield - (VA),VA,US,NERC_REGION,SERC
+19979,Town of Wakefield - (MA),MA,US,NERC_REGION,NPCC
+19980,City of Wakefield - (NE),NE,US,NERC_REGION,MRO
+19981,Wake Electric Membership Corp,NC,US,NERC_REGION,SERC
+20021,Town of Walkerton - (IN),IN,US,NERC_REGION,RFC
+20025,City of Wall Lake - (IA),IA,US,NERC_REGION,MRO
+20061,Walters Public Works Authority,OK,US,NERC_REGION,SPP
+20063,Village of Walthill - (NE),NE,US,NERC_REGION,MRO
+20065,Walton Electric Member Corp,GA,US,NERC_REGION,SERC
+20069,City of Wamego - (KS),KS,US,NERC_REGION,SPP
+20070,Borough of Wampum,PA,US,NERC_REGION,RFC
+20071,Town of Walstonburg,NC,US,NERC_REGION,SERC
+20077,City of Wapakoneta - (OH),OH,US,NERC_REGION,RFC
+20110,City of Warren - (MN),MN,US,NERC_REGION,MRO
+20111,Warren County Rural E M C,IN,US,NERC_REGION,RFC
+20122,Town of Warren - (IN),IN,US,NERC_REGION,RFC
+20134,City of Warroad,MN,US,NERC_REGION,MRO
+20135,City of Washington - (UT),UT,US,NERC_REGION,WECC
+20136,City of Waseca - (MN),MN,US,NERC_REGION,MRO
+20138,"Wasco Electric Coop, Inc",OR,US,NERC_REGION,WECC
+20139,City of Washington - (IN),IN,US,NERC_REGION,RFC
+20141,City of Washington - (KS),KS,US,NERC_REGION,SPP
+20142,City of Washington - (NC),NC,US,NERC_REGION,SERC
+20146,Washington Elec Member Corp,GA,US,NERC_REGION,SERC
+20150,Washington Electric Coop - (OH),OH,US,NERC_REGION,RFC
+20151,Washington Electric Coop - (VT),VT,US,NERC_REGION,NPCC
+20153,"Washington Island El Coop, Inc",WI,US,NERC_REGION,RFC
+20160,Energy Northwest,WA,US,NERC_REGION,WECC
+20163,Wagoner Public Works Authority,OK,US,NERC_REGION,SPP
+20169,Avista Corp,WA,US,NERC_REGION,WECC
+20176,City of Water Valley - (MS),MS,US,NERC_REGION,SERC
+20180,City of Waterloo - (IL),IL,US,NERC_REGION,RFC
+20182,Waterloo Light & Water Comm,WI,US,NERC_REGION,MISO
+20187,Watertown Municipal Utilities,SD,US,NERC_REGION,MRO
+20188,City of Watertown - (NY),NY,US,NERC_REGION,NPCC
+20189,City of Waterville - (KS),KS,US,NERC_REGION,SPP
+20192,City of Wathena - (KS),KS,US,NERC_REGION,SPP
+20193,Village of Watkins Glen - (NY),NY,US,NERC_REGION,NPCC
+20196,City of Watonga - (OK),OK,US,NERC_REGION,SPP
+20206,Borough of Watsontown - (PA),PA,US,NERC_REGION,RFC
+20209,City of Wauchula - (FL),FL,US,NERC_REGION,FRCC
+20211,Village of Waunakee - (WI),WI,US,NERC_REGION,MISO
+20212,Village of Wauneta - (NE),NE,US,NERC_REGION,MRO
+20213,Waupun Utilities,WI,US,NERC_REGION,MISO
+20214,Waverly Municipal Elec Utility,IA,US,NERC_REGION,MRO
+20216,Whitewater Valley Rural EMC,IN,US,NERC_REGION,RFC
+20219,City of Wayne,NE,US,NERC_REGION,MRO
+20222,Wayne-White Counties Elec Coop,IL,US,NERC_REGION,RFC
+20223,Village of Waynesfield - (OH),OH,US,NERC_REGION,RFC
+20225,Town of Waynesville - (NC),NC,US,NERC_REGION,SERC
+20226,City of Waynetown - (IN),IN,US,NERC_REGION,RFC
+20227,City of Waynoka - (OK),OK,US,NERC_REGION,SPP
+20230,Weatherford Mun Utility System,TX,US,NERC_REGION,TRE
+20232,Borough of Weatherly - (PA),PA,US,NERC_REGION,RFC
+20259,City of Webster City - (IA),IA,US,NERC_REGION,MRO
+20297,City of Weiser - (ID),ID,US,NERC_REGION,WECC
+20313,Village of Wellington - (OH),OH,US,NERC_REGION,RFC
+20315,City of Wellington - (KS),KS,US,NERC_REGION,SPP
+20318,Webster Electric Coop,MO,US,NERC_REGION,SERC
+20326,Town of West Boylston - (MA),MA,US,NERC_REGION,NPCC
+20332,Wells Rural Electric Co,NV,US,NERC_REGION,WECC
+20334,Wellsborough Electric Co,PA,US,NERC_REGION,RFC
+20337,Village of Wellsville - (NY),NY,US,NERC_REGION,NPCC
+20343,Town of Welsh - (LA),LA,US,NERC_REGION,SPP
+20359,City of Wessington Springs,SD,US,NERC_REGION,MRO
+20363,West Central Electric Coop Inc - (MO),MO,US,NERC_REGION,SERC
+20364,City of West Bend,IA,US,NERC_REGION,MRO
+20368,West Central Electric Coop Inc - (SD),SD,US,NERC_REGION,MRO
+20371,"West Florida El Coop Assn, Inc",FL,US,NERC_REGION,SERC
+20377,West Kentucky Rural E C C,KY,US,NERC_REGION,SERC
+20379,Town of Westfield - (IA),IA,US,NERC_REGION,MRO
+20380,City of West Liberty - (IA),IA,US,NERC_REGION,MRO
+20382,City of West Memphis - (AR),AR,US,NERC_REGION,
+20385,West Oregon Electric Coop Inc,OR,US,NERC_REGION,WECC
+20392,City of West Plains - (MO),MO,US,NERC_REGION,SERC
+20393,City of West Point - (GA),GA,US,NERC_REGION,SERC
+20396,West Point Utility System,IA,US,NERC_REGION,MRO
+20397,City of West Point - (NE),NE,US,NERC_REGION,MRO
+20413,Mountrail-Williams Elec Coop,ND,US,NERC_REGION,MRO
+20421,Western Minnesota Mun Pwr Agny,SD,US,NERC_REGION,MRO
+20422,Whetstone Valley Elec Coop Inc,SD,US,NERC_REGION,MRO
+20430,City of Westbrook,MN,US,NERC_REGION,MRO
+20434,City of Westby,WI,US,NERC_REGION,MISO
+20447,"Western Farmers Elec Coop, Inc",OK,US,NERC_REGION,SPP
+20466,City of Whalan - (MN),MN,US,NERC_REGION,MRO
+20471,Village of Wharton - (OH),OH,US,NERC_REGION,RFC
+20472,"Wharton County Elec Coop, Inc",TX,US,NERC_REGION,TRE
+20476,Western Coop Electric Assn Inc,KS,US,NERC_REGION,SPP
+20477,City of Westerville - (OH),OH,US,NERC_REGION,RFC
+20480,Village of Westfield - (NY),NY,US,NERC_REGION,NPCC
+20481,City of Westfield - (MA),MA,US,NERC_REGION,NPCC
+20490,City of Westminster - (SC),SC,US,NERC_REGION,SERC
+20509,Wheat Belt Public Power Dist,NE,US,NERC_REGION,MRO
+20510,"Wheatland Electric Coop, Inc",KS,US,NERC_REGION,SPP
+20534,City of Whigham - (GA),GA,US,NERC_REGION,SERC
+20574,White River Valley El Coop Inc,MO,US,NERC_REGION,SERC
+20576,"White River Electric Assn, Inc",CO,US,NERC_REGION,WECC
+20583,Whitehall Electric Utility,WI,US,NERC_REGION,MISO
+20588,City of Whitesboro - (TX),TX,US,NERC_REGION,TRE
+20603,Northeastern Rural E M C,IN,US,NERC_REGION,RFC
+20618,Town of Wickenburg,AZ,US,NERC_REGION,WECC
+20632,City of Wilber,NE,US,NERC_REGION,MRO
+20639,"Wild Rice Electric Coop, Inc",MN,US,NERC_REGION,MRO
+20641,Village of Wilcox - (NE),NE,US,NERC_REGION,MRO
+20659,"WGL Energy Services, Inc.",VA,US,NERC_REGION,
+20729,Town of Williamsport - (MD),MD,US,NERC_REGION,RFC
+20730,City of Williamsport - (IN),IN,US,NERC_REGION,RFC
+20731,Williamstown Utility Comm,KY,US,NERC_REGION,RFC
+20737,Willmar Municipal Utilities,MN,US,NERC_REGION,MRO
+20739,City of Willow Springs - (MO),MO,US,NERC_REGION,SERC
+20785,City of Wilson,NC,US,NERC_REGION,SERC
+20789,City of Wilton,IA,US,NERC_REGION,MRO
+20792,Town of Winamac - (IN),IN,US,NERC_REGION,RFC
+20793,City of Winchester - (TN),TN,US,NERC_REGION,SERC
+20806,City of Windom,MN,US,NERC_REGION,MRO
+20811,Town of Windsor- (NC),NC,US,NERC_REGION,SERC
+20813,City of Winfield - (KS),KS,US,NERC_REGION,SPP
+20823,Winner Municipal Utility,SD,US,NERC_REGION,MRO
+20824,Village of Winnetka - (IL),IL,US,NERC_REGION,RFC
+20826,Town of Winnsboro - (SC),SC,US,NERC_REGION,SERC
+20827,City of Winona - (MO),MO,US,NERC_REGION,SERC
+20835,City of Winterset - (IA),IA,US,NERC_REGION,MRO
+20836,City of Winterville - (NC),NC,US,NERC_REGION,SERC
+20837,City of Winthrop - (MN),MN,US,NERC_REGION,MRO
+20841,"Wiregrass Electric Coop, Inc",AL,US,NERC_REGION,SERC
+20844,Wisconsin Dells Electric Util,WI,US,NERC_REGION,MRO
+20845,Wolverine Power Marketing Coop,MI,US,NERC_REGION,RFC
+20846,City of Woolstock - (IA),IA,US,NERC_REGION,MRO
+20847,Wisconsin Electric Power Co,WI,US,NERC_REGION,
+20848,City of Blue Hill - (NE),NE,US,NERC_REGION,MRO
+20856,Wisconsin Power & Light Co,WI,US,NERC_REGION,MRO
+20858,WPPI Energy,WI,US,NERC_REGION,MISO
+20860,Wisconsin Public Service Corp,WI,US,NERC_REGION,
+20862,Wisconsin Rapids W W & L Comm,WI,US,NERC_REGION,MRO
+20863,Wisconsin River Power Company,WI,US,NERC_REGION,RFC
+20880,City of Wisner,NE,US,NERC_REGION,MRO
+20910,Wolverine Power Supply Coop,MI,US,NERC_REGION,RFC
+20913,Town of Wolfeboro - (NH),NH,US,NERC_REGION,NPCC
+20927,"Wood County Electric Coop, Inc",TX,US,NERC_REGION,SPP
+20945,City of Wood River- (NE),NE,US,NERC_REGION,MRO
+20948,Wise Electric Coop Inc,TX,US,NERC_REGION,TRE
+20949,City of Woodbine - (IA),IA,US,NERC_REGION,MRO
+20950,Village of Winside - (NE),NE,US,NERC_REGION,MRO
+20951,Woodbury County Rural E C A,IA,US,NERC_REGION,SPP
+20963,Woodruff Electric Coop Corp,AR,US,NERC_REGION,SERC
+20977,City of Woodsfield - (OH),OH,US,NERC_REGION,RFC
+20979,Village of Woodville - (OH),OH,US,NERC_REGION,RFC
+20980,Precinct of Woodsville,NH,US,NERC_REGION,NPCC
+20996,Wright-Hennepin Coop Elec Assn,MN,US,NERC_REGION,MRO
+20997,Yellowstone Valley Elec Co-op,MT,US,NERC_REGION,WECC
+21002,York Electric Coop Inc,SC,US,NERC_REGION,SERC
+21013,City of Worthington - (MN),MN,US,NERC_REGION,MRO
+21015,City of Wrangell - (AK),AK,US,NERC_REGION,AK
+21021,City of Wray,CO,US,NERC_REGION,WSCC
+21048,Wyandotte Municipal Serv Comm,MI,US,NERC_REGION,RFC
+21056,City of Wymore - (NE),NE,US,NERC_REGION,MRO
+21066,City of Wynnewood - (OK),OK,US,NERC_REGION,SPP
+21079,Wyrulec Company,WY,US,NERC_REGION,WECC
+21093,3 Phases Renewables Inc,CA,US,NERC_REGION,WECC
+21095,Public Serv Comm of Yazoo City,MS,US,NERC_REGION,SERC
+21101,Village of Yellow Springs - (OH),OH,US,NERC_REGION,RFC
+21108,City of Yoakum - (TX),TX,US,NERC_REGION,TRE
+21111,Perennial Public Power Dist,NE,US,NERC_REGION,SPP
+21114,Yazoo Valley Elec Power Assn,MS,US,NERC_REGION,SERC
+21140,Yuba County Water Agency,CA,US,NERC_REGION,WECC
+21143,City of Yuma - (CO),CO,US,NERC_REGION,WECC
+21158,City of Zeeland - (MI),MI,US,NERC_REGION,RFC
+21160,Borough of Zelienople - (PA),PA,US,NERC_REGION,RFC
+21239,Electrical Dist No7 Maricopa,AZ,US,NERC_REGION,WECC
+21244,"Southside Electric Coop, Inc",VA,US,NERC_REGION,SERC
+21249,"HQ Energy Services (U.S.), Inc",CT,US,NERC_REGION,NPCC
+21352,Municipal Energy Agency of NE,NE,US,NERC_REGION,MRO
+21514,"Flowell Electric Assn, Inc",UT,US,NERC_REGION,WECC
+21526,City of Laurens - (SC),SC,US,NERC_REGION,SERC
+21533,City of Minneapolis - (KS),KS,US,NERC_REGION,SPP
+21538,"Mohave Electric Cooperative, I",AZ,US,NERC_REGION,WECC
+21554,Seminole Electric Cooperative Inc,FL,US,NERC_REGION,FRCC
+21567,"Washington-St Tammany E C, Inc",LA,US,NERC_REGION,SERC
+21632,EnergyUnited Elec Member Corp,NC,US,NERC_REGION,SERC
+21704,MSR Public Power Agency,CA,US,NERC_REGION,WECC
+22053,Kentucky Power Co,OH,US,NERC_REGION,RFC
+22056,Smarr EMC,GA,US,NERC_REGION,SERC
+22355,PUD No 1 of Mason County,WA,US,NERC_REGION,WECC
+22500,"Evergy Kansas Central, Inc",KS,US,NERC_REGION,SPP
+22646,"United Electric Coop, Inc - (MO)",MO,US,NERC_REGION,SERC
+22690,Roosevelt County Elec Coop Inc,NM,US,NERC_REGION,SPP
+22814,Raft Rural Elec Coop Inc,ID,US,NERC_REGION,WECC
+22815,Delta Electric Power Assn,MS,US,NERC_REGION,SERC
+22822,Clark County Rural E M C - (IN),IN,US,NERC_REGION,RFC
+23326,"Sierra Electric Coop, Inc",NM,US,NERC_REGION,WECC
+23586,"Vigilante Electric Coop, Inc",MT,US,NERC_REGION,
+23826,Bluestem Electric Coop Inc,KS,US,NERC_REGION,SPP
+24211,Tucson Electric Power Co,AZ,US,NERC_REGION,WECC
+24431,Utah Municipal Power Agency,UT,US,NERC_REGION,WECC
+24486,City of Akutan - (AK),AK,US,NERC_REGION,AK
+24558,City of Escanaba,MI,US,NERC_REGION,MRO
+24590,Unitil Energy Systems,NH,US,NERC_REGION,NPCC
+24753,Boone County Rural EMC,IN,US,NERC_REGION,RFC
+24889,Brunswick Electric Member Corp,NC,US,NERC_REGION,SERC
+24949,Cass County Elec Coop Inc,ND,US,NERC_REGION,MRO
+25060,Wellton-Mohawk Irr & Drain Dist,AZ,US,NERC_REGION,WECC
+25177,Dakota Electric Association,MN,US,NERC_REGION,MRO
+25251,"Entergy Power, LLC",AR,US,NERC_REGION,SERC
+25295,Western Indiana Energy REMC,IN,US,NERC_REGION,RFC
+25866,Ak-Chin Electric Utility Authority,AZ,US,NERC_REGION,WECC
+26120,Town of Langford- (SD),SD,US,NERC_REGION,MRO
+26218,Little Ocmulgee El Member Corp,GA,US,NERC_REGION,SERC
+26253,Louisiana Energy & Power Authority,LA,US,NERC_REGION,SPP
+26510,Liberty Utilities (Granite State Electri,NH,US,NERC_REGION,NPCC
+26616,North Slope Borough Power & Light,AK,US,NERC_REGION,AK
+26751,"National Grid Generation, LLC",NY,US,NERC_REGION,NPCC
+26765,Pella Cooperative Elec Assn,IA,US,NERC_REGION,MRO
+26894,City of Radium - (KS),KS,US,NERC_REGION,SPP
+26916,"Ravalli County Elec Coop, Inc",MT,US,NERC_REGION,WECC
+26934,"Red Lake Electric Coop, Inc",MN,US,NERC_REGION,MRO
+26939,Red River Valley Coop Pwr Assn,MN,US,NERC_REGION,MRO
+27000,WAPA-- Western Area Power Administration,CO,US,NERC_REGION,
+27026,City of Round Lake - (MN),MN,US,NERC_REGION,MRO
+27058,"High West Energy, Inc",WY,US,NERC_REGION,WECC
+27238,"Southwest Electric Coop, Inc",MO,US,NERC_REGION,SERC
+27269,City of Stanhope - (IA),IA,US,NERC_REGION,MRO
+27316,Town of Stowe- (VT),VT,US,NERC_REGION,NPCC
+27369,Taylor Electric Coop Inc - (TX),TX,US,NERC_REGION,TRE
+27422,Todd-Wadena Electric Coop,MN,US,NERC_REGION,MRO
+27545,City of Vermillion - (KS),KS,US,NERC_REGION,SPP
+27599,Carroll-White REMC,IN,US,NERC_REGION,RFC
+27703,U S Army Corps of Engineers,MI,US,NERC_REGION,RFC
+28541,Clatskanie Peoples Util Dist,OR,US,NERC_REGION,WECC
+28604,Kerrville Public Utility Board,TX,US,NERC_REGION,TRE
+28802,"Talen Energy Marketing, LLC",TX,US,NERC_REGION,RFC
+28978,City of San Marcos - (TX),TX,US,NERC_REGION,TRE
+28981,City of San Saba - (TX),TX,US,NERC_REGION,TRE
+29295,City of Wells - (MN),MN,US,NERC_REGION,MRO
+29296,Western Illinois Elec Coop,IL,US,NERC_REGION,RFC
+29297,Pelican Utility,AK,US,NERC_REGION,AK
+29304,Southeastern Power Admin,GA,US,NERC_REGION,SERC
+29305,City of Madelia - (MN),MN,US,NERC_REGION,MRO
+30151,"Tri-State G & T Assn, Inc",CO,US,NERC_REGION,WECC
+30517,"Pioneer Electric Coop, Inc - (AL)",AL,US,NERC_REGION,SPP
+30856,City of Winnfield - (LA),LA,US,NERC_REGION,SPP
+31516,Midvale Irrigation District,WY,US,NERC_REGION,WECC
+31833,Okefenoke Rural El Member Corp,GA,US,NERC_REGION,SERC
+36189,"Mid-Ohio Energy Coop, Inc",OH,US,NERC_REGION,RFC
+38084,Great Lakes Energy Coop,MI,US,NERC_REGION,MRO
+39347,"East Texas Electric Coop, Inc",TX,US,NERC_REGION,SERC
+40051,Texas-New Mexico Power Co,TX,US,NERC_REGION,TRE
+40127,Clarke-Washington E M C,AL,US,NERC_REGION,SERC
+40165,"Dixie Escalante R E A, Inc",UT,US,NERC_REGION,WECC
+40166,"Chickasaw Electric Coop, Inc",TN,US,NERC_REGION,SERC
+40167,"Somerset Rural Elec Coop, Inc",PA,US,NERC_REGION,RFC
+40208,"Ark Valley Elec Coop Assn, Inc",KS,US,NERC_REGION,SPP
+40212,Colquitt Electric Membership Corp,GA,US,NERC_REGION,SERC
+40215,"Cordova Electric Coop, Inc",AK,US,NERC_REGION,AK
+40218,"Central Electric Pwr Coop, Inc - (SC)",SC,US,NERC_REGION,SERC
+40219,"United Electric Coop, Inc - (PA)",PA,US,NERC_REGION,RFC
+40220,Adams Electric Cooperative Inc,PA,US,NERC_REGION,RFC
+40221,"Bedford Rural Elec Coop, Inc",PA,US,NERC_REGION,RFC
+40222,Valley Rural Electric Coop Inc,PA,US,NERC_REGION,RFC
+40223,Warren Electric Coop Inc,PA,US,NERC_REGION,RFC
+40224,"Central Electric Coop, Inc - (PA)",PA,US,NERC_REGION,RFC
+40229,Old Dominion Electric Coop,VA,US,NERC_REGION,SERC
+40230,Deseret Generation & Tran Coop,UT,US,NERC_REGION,WECC
+40289,Claverack Rural Elec Coop Inc,PA,US,NERC_REGION,RFC
+40290,Tri-County Rural Elec Coop Inc (PA),PA,US,NERC_REGION,RFC
+40291,"Sullivan County R E C, Inc - (PA)",PA,US,NERC_REGION,RFC
+40292,REA Energy Coop Inc,PA,US,NERC_REGION,RFC
+40293,"Northwestern Rural E C A, Inc - (PA)",PA,US,NERC_REGION,RFC
+40299,Sussex Rural Electric Coop Inc,NJ,US,NERC_REGION,RFC
+40300,Nebraska Electric G&T Coop Inc,NE,US,NERC_REGION,MRO
+40301,Central Montana E Pwr Coop Inc,MT,US,NERC_REGION,WECC
+40303,Monroe County Elec Power Assn,MS,US,NERC_REGION,SERC
+40304,Minnesota Valley Coop L&P Assn,MN,US,NERC_REGION,MRO
+40307,"Prairie Power, Inc",IL,US,NERC_REGION,SERC
+40355,Maricopa County M W C Dist #1,AZ,US,NERC_REGION,WECC
+40357,Electrical Dist No6 Pinal County,AZ,US,NERC_REGION,WECC
+40364,City of Courtland,AL,US,NERC_REGION,SERC
+40367,Village of Ladd - (IL),IL,US,NERC_REGION,RFC
+40369,City of Oxford - (GA),GA,US,NERC_REGION,SERC
+40382,City of Rockport - (MO),MO,US,NERC_REGION,SERC
+40390,City of Buffalo - (IA),IA,US,NERC_REGION,MRO
+40433,City of Enterprise - (UT),UT,US,NERC_REGION,WECC
+40435,City of White - (SD),SD,US,NERC_REGION,MRO
+40437,Emerald People's Utility Dist,OR,US,NERC_REGION,WECC
+40438,Columbia River Peoples Ut Dist,OR,US,NERC_REGION,WECC
+40440,City of Stanton - (ND),ND,US,NERC_REGION,MRO
+40456,PUD No 1 of Whatcom County,WA,US,NERC_REGION,WECC
+40548,Unalakleet Valley Elec Coop,AK,US,NERC_REGION,AK
+40575,Utah Associated Mun Power Sys,UT,US,NERC_REGION,WECC
+40576,Intermountain Power Agency,CA,US,NERC_REGION,WECC
+40577,"American Mun Power-Ohio, Inc",OH,US,NERC_REGION,RFC
+40580,Southern Minnesota Mun P Agny,MN,US,NERC_REGION,MRO
+40581,Northern Municipal Power Agency,MN,US,NERC_REGION,MRO
+40582,Michigan Public Power Agency,MI,US,NERC_REGION,RF
+40603,Wyoming Municipal Power Agency,WY,US,NERC_REGION,WECC
+40604,Heartland Consumers Power Dist,SD,US,NERC_REGION,MRO
+40613,Northern California Power Agny,CA,US,NERC_REGION,WECC
+40614,Alabama Municipal Elec Authority,AL,US,NERC_REGION,SERC
+44388,New England Elec Transm'n Corp,MA,US,NERC_REGION,NPCC
+49730,American PowerNet,PA,US,NERC_REGION,
+49746,The Energy Coop,PA,US,NERC_REGION,RFC
+49803,Alaska Electric & Energy Coop,AK,US,NERC_REGION,AK
+49818,"Alliance Power Company, LLC.",TX,US,NERC_REGION,
+49824,Calpine Power Management LLC,TX,US,NERC_REGION,TRE
+49826,Mohegan Tribal Utility Authority,CT,US,NERC_REGION,NPCC
+49848,Massachusetts Bay Trans Authority,MA,US,NERC_REGION,NPCC
+49853,Amigo Energy,TX,US,NERC_REGION,TRE
+49922,U.S. Energy Partners LLC,NY,US,NERC_REGION,
+49952,3000 Energy Corp,TX,US,NERC_REGION,
+49956,Merrill Lynch Commodities,TX,US,NERC_REGION,
+49986,Southwest Iowa Rural Elec Coop,IA,US,NERC_REGION,RFC
+49987,Harvard Dedicated Energy Limit,MA,US,NERC_REGION,
+49998,City of Berea Municipal Utility,KY,US,NERC_REGION,RFC
+50041,"Stream SPE, LTD",TX,US,NERC_REGION,
+50043,"Exelon Generation Company, LLC",MD,US,NERC_REGION,RFC
+50046,"Texas Retail Energy, LLC",AR,US,NERC_REGION,
+50153,"APN Starfirst, L.P.",PA,US,NERC_REGION,
+50156,AmeriPower LLC,TX,US,NERC_REGION,
+50174,Electric Transmission Texas LLC,TX,US,NERC_REGION,
+54728,Texas General Land Office,TX,US,NERC_REGION,
+54820,Direct Energy Services,TX,US,NERC_REGION,
+54872,"Accent Energy Holdings, LLC",OH,US,NERC_REGION,
+54873,Freedom Energy,NH,US,NERC_REGION,
+54875,New York Industrial Energy Buyers,NY,US,NERC_REGION,
+54893,NOCO Electric,NY,US,NERC_REGION,NPCC
+54913,NSTAR Electric Company,MA,US,NERC_REGION,
+55701,"Sempra Gas & Power Marketing, LLC",CA,US,NERC_REGION,
+55719,TDM US,CA,US,NERC_REGION,
+55722,AEP Energy,IL,US,NERC_REGION,RFC
+55758,"GenOn Energy Management, LLC",TX,US,NERC_REGION,
+55781,Liberty Power Corp.,FL,US,NERC_REGION,
+55787,City of Moreno Valley - (CA),CA,US,NERC_REGION,WECC
+55813,"Bluerock Energy, Inc.",NY,US,NERC_REGION,
+55814,"Columbia Utilities Power, LLC",NY,US,NERC_REGION,
+55815,"IDT Energy, Inc.",NJ,US,NERC_REGION,
+55874,"Energy Services Providers, Inc",MA,US,NERC_REGION,
+55878,Hudson Energy Services,NY,US,NERC_REGION,
+55897,PSEG Energy Resources and Trade,NJ,US,NERC_REGION,
+55937,Entergy Texas Inc.,TX,US,NERC_REGION,SERC
+55959,Roughrider Electric Cooperativ,ND,US,NERC_REGION,MRO
+55982,Heart of Texas Electric Coop,TX,US,NERC_REGION,
+56068,International Transmission Company DBA I,MI,US,NERC_REGION,
+56146,"Black Hills Colorado Electric, LLC",SD,US,NERC_REGION,WECC
+56161,ITC Midwest LLC,MI,US,NERC_REGION,
+56162,American Transmission Systems Inc,OH,US,NERC_REGION,RFC
+56163,"Michigan Electric Transmission Company,",MI,US,NERC_REGION,
+56196,Just Energy New York Corp.,CN,US,NERC_REGION,
+56212,"Ambit Energy Holdings, LLC",TX,US,NERC_REGION,
+56220,Anthracite Power & Light,PA,US,NERC_REGION,
+56224,Rancho Cucamonga Municipal Utility,CA,US,NERC_REGION,
+56247,Mega Energy LP DBA Texans Energy,TX,US,NERC_REGION,
+56248,"Young Energy, LLC",TX,US,NERC_REGION,TRE
+56255,"Brilliant Energy, LLC",TX,US,NERC_REGION,
+56265,Energy Plus Holdings LLC,PA,US,NERC_REGION,
+56276,TransCanada Energy Marketing ULC,CA,US,NERC_REGION,WECC
+56279,"Spartan Renewable Energy, Inc",MI,US,NERC_REGION,
+56286,"Frontier Utilities, Inc.",TX,US,NERC_REGION,TRE
+56288,Luminant Energy,TX,US,NERC_REGION,
+56292,"Bounce Energy, Inc.",TX,US,NERC_REGION,
+56360,Discount Power - (TX),TX,US,NERC_REGION,
+56379,"MC Squared Energy Services, LLC",IL,US,NERC_REGION,
+56408,"UGI Energy Services, Inc.",PA,US,NERC_REGION,
+56441,Our Energy LLC,TX,US,NERC_REGION,
+56496,"UP Power Marketing, LLC",MI,US,NERC_REGION,MRO
+56501,"Palmco Power NJ, LLC",NY,US,NERC_REGION,
+56504,Major Energy Electric Services,NY,US,NERC_REGION,NPCC
+56521,"Devonshire Energy, LLC",MA,US,NERC_REGION,
+56522,"Backyard Farms Energy, LLC",ME,US,NERC_REGION,
+56526,"ITC Great Plains, LLC",KS,US,NERC_REGION,
+56528,JP Morgan,NY,US,NERC_REGION,
+56535,City of Williams - AZ,AZ,US,NERC_REGION,WECC
+56536,Riverside Electric Cooperative,ID,US,NERC_REGION,
+56546,Dominion Energy Marketing Inc.,VA,US,NERC_REGION,
+56571,AP Holdings LLC,TX,US,NERC_REGION,
+56573,"Palmco Power PA, LLC",NY,US,NERC_REGION,
+56692,Marin Clean Energy,CA,US,NERC_REGION,WECC
+56697,Ameren Illinois Company,MO,US,NERC_REGION,SERC
+56734,Smart Prepaid Electric,TX,US,NERC_REGION,
+56737,"Stream Energy Pennsylvania, LLC",PA,US,NERC_REGION,
+56739,Gold Country Energy,AK,US,NERC_REGION,
+56775,Entrust Energy,TX,US,NERC_REGION,
+56784,NRG Power Marketing LLC,NJ,US,NERC_REGION,
+56810,American Light and Power,TX,US,NERC_REGION,
+56876,"Stream Energy Maryland, LLC",MD,US,NERC_REGION,
+56890,Citigroup Energy Inc,TX,US,NERC_REGION,
+56982,PBF Power Marketing LLC,NJ,US,NERC_REGION,
+57037,Reliant Energy Northeast LLC,,US,NERC_REGION,
+57067,"ENGIE Retail, LLC",TX,US,NERC_REGION,
+57074,"Stream Energy New Jersey, LLC",NJ,US,NERC_REGION,
+57132,"US Retailers, LLC",TX,US,NERC_REGION,
+57185,"Palmco Power MD, LLC",NY,US,NERC_REGION,
+57298,TAQA Gen X LLC,NY,US,NERC_REGION,RFC
+57307,"Plymouth Rock Energy, LLC",NY,US,NERC_REGION,
+57350,Summer Energy LLC,TX,US,NERC_REGION,
+57394,Value Based Brands LLC,TX,US,NERC_REGION,
+57428,Source Power & Gas LLC,TX,US,NERC_REGION,
+57459,"Wolverine Alternative Investments, LLC",IL,US,NERC_REGION,
+57467,"Palmco Power OH, LLC",NY,US,NERC_REGION,
+57483,Liberty Utilities,CA,US,NERC_REGION,WECC
+57486,"XOOM Energy Texas, LLC",NC,US,NERC_REGION,
+57487,"XOOM Energy Connecticut, LLC",NC,US,NERC_REGION,
+57488,"XOOM Energy Illinois, LLC",NC,US,NERC_REGION,
+57489,"XOOM Energy Massachusetts, LLC",NC,US,NERC_REGION,
+57490,"XOOM Energy Maryland, LLC",NC,US,NERC_REGION,
+57491,"XOOM Energy New Jersey, LLC",NC,US,NERC_REGION,
+58085,"Electricity Maine, LLC",ME,US,NERC_REGION,
+58086,"Electricity NH, LLC d/b/a ENH Power, LLC",ME,US,NERC_REGION,
+58116,"Public Power & Utility of Maryland, LLC",CT,US,NERC_REGION,
+58118,Public Power LLC (PA),CT,US,NERC_REGION,
+58119,Public Power LLC (CT),CT,US,NERC_REGION,
+58123,Aha Macav Power Service,AZ,US,NERC_REGION,
+58124,City of Winter Park - (FL),FL,US,NERC_REGION,FRCC
+58126,Pittsburg Power Company,CA,US,NERC_REGION,
+58139,Town of Pickstown - (SD),SD,US,NERC_REGION,
+58142,Cincinnati Bell Energy LLC,CT,US,NERC_REGION,
+58158,FairPoint Energy LLC,CT,US,NERC_REGION,
+58160,Viridian Energy NY LLC,CT,US,NERC_REGION,
+58161,Viridian Energy LLC,CT,US,NERC_REGION,
+58162,Viridian Energy PA LLC,CT,US,NERC_REGION,
+58181,"Stream Energy New York, LLC",NY,US,NERC_REGION,
+58196,"C. N. Brown Electricity, LLC",ME,US,NERC_REGION,
+58230,MJMEUC,MO,US,NERC_REGION,SPP
+58248,"EnergyMark, LLC",NY,US,NERC_REGION,
+58263,V247 Power Corporation,TX,US,NERC_REGION,
+58314,"Palmco Power IL, LLC",NY,US,NERC_REGION,
+58339,"XOOM Energy Pennsylvania, LLC",NC,US,NERC_REGION,
+58364,New Brunswick Power Generation Corp.,CN,US,NERC_REGION,
+58367,"XOOM Energy New York, LLC",NC,US,NERC_REGION,
+58457,"EDF Industrial Power Services (CA), LLC",TX,US,NERC_REGION,
+58458,Silver State Energy Association,NV,US,NERC_REGION,
+58476,"Stream Energy Columbia, LLC",DC,US,NERC_REGION,
+58630,"XOOM Energy Maine, LLC",NC,US,NERC_REGION,
+58631,"XOOM Energy Rhode Island, LLC",NC,US,NERC_REGION,
+58632,"XOOM Energy Delaware, LLC",NC,US,NERC_REGION,
+58633,"XOOM Energy New Hampshire, LLC",NC,US,NERC_REGION,
+58663,Respond Power LLC,NY,US,NERC_REGION,
+58667,"North American Power and Gas, LLC",CT,US,NERC_REGION,
+58683,Everyday Energy LLC,CT,US,NERC_REGION,
+58747,"Provider Power MASS, LLC",ME,US,NERC_REGION,
+58799,"Mega Energy of New England, LLC",TX,US,NERC_REGION,
+58805,Pro Power Providers,TX,US,NERC_REGION,
+58851,City of Cerritos - (CA),CA,US,NERC_REGION,
+58853,Kiwi Energy NY LLC,NY,US,NERC_REGION,
+58951,"CleanChoice Energy, Inc.",DC,US,NERC_REGION,
+58952,Tomorow Energy Corp.,NV,US,NERC_REGION,WECC
+58953,"Star Energy Partners, LLC",OH,US,NERC_REGION,
+58956,"SmartEnergy Holdings, LLC",NY,US,NERC_REGION,
+58957,"Interstate Gas Supply, Inc.",OH,US,NERC_REGION,
+58963,Brooklet Energy Distribution,TX,US,NERC_REGION,
+58965,Energy.Me Midwest LLC,NY,US,NERC_REGION,SERC
+58966,Marathon Power LLC,NY,US,NERC_REGION,
+58967,"SBR Energy, LLC",CT,US,NERC_REGION,
+58972,"Realgy, LLC",CT,US,NERC_REGION,
+58973,"Discount Energy Group, LLC",AZ,US,NERC_REGION,
+58978,"Harborside Energy, LLC",NY,US,NERC_REGION,
+59012,"Mega Energy of New Hampshire, LLC",TX,US,NERC_REGION,
+59013,PUD No 1 of Jefferson County,WA,US,NERC_REGION,
+59052,Astral Energy LLC,NJ,US,NERC_REGION,
+59053,"Abest Power & Gas, LLC",NY,US,NERC_REGION,
+59054,"Eligo Energy, LLC",IL,US,NERC_REGION,
+59055,"Choice Energy, LLC d/b/a 4 Choice Energy",IA,US,NERC_REGION,
+59057,"Mega Energy of Maine, LLC",TX,US,NERC_REGION,
+59059,Town Square Energy,AZ,US,NERC_REGION,
+59062,"Horizon Power and Light, LLC",TX,US,NERC_REGION,
+59064,"Great American Power, LLC",GA,US,NERC_REGION,
+59065,Titan Gas LLC,TX,US,NERC_REGION,ERCOT
+59082,"Family Energy, Inc. New York",CN,US,NERC_REGION,
+59086,"Constellation Solar Holding, LLC",MD,US,NERC_REGION,
+59088,"Nordic Energy Services, LLC",IL,US,NERC_REGION,
+59126,Sonoma Clean Power Authority,CA,US,NERC_REGION,
+59127,"Sunwave Gas & Power Connecticut, Inc.",MA,US,NERC_REGION,
+59128,MPower Energy LLC,NY,US,NERC_REGION,NPCC
+59139,SunEdison LLC,CA,US,NERC_REGION,
+59310,"Inspire Energy Holdings, LLC",CA,US,NERC_REGION,
+59311,"XOOM Energy Ohio, LLC",NC,US,NERC_REGION,
+59312,"XOOM Energy Washington DC, LLC",NC,US,NERC_REGION,
+59314,Infuse Energy LLC,TX,US,NERC_REGION,
+59361,Lykins Energy Solutions,OH,US,NERC_REGION,
+59385,"Dynegy Energy Services, LLC",TX,US,NERC_REGION,
+59410,"Shipley Choice, LLC",PA,US,NERC_REGION,RF
+59411,Power Express,TX,US,NERC_REGION,
+59472,Agera Energy LLC,NY,US,NERC_REGION,
+59505,Heartland REMC,IN,US,NERC_REGION,
+59507,"Lonestar Generation, LLC",TX,US,NERC_REGION,
+59557,RGS Energy,CO,US,NERC_REGION,
+59566,Axon Power & Gas LLC,TX,US,NERC_REGION,
+59580,"SunPower Capital, LLC",TX,US,NERC_REGION,
+59619,"EDF Energy Services, LLC",TX,US,NERC_REGION,
+59620,Verde Energy USA,CT,US,NERC_REGION,
+59624,"Vivint Solar, Inc.",UT,US,NERC_REGION,
+59625,Lancaster Choice Energy,CA,US,NERC_REGION,
+59647,Sunrun Inc.,CA,US,NERC_REGION,
+59676,"Collegiate Clean Energy, LLC",VA,US,NERC_REGION,
+59679,Aggregated Transit Energy,MA,US,NERC_REGION,
+59763,"Consolidated Power Co., LLC",NY,US,NERC_REGION,
+59793,"First Point Power, LLC",RI,US,NERC_REGION,
+59794,"Starion Energy, Inc.",CT,US,NERC_REGION,
+59795,"Starion Energy PA, Inc.",CT,US,NERC_REGION,
+59796,"Starion Energy NY, Inc.",CT,US,NERC_REGION,
+59797,Park Power LLC,PA,US,NERC_REGION,
+59798,Volt Electricity Provider LP,TX,US,NERC_REGION,ERCOT
+59799,American Power & Gas,FL,US,NERC_REGION,FRCC
+59800,Capital Energy LLC,OH,US,NERC_REGION,
+59801,CEI,PA,US,NERC_REGION,
+59807,"Rushmore Energy, LLC",TX,US,NERC_REGION,
+59809,"Residents Energy, LLC",NJ,US,NERC_REGION,
+59810,Greenlight Energy Inc.,NY,US,NERC_REGION,NPCC
+59811,Santanna Energy Services,TX,US,NERC_REGION,
+59812,New Wave Energy Corporation,NY,US,NERC_REGION,
+59815,"HIKO Energy, LLC",NY,US,NERC_REGION,
+59816,"Supreme Energy, Inc.",NJ,US,NERC_REGION,
+59818,Algonquin Energy Services,CN,US,NERC_REGION,
+59820,"Mansfield Power and Gas, LLC",GA,US,NERC_REGION,
+59829,Hampshire COG d/b/a Hampshire Power,MA,US,NERC_REGION,
+59830,Aequitas Energy Inc,NY,US,NERC_REGION,
+59832,Great Eastern Energy,NY,US,NERC_REGION,NPCC
+59846,Western Reserve Energy Services LLC,OH,US,NERC_REGION,
+59847,Sustainable Star LLC,VA,US,NERC_REGION,
+59848,"ResCom Energy, LLC",IL,US,NERC_REGION,
+59931,"MidAmerican Energy Services, LLC",IA,US,NERC_REGION,
+59932,Switch Energy,CT,US,NERC_REGION,NPCC
+59933,"Texpo Power, L.P.",TX,US,NERC_REGION,
+59943,Spruce Finance,CA,US,NERC_REGION,
+59958,"Mega Energy of Illinois, LLC",TX,US,NERC_REGION,
+59972,The Regents of the Univ. of California,CA,US,NERC_REGION,
+59993,Discount Power Inc - (CT),CT,US,NERC_REGION,
+60025,Greenbacker Renewable Energy Corporation,NY,US,NERC_REGION,
+60041,Planet Energy,CN,US,NERC_REGION,
+60053,"East Coast Power & Gas, LLC",NY,US,NERC_REGION,
+60065,Cross Texas Transmission,TX,US,NERC_REGION,
+60066,Wind Energy Transmission Texas LLC,TX,US,NERC_REGION,
+60080,Pleasant Hill Community Line,IA,US,NERC_REGION,
+60084,OE Holdings,MD,US,NERC_REGION,
+60101,"Nittany Energy, LLC",PA,US,NERC_REGION,
+60124,Spring Energy RRH LLC dba Spring Power &,NY,US,NERC_REGION,
+60181,CleanPowerSF,CA,US,NERC_REGION,
+60202,Electranet Power LLC,TX,US,NERC_REGION,
+60218,MPower Energy NJ LLC,NY,US,NERC_REGION,
+60402,Peninsula Clean Energy Authority,CA,US,NERC_REGION,
+60482,CKenergy Electric Cooperative,OK,US,NERC_REGION,
+60502,Port of Stockton - (CA),CA,US,NERC_REGION,
+60583,Atlantic Energy LLC,NY,US,NERC_REGION,
+60631,Upper Michigan Energy Resources Corp.,WI,US,NERC_REGION,
+60715,Port of Oakland,CA,US,NERC_REGION,
+60744,ITC Interconnection LLC,MI,US,NERC_REGION,
+60758,Apple Valley Choice Energy,CA,US,NERC_REGION,
+60759,Silicon Valley Clean Energy Authority,CA,US,NERC_REGION,
+60770,Southeast Alaska Power Agency,AK,US,NERC_REGION,
+60839,Southern Pioneer Electric Company,KS,US,NERC_REGION,
+60868,Redwood Coast Energy Authority,CA,US,NERC_REGION,
+60870,PSEG Energy Solutions LLC,NJ,US,NERC_REGION,
+60913,Dynegy Marketing and Trade LLC,TX,US,NERC_REGION,
+60914,Current Power & Gas Inc.,AZ,US,NERC_REGION,
+60915,Griddy Energy LLC,CA,US,NERC_REGION,
+61059,"Renaissance Power & Gas, Inc.",NV,US,NERC_REGION,
+61083,Pico Rivera Innovative Municipal Energy,CA,US,NERC_REGION,
+61092,"Stream Energy Illinois, LLC",TX,US,NERC_REGION,
+61098,Longroad Energy,CA,US,NERC_REGION,
+61131,Freepoint Energy Solutions LLC,CT,US,NERC_REGION,ERCOT
+61200,"Summer Energy Northeast, LLC",TX,US,NERC_REGION,
+61201,"Stream Energy Delaware, LLC",TX,US,NERC_REGION,
+61205,Volterra Energy,TX,US,NERC_REGION,
+61206,Total Gas & Power North America Inc,TX,US,NERC_REGION,
+61264,Heritage Power LLC,TX,US,NERC_REGION,
+61265,Pogo Energy LLC,TX,US,NERC_REGION,
+61300,Members 1st Power Cooperative,WY,US,NERC_REGION,
+61311,Conservice Energy,TX,US,NERC_REGION,
+61367,South Bay Energy Corp.,NY,US,NERC_REGION,
+61378,Censtar Energy Corporation,TX,US,NERC_REGION,
+61424,Tidal Energy Marketing Inc.,CN,US,NERC_REGION,WECC
+61431,Pioneer Community Energy,CA,US,NERC_REGION,
+61432,Monterey Bay Community Power,CA,US,NERC_REGION,
+61433,San Jacinto Power,CA,US,NERC_REGION,
+61439,Windrose Power & Gas LLC,TX,US,NERC_REGION,
+61460,Drift,WA,US,NERC_REGION,
+61471,Rancho Mirage Energy Authority,CA,US,NERC_REGION,
+61475,East Bay Community Energy,CA,US,NERC_REGION,
+61479,"Stream Ohio Gas & Electric, LLC",TX,US,NERC_REGION,
+61503,City of Solana Beach,CA,US,NERC_REGION,
+61522,"Mega Energy of Ohio, LLC",TX,US,NERC_REGION,
+61526,Clean Power Alliance of Southern Califor,CA,US,NERC_REGION,
+61570,King City Community Power,CA,US,NERC_REGION,
+61769,GridPlus Texas Inc,TX,US,NERC_REGION,
+61855,"Pulse Power, LLC",TX,US,NERC_REGION,
+61920,"All American Power and Gas, LLC",FL,US,NERC_REGION,
+61921,"Flanders Energy, LLC",NY,US,NERC_REGION,
+62107,City of Industry,CA,US,NERC_REGION,
+62148,Powervine Energy,CT,US,NERC_REGION,
+62156,"Power UP Energy, LLC",NJ,US,NERC_REGION,
+62722,ATG Clean Energy Holdings Inc.,TX,US,NERC_REGION,
+62776,NorthPoint Energy,CN,US,NERC_REGION,
+62779,Lathrop Irrigation District,CA,US,NERC_REGION,
+62790,"Summer Energy Midwest, LLC",TX,US,NERC_REGION,
+62862,Chariot Energy,TX,US,NERC_REGION,
+63007,First Choice Energy LLC,NY,US,NERC_REGION,
+63008,Agressive Energy LLC,NY,US,NERC_REGION,
+63027,Josco Energy Corp-  NY,NJ,US,NERC_REGION,
+63028,Josco Energy USA LLC,NJ,US,NERC_REGION,
+63029,Josco Energy IL LLC,NJ,US,NERC_REGION,
+63112,Bulb US LLC,TX,US,NERC_REGION,
+63123,"Iberdrola Solutions, LLC",TX,US,NERC_REGION,
+63168,Median Energy Corp.,NJ,US,NERC_REGION,
+63169,Median Energy PA LLC,NJ,US,NERC_REGION,
+63232,"National Gas & Electric, LLC",TX,US,NERC_REGION,
+63364,"Mirabito Power & Gas, LLC",NY,US,NERC_REGION,
+63367,Commercial Energy of California,CA,US,NERC_REGION,
+88888,Withheld,TX,US,NERC_REGION,TRE
+15497,Puerto Rico Electric Pwr Authority,PR,US,NERC_REGION,PR
+19879,Virgin Islands Water & Power Authority,VI,US,NERC_REGION,VI
+40429,American Samoa Power Authority,AS,US,NERC_REGION,AS
+57105,Commonwealth Utility Corporation,MP,US,NERC_REGION,MP

@@ -881,6 +881,24 @@ def query_timeseries(qs, start=None, end=None):
     return qs.order_by('as_of_datetime')
 
 
+class Utility(models.Model):
+    utility_id = IntegerField(_("Utility Number"), primary_key=True)
+    utility_name = CharField(max_length=255, blank=True, null=True)
+    country = CharField(max_length=2, blank=True, null=True)
+    state = CharField(max_length=2, blank=True, null=True)
+    division_type = CharField(max_length=255, blank=True, null=True)
+    division_id = CharField(max_length=255, blank=True, null=True)
+
+    def get_choices():
+        model_choices = [(c.utility_id, '{}: {}'.format(c.utility_id, c.utility_name)) for c in Utility.objects.all()]
+        model_choices.insert(0, ('', ''))
+
+        return model_choices
+
+    class Meta:
+        db_table = 'core_utility'
+
+
 class Meter(models.Model):
     meter_id = CharField(_("Meter ID"), max_length=255, primary_key=True)
     description = CharField(_("Description"), max_length=255, blank=True, null=True)
@@ -888,7 +906,8 @@ class Meter(models.Model):
     site = ForeignKey(Entity, on_delete=models.CASCADE)
     equipment = ForeignKey(Entity, on_delete=models.CASCADE, blank=True, null=True, related_name='equipment_meters')
     attributes = HStoreField(_("Attributes"), blank=True, null=True)
-    utility_number = IntegerField(_("Utility"), blank=True, null=True)
+    utility = ForeignKey(Utility, null=True, blank=True, on_delete=models.SET_NULL)
+    account_number = CharField(_("Account Number"), max_length=255, blank=True, null=True)
     from_datetime = DateTimeField(_("From Date"), default=now)
     thru_datetime = DateTimeField(_("Thru Date"), blank=True, null=True)
 
@@ -1150,7 +1169,8 @@ class MeterFinancialValue(models.Model):
     created_by_user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
 
     def get_absolute_url(self):
-        return reverse("core:meter_financial_value_detail", kwargs={"meter": self.meter_id, "meter_value_id": self.meter_value_id})
+        return reverse("core:meter_financial_value_detail", kwargs={"meter": self.meter_id,
+                                                                    "meter_value_id": self.meter_value_id})
 
     class Meta:
         db_table = 'core_meter_financial_value'

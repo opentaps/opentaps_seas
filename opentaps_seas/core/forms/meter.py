@@ -25,6 +25,7 @@ from ..models import Meter
 from ..models import MeterHistory
 from ..models import MeterRatePlanHistory
 from ..models import UnitOfMeasure
+from ..models import Utility
 from ..models import WeatherStation
 from .widgets import make_custom_datefields
 from .widgets import DateTimeField
@@ -267,11 +268,14 @@ class MeterCreateForm(forms.ModelForm):
             error_msg = u"No weather station found for this Site. Please check that your site is set up correctly."
             self.add_error('weather_station', error_msg)
 
+        if 'utility' not in self.data:
+            self.fields['utility'] = forms.ChoiceField(choices=Utility.get_choices(), required=False)
+
     def save(self, commit=True):
         description = self.cleaned_data['description']
         meter_id = self.cleaned_data['meter_id']
         site = self.cleaned_data['site']
-        utility_number = self.cleaned_data['utility_number']
+        account_number = self.cleaned_data['account_number']
 
         if not meter_id or meter_id == '':
             id_base = site.entity_id
@@ -282,16 +286,19 @@ class MeterCreateForm(forms.ModelForm):
         weather_station = self.cleaned_data['weather_station']
         from_datetime = self.cleaned_data['from_datetime']
         thru_datetime = self.cleaned_data['thru_datetime']
+        utility = self.cleaned_data['utility']
 
         meter = Meter(meter_id=meter_id)
         meter.site_id = site.entity_id
         meter.description = description
         if weather_station:
             meter.weather_station_id = weather_station.weather_station_id
+        if utility:
+            meter.utility_id = utility.utility_id
         meter.from_datetime = from_datetime
         meter.thru_datetime = thru_datetime
-        if utility_number:
-            meter.utility_number = utility_number
+        if account_number:
+            meter.account_number = account_number
 
         meter.save()
         self.instance = Meter.objects.get(meter_id=meter_id)
@@ -301,7 +308,7 @@ class MeterCreateForm(forms.ModelForm):
 
     class Meta:
         model = Meter
-        fields = ["site", "meter_id", "description", "utility_number",
+        fields = ["site", "meter_id", "description", "account_number", "utility",
                   "weather_station", "from_datetime", "thru_datetime"]
 
 
@@ -316,9 +323,13 @@ class MeterUpdateForm(forms.ModelForm):
         if 'weather_station' not in self.data:
             self.fields['weather_station'].queryset = WeatherStation.objects.none()
 
+        if 'utility' not in self.data:
+            self.fields['utility'] = forms.ChoiceField(choices=Utility.get_choices(), required=False)
+
     class Meta:
         model = Meter
-        fields = ["meter_id", "description", "utility_number", "weather_station", "from_datetime", "thru_datetime"]
+        fields = ["meter_id", "description", "account_number", "utility",
+                  "weather_station", "from_datetime", "thru_datetime"]
 
 
 class MeterRatePlanHistoryUpdateForm(forms.ModelForm):
