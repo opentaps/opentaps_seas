@@ -41,7 +41,12 @@ Meters
 -------------
 
 Each site could be associated with one or more meters, which could be a utility meter or a measuring device to record solar generation, battery charge or discharge, or any other technology’s 
-use or production of energy.  Each Meter is associated with a Weather Station.  We currently use the NOAA ISD weather stations and weather data based on OpenEE Weather.
+use or production of energy.  
+
+Each Meter can be associated with a utility, but does not have to be.  The list of utilities and their ID numbers currently come from the US Energy Information Administration's EIA-861
+data set (https://www.eia.gov/electricity/data/eia861/).  When creating or updating the Meter, you can choose a utility and also enter an account number with the utility.
+
+Each Meter is associated with a Weather Station.  We currently use the NOAA ISD weather stations and weather data based on OpenEE Weather.
 When you add a Meter, you can either enter all the information, or use UtilityAPI.  If you enter all the information yourself, 
 the UI uses the location of the Site to get the nearest Weather Station, so all Meters at the same Site will have the same Weather Stations.  If you click on a
 Weather Station, you can see detailed information about it and use the Fetch Data button to get historical readings from the station.  
