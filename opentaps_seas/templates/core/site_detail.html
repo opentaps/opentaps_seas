@@ -145,6 +145,7 @@
     {% include "core/_notes.html" with form_title='Add Note' form=notes_form items=notes %}
   {% endif %}
 
+  {% if bacnet_configs %}
   <div class="card mb-3">
     <div class="card-body">
       <h3>
@@ -152,7 +153,6 @@
           <div class="">
             BACNet Configs
           </div>
-          {% if bacnet_configs %}
           <div class="text-right flex-grow-1">
             <form method="POST" action="{% url 'core:topic_list' %}">
               {% csrf_token %}
@@ -161,7 +161,6 @@
               <a class="btn btn-info" href="{% url 'core:topic_export' object.entity_id %}"><i class="fa fa-download"></i> Export</a>
             </form>
           </div>
-          {% endif %}
         </div>
       </h3>
       <div class="header-top">
@@ -194,6 +193,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
 </div>
 <script>
