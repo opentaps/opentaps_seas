@@ -308,7 +308,7 @@ class MeterCreateForm(forms.ModelForm):
 
     class Meta:
         model = Meter
-        fields = ["site", "meter_id", "description", "account_number", "utility",
+        fields = ["site", "meter_id", "description", "utility", "account_number",
                   "weather_station", "from_datetime", "thru_datetime"]
 
 
@@ -328,7 +328,7 @@ class MeterUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Meter
-        fields = ["meter_id", "description", "account_number", "utility",
+        fields = ["meter_id", "description", "utility", "account_number",
                   "weather_station", "from_datetime", "thru_datetime"]
 
 

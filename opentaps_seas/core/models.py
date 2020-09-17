@@ -890,7 +890,8 @@ class Utility(models.Model):
     division_id = CharField(max_length=255, blank=True, null=True)
 
     def get_choices():
-        model_choices = [(c.utility_id, '{}: {}'.format(c.utility_id, c.utility_name)) for c in Utility.objects.all()]
+        model_choices = [(c.utility_id, '{} ({})'.format(c.utility_name, c.utility_id))
+                         for c in Utility.objects.all().order_by('utility_name')]
         model_choices.insert(0, ('', ''))
 
         return model_choices

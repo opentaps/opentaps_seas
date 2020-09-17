@@ -49,7 +49,7 @@
         </h2>
       {% endif %}
       {% if object.utility %}
-        <h3>Utility {{ object.utility.utility_name }} <span style="font-size: 1rem;">(id: {{ object.utility_id }})</h3>
+        <h3>Utility <span style="font-size: 1rem;">{{ object.utility.utility_name }} ({{ object.utility_id }}){% if object.account_number %} - Account {{ object.account_number }} {% endif %}</h3>
       {% endif %}
       <br/>
       {% block inner_content %}
