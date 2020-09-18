@@ -124,6 +124,7 @@
         </button>
         <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/opentaps_logo.png' %}"/></a>
 
+        {% if request.user.is_authenticated %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item {% if 'core:site_' in request.resolver_match.view_name %}active{% endif %}">
@@ -132,12 +133,6 @@
             <li class="nav-item {% if 'core:transaction' in request.resolver_match.view_name %}active{% endif %}">
               <a class="nav-link" href="{% url 'core:transaction_list' %}">{% trans "Transactions" %} {% if 'core:transaction' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
             </li>
-            {% if request.user.is_authenticated %}
-              <li class="nav-item {% if 'users:detail' == request.resolver_match.view_name %}active{% endif %}">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
-              </li>
-            {% endif %}
 
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Config</a>
@@ -149,23 +144,14 @@
               </div>
             </li>
 
-            {% if request.user.is_authenticated %}
-              <li class="nav-item {% if 'account_logout' == request.resolver_match.view_name %}active{% endif %}">
+            
+              <li class="nav-item {% if 'users:detail' == request.resolver_match.view_name %}active{% endif %}">
                 {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+                <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
               </li>
-            {% else %}
-              <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
-              </li>
-              <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
-              </li>
-            {% endif %}
           </ul>
         </div>
+         {% endif %}
       </nav>
 
     </div>

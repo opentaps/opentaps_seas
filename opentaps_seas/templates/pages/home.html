@@ -19,9 +19,11 @@
 {% endcomment %}
 
 {% block content %}
+{% load static i18n %}
 <br/><br/>
 <h2 align='center'>opentaps Smart Energy Applications Suite</h2>
 
 <br/><br/>
-<p align='center'>Please <a href="{% url 'account_login' %}">Sign in</a> to get started.</p> 
+<p align='center'>Please <a id="sign-up-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
+or <a id = "sign-in-link" href="{% url 'account_login' %}">Sign in</a> to get started.</p> 
 {% endblock content %}

@@ -19,7 +19,7 @@
 {% endcomment %}
 
 {% load static %}
-
+{% load static i18n %}
 {% block title %}User: {{ object.username }}{% endblock %}
 
 {% block content %}
@@ -45,7 +45,11 @@
     <!-- Your Stuff: Custom user template urls -->
   </div>
 
-</div>
+   <div class="col-sm-12">
+      <br/><br/>
+      <a class="btn btn-danger" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+   </div>
+
 <!-- End Action buttons -->
 {% endif %}
 
