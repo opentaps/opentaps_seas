@@ -294,6 +294,8 @@ CRATE_TAG_AUTOSYNC = get_secret('CRATE_TAG_AUTOSYNC', required=False)
 OPENEI_API_KEY = get_secret('OPENEI_API_KEY', required=False)
 UTILITY_API_KEY = get_secret('UTILITY_API_KEY', required=False)
 
+EMISSIONS_API_URL = get_secret('EMISSIONS_API_URL', required=False)
+
 # Celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'

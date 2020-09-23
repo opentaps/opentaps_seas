@@ -120,6 +120,28 @@
   {% block after_content %}
     {% if object and object.meter_id %}
 
+      {% if emissions_data or emissions_data_error %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h3>
+                <div class="row m-0">
+                  <div class="">
+                    Emissions
+                  </div>
+                </div>
+              </h3>
+              <div class="row m-0 mb-2">
+                {% if emissions_data %}
+                  <div>{{ emissions_data }}</div>
+                {% endif %}
+                {% if emissions_data_error %}
+                  <div class="alert alert-danger flex-grow-1">{{ emissions_data_error }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+      {% endif %}
+
       {% if object.transactions.exists %}
         {% url 'core:meter_transactions_table' object.meter_id as meter_transactions_url %}
         {% include "core/_ajax_table.html" with title="Transactions" name="transactions" table_url=meter_transactions_url %}

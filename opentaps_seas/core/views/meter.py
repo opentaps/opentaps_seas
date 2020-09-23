@@ -16,14 +16,17 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 from datetime import datetime
+from datetime import date
 from datetime import timedelta
 from datetime import timezone
+from calendar import monthrange
 import logging
 from math import isnan
 
 from .common import WithBreadcrumbsMixin
 from .. import utils
 from .. import pysam_utils
+from .. import emissions_utils
 from ..forms.meter import MeterCreateForm
 from ..forms.meter import MeterDataUploadForm
 from ..forms.meter import MeterUpdateForm
@@ -536,6 +539,23 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
             history_items = MeterRatePlanHistory.objects.filter(meter_id=meter.meter_id).order_by("-from_datetime")
             if history_items:
                 context['rate_plan_history'] = history_items[0]
+
+            if meter.utility_id and meter.account_number:
+                today = datetime.today()
+                last_day = monthrange(today.year, today.month)[1]
+                from_date = date(today.year, today.month, 1)
+                thru_date = date(today.year, today.month, last_day)
+
+                try:
+                    emissions_data = emissions_utils.get_emissions_data(meter.utility_id, meter.account_number,
+                                                                        from_date.strftime("%Y-%m-%d"),
+                                                                        thru_date.strftime("%Y-%m-%d"))
+                    if emissions_data:
+                        context['emissions_data'] = emissions_data
+                    else:
+                        context['emissions_data_error'] = 'Cannot get emissions data'
+                except NameError as e:
+                    context['emissions_data_error'] = e
 
         return context
 
