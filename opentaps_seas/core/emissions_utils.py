@@ -18,7 +18,7 @@ def get_emissions_data(utility_id, account_number, from_date, thru_date):
     try:
         r = requests.get(api_url)
         if r.status_code == 200:
-            emissions_data = r.json()
+            emissions_data = [r.json()]
     except requests.exceptions.ConnectionError as e:
         logger.error(e)
 

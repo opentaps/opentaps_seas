@@ -132,7 +132,26 @@
               </h3>
               <div class="row m-0 mb-2">
                 {% if emissions_data %}
-                  <div>{{ emissions_data }}</div>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">From Date</th>
+                        <th scope="col">Thru Date</th>
+                        <th scope="col" align="right">Emissions Amount</th>
+                        <th scope="col" align="right">UOM</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for emissions in emissions_data %}
+                      <tr>
+                        <td>{{ emissions.fromDate }}</td>
+                        <td>{{ emissions.thruDate }}</td>
+                        <td align="right">{{ emissions.emissionsAmount }}</td>
+                        <td align="right">{{ emissions.emissionsUom }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
                 {% endif %}
                 {% if emissions_data_error %}
                   <div class="alert alert-danger flex-grow-1">{{ emissions_data_error }}</div>
