@@ -39,6 +39,7 @@ from ..models import EquipmentView
 from ..models import Meter
 from ..models import MeterFinancialValue
 from ..models import MeterFinancialValueItem
+from ..models import MeterHistory
 from ..models import MeterRatePlan
 from ..models import MeterRatePlanHistory
 from ..models import SiteView
@@ -49,6 +50,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
+from django.db.models import Sum
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -853,3 +855,38 @@ class MeterRatePlanHistoryEditView(LoginRequiredMixin, WithBreadcrumbsMixin, Upd
 
 
 meter_rate_plan_history_edit = MeterRatePlanHistoryEditView.as_view()
+
+
+@login_required()
+def meter_history_total_json(request, meter_id):
+    total = 0.00
+    from_date = request.GET.get('from_date')
+    thru_date = request.GET.get('thru_date')
+
+    from_date_object = datetime.strptime(from_date, '%Y-%m-%d %H:%M:%S')
+    from_date_object = from_date_object.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    thru_date_object = datetime.strptime(thru_date, '%Y-%m-%d %H:%M:%S')
+    thru_date_object = thru_date_object.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    meter_history = MeterHistory.objects.filter(meter_id=meter_id, as_of_datetime__gte=from_date_object,
+                                                as_of_datetime__lte=thru_date_object).order_by('as_of_datetime').first()
+
+    if not meter_history:
+        return JsonResponse({'error': 'Cannot find meter history for meter : {}'.format(meter_id)})
+
+    uom = meter_history.uom_id
+    unit_of_measure = UnitOfMeasure.objects.get(uom_id=meter_history.uom_id)
+    if unit_of_measure:
+        uom = unit_of_measure.code
+
+    meter_history_total = MeterHistory.objects.filter(meter_id=meter_id, as_of_datetime__gte=from_date_object,
+                                                      as_of_datetime__lte=thru_date_object).aggregate(Sum('value'))
+
+    if meter_history_total:
+        total = meter_history_total['value__sum']
+    from_date_str = from_date_object.strftime("%Y-%m-%d")
+    thru_date_str = thru_date_object.strftime("%Y-%m-%d")
+    item = {'total': total, 'uom': uom, 'from_date': from_date_str, 'thru_date': thru_date_str}
+
+    return JsonResponse({'item': item})

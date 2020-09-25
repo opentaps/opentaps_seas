@@ -82,7 +82,9 @@
       'utilityapi_meter_data_import' : '{% url "core:utilityapi_meter_data_import" '999' %}'.replace('999', '<meter_id>'),
       'utilityapi_meters_data_import' : '{% url "core:utilityapi_meters_data_import" '999' %}'.replace('999', '<site_id>'),
       'utilityapi_create_form' : '{% url "core:utilityapi_create_form" %}',
-      'weather_stations_json' : '{% url "core:weather_stations_json" %}'
+      'weather_stations_json' : '{% url "core:weather_stations_json" %}',
+      'meter_history_total_json' : '{% url "core:meter_history_total_json" '999' %}'.replace('999', '<meter_id>'),
+      'emissions_record_emissions_json' : '{% url "core:emissions_record_emissions_json" %}',
 
     };
     </script>
@@ -144,7 +146,7 @@
               </div>
             </li>
 
-            
+
               <li class="nav-item {% if 'users:detail' == request.resolver_match.view_name %}active{% endif %}">
                 {# URL provided by django-allauth/account/urls.py #}
                 <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>

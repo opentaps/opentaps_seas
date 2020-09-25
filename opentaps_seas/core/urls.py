@@ -29,6 +29,7 @@ from .views import topic
 from .views import transaction
 from .views import weather
 from .views import utilityapi
+from .views import emissions
 
 from ..eemeter.views import meter_model_calc_saving_view
 from ..eemeter.views import meter_model_create_view
@@ -193,4 +194,9 @@ urlpatterns = [
          name="utilityapi_meters_data_import"),
     path("uom.json", view=common.uom_list_json_view, name="uom_list_json"),
     path("uom.json/<str:restricted>", view=common.uom_list_json_view, name="uom_restricted_list_json"),
+    path("emissions/create_emissions/<path:meter_id>", view=emissions.create_emissions,
+         name="emissions_create_emissions"),
+    path("emissions/record_emissions.json", view=emissions.record_emissions, name="emissions_record_emissions_json"),
+    path("meter_history.json/total/<str:meter_id>", view=meter.meter_history_total_json,
+         name="meter_history_total_json"),
 ]

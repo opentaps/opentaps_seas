@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}Create Emissions for Meter: {{ meter.meter_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3" id="createemissions">
+    <div class="card-body">
+      <h2>Create Emissions for Meter {% if meter.description %}{{ meter.description }}{% else %}{{ meter.meter_id }}{% endif %}</h2>
+      <br/>
+      {% block inner_content %}
+
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+          ${ errors.error }
+      </div>
+      <div class="alert alert-success mt-3" role="alert" v-if="successes.success" v-cloak>
+        ${ successes.success }
+      </div>
+
+      <div class="form-group">
+        <label for="fromDate">From Date*</label>
+        <b-form-input type="text" class="datetime" id="fromDate" placeholder="Input Date" :state="fromDateState" v-model="fromDate" required></b-form-input>
+        <b-form-invalid-feedback id="fromDate">
+            From Date is required
+        </b-form-invalid-feedback>
+      </div>
+
+      <div class="form-group">
+        <label for="thruDate">Thru Date*</label>
+        <b-form-input type="text" class="datetime" id="thruDate" placeholder="Input Date" :state="thruDateState" v-model="thruDate" required></b-form-input>
+        <b-form-invalid-feedback id="thruDate">
+            Thru Date is required
+        </b-form-invalid-feedback>
+      </div>
+
+      <div class="mt-3 text-right">
+        <b-button variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
+          Create Emissions
+        </b-button>
+        <b-spinner v-if="isRecordDisabled" variant="secondary"></b-spinner>
+      </div>
+     {% endblock inner_content %}
+
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    name: 'createemissions',
+    el: '#createemissions',
+    data() {
+      return {
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        isRecordDisabled: false,
+        fromDateState: null,
+        fromDate: moment().startOf('month').format('YYYY-MM-DD HH:mm:ss'),
+        thruDateState: null,
+        thruDate: moment().endOf('month').format('YYYY-MM-DD HH:mm:ss'),
+        errors: {'error': null},
+        successes:  {'success': null},
+        meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
+        utilityId: {%if meter.utility_id %}'{{ meter.utility_id|safe}}'{%else%}''{%endif%},
+        accountNumber: {%if meter.account_number %}'{{ meter.account_number|safe}}'{%else%}''{%endif%},
+
+      }
+    },
+    mounted() {
+      console.log('mounted..');
+      flatpickr(this.$el.getElementsByClassName('datetime'), {
+          "dateFormat": "Y-m-d H:i:S",
+          "time_24hr": "true",
+          "allowInput": "true",
+          "enableTime": "true",
+          "enableSeconds": "true",
+          "minuteIncrement": 1
+        });
+    },
+    methods: {
+      get_meter_total_energy_used() {
+        console.log('get_meter_total_energy_used ...');
+        this.isRecordDisabled = true;
+        this.errors = {'error': null};
+        this.successes =  {'success': null};
+        url = dutils.urls.resolve('meter_history_total_json', { meter_id: this.meterId }) + '?from_date=' + this.fromDate + '&thru_date=' + this.thruDate;
+        axios.get(url)
+          .then(x => {
+            console.log('get_meter_total_energy_used', x.data)
+
+            if (x.data.error) {
+                this.errors['error'] = x.data.error;
+            } else if (!x.data.item) {
+                this.errors['error'] = 'Cannot get meter total energy used.';
+            } else {
+                this.record_emissions(x.data.item)
+            }
+            this.isRecordDisabled = false;
+          })
+          .catch(err => {
+            console.error('loading meter total energy used error :', err);
+            e = getResponseError(err);
+            this.errors = e;
+            this.isRecordDisabled = false;
+          });
+      },
+      record_emissions(item) {
+        this.isRecordDisabled = true;
+        console.log('record_emissions ...', item);
+        url = dutils.urls.resolve('emissions_record_emissions_json');
+        data = {
+          utility_id: this.utilityId,
+          account_number: this.accountNumber,
+          from_date: item.from_date,
+          thru_date: item.thru_date,
+          amount: item.total,
+          uom: item.uom
+        }
+        axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+          .then(x => x.data)
+          .then(x => {
+            if (x.success) {
+              console.log('record_emissions, result = ', x);
+              this.successes = {'success': 'Successfully created.'};
+
+            } else if (x.error) {
+              this.errors['error'] = x.error;
+            } else {
+              this.errors['error'] = 'Cannot record emissions';
+            }
+            this.isRecordDisabled = false;
+          })
+          .catch(err => {
+            e = getResponseError(err);
+            console.error(e, err);
+            this.errors = e;
+            this.isRecordDisabled = false;
+          });
+      },
+    }
+  });
+})();
+</script>
+{% endblock content %}
