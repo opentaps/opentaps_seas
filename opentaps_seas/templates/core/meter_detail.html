@@ -27,30 +27,70 @@
 
   {% include "core/_breadcrumbs.html" %}
 
-  {% block add_button %}
-  <div class="d-flex mb-2">
-    <a href="{% url 'core:meter_create' object.site_id %}" class="btn btn-primary ml-auto" role="button"><i class="fa fa-plus"></i> Add Meter</a>
-  </div>
-  {% endblock add_button %}
-  <div class="card mb-3">
-    <div class="card-body">
+  <div class="card mb-3 p-3">
+    <div >
       {% if object.description %}
-        <h2>Meter {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.meter_id }})</span></h2>
+        <h2 class="d-inline">Meter {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.meter_id }})</span>
+        </h2>
       {% else %}
-        <h2>
-          <div class="row m-0">
-            <div>Meter {{ object.meter_id }}</div>
-            {% if newmeter %}
-            <div class="text-right flex-grow-1">
-              <a class="btn btn-primary" href="{% url 'core:utilityapi_meters_import' site_id %}"><i class="fa fa-plus"></i> Add from UtilityAPI</a>
-            </div>
-            {% endif %}
+        <h2 class="d-inline">
+          <div class="d-inline row m-0">
+            <div class="d-inline">Meter {{ object.meter_id }}</div>
+              {% if newmeter %}
+                <div class="text-right flex-grow-1 d-inline">
+                <a class="btn btn-primary" href="{% url 'core:utilityapi_meters_import' site_id %}"><i class="fa fa-plus"></i> Add from UtilityAPI</a>
+              </div>
+              {% endif %}
           </div>
         </h2>
-      {% endif %}
+    {% endif %}
+    {% block add_button %}
+            <div class="float-right d-inline">
+                <a href="{% url 'core:meter_create' object.site_id %}" class="btn btn-primary" role="button"><i class="fa fa-plus"></i> Add Meter</a>
+                <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
+                <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
+            </div>
+          {% endblock add_button %}
+    </div>
+    <div class="row m-0 mb-2 pt-3">
       {% if object.utility %}
-        <h3><span style="font-size: 1rem;">{{ object.utility.utility_name }} ({{ object.utility_id }}){% if object.account_number %} - Account {{ object.account_number }} {% endif %}</h3>
+        <h3><span style="font-size: 1rem;">object/utility name here</h3>
       {% endif %}
+      {% if meter.attributes.utilityapi_meter_uid %}
+        <div class="row m-0 mb-2 ml-auto" id="utilityapi_meter_bill">
+          <div>
+            <b>Meter Utility API Id: </b>{{ meter.attributes.utilityapi_meter_uid }}
+            <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">${ errors.error }
+            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="alert alert-success mt-3" role="alert" v-if="success">${ success }
+            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+        </div>
+        <div class="text-right flex-grow-1">
+          <b-spinner v-if="loading" variant="secondary"></b-spinner>
+          <button v-if="!loading" v-on:click="get_bills" class="btn btn-primary btn-sm ml-4 mr-2"><i class="fas fa-cloud-download-alt"></i> Get Bills</button>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+      <div class="text-right flex-grow-1">
+        <b>Meter Rate Plan:</b>
+        {% if not rate_plan_history %}
+          n/a
+        {% else %}
+          <a href="{% url 'core:meter_rate_plan_history_detail' rate_plan_history.rate_plan_history_id %}"> {{ rate_plan_history.description }}</a>
+        {% endif %}
+          <a class="btn btn-primary btn-sm ml-4 mr-2" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
+      </div>
+      <p style="margin-left: 50%; padding-top: 5%;"><b>Weather Station:</b>
+      {% if not object.weather_station %}
+        n/a
+      {% else %}
+        <a href="{{ object.weather_station.get_absolute_url }}">{{ object.weather_station }}</a>
+      {% endif %}
+      </p>
+      <div class="card-body" style="display: flex; flex-direction: row; justify-content: space-around;">
       <br/>
       {% block inner_content %}
       <p>
@@ -61,60 +101,14 @@
       <p><b>Equipment{% if equipments|length > 1 %}s{% endif %}:</b> {% for e in equipments %} <a href="{{ e.get_absolute_url }}">{{ e }}</a> {% endfor %}
       {% endif %}
 
-      <p><b>Weather Station:</b>
-        {% if not object.weather_station %}
-          n/a
-        {% else %}
-          <a href="{{ object.weather_station.get_absolute_url }}">{{ object.weather_station }}</a>
-        {% endif %}
-      </p>
-
       {% if has_weather_data %}
       <p>
         {% include "core/_weather_history_chart.html" with weather_station_id=object.weather_station_id site=object.site %}
       </p>
       {% endif %}
-
-      <div class="row m-0 mb-2">
-        <div>
-          <b>Meter Rate Plan:</b>
-          {% if not rate_plan_history %}
-            n/a
-          {% else %}
-            <a href="{% url 'core:meter_rate_plan_history_detail' rate_plan_history.rate_plan_history_id %}">{{ rate_plan_history.description }}</a>
-          {% endif %}
-        </div>
-
-        <div class="text-right flex-grow-1">
-          <a class="btn btn-primary btn-sm" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
-        </div>
-      </div>
-
-      {% if meter.attributes.utilityapi_meter_uid %}
-      <div class="row m-0 mb-2" id="utilityapi_meter_bill">
-        <div>
-          <b>Meter Utility API Id:</b> {{ meter.attributes.utilityapi_meter_uid }}
-          <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">${ errors.error }
-            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          </div>
-          <div class="alert alert-success mt-3" role="alert" v-if="success">${ success }
-            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          </div>
-        </div>
-
-        <div class="text-right flex-grow-1">
-          <b-spinner v-if="loading" variant="secondary"></b-spinner>
-          <button v-if="!loading" v-on:click="get_bills" class="btn btn-primary btn-sm"><i class="fas fa-cloud-download-alt"></i> Get Bills</button>
-        </div>
-      </div>
-      {% endif %}
-
-      <div class="form-group d-flex justify-content-around mt-5">
-        <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger col-5" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
-        <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary col-5" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
-      </div>
       {% endblock inner_content %}
     </div>
+      </div>
   </div>
 
   {% block after_content %}
