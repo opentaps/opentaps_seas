@@ -290,3 +290,6 @@ opentaps_seas/media/
 # IDE settings
 /.vscode
 /.idea
+
+# secrets.json
+secrets.json
