@@ -27,6 +27,7 @@ def clean():
     with connections['default'].cursor() as c:
         # delete all related tables first_row
         c.execute("DELETE FROM eemeter_baselinemodel;")
+        c.execute("DELETE FROM core_meter_financial_value_item;")
         c.execute("DELETE FROM core_meter_financial_value;")
         c.execute("DELETE FROM core_meter_production;")
         c.execute("DELETE FROM core_meter_history;")
