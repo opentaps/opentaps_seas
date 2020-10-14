@@ -23,11 +23,11 @@
 {% block title %}Meter: {{ object.meter_id }}{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container card mb-3">
 
   {% include "core/_breadcrumbs.html" %}
 
-  <div class="card mb-3 p-3">
+  <div class="p-3">
     <div >
       {% if object.description %}
         <h2 class="d-inline">Meter {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.meter_id }})</span>
@@ -54,7 +54,7 @@
     </div>
     <div class="row m-0 mb-2 pt-3">
       {% if meter.attributes.utilityapi_meter_uid %}
-        <div class="row m-0 mb-2 ml-auto" id="utilityapi_meter_bill">
+        <div class="row m-0 mb-2 mr-auto" id="utilityapi_meter_bill">
           <div>
             <b>Meter Utility API Id: </b>{{ meter.attributes.utilityapi_meter_uid }}
             <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">${ errors.error }
@@ -70,9 +70,8 @@
         </div>
       </div>
       {% endif %}
-    </div>
-      <div class="text-right flex-grow-1">
-        <b>Meter Rate Plan:</b>
+      <div style="margin-left: auto;">
+       <b>Meter Rate Plan:</b>
         {% if not rate_plan_history %}
           n/a
         {% else %}
@@ -80,20 +79,26 @@
         {% endif %}
           <a class="btn btn-primary btn-sm ml-4 mr-2" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
       </div>
-      <div style="justify-content: space-between; width: 70%; margin-left: 5%; padding-top: 5%;" class="d-flex pl-2">
+      <div style="justify-content: space-between; width: 70%; margin-left: 1%; padding-top: 1%;" class="d-flex pl-2">
         {% if object.utility %}
-          <p><b>{{ object.utility.utility_name }} ({{ object.utility_id }}){% if object.account_number %} - Account {{ object.account_number }}</b></p>   
+          <p style="font-size: 0.8rem;" ><b>{{ object.utility.utility_name }} ({{ object.utility_id }}){% if object.account_number %} - Account {{ object.account_number }}</b></p>   
         {% endif %}
         {% endif %}
-        <p><b>Weather Station:</b>
+        <p style="font-size: 0.8rem;">
+        <b>Weather Station:</b>
         {% if not object.weather_station %}
           n/a
         {% else %}
           <a href="{{ object.weather_station.get_absolute_url }}">{{ object.weather_station }}</a>
         {% endif %}
         </p>
+        </div>
       </div>
-      <div class="card-body" style="display: flex; flex-direction: row; justify-content: space-around;">
+    </div>
+      <div class="text-right flex-grow-1">
+        
+      </div>
+      <div class="card-body" style="display: flex; flex-direction: row; justify-content: space-around; padding: 0 1.25rem;">
       <br/>
       {% block inner_content %}
       <p>
