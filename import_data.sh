@@ -57,8 +57,8 @@ if [ "$1" == "all_data" ]; then
     python manage.py runscript import_statuses --script-args $ARGS
     python manage.py runscript import_unit_of_measure --script-args $ARGS
     python manage.py runscript import_weather_stations --script-args $ARGS
-    python manage.py runscript import_entities --script-args $ARGS
     python manage.py runscript import_utilities --script-args $ARGS
+    python manage.py runscript import_entities --script-args $ARGS
     python manage.py runscript import_timezones --script-args $ARGS
     python manage.py runscript import_geos --script-args $ARGS
     python manage.py runscript import_tagrules --script-args $ARGS
