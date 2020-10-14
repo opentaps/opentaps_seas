@@ -53,9 +53,6 @@
           {% endblock add_button %}
     </div>
     <div class="row m-0 mb-2 pt-3">
-      {% if object.utility %}
-        <h3><span style="font-size: 1rem;">object/utility name here</h3>
-      {% endif %}
       {% if meter.attributes.utilityapi_meter_uid %}
         <div class="row m-0 mb-2 ml-auto" id="utilityapi_meter_bill">
           <div>
@@ -83,13 +80,19 @@
         {% endif %}
           <a class="btn btn-primary btn-sm ml-4 mr-2" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
       </div>
-      <p style="margin-left: 50%; padding-top: 5%;"><b>Weather Station:</b>
-      {% if not object.weather_station %}
-        n/a
-      {% else %}
-        <a href="{{ object.weather_station.get_absolute_url }}">{{ object.weather_station }}</a>
-      {% endif %}
-      </p>
+      <div style="justify-content: space-between; width: 70%; margin-left: 5%; padding-top: 5%;" class="d-flex pl-2">
+        {% if object.utility %}
+          <p><b>{{ object.utility.utility_name }} ({{ object.utility_id }}){% if object.account_number %} - Account {{ object.account_number }}</b></p>   
+        {% endif %}
+        {% endif %}
+        <p><b>Weather Station:</b>
+        {% if not object.weather_station %}
+          n/a
+        {% else %}
+          <a href="{{ object.weather_station.get_absolute_url }}">{{ object.weather_station }}</a>
+        {% endif %}
+        </p>
+      </div>
       <div class="card-body" style="display: flex; flex-direction: row; justify-content: space-around;">
       <br/>
       {% block inner_content %}
