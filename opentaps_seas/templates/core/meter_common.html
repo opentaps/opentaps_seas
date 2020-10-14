@@ -20,31 +20,37 @@
 
 {% load static %}
 
-{% block title %}Meter: {{ object.meter_id }}{% endblock %}
-
+{% block title %}
+{% if object.meter_id|length > 0 %}
+  Meter: {{ object.meter_id }}
+{% else %}
+  New Meter
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="container card mb-3">
 
   {% include "core/_breadcrumbs.html" %}
 
   <div class="p-3">
-    <div >
+    <div class="text-center">
       {% if object.description %}
         <h2 class="d-inline">Meter {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.meter_id }})</span>
         </h2>
       {% else %}
         <h2 class="d-inline">
-          <div class="d-inline row m-0">
-            <div class="d-inline">Meter {{ object.meter_id }}</div>
-              {% if newmeter %}
-                <div class="text-right flex-grow-1 d-inline">
-                <a class="btn btn-primary" href="{% url 'core:utilityapi_meters_import' site_id %}"><i class="fa fa-plus"></i> Add from UtilityAPI</a>
-              </div>
-              {% endif %}
+            {% if not newmeter %}
+              <div class="d-inline">Meter {{ object.meter_id }}</div>
+            {% else %}
+              <div class="d-inline">Create a New Meter</div>
+        </h2><br>
+      </div>
+          <div class="text-right flex-grow-1 d-inline">
+            <a class="btn btn-primary float-right" href="{% url 'core:utilityapi_meters_import' site_id %}"><i class="fa fa-plus"></i> Add from UtilityAPI</a>
           </div>
-        </h2>
-    {% endif %}
-    {% block add_button %}
+            {% endif %}
+        {% endif %}
+      {% block add_button %}
             <div class="float-right d-inline">
                 <a href="{% url 'core:meter_create' object.site_id %}" class="btn btn-primary" role="button"><i class="fa fa-plus"></i> Add Meter</a>
                 <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
@@ -70,36 +76,6 @@
         </div>
       </div>
       {% endif %}
-      <div style="margin-left: auto;">
-       <b>Meter Rate Plan:</b>
-        {% if not rate_plan_history %}
-          <a href="{% url 'core:meter_rate_plan_history' object.meter_id %}">&nbsp &nbsp N/A &nbsp</a>
-        {% else %}
-          <a href="{% url 'core:meter_rate_plan_history_detail' rate_plan_history.rate_plan_history_id %}"> {{ rate_plan_history.description }}</a>
-        {% endif %}
-          <a class="btn btn-primary btn-sm ml-4 mr-2" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See History</a>
-      </div>
-      <div style="justify-content: space-between; width: 70%; margin-left: 1%; padding-top: 1%;" class="d-flex pl-2">
-        {% if object.utility %}
-          <p style="font-size: 0.8rem;" ><b>{{ object.utility.utility_name }} ({{ object.utility_id }}){% if object.account_number %}<br/> Account {{ object.account_number }}</b></p>   
-        {% endif %}
-        {% endif %}
-        <p style="font-size: 0.8rem;">
-        <b>Weather Station:</b>
-        {% if not object.weather_station %}
-          n/a
-        {% else %}
-          <a href="{{ object.weather_station.get_absolute_url }}">{{ object.weather_station }}</a>
-        {% endif %}
-        </p>
-        </div>
-      </div>
-    </div>
-      <div class="text-right flex-grow-1">
-        
-      </div>
-      <div class="card-body" style="display: flex; flex-direction: row; justify-content: space-around; padding: 0 1.25rem;">
-      <br/>
       {% block inner_content %}
       <p>
         {% include "core/_meter_history_chart.html" with meter_id=object.meter_id is_solaredge=is_solaredge latest_meter_date=latest_meter_date %}

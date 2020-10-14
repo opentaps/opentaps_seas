@@ -1,4 +1,4 @@
-{% extends "core/meter_detail.html" %}
+{% extends "core/meter_common.html" %}
 {% comment 'header' %}
 # This file is part of opentaps Smart Energy Applications Suite (SEAS).
 
@@ -25,7 +25,7 @@
 {% endblock add_button %}
 
 {% block inner_content %}
-<form method="post" id="meterForm" data-weather-stations-url="{% url 'core:weather_stations_json' %}" novalidate>
+<form method="post" style="margin: auto;" id="meterForm" data-weather-stations-url="{% url 'core:weather_stations_json' %}" novalidate>
   {% csrf_token %}
   {{ form|crispy }}
 
