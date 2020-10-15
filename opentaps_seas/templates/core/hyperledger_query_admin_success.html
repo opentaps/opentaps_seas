@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load crispy_forms_tags %} {% block content %} <div
+  class="content-section">
+  {% if exists == "existing" %}
+  <h2>This organization already exists. Select a user below to enroll them in {{name}}.</h2>
+  {% else %}
+  <h2>Success. Select a user below to enroll them in {{name}}.</h2>
+  {% endif %}
+  {% for user in all_users %}
+  <a href="{% url 'core:hyperledger_enroll' user=user org_name=name%}">
+    <input type="submit" value={{user}} name="mybtn" id="start_submit" class="btn btn-primary d-block mt-2" />
+  </a>
+  {% endfor %}
+  <br><a href="{% url 'core:hyperledger_query_admin' %}">
+    <button class="btn btn-primary mt-5" type="submit">Back</button>
+  </a>
+  </div>
+  {% endblock %}

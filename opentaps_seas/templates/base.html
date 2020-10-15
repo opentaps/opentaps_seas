@@ -9,16 +9,14 @@
 
 # opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Lesser General Public License for more details.
 
 # You should have received a copy of the GNU Lesser General Public License
 # along with opentaps Smart Energy Applications Suite (SEAS).
-# If not, see <https://www.gnu.org/licenses/>.
-{% endcomment %}
+# If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load static i18n %}<!DOCTYPE html>
+  <html lang="en">
 
-{% load static i18n %}<!DOCTYPE html>
-<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -46,47 +44,68 @@
     <script src="{% static 'js/vue-loading-overlay-3.js' %}"></script>
     <script src="{% static 'js/dutils.js' %}"></script>
     <script type="text/javascript">
-    dutils.conf.urls = {
-      'get_task_progress_json': '{% url "core:get_task_progress_json" '999' %}'.replace('999', '<id>'),
-      'model_list_json': '{% url "core:model_list_json" %}',
-      'model_list': '{% url "core:model_list" %}',
-      'model_detail': '{% url "core:model_detail" '999' %}'.replace('999', '<id>'),
-      'site_list_json': '{% url "core:site_list_json" %}',
-      'site_list': '{% url "core:site_list" %}',
-      'site_detail': '{% url "core:site_detail" '999' %}'.replace('999', '<id>'),
-      'equipment_list_json': '{% url "core:equipment_list_json" %}',
-      'equipment_list': '{% url "core:equipment_list" %}',
-      'equipment_detail': '{% url "core:equipment_detail" '999' %}'.replace('999', '<id>'),
-      'equipment_dashboard': '{% url "core:equipment_dashboard" '999' %}'.replace('999', '<id>'),
-      'equipment_data_points_table': '{% url "core:equipment_data_points_table" '999' %}'.replace('999', '<id>'),
-      'point_detail': '{% url "core:point_detail" '999' %}'.replace('999', '<id>'),
-      'topic_list': '{% url "core:topic_list" %}',
-      'topic_list_table': '{% url "core:topic_table" %}',
-      'topic_json': '{% url "core:topic_json" %}',
-      'topic_rules': '{% url "core:topic_rules" %}',
-      'topic_table_fields': '{% url "core:topic_table_fields" %}',
-      'topictagruleset_run': '{% url "core:topictagruleset_run" '999' %}'.replace('999', '<id>'),
-      'topictagrule_run': '{% url "core:topictagrule_run" '999' %}'.replace('999', '<id>'),
-      'tag_topics': '{% url "core:tag_topics" %}',
-      'topic_assoc': '{% url "core:topic_assoc" '999' %}'.replace('999', '<id>'),
-      'topic_setup': '{% url "core:topic_setup" '999' %}'.replace('999', '<id>'),
-      'state_list_json': '{% url "core:state_list_json" '999' %}'.replace('999', '<country>'),
-      'timezone_list_json': '{% url "core:timezone_list_json" '999' %}'.replace('999', '<geo_id>'),
-      'bacnet_prefix_list_json': '{% url "core:bacnet_prefix_list_json" '999' %}'.replace('999', '<site>'),
-      'utility_rates_json': '{% url "core:utility_rates_json" %}',
-      'meter_rate_plan_history' : '{% url "core:meter_rate_plan_history" %}',
-      'meter_rate_plan_history_detail' : '{% url "core:meter_rate_plan_history_detail" '999' %}'.replace('999', '<rate_plan_history_id>'),
-      'meter_rate_plan_history_edit' : '{% url "core:meter_rate_plan_history_edit" '999' %}'.replace('999', '<rate_plan_history_id>'),
-      'utilityapi_meters_json' : '{% url "core:utilityapi_meters_json" %}',
-      'utilityapi_meter_bills_import' : '{% url "core:utilityapi_meter_bills_import" '999' %}'.replace('999', '<meter_id>'),
-      'utilityapi_meter_data_import' : '{% url "core:utilityapi_meter_data_import" '999' %}'.replace('999', '<meter_id>'),
-      'utilityapi_meters_data_import' : '{% url "core:utilityapi_meters_data_import" '999' %}'.replace('999', '<site_id>'),
-      'utilityapi_create_form' : '{% url "core:utilityapi_create_form" %}',
-      'weather_stations_json' : '{% url "core:weather_stations_json" %}',
-      'meter_history_total_json' : '{% url "core:meter_history_total_json" '999' %}'.replace('999', '<meter_id>'),
-      'emissions_record_emissions_json' : '{% url "core:emissions_record_emissions_json" %}',
+      dutils.conf.urls = {
+        'get_task_progress_json': '{% url "core:get_task_progress_json" '
+        999 ' %}'.replace('999', '<id>'),
+        'model_list_json': '{% url "core:model_list_json" %}',
+        'model_list': '{% url "core:model_list" %}',
+        'model_detail': '{% url "core:model_detail" '
+        999 ' %}'.replace('999', '<id>'),
+        'site_list_json': '{% url "core:site_list_json" %}',
+        'site_list': '{% url "core:site_list" %}',
+        'site_detail': '{% url "core:site_detail" '
+        999 ' %}'.replace('999', '<id>'),
+        'equipment_list_json': '{% url "core:equipment_list_json" %}',
+        'equipment_list': '{% url "core:equipment_list" %}',
+        'equipment_detail': '{% url "core:equipment_detail" '
+        999 ' %}'.replace('999', '<id>'),
+        'equipment_dashboard': '{% url "core:equipment_dashboard" '
+        999 ' %}'.replace('999', '<id>'),
+        'equipment_data_points_table': '{% url "core:equipment_data_points_table" '
+        999 ' %}'.replace('999', '<id>'),
+        'point_detail': '{% url "core:point_detail" '
+        999 ' %}'.replace('999', '<id>'),
+        'topic_list': '{% url "core:topic_list" %}',
+        'topic_list_table': '{% url "core:topic_table" %}',
+        'topic_json': '{% url "core:topic_json" %}',
+        'topic_rules': '{% url "core:topic_rules" %}',
+        'topic_table_fields': '{% url "core:topic_table_fields" %}',
+        'topictagruleset_run': '{% url "core:topictagruleset_run" '
+        999 ' %}'.replace('999', '<id>'),
+        'topictagrule_run': '{% url "core:topictagrule_run" '
+        999 ' %}'.replace('999', '<id>'),
+        'tag_topics': '{% url "core:tag_topics" %}',
+        'topic_assoc': '{% url "core:topic_assoc" '
+        999 ' %}'.replace('999', '<id>'),
+        'topic_setup': '{% url "core:topic_setup" '
+        999 ' %}'.replace('999', '<id>'),
+        'state_list_json': '{% url "core:state_list_json" '
+        999 ' %}'.replace('999', '<country>'),
+        'timezone_list_json': '{% url "core:timezone_list_json" '
+        999 ' %}'.replace('999', '<geo_id>'),
+        'bacnet_prefix_list_json': '{% url "core:bacnet_prefix_list_json" '
+        999 ' %}'.replace('999', '<site>'),
+        'utility_rates_json': '{% url "core:utility_rates_json" %}',
+        'meter_rate_plan_history': '{% url "core:meter_rate_plan_history" %}',
+        'meter_rate_plan_history_detail': '{% url "core:meter_rate_plan_history_detail" '
+        999 ' %}'.replace('999', '<rate_plan_history_id>'),
+        'meter_rate_plan_history_edit': '{% url "core:meter_rate_plan_history_edit" '
+        999 ' %}'.replace('999', '<rate_plan_history_id>'),
+        'utilityapi_meters_json': '{% url "core:utilityapi_meters_json" %}',
+        'utilityapi_meter_bills_import': '{% url "core:utilityapi_meter_bills_import" '
+        999 ' %}'.replace('999', '<meter_id>'),
+        'utilityapi_meter_data_import': '{% url "core:utilityapi_meter_data_import" '
+        999 ' %}'.replace('999', '<meter_id>'),
+        'utilityapi_meters_data_import': '{% url "core:utilityapi_meters_data_import" '
+        999 ' %}'.replace('999', '<site_id>'),
+        'utilityapi_create_form': '{% url "core:utilityapi_create_form" %}',
+        'weather_stations_json': '{% url "core:weather_stations_json" %}',
+        'meter_history_total_json': '{% url "core:meter_history_total_json" '
+        999 ' %}'.replace('999', '<meter_id>'),
+        'emissions_record_emissions_json': '{% url "core:emissions_record_emissions_json" %}',
 
-    };
+      };
+
     </script>
     <script src="{% static 'js/vuejs-dialog.min.js' %}"></script>
     <script src="{% static 'js/project-vue.js' %}"></script>
@@ -121,39 +140,56 @@
 
     <div class="mb-1">
       <nav class="navbar navbar-expand-md navbar-light">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+          data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/opentaps_logo.png' %}"/></a>
+        <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/opentaps_logo.png' %}" /></a>
 
         {% if request.user.is_authenticated %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item {% if 'core:site_' in request.resolver_match.view_name %}active{% endif %}">
-              <a class="nav-link" href="{% url 'core:site_list' %}">{% trans "Sites" %} {% if 'core:site_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+              <a class="nav-link" href="{% url 'core:site_list' %}">{% trans "Sites" %}
+                {% if 'core:site_' in request.resolver_match.view_name %}<span
+                  class="sr-only">(current)</span>{% endif %}</a>
             </li>
             <li class="nav-item {% if 'core:transaction' in request.resolver_match.view_name %}active{% endif %}">
-              <a class="nav-link" href="{% url 'core:transaction_list' %}">{% trans "Transactions" %} {% if 'core:transaction' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+              <a class="nav-link" href="{% url 'core:transaction_list' %}">{% trans "Transactions" %}
+                {% if 'core:transaction' in request.resolver_match.view_name %}<span
+                  class="sr-only">(current)</span>{% endif %}</a>
             </li>
 
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Config</a>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="{% url 'core:topic_list' %}">{% trans "Topics" %} {% if 'core:topic' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
-                <a class="dropdown-item" href="{% url 'core:model_list' %}">{% trans "Models" %} {% if 'core:model_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
-                <a class="dropdown-item" href="{% url 'core:tag_list' %}">{% trans "Tags" %} {% if 'core:tag_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
-                <a class="dropdown-item" href="{% url 'volttron:default' %}">{% trans "VOLTTRON" %} {% if 'core:tag_' in request.resolver_match.view_name %}<span class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'core:topic_list' %}">{% trans "Topics" %}
+                  {% if 'core:topic' in request.resolver_match.view_name %}<span
+                    class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'core:model_list' %}">{% trans "Models" %}
+                  {% if 'core:model_' in request.resolver_match.view_name %}<span
+                    class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'core:tag_list' %}">{% trans "Tags" %}
+                  {% if 'core:tag_' in request.resolver_match.view_name %}<span
+                    class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'core:hyperledger_query_admin' %}">{% trans "Hyperledger" %}
+                  {% if 'core:tag_' in request.resolver_match.view_name %}<span
+                    class="sr-only">(current)</span>{% endif %}</a>
+                <a class="dropdown-item" href="{% url 'volttron:default' %}">{% trans "VOLTTRON" %}
+                  {% if 'core:tag_' in request.resolver_match.view_name %}<span
+                    class="sr-only">(current)</span>{% endif %}</a>
               </div>
             </li>
 
 
-              <li class="nav-item {% if 'users:detail' == request.resolver_match.view_name %}active{% endif %}">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
-              </li>
+            <li class="nav-item {% if 'users:detail' == request.resolver_match.view_name %}active{% endif %}">
+              {# URL provided by django-allauth/account/urls.py #}
+              <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
+            </li>
           </ul>
         </div>
-         {% endif %}
+        {% endif %}
       </nav>
 
     </div>
@@ -161,13 +197,13 @@
     <div class="{{container_css|default:'container'}}">
 
       {% if messages %}
-          {% for message in messages %}
-              <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
-          {% endfor %}
+      {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+      {% endfor %}
       {% endif %}
 
       {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
+      <p>Use this document as a way to quick start any new project.</p>
       {% endblock content %}
 
     </div> <!-- /container -->
@@ -179,19 +215,27 @@
     <!-- Placed at the end of the document so the pages load faster -->
     {% block javascript %}
 
-      <!-- Required by Bootstrap v4.1.1 -->
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-      <!-- Your stuff: Third-party javascript libraries go here -->
+    <!-- Required by Bootstrap v4.1.1 -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <!-- Your stuff: Third-party javascript libraries go here -->
 
-      <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/monim67/django-flatpickr@1.0.0/static/js/django-flatpickr.js"></script>
+    <script type="text/javascript"
+      src="https://cdn.jsdelivr.net/gh/monim67/django-flatpickr@1.0.0/static/js/django-flatpickr.js"></script>
 
-      <!-- place project specific Javascript in this file -->
+    <!-- place project specific Javascript in this file -->
 
-      <script src="{% static 'js/project.js' %}"></script>
+    <script src="{% static 'js/project.js' %}"></script>
 
 
     {% endblock javascript %}
   </body>
-</html>
+
+  </html>
