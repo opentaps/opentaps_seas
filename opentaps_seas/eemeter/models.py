@@ -38,16 +38,13 @@ from django.urls import reverse
 logger = logging.getLogger(__name__)
 
 
-METER_MODEL_CHOICES = [
-    ('hourly', 'Hourly'),
-    ('daily', 'Daily')
-]
+METER_MODEL_CHOICES = [("hourly", "Hourly"), ("daily", "Daily")]
 
 
 class BaselineModel(models.Model):
     class FREQUENCY(Enum):
-        hourly = ('hourly', 'Hourly')
-        daily = ('daily', 'Daily')
+        hourly = ("hourly", "Hourly")
+        daily = ("daily", "Daily")
 
         @classmethod
         def get_value(cls, member):
@@ -56,35 +53,63 @@ class BaselineModel(models.Model):
     id = AutoField(_("Baseline Model ID"), primary_key=True, auto_created=True)
     meter = ForeignKey(Meter, null=True, blank=True, on_delete=models.SET_NULL)
     model_class = CharField(_("Model Class"), blank=False, null=False, max_length=512)
-    frequency = CharField(_("Frequency"), blank=False, null=False, max_length=255, choices=[x.value for x in FREQUENCY])
+    frequency = CharField(
+        _("Frequency"),
+        blank=False,
+        null=False,
+        max_length=255,
+        choices=[x.value for x in FREQUENCY],
+    )
     data = JSONField(blank=True, null=True)
     description = CharField(_("Description"), blank=True, null=True, max_length=255)
     from_datetime = DateTimeField(_("From Date"), blank=True, null=True)
     thru_datetime = DateTimeField(_("Thru Date"), default=now)
     created_datetime = DateTimeField(_("Created Date"), default=now)
-    last_calc_saving_datetime = DateTimeField(_("Last Calculated Savings Date"), blank=True, null=True)
+    last_calc_saving_datetime = DateTimeField(
+        _("Last Calculated Savings Date"), blank=True, null=True
+    )
     plot_data = TextField(null=True, blank=True)
-    uom = ForeignKey(UnitOfMeasure, on_delete=models.DO_NOTHING, related_name='+')
+    uom = ForeignKey(
+        UnitOfMeasure, on_delete=models.DO_NOTHING, related_name="+", default=None
+    )
     model_params = HStoreField(_("Model Parameters"), blank=True, null=True)
 
     def __str__(self):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse("core:meter_model_detail", kwargs={"meter_id": self.meter_id, "id": self.id})
+        return reverse(
+            "core:meter_model_detail", kwargs={"meter_id": self.meter_id, "id": self.id}
+        )
 
     def get_frequency_delta(self):
-        if self.frequency == 'daily':
+        if self.frequency == "daily":
             return timedelta(hours=24)
         else:
             return timedelta(hours=1)
 
     def get_production(self):
         q = MeterProduction.objects
-        q = q.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): '{}'.format(self.id)}))
-        return q.order_by('from_datetime')
+        q = q.filter(
+            Q(
+                **{
+                    "meter_production_reference__{}".format(
+                        "BaselineModel.id"
+                    ): "{}".format(self.id)
+                }
+            )
+        )
+        return q.order_by("from_datetime")
 
     def get_financial_value(self):
         q = MeterFinancialValue.objects
-        q = q.filter(Q(**{'meter_production_reference__{}'.format('BaselineModel.id'): '{}'.format(self.id)}))
-        return q.order_by('from_datetime')
+        q = q.filter(
+            Q(
+                **{
+                    "meter_production_reference__{}".format(
+                        "BaselineModel.id"
+                    ): "{}".format(self.id)
+                }
+            )
+        )
+        return q.order_by("from_datetime")

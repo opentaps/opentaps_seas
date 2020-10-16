@@ -18,20 +18,29 @@
 import logging
 import requests
 from django.conf import settings
+import json
 
 logger = logging.getLogger(__name__)
 
 
-def get_emissions_data(utility_id, account_number, from_date, thru_date):
-    # /emissionscontract/getEmissionsData/{utilityId}/{partyId}/{fromDate}/{thruDate}
+def get_emissions_data(
+    user_id, user_org, utility_id, account_number, from_date, thru_date
+):
     emissions_data = None
     if settings.EMISSIONS_API_URL:
         api_url = settings.EMISSIONS_API_URL
     else:
-        raise NameError('Missing Emissions API configuration')
-
-    api_url += "/emissionscontract/getEmissionsData/{0}/{1}/{2}/{3}".format(utility_id, account_number,
-                                                                            from_date, thru_date)
+        raise NameError("Missing Emissions API configuration")
+    # api_url = ""
+    headers = {"Accept": "application/json"}
+    api_url += "/emissionscontract/getEmissionsData/{0}/{1}/{2}/{3}/{4}/{5}".format(
+        user_id,
+        user_org,
+        utility_id,
+        account_number,
+        f"{from_date} 00:00:00",
+        f"{thru_date} 00:00:00",
+    )
     try:
         r = requests.get(api_url)
         if r.status_code == 200:
@@ -47,17 +56,17 @@ def record_emissions(utility_id, account_number, from_date, thru_date, amount, u
     if settings.EMISSIONS_API_URL:
         api_url = settings.EMISSIONS_API_URL
     else:
-        raise NameError('Missing Emissions API configuration')
+        raise NameError("Missing Emissions API configuration")
 
     api_url += "/emissionscontract/recordEmissions"
-    headers = {'accept': 'application/json', 'Content-Type': 'application/json'}
+    headers = {"accept": "application/json", "Content-Type": "application/json"}
     data = {
         "utilityId": utility_id,
         "partyId": account_number,
         "fromDate": from_date,
         "thruDate": thru_date,
         "energyUseAmount": amount,
-        "energyUseUom": uom
+        "energyUseUom": uom,
     }
 
     emissions_data = None

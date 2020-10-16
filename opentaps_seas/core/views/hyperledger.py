@@ -112,6 +112,9 @@ def hyperledger_enroll_view(request, **kwargs):
                     reverse("core:hyperledger_enroll_result", kwargs=context)
                 )
             elif response.status_code == 201:
+                user = request.user
+                user.org_name = org_name
+                user.save()
                 context["result"] = "success"
                 return HttpResponseRedirect(
                     reverse("core:hyperledger_enroll_result", kwargs=context)
