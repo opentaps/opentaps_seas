@@ -133,6 +133,16 @@ For production, you can use supervisor to manage it as a service and ensure it w
 
 Important: remember that if the opentaps_seas code is updated the celery worker must be restarted as well or it will keep running the old version.
 
+Hyperledger Fabric
+^^^^^^^^^^^^^^^^^^
+
+Emissions recording is done with the Hyperledger Fabric utility emissions channel (see https://github.com/opentaps/blockchain-carbon-accounting)  Once you have that set up,
+you can connect opentaps SEAS to it.
+
+Go to the Config tab of the main user interface.  You will first need to enroll the admin of your organization and then enroll each of your users.  Note that the 
+organization must be one of the recognized organizations of your Fabric network.
+
+
 VOLTTRON
 ^^^^^^^^
 

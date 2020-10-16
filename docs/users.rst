@@ -60,21 +60,22 @@ A meter could be removed from a site, but it is not deleted.  The meter and weat
 Each meter is also associated with a rate plan, which is used to calculate billing for the meter's readings.  You will be prompted to add this rate plan when you add a new meter.  You can choose from a "Simple Rate Plan"
 which is a simple flat rate plan used for demo purposes, or you can choose to get your rate plan from OpenEI's utility rate database.  
 
-When you click through to a meter, you will see its past readings (history).  Above the readings are three buttons:
+When you click through to a meter, if your meter is set up with UtilityAPI, it will show the UtilityAPI UUID of the meter.  You can click on Get Bills to get past bills from UtilityAPI.  These will show up as "Financial Values" under the Models.  Click 
+on one of them, and you can see the detailed line items of the bill.  Next to it is the rate plan of the meter.  You can click on this to see the history of this meter's rate plan and get more rate data from OpenEI.  You can have different rate plans associated with a meter
+over time for this meter, for example switching from traditional to time of use plans.  Click on one of the plans to see the details from OpenEI.
+
+Below this you will see the utility and account number and its past readings (history).  There are three buttons:
 
  * You can use the powerplug button to get the latest meter readings from UtilityAPI. If the meter was not set up as a UtilityAPI meter, you can do it here.    
  * You can use the up arrow icon to upload the meter history using either a CSV format or the Green Button XML format.  An example of the CSV file format could be found in the file ``examples/meter.csv``.  Examples of the Green Button XML file could be found at https://www.energy.gov/downloads/green-button-sample-data-pge  
  * You can use the down arrow to download the meter readings in a CSV format. 
 
-Below the readings is the meter's weather station, with the latest temperature data.  You can download the temperature data or click through the weather station to see more details about it.
+Next to the readings is the meter's weather station, with the latest temperature data.  You can download the temperature data or click through the weather station to see more details about it.
 
-Below the weather station is the rate plan of the meter.  You can click on this to see the history of this meter's rate plan and get more rate data from OpenEI.  You can have different rate plans associated with a meter
-over time for this meter, for example switching from traditional to time of use plans.  Click on one of the plans to see the details from OpenEI.
+Then you will see a section called "Emissions".  These are the emissions records for the meter record on the Hyperledger Fabric utility emissions channel.  You can record new emissions for
+a time period and see the recorded emissions.
 
-If your meter is set up with UtilityAPI, it will show the UtilityAPI UUID of the meter.  You can click on Get Bills to get past bills from UtilityAPI.  These will show up as "Financial Values" under the Models.  Click 
-on one of them, and you can see the detailed line items of the bill.
-
-Below the Meter is a list of Models.  These models are models of energy usage and can be used for Measurement and Verification (M&V) of energy savings.  Currently we're including the OpenEEMeter 
+Next is a list of Models.  These models are models of energy usage and can be used for Measurement and Verification (M&V) of energy savings.  Currently we're including the OpenEEMeter 
 models, which are IPMVP Option C whole building energy use statistical models that follow the CalTrack 2.0 standard (See https://www.caltrack.org and http://eemeter.openee.io/tutorial.html for more details.)  
 
 You can click on the "Build a Model" button to build a new model for this meter.  This screen is currently based on input needed for OpenEEMeter models and will ask if you want a daily or hourly model and the
@@ -100,6 +101,7 @@ and battery stored energy in the same way: More energy for the consumer.  Or, as
 Below the Meter Production is a history of the financial value of the energy produced (or saved) as calculated by this Model, based on this Meter's rate plan.  It is always aggregated by the billing interval of the 
 Meter's rate plan, even if the particular Model was only active during part of the month.
 
+At the bottom are the Transactions related to this Meter, if any.
 
 Equipment
 ---------
