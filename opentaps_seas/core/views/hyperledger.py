@@ -100,20 +100,26 @@ def hyperledger_enroll_view(request, **kwargs):
             data = {
                 "userId": str(user_id),
                 "orgName": org_name,
-                "affiliation": affiliation,
+                "affiliation": f"{org_name}.{affiliation}",
             }
             headers = {"Content-type": "application/json", "Accept": "application/json"}
             response = requests.post(
                 ENROLL_USER_URL, data=json.dumps(data), headers=headers
             )
             if response.status_code == 409:
-                return
-                # return HttpResponseRedirect(
-                #     reverse("core:hyperledger_enroll_success", kwargs=context)
-                # )
-            elif response.status_code == 201:
+                context["result"] = "failure"
                 return HttpResponseRedirect(
-                    reverse("core:hyperledger_enroll_success", kwargs=context)
+                    reverse("core:hyperledger_enroll_result", kwargs=context)
+                )
+            elif response.status_code == 201:
+                context["result"] = "success"
+                return HttpResponseRedirect(
+                    reverse("core:hyperledger_enroll_result", kwargs=context)
+                )
+            else:
+                context["result"] = "failure"
+                return HttpResponseRedirect(
+                    reverse("core:hyperledger_enroll_result", kwargs=context)
                 )
 
     context = kwargs
@@ -122,6 +128,6 @@ def hyperledger_enroll_view(request, **kwargs):
     return render(request, "core/hyperledger_enroll.html", context)
 
 
-def hyperledger_enroll_success_view(request, **kwargs):
+def hyperledger_enroll_result_view(request, **kwargs):
     context = kwargs
-    return render(request, "core/hyperledger_enroll_success.html", context,)
+    return render(request, "core/hyperledger_enroll_result.html", context,)

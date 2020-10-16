@@ -24,7 +24,8 @@
   {% endif %}
   {% for user in all_users %}
   <a href="{% url 'core:hyperledger_enroll' user=user org_name=name%}">
-    <input type="submit" value={{user}} name="mybtn" id="start_submit" class="btn btn-primary d-block mt-2" />
+    <input type="submit" value={{user}} name="mybtn" id="start_submit" class="d-block mt-2"
+      style="border: none; background-color: white; color: blue;" />
   </a>
   {% endfor %}
   <br><a href="{% url 'core:hyperledger_query_admin' %}">

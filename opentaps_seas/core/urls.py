@@ -194,9 +194,9 @@ urlpatterns = [
         name="hyperledger_enroll",
     ),
     path(
-        "hyperledger/enroll/success/<str:user>/<str:org_name>",
-        view=hyperledger.hyperledger_enroll_success_view,
-        name="hyperledger_enroll_success",
+        "hyperledger/enroll/result/<str:user>/<str:org_name>/<str:result>",
+        view=hyperledger.hyperledger_enroll_result_view,
+        name="hyperledger_enroll_result",
     ),
     path("model/", view=model.model_list_view, name="model_list"),
     path("model.json", view=model.model_list_json_view, name="model_list_json"),
