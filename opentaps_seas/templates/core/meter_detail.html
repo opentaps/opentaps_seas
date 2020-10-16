@@ -50,7 +50,7 @@
       </div>
       {% endblock add_button %}
     </div>
-    <div class="row m-0 mb-2 pt-3">
+    <div class="m-0 mb-2 pt-3">
       {% if meter.attributes.utilityapi_meter_uid %}
       <div class="row m-0 mb-2 mr-auto" id="utilityapi_meter_bill">
         <div>
@@ -82,9 +82,9 @@
         <a class="btn btn-primary btn-sm ml-4 mr-2" href="{% url 'core:meter_rate_plan_history' object.meter_id %}">See
           History</a>
       </div>
-      <div style="justify-content: space-between; width: 70%; margin-left: 1%; padding-top: 1%;" class="d-flex pl-2">
+      <div style="margin-left: 1%; padding-top: 2%;" class="d-flex pl-2">
         {% if object.utility %}
-        <p style="font-size: 0.8rem;"><b>{{ object.utility.utility_name }}
+        <p style="font-size: 0.8rem; width: 50%;"><b>{{ object.utility.utility_name }}
             ({{ object.utility_id }}){% if object.account_number %}<br /> Account {{ object.account_number }}</b></p>
         {% endif %}
         {% endif %}
@@ -102,7 +102,7 @@
   <div class="text-right flex-grow-1">
 
   </div>
-  <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start; padding: 3% 4%; margin-left: -3%">
+  <div class="card-body" style="display: flex; flex-direction: row; justify-content: flex-start; padding: 0 4%; padding-bottom: 1%; margin-left: -3%">
     <br />
     {% block inner_content %}
     <p>
