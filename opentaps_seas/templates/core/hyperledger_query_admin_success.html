@@ -18,9 +18,9 @@
 # If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load crispy_forms_tags %} {% block content %} <div
   class="content-section">
   {% if exists == "existing" %}
-  <h2>This organization already exists. Select a user below to enroll them in {{name}}.</h2>
+  <p>This organization already exists. Select a user below to enroll them in {{name}}.</p>
   {% else %}
-  <h2>Success. Select a user below to enroll them in {{name}}.</h2>
+  <p>Success. Select a user below to enroll them in {{name}}.</p>
   {% endif %}
   {% for user in all_users %}
   <a href="{% url 'core:hyperledger_enroll' user=user org_name=name%}">
