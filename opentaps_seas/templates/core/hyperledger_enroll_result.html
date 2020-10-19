@@ -18,9 +18,9 @@
 # If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load crispy_forms_tags %} {% block content %} <div
   class="content-section">
   {% if result == "success"%}
-  <h2>Successfully enrolled {{user}} in {{org_name}}.</h2>
+  <p>Successfully enrolled {{user}} in {{org_name}}.</p>
   {% else %}
-  <h2>There was an error enrolling {{user}} in {{org_name}}.</h2>
+  <p>There was an error enrolling {{user}} in {{org_name}}.</p>
   {% endif %}
   <br><a href="{% url 'core:hyperledger_query_admin' %}">
     <button class="btn btn-primary mt-5" type="submit">Back</button>
