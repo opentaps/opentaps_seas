@@ -18,15 +18,17 @@
 # If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load crispy_forms_tags %} {% block content %} <div
   class="content-section">
   {% if exists == "existing" %}
-  <p>This organization already exists. Select a user below to enroll them in {{name}}.</p>
+  <h2>Select a user below to enroll them in {{name}}.</h2>
   {% else %}
-  <p>Success. Select a user below to enroll them in {{name}}.</p>
+  <h2>Successfully registered organization. Select a user below to enroll them in {{name}}.</h2>
   {% endif %}
   {% for user in all_users %}
+  {% if user.org_name != name%}
   <a href="{% url 'core:hyperledger_enroll' user=user org_name=name%}">
     <input type="submit" value={{user}} name="mybtn" id="start_submit" class="d-block mt-2"
       style="border: none; background-color: white; color: blue;" />
   </a>
+  {% endif %}
   {% endfor %}
   <br><a href="{% url 'core:hyperledger_query_admin' %}">
     <button class="btn btn-primary mt-5" type="submit">Back</button>

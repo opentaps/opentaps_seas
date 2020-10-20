@@ -17,14 +17,14 @@
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load crispy_forms_tags %} {% block content %} <div
   class="content-section">
-  <h3>Enrolling {{user}} in {{org_name}}</h3>
+  <h3>Enroll User</h3>
   <form method="POST">
     {% csrf_token %}
     <fieldset class="form-group">
       {{ form | crispy }}
     </fieldset>
     <div class="form-group">
-      <button class="btn btn-primary" type="submit">Submit</button>
+      <button class="btn btn-primary" type="submit">Enroll</button>
     </div>
   </form>
   </div>

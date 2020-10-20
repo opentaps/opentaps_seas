@@ -20,11 +20,11 @@
   <form method="POST">
     {% csrf_token %}
     <fieldset class="form-group">
-      <legend class="border-bottom mb4">Enter an Organization Name to register:</legend>
+      <legend class="border-bottom mb4">Enroll Organization:</legend>
       {{ form | crispy }}
     </fieldset>
     <div class="form-group">
-      <button class="btn btn-primary" type="submit">Query</button>
+      <button class="btn btn-primary" type="submit">Enroll</button>
     </div>
   </form>
   </div>

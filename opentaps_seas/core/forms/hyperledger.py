@@ -2,7 +2,7 @@ from django import forms
 
 
 class HyperLedgerQueryAdminForm(forms.Form):
-    name = forms.CharField()
+    name = forms.CharField(label="Org Name:")
 
     class Meta:
         fields = ["name"]
