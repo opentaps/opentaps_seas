@@ -18,9 +18,10 @@
 # If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load crispy_forms_tags %} {% block content %} <div
   class="content-section">
   {% if exists == "existing" %}
-  <h2>Select a user below to enroll them in {{name}}.</h2>
+  <h2>Enroll Users</h2>
   {% else %}
-  <h2>Successfully registered organization. Select a user below to enroll them in {{name}}.</h2>
+  <h2>Enroll Users</h2>
+  <p class="alert alert-success">Successfully registered new organization {{name}}.</p>
   {% endif %}
   {% for user in all_users %}
   {% if user.org_name != name%}
