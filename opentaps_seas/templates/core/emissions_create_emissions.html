@@ -39,7 +39,6 @@
       <div class="alert alert-success mt-3" role="alert" v-if="successes.success" v-cloak>
         ${ successes.success }
       </div>
-
       <div class="form-group">
         <label for="fromDate">From Date*</label>
         <b-form-input type="text" class="datetime" id="fromDate" placeholder="Input Date" :state="fromDateState" v-model="fromDate" required></b-form-input>
@@ -78,6 +77,8 @@
     el: '#createemissions',
     data() {
       return {
+        userId: "{{user.id}}",
+        orgName: "{{user.org_name}}",
         csrfmiddlewaretoken: CSRF_TOKEN,
         isRecordDisabled: false,
         fromDateState: null,
@@ -93,7 +94,6 @@
       }
     },
     mounted() {
-      console.log('mounted..');
       flatpickr(this.$el.getElementsByClassName('datetime'), {
           "dateFormat": "Y-m-d H:i:S",
           "time_24hr": "true",
@@ -105,21 +105,23 @@
     },
     methods: {
       get_meter_total_energy_used() {
-        console.log('get_meter_total_energy_used ...');
         this.isRecordDisabled = true;
         this.errors = {'error': null};
         this.successes =  {'success': null};
-        url = dutils.urls.resolve('meter_history_total_json', { meter_id: this.meterId }) + '?from_date=' + this.fromDate + '&thru_date=' + this.thruDate;
+        url = "http://localhost:9000/api/v1/utilityemissionchannel/emissionscontract/getEmissionsData"
+        url = `${url}/${this.userId}/${this.orgName}/${this.utilityId}/${this.accountNumber}/${this.fromDate}/${this.thruDate}`
         axios.get(url)
           .then(x => {
-            console.log('get_meter_total_energy_used', x.data)
-
-            if (x.data.error) {
+            item = {
+              total: x.data.emissionsAmount,
+              uom: x.data.emissionsUom
+            }
+            if (x.data.error ) {
                 this.errors['error'] = x.data.error;
-            } else if (!x.data.item) {
+            } else if (!item.uom) {
                 this.errors['error'] = 'Cannot get meter total energy used.';
             } else {
-                this.record_emissions(x.data.item)
+                this.record_emissions(item)
             }
             this.isRecordDisabled = false;
           })
@@ -132,24 +134,24 @@
       },
       record_emissions(item) {
         this.isRecordDisabled = true;
-        console.log('record_emissions ...', item);
-        url = dutils.urls.resolve('emissions_record_emissions_json');
+        url = "http://localhost:9000/api/v1/utilityemissionchannel/emissionscontract/recordEmissions"
         data = {
-          utility_id: this.utilityId,
-          account_number: this.accountNumber,
-          from_date: item.from_date,
-          thru_date: item.thru_date,
-          amount: item.total,
-          uom: item.uom
+          userId: this.userId,
+          orgName: this.orgName,
+          utilityId: this.utilityId,
+          partyId: this.accountNumber,
+          fromDate: this.fromDate,
+          thruDate: this.thruDate,
+          energyUseAmount: item.total.toLocaleString('fullwide', { useGrouping: false }) ,
+          energyUseUom: item.uom
         }
         axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
           .then(x => x.data)
           .then(x => {
-            if (x.success) {
-              console.log('record_emissions, result = ', x);
+            if (x.info == "EMISSION RECORDED TO LEDGER") {
               this.successes = {'success': 'Successfully created.'};
 
-            } else if (x.error) {
+            } else if (x.info != "EMISSION RECORDED TO LEDGER") {
               this.errors['error'] = x.error;
             } else {
               this.errors['error'] = 'Cannot record emissions';

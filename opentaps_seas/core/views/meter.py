@@ -579,8 +579,8 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                         user_org,
                         meter.utility_id,
                         meter.account_number,
-                        from_date.strftime("%Y-%m-%d"),
-                        thru_date.strftime("%Y-%m-%d"),
+                        from_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        thru_date.strftime("%Y-%m-%d %H:%M:%S"),
                     )
                     if emissions_data:
                         context["emissions_data"] = emissions_data
