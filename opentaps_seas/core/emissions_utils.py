@@ -44,7 +44,9 @@ def get_emissions_data(
     return emissions_data
 
 
-def record_emissions(utility_id, account_number, from_date, thru_date, amount, uom):
+def record_emissions(
+    user_id, org_name, utility_id, account_number, from_date, thru_date, amount, uom
+):
     # /emissionscontract/recordEmissions
     if settings.EMISSIONS_API_URL:
         api_url = settings.EMISSIONS_API_URL
@@ -54,6 +56,8 @@ def record_emissions(utility_id, account_number, from_date, thru_date, amount, u
     api_url += "/emissionscontract/recordEmissions"
     headers = {"accept": "application/json", "Content-Type": "application/json"}
     data = {
+        "userId": user_id,
+        "orgName": org_name,
         "utilityId": utility_id,
         "partyId": account_number,
         "fromDate": from_date,

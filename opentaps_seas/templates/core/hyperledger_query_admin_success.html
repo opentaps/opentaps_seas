@@ -18,9 +18,9 @@
 # If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load crispy_forms_tags %} {% block content %} <div
   class="content-section">
   {% if exists == "existing" %}
-  <h2>Enroll Users</h2>
+  <h2>Enroll User</h2>
   {% else %}
-  <h2>Enroll Users</h2>
+  <h2>Enroll User</h2>
   <p class="alert alert-success">Successfully registered new organization {{name}}.</p>
   {% endif %}
   {% for user in all_users %}
@@ -29,6 +29,13 @@
     <input type="submit" value={{user}} name="mybtn" id="start_submit" class="d-block mt-2"
       style="border: none; background-color: white; color: blue;" />
   </a>
+  {% endif %}
+  {% endfor %}
+  <h3 class="pt-5">Users currently enrolled in {{name}}</h3>
+  {% for user in all_users %}
+  {% if user.org_name == name %}
+  <input type="submit" value={{user}} name="mybtn" id="start_submit" class="d-block mt-2"
+    style="border: none; background-color: white; color: blue; outline: 0;" />
   {% endif %}
   {% endfor %}
   <br><a href="{% url 'core:hyperledger_query_admin' %}">

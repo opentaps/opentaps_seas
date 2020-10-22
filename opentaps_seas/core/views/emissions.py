@@ -38,14 +38,14 @@ class CreateEmissions(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     model = Meter
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
-    template_name = 'core/emissions_create_emissions.html'
+    template_name = "core/emissions_create_emissions.html"
 
     def get_context_data(self, **kwargs):
         context = super(CreateEmissions, self).get_context_data(**kwargs)
-        context["meter_id"] = self.kwargs['meter_id']
+        context["meter_id"] = self.kwargs["meter_id"]
 
         try:
-            meter = Meter.objects.get(meter_id=self.kwargs['meter_id'])
+            meter = Meter.objects.get(meter_id=self.kwargs["meter_id"])
         except Meter.DoesNotExist:
             pass
         else:
@@ -58,11 +58,11 @@ class CreateEmissions(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
 
     def get_breadcrumbs(self, context):
         b = []
-        b.append({'url': reverse('core:site_list'), 'label': 'Sites'})
+        b.append({"url": reverse("core:site_list"), "label": "Sites"})
         meter = None
-        if self.kwargs['meter_id']:
+        if self.kwargs["meter_id"]:
             try:
-                meter = Meter.objects.get(meter_id=self.kwargs['meter_id'])
+                meter = Meter.objects.get(meter_id=self.kwargs["meter_id"])
             except Meter.DoesNotExist:
                 pass
             else:
@@ -71,20 +71,20 @@ class CreateEmissions(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                 except SiteView.DoesNotExist:
                     pass
                 else:
-                    label = 'Site'
+                    label = "Site"
                     if site.description:
                         label = site.description
-                    url = reverse("core:site_detail", kwargs={'site': meter.site_id})
-                    b.append({'url': url, 'label': label})
+                    url = reverse("core:site_detail", kwargs={"site": meter.site_id})
+                    b.append({"url": url, "label": label})
 
         if meter:
-            url = reverse("core:meter_detail", kwargs={'meter_id': meter.meter_id})
-            label = 'Meter ' + meter.meter_id
+            url = reverse("core:meter_detail", kwargs={"meter_id": meter.meter_id})
+            label = "Meter " + meter.meter_id
             if meter.description:
-                label = 'Meter ' + meter.description
-            b.append({'url': url, 'label': label})
+                label = "Meter " + meter.description
+            b.append({"url": url, "label": label})
 
-        b.append({'label': 'Create Emissions'})
+        b.append({"label": "Create Emissions"})
         return b
 
 
@@ -92,21 +92,31 @@ create_emissions = CreateEmissions.as_view()
 
 
 @login_required()
-@api_view(['POST'])
+@api_view(["POST"])
 def record_emissions(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.data
-        utility_id = data.get('utility_id')
-        account_number = data.get('account_number')
-        from_date = data.get('from_date')
-        thru_date = data.get('thru_date')
-        amount = data.get('amount')
-        uom = data.get('uom')
+        user_id = data.get("user_id")
+        org_name = data.get("org_name")
+        utility_id = data.get("utility_id")
+        account_number = data.get("account_number")
+        from_date = data.get("from_date")
+        thru_date = data.get("thru_date")
+        amount = data.get("amount")
+        uom = data.get("uom")
 
-        emissions_data = emissions_utils.record_emissions(utility_id, account_number, from_date,
-                                                          thru_date, amount, uom)
+        emissions_data = emissions_utils.record_emissions(
+            user_id,
+            org_name,
+            utility_id,
+            account_number,
+            from_date,
+            thru_date,
+            amount,
+            uom,
+        )
 
         if emissions_data:
-            return JsonResponse({'success': 1, 'emissions_data': emissions_data})
+            return JsonResponse({"success": 1, "emissions_data": emissions_data})
         else:
-            return JsonResponse({'error': 'Cannot record emissions'})
+            return JsonResponse({"error": "Cannot record emissions"})

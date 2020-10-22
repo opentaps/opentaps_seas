@@ -500,7 +500,7 @@ urlpatterns = [
         name="emissions_record_emissions_json",
     ),
     path(
-        "meter_history.json/total/<str:meter_id>",
+        "meter_history_json/total/<str:meter_id>",
         view=meter.meter_history_total_json,
         name="meter_history_total_json",
     ),

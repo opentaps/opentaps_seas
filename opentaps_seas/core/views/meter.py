@@ -992,8 +992,8 @@ def meter_history_total_json(request, meter_id):
 
     if meter_history_total:
         total = meter_history_total["value__sum"]
-    from_date_str = from_date_object.strftime("%Y-%m-%d")
-    thru_date_str = thru_date_object.strftime("%Y-%m-%d")
+    from_date_str = from_date_object.strftime("%Y-%m-%d %H:%M:%S")
+    thru_date_str = thru_date_object.strftime("%Y-%m-%d %H:%M:%S")
     item = {
         "total": total,
         "uom": uom,
