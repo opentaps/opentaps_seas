@@ -20,7 +20,7 @@
 
 {% load static %}
 
-{% block title %}Create Emissions for Meter: {{ meter.meter_id }}{% endblock %}
+{% block title %}Record Emissions for Meter: {{ meter.meter_id }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -29,7 +29,7 @@
 
   <div class="card mb-3" id="createemissions">
     <div class="card-body">
-      <h2>Create Emissions for Meter {% if meter.description %}{{ meter.description }}{% else %}{{ meter.meter_id }}{% endif %}</h2>
+      <h2>Record Emissions for Meter {% if meter.description %}{{ meter.description }}{% else %}{{ meter.meter_id }}{% endif %}</h2>
       <br/>
       {% block inner_content %}
 
@@ -57,10 +57,13 @@
       </div>
 
       <div class="mt-3 text-right">
-        <b-button variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
-          Create Emissions
+        <b-button v-if="!isRecordDisabled" variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
+          Record
         </b-button>
-        <b-spinner v-if="isRecordDisabled" variant="secondary"></b-spinner>
+        <b-button v-else variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
+          Please wait...
+        </b-button>
+        {% comment %} <b-spinner v-if="isRecordDisabled" variant="secondary"></b-spinner> {% endcomment %}
       </div>
      {% endblock inner_content %}
 
