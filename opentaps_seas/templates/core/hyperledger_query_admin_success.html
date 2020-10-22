@@ -23,21 +23,29 @@
   <h2>Enroll User</h2>
   <p class="alert alert-success">Successfully registered new organization {{name}}.</p>
   {% endif %}
-  {% for user in all_users %}
-  {% if user.org_name != name%}
-  <a href="{% url 'core:hyperledger_enroll' user=user org_name=name%}">
-    <input type="submit" value={{user}} name="mybtn" id="start_submit" class="d-block mt-2"
-      style="border: none; background-color: white; color: blue;" />
-  </a>
-  {% endif %}
-  {% endfor %}
-  <h3 class="pt-5">Users currently enrolled in {{name}}</h3>
-  {% for user in all_users %}
-  {% if user.org_name == name %}
-  <input type="submit" value={{user}} name="mybtn" id="start_submit" class="d-block mt-2"
-    style="border: none; background-color: white; color: blue; outline: 0;" />
-  {% endif %}
-  {% endfor %}
+  <ul class="pt-3">
+    {% for user in all_users %}
+    {% if user.org_name != name%}
+
+    <li>
+      <a href="{% url 'core:hyperledger_enroll' user=user org_name=name%}">
+        <input type="submit" value={{user}} name="mybtn" id="start_submit" class="d-block"
+          style="border: none; background-color: white; color: blue;" />
+      </a>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+  <p class="pt-5 font-weight-bold">Users currently enrolled in {{name}}</p>
+  <ul>
+    {% for user in all_users %}
+    {% if user.org_name == name %}
+    <li>
+      <p class="d-block ml-1">{{user}}</p>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
   <br><a href="{% url 'core:hyperledger_query_admin' %}">
     <button class="btn btn-primary mt-5" type="submit">Back</button>
   </a>
