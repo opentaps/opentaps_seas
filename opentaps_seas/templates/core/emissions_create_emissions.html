@@ -57,14 +57,20 @@
       </div>
 
       <div class="mt-3 text-right">
-        <b-button v-if="!isRecordDisabled" variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
+        <b-button v-if="!isRecordDisabled && !success" variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
           Record
+        </b-button>
+        <b-button v-else-if="success" variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="!isRecordDisabled">
+          Recorded.
         </b-button>
         <b-button v-else variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
           Please wait...
         </b-button>
         {% comment %} <b-spinner v-if="isRecordDisabled" variant="secondary"></b-spinner> {% endcomment %}
       </div>
+      <a v-bind:href="url">
+        <button class="btn btn-primary mt-5" type="submit">Back</button>
+      </a>
      {% endblock inner_content %}
 
     </div>
@@ -85,6 +91,8 @@
         orgName: "{{user.org_name}}",
         csrfmiddlewaretoken: CSRF_TOKEN,
         isRecordDisabled: false,
+        success: false,
+        url: "/opentaps_seas/meter/view/{{ meter_id|safe}}",
         fromDateState: null,
         fromDate: moment().startOf('month').format('YYYY-MM-DD HH:mm:ss'),
         thruDateState: null,
@@ -154,6 +162,7 @@
               this.errors['error'] = 'Cannot record emissions';
             }
             this.isRecordDisabled = false;
+            this.success = true;
           })
           .catch(err => {
             e = getResponseError(err);
