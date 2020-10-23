@@ -109,7 +109,6 @@
     },
     methods: {
       get_meter_total_energy_used() {
-        this.isRecordDisabled = true;
         this.errors = {'error': null};
         this.successes =  {'success': null};
         url = "/opentaps_seas/meter_history_json/total/" + this.meterId + '?from_date=' + this.fromDate + '&thru_date=' + this.thruDate;
@@ -123,7 +122,6 @@
             } else {
                 this.record_emissions(x.data.item)
             }
-            this.isRecordDisabled = false;
           })
           .catch(err => {
             e = getResponseError(err);
