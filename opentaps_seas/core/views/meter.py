@@ -579,8 +579,8 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
                         user_org,
                         meter.utility_id,
                         meter.account_number,
-                        f"{from_date.strftime('%Y-%m-%d')}%2000:00:00",
-                        f"{thru_date.strftime('%Y-%m-%d')}%2023:59:59",
+                        f"{from_date.strftime('%Y-%m-%dT')}00:00:00",
+                        f"{thru_date.strftime('%Y-%m-%dT')}23:59:59",
                     )
                     if emissions_data:
                         context["emissions_data"] = emissions_data
@@ -992,8 +992,9 @@ def meter_history_total_json(request, meter_id):
 
     if meter_history_total:
         total = meter_history_total["value__sum"]
-    from_date_str = from_date_object.strftime("%Y-%m-%d %H:%M:%S")
-    thru_date_str = thru_date_object.strftime("%Y-%m-%d %H:%M:%S")
+    # Standardize date H/M/S for API compatibility
+    from_date_str = from_date_object.strftime("%Y-%m-%dT%H:%M:%S")
+    thru_date_str = thru_date_object.strftime("%Y-%m-%dT%H:%M:%S")
     item = {
         "total": total,
         "uom": uom,

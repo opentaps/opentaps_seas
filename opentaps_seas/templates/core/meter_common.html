@@ -10,79 +10,77 @@
 
 # opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Lesser General Public License for more details.
 
 # You should have received a copy of the GNU Lesser General Public License
 # along with opentaps Smart Energy Applications Suite (SEAS).
-# If not, see <https://www.gnu.org/licenses/>.
-{% endcomment %}
-
-{% load static %}
-
-{% block title %}
-{% if object.meter_id|length > 0 %}
-  Meter: {{ object.meter_id }}
-{% else %}
-  New Meter
-{% endif %}
-{% endblock %}
-{% block content %}
-<div class="container card mb-3">
+# If not, see <https://www.gnu.org/licenses/>. {% endcomment %} {% load static %} {% block title %}
+  {% if object.meter_id|length > 0 %} Meter: {{ object.meter_id }} {% else %} New Meter {% endif %} {% endblock %}
+  {% block content %} <div class="container card mb-3">
 
   {% include "core/_breadcrumbs.html" %}
 
   <div class="p-3">
     <div class="text-center">
       {% if object.description %}
-        <h2 class="d-inline">Meter {{ object.description }} <span style="font-size: 1rem;">(id: {{ object.meter_id }})</span>
-        </h2>
+      <h2 class="d-inline">Meter {{ object.description }} <span style="font-size: 1rem;">(id:
+          {{ object.meter_id }})</span>
+      </h2>
       {% else %}
-        <h2 class="d-inline">
-            {% if not newmeter %}
-              <div class="d-inline">Meter {{ object.meter_id }}</div>
-            {% else %}
-              <div class="d-inline">Create a New Meter</div>
-        </h2><br>
-      </div>
-          <div class="text-right flex-grow-1 d-inline">
-            <a class="btn btn-primary float-right" href="{% url 'core:utilityapi_meters_import' site_id %}"><i class="fa fa-plus"></i> Add from UtilityAPI</a>
-          </div>
-            {% endif %}
-        {% endif %}
-      {% block add_button %}
-            <div class="float-right d-inline">
-                <a href="{% url 'core:meter_create' object.site_id %}" class="btn btn-primary" role="button"><i class="fa fa-plus"></i> Add Meter</a>
-                <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary" role="button"><i class="fa fa-edit mr-2"></i> Edit</a>
-                <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger" role="button" ><i class="fa fa-trash mr-2"></i> Deactivate</a>
-            </div>
-          {% endblock add_button %}
+      <h2 class="d-inline">
+        {% if not newmeter %}
+        <div class="d-inline">Meter {{ object.meter_id }}</div>
+        {% else %}
+        <div class="d-inline">Create a New Meter</div>
+      </h2><br>
     </div>
-    <div class="row m-0 mb-2 pt-3">
-      {% if meter.attributes.utilityapi_meter_uid %}
-        <div class="row m-0 mb-2 mr-auto" id="utilityapi_meter_bill">
-          <div>
-            <b>Meter Utility API Id: </b>{{ meter.attributes.utilityapi_meter_uid }}
-            <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">${ errors.error }
-            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          </div>
-          <div class="alert alert-success mt-3" role="alert" v-if="success">${ success }
-            <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          </div>
+    <div class="text-right flex-grow-1 d-inline">
+      <a class="btn btn-primary float-right" href="{% url 'core:utilityapi_meters_import' site_id %}"><i
+          class="fa fa-plus"></i> Add from UtilityAPI</a>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% block add_button %}
+    <div class="float-right d-inline">
+      <a href="{% url 'core:meter_create' object.site_id %}" class="btn btn-primary" role="button"><i
+          class="fa fa-plus"></i> Add Meter</a>
+      <a href="{% url 'core:meter_edit' object.meter_id %}" class="btn btn-primary" role="button"><i
+          class="fa fa-edit mr-2"></i> Edit</a>
+      <a href="{% url 'core:meter_deactivate' object.meter_id %}" class="btn btn-danger" role="button"><i
+          class="fa fa-trash mr-2"></i> Deactivate</a>
+    </div>
+    {% endblock add_button %}
+  </div>
+  <div class="row m-0 mb-2 pt-3">
+    {% if meter.attributes.utilityapi_meter_uid %}
+    <div class="row m-0 mb-2 mr-auto" id="utilityapi_meter_bill">
+      <div>
+        <b>Meter Utility API Id: </b>{{ meter.attributes.utilityapi_meter_uid }}
+        <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">${ errors.error }
+          <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
         </div>
-        <div class="text-right flex-grow-1">
-          <b-spinner v-if="loading" variant="secondary"></b-spinner>
-          <button v-if="!loading" v-on:click="get_bills" class="btn btn-primary btn-sm ml-4 mr-2"><i class="fas fa-cloud-download-alt"></i> Get Bills</button>
+        <div class="alert alert-success mt-3" role="alert" v-if="success">${ success }
+          <button type="button" class="close" v-on:click="close_alert" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
         </div>
       </div>
-      {% endif %}
-      {% block inner_content %}
-      <p>
-        {% include "core/_meter_history_chart.html" with meter_id=object.meter_id is_solaredge=is_solaredge latest_meter_date=latest_meter_date %}
-      </p>
+      <div class="text-right flex-grow-1">
+        <b-spinner v-if="loading" variant="secondary"></b-spinner>
+        <button v-if="!loading" v-on:click="get_bills" class="btn btn-primary btn-sm ml-4 mr-2"><i
+            class="fas fa-cloud-download-alt"></i> Get Bills</button>
+      </div>
+    </div>
+    {% endif %}
+    {% block inner_content %}
+    <p>
+      {% include "core/_meter_history_chart.html" with meter_id=object.meter_id is_solaredge=is_solaredge latest_meter_date=latest_meter_date %}
+    </p>
 
-      {% if has_equipments %}
-      <p><b>Equipment{% if equipments|length > 1 %}s{% endif %}:</b> {% for e in equipments %} <a href="{{ e.get_absolute_url }}">{{ e }}</a> {% endfor %}
+    {% if has_equipments %}
+    <p><b>Equipment{% if equipments|length > 1 %}s{% endif %}:</b> {% for e in equipments %} <a
+        href="{{ e.get_absolute_url }}">{{ e }}</a> {% endfor %}
       {% endif %}
 
       {% if has_weather_data %}
@@ -91,155 +89,175 @@
       </p>
       {% endif %}
       {% endblock inner_content %}
-    </div>
-      </div>
+  </div>
+  </div>
   </div>
 
   {% block after_content %}
-    {% if object and object.meter_id %}
+  {% if object and object.meter_id %}
 
-      {% if emissions_data or emissions_data_error %}
-          <div class="card mb-3">
-            <div class="card-body">
-              <h3>
-                <div class="row m-0">
-                  <div class="">
-                    Emissions
-                  </div>
-                  <div class="text-right flex-grow-1">
-                    <a class="btn btn-primary" href="{% url 'core:emissions_create_emissions' object.meter_id %}"><i class="fa fa-plus"></i> Record Emissions</a>
-                  </div>
-                </div>
-              </h3>
-              <div class="row m-0 mb-2">
-                {% if emissions_data %}
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">From Date</th>
-                        <th scope="col">Thru Date</th>
-                        <th scope="col" align="right">Emissions Amount</th>
-                        <th scope="col" align="right">UOM</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    {% for emissions in emissions_data %}
-                      <tr>
-                        <td>{{ emissions.fromDate }}</td>
-                        <td>{{ emissions.thruDate }}</td>
-                        <td align="right">{{ emissions.emissionsAmount|floatformat:3 }}</td>
-                        <td align="right">{{ emissions.emissionsUom }}</td>
-                      </tr>
-                    {% endfor %}
-                    </tbody>
-                  </table>
-                {% endif %}
-                {% if emissions_data_error %}
-                  <div class="alert alert-danger flex-grow-1">{{ emissions_data_error }}</div>
-                {% endif %}
-              </div>
-            </div>
+  {% if emissions_data or emissions_data_error %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h3>
+        <div class="row m-0">
+          <div class="">
+            Emissions
           </div>
-      {% endif %}
-
-      {% if object.transactions.exists %}
-        {% url 'core:meter_transactions_table' object.meter_id as meter_transactions_url %}
-        {% include "core/_ajax_table.html" with title="Transactions" name="transactions" table_url=meter_transactions_url %}
-      {% endif %}
-
-      <div class="card mb-3">
-        <div class="card-body">
-          <h3>
-            <div class="row m-0">
-              <div class="">
-                Models
-              </div>
-              <div class="text-right flex-grow-1">
-                <a class="btn btn-primary" href="{% url 'core:meter_model_create' object.meter_id %}"><i class="fa fa-plus"></i> Build a Model</a>
-              </div>
-            </div>
-          </h3>
-          <div class="header-top">
-            {% load qs_order_by from core_tags %}
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Model</th>
-                  <th scope="col">Range</th>
-                  <th scope="col">Created</th>
-                </tr>
-              </thead>
-              <tbody>
-              {% for model in object.baselinemodel_set.all|qs_order_by:'-id' %}
-                <tr>
-                  <th scope="row"><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}</a></th>
-                  <td><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.description|default:model.model_class }}</a></td>
-                  <td>{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</td>
-                  <td><span class="text-muted text-right">{{ model.created_datetime|date:'m/d/Y' }}</span></td>
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
+          <div class="text-right flex-grow-1">
+            <a class="btn btn-primary" href="{% url 'core:emissions_create_emissions' object.meter_id %}"><i
+                class="fa fa-plus"></i> Record Emissions</a>
           </div>
         </div>
+      </h3>
+      <div class="row m-0 mb-2">
+        {% if emissions_data %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">From Date</th>
+              <th scope="col">Thru Date</th>
+              <th scope="col" align="right">Emissions Amount</th>
+              <th scope="col" align="right">UOM</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for emissions in emissions_data %}
+            <tr>
+              <td>{{ emissions.fromDate }}</td>
+              <td>{{ emissions.thruDate }}</td>
+              <td align="right">{{ emissions.emissionsAmount|floatformat:3 }}</td>
+              <td align="right">{{ emissions.emissionsUom }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if emissions_data_error %}
+        <div class="alert alert-danger flex-grow-1">{{ emissions_data_error }}</div>
+        {% endif %}
       </div>
+    </div>
+  </div>
+  {% endif %}
 
-      {% url 'core:meter_financial_values_table' object.meter_id as meter_financial_values_url %}
-      {% include "core/_ajax_table.html" with title="Financial Values" name="financial_values" table_url=meter_financial_values_url hide_empty=True %}
-    {% endif %}
+  {% if object.transactions.exists %}
+  {% url 'core:meter_transactions_table' object.meter_id as meter_transactions_url %}
+  {% include "core/_ajax_table.html" with title="Transactions" name="transactions" table_url=meter_transactions_url %}
+  {% endif %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h3>
+        <div class="row m-0">
+          <div class="">
+            Models
+          </div>
+          <div class="text-right flex-grow-1">
+            <a class="btn btn-primary" href="{% url 'core:meter_model_create' object.meter_id %}"><i
+                class="fa fa-plus"></i> Build a Model</a>
+          </div>
+        </div>
+      </h3>
+      <div class="header-top">
+        {% load qs_order_by from core_tags %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Model</th>
+              <th scope="col">Range</th>
+              <th scope="col">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for model in object.baselinemodel_set.all|qs_order_by:'-id' %}
+            <tr>
+              <th scope="row"><a href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.id }}</a>
+              </th>
+              <td><a
+                  href="{% url 'core:meter_model_detail' model.meter_id model.id %}">{{ model.description|default:model.model_class }}</a>
+              </td>
+              <td>{{ model.from_datetime|date:'m/d/Y' }} to {{ model.thru_datetime|date:'m/d/Y' }}</td>
+              <td><span class="text-muted text-right">{{ model.created_datetime|date:'m/d/Y' }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% url 'core:meter_financial_values_table' object.meter_id as meter_financial_values_url %}
+  {% include "core/_ajax_table.html" with title="Financial Values" name="financial_values" table_url=meter_financial_values_url hide_empty=True %}
+  {% endif %}
   {% endblock after_content %}
 
-</div>
-<script>
-(function() {
-  {% load js_csrf_token from core_tags %}
-  const CSRF_TOKEN = '{% js_csrf_token %}';
+  </div>
+  <script>
+    (function () {
+      {
+        %
+        load js_csrf_token from core_tags %
+      }
+      const CSRF_TOKEN = '{% js_csrf_token %}';
 
-  new Vue({
-    delimiters: ['${', '}'],
-    name: 'utilityapi_meter_bill',
-    el: '#utilityapi_meter_bill',
-    data() {
-      return {
-        csrfmiddlewaretoken: CSRF_TOKEN,
-        loading: false,
-        success: false,
-        errors: {'error': null},
-      }
-    },
-    mounted() {
-    },
-    methods: {
-      close_alert() {
-        this.success = false;
-        this.errors = {'error': null};
-      },
-      get_bills() {
-        this.errors = {'error': null};
-        url = dutils.urls.resolve('utilityapi_meter_bills_import', {meter_id: '{{object.meter_id}}' });
-        console.log('get_bills for {{object.meter_id}} ...')
-        this.loading = true;
-        this.success = false;
-        axios.post(url, {}, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
-          .then(x => x.data)
-          .then(x => {
-            if (x.success) {
-              console.log('get_bills, result = ', x);
-              this.success = x.message;
-              eventHub.$emit('financial_values_table_refresh')
-            }
-            this.loading = false;
-          })
-          .catch(err => {
-            e = getResponseError(err);
-            console.error(e, err);
-            this.errors = e;
-            this.loading = false;
-          });
-      }
-    }
-  });
-})();
-</script>
-{% endblock content %}
+      new Vue({
+        delimiters: ['${', '}'],
+        name: 'utilityapi_meter_bill',
+        el: '#utilityapi_meter_bill',
+        data() {
+          return {
+            csrfmiddlewaretoken: CSRF_TOKEN,
+            loading: false,
+            success: false,
+            errors: {
+              'error': null
+            },
+          }
+        },
+        mounted() {},
+        methods: {
+          close_alert() {
+            this.success = false;
+            this.errors = {
+              'error': null
+            };
+          },
+          get_bills() {
+            this.errors = {
+              'error': null
+            };
+            url = dutils.urls.resolve('utilityapi_meter_bills_import', {
+              meter_id: '{{object.meter_id}}'
+            });
+            console.log('get_bills for {{object.meter_id}} ...')
+            this.loading = true;
+            this.success = false;
+            axios.post(url, {}, {
+                headers: {
+                  'X-CSRFToken': this.csrfmiddlewaretoken
+                }
+              })
+              .then(x => x.data)
+              .then(x => {
+                if (x.success) {
+                  console.log('get_bills, result = ', x);
+                  this.success = x.message;
+                  eventHub.$emit('financial_values_table_refresh')
+                }
+                this.loading = false;
+              })
+              .catch(err => {
+                e = getResponseError(err);
+                console.error(e, err);
+                this.errors = e;
+                this.loading = false;
+              });
+          }
+        }
+      });
+    })();
+
+  </script>
+  {% endblock content %}

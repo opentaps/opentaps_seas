@@ -41,6 +41,10 @@ def get_emissions_data(
     except requests.exceptions.ConnectionError as e:
         logger.error(e)
 
+    # Format dates for display
+    for emission_data_set in emissions_data:
+        emission_data_set["fromDate"] = emission_data_set["fromDate"].replace("T", " ")
+        emission_data_set["thruDate"] = emission_data_set["thruDate"].replace("T", " ")
     return emissions_data
 
 
