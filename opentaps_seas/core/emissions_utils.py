@@ -42,9 +42,14 @@ def get_emissions_data(
         logger.error(e)
 
     # Format dates for display
-    for emission_data_set in emissions_data:
-        emission_data_set["fromDate"] = emission_data_set["fromDate"].replace("T", " ")
-        emission_data_set["thruDate"] = emission_data_set["thruDate"].replace("T", " ")
+    if emissions_data:
+        for emission_data_set in emissions_data:
+            emission_data_set["fromDate"] = emission_data_set["fromDate"].replace(
+                "T", " "
+            )
+            emission_data_set["thruDate"] = emission_data_set["thruDate"].replace(
+                "T", " "
+            )
     return emissions_data
 
 
