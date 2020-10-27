@@ -33,11 +33,11 @@ def get_emissions_data(
         raise NameError("Missing Emissions API configuration")
     # api_url = ""
     headers = {"Accept": "application/json"}
-    api_url += f"/emissionscontract/getEmissionsData/{user_id}/{user_org}/{utility_id}/{account_number}/{from_date}/{thru_date}"
+    api_url += f"/emissionscontract/getAllEmissionsData/{user_id}/{user_org}/{utility_id}/{account_number}"
     try:
         r = requests.get(api_url)
         if r.status_code == 200:
-            emissions_data = [r.json()]
+            emissions_data = r.json()
     except requests.exceptions.ConnectionError as e:
         logger.error(e)
 
@@ -50,6 +50,7 @@ def get_emissions_data(
             emission_data_set["thruDate"] = emission_data_set["thruDate"].replace(
                 "T", " "
             )
+
     return emissions_data
 
 
