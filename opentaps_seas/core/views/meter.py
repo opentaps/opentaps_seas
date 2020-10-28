@@ -533,7 +533,7 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(MeterDetailView, self).get_context_data(**kwargs)
         context["is_solaredge"] = False
-        user_id = self.request.user.id
+        user_id = self.request.user.username
         user_org = self.request.user.org_name
         if context["object"]:
             meter = context["object"]

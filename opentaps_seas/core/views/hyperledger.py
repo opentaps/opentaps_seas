@@ -94,7 +94,7 @@ def hyperledger_enroll_view(request, **kwargs):
         form = HyperLedgerEnrollUserForm(request.POST)
         context = {"user": kwargs["user"], "org_name": kwargs["org_name"]}
         if form.is_valid():
-            user_id = User.objects.filter(username=kwargs["user"]).first().id
+            user_id = User.objects.filter(username=kwargs["user"]).first().username
             affiliation = form.cleaned_data["affiliation"]
             org_name = kwargs["org_name"]
             data = {
