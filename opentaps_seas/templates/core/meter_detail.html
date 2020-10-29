@@ -150,6 +150,10 @@
               <th scope="col">Thru Date</th>
               <th scope="col" align="right">Emissions Amount</th>
               <th scope="col" align="right">UOM</th>
+              <th scope="col" align="right">Renewable Energy Amount</th>
+              <th scope="col" align="right">Non-Renewable Energy Amount</th>
+              <th scope="col" align="right">Division Type</th>
+              <th scope="col" align="right">Division ID</th>
             </tr>
           </thead>
           <tbody>
@@ -159,6 +163,10 @@
               <td>{{ emissions.thruDate }}</td>
               <td align="right">{{ emissions.emissionsAmount|floatformat:3 }}</td>
               <td align="right">{{ emissions.emissionsUom }}</td>
+              <td align="right">{{ emissions.renewableEnergyUseAmount }}</td>
+              <td align="right">{{ emissions.nonrenewableEnergyUseAmount }}</td>
+              <td align="right">{{ emissions.divisionType }}</td>
+              <td align="right">{{ emissions.divisionId }}</td>
             </tr>
             {% endfor %}
           </tbody>
