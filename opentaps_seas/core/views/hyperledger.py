@@ -94,7 +94,8 @@ def hyperledger_enroll_view(request, **kwargs):
         form = HyperLedgerEnrollUserForm(request.POST)
         context = {"user": kwargs["user"], "org_name": kwargs["org_name"]}
         if form.is_valid():
-            user_id = User.objects.filter(username=kwargs["user"]).first().username
+            user = User.objects.filter(username=kwargs["user"]).first()
+            user_id = user.username
             affiliation = form.cleaned_data["affiliation"]
             org_name = kwargs["org_name"]
             data = {
@@ -112,7 +113,6 @@ def hyperledger_enroll_view(request, **kwargs):
                     reverse("core:hyperledger_enroll_result", kwargs=context)
                 )
             elif response.status_code == 201:
-                user = request.user
                 user.org_name = org_name
                 user.save()
                 context["result"] = "success"
