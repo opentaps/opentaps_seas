@@ -148,12 +148,11 @@
             <tr>
               <th scope="col">From Date</th>
               <th scope="col">Thru Date</th>
-              <th scope="col" align="right">Emissions Amount</th>
-              <th scope="col" align="right">UOM</th>
-              <th scope="col" align="right">Renewable Energy Amount</th>
-              <th scope="col" align="right">Non-Renewable Energy Amount</th>
-              <th scope="col" align="right">Division Type</th>
-              <th scope="col" align="right">Division ID</th>
+              <th scope="col" align="right">Emissions</th>
+              <th scope="col" align="right">Total Energy Used</th>
+              <th scope="col" align="right">Renewable Energy</th>
+              <th scope="col" align="right">Non-Renewable Energy</th>
+              <th scope="col" align="right">Factor Source</th>
             </tr>
           </thead>
           <tbody>
@@ -161,12 +160,11 @@
             <tr>
               <td>{{ emissions.fromDate }}</td>
               <td>{{ emissions.thruDate }}</td>
-              <td align="right">{{ emissions.emissionsAmount|floatformat:3 }}</td>
-              <td align="right">{{ emissions.emissionsUom }}</td>
-              <td align="right">{{ emissions.renewableEnergyUseAmount }}</td>
-              <td align="right">{{ emissions.nonrenewableEnergyUseAmount }}</td>
-              <td align="right">{{ emissions.divisionType }}</td>
-              <td align="right">{{ emissions.divisionId }}</td>
+              <td align="right">{{ emissions.emissionsAmount|floatformat:3 }} {{ emissions.emissionsUom }}</td>
+              <td align="right">{{ emissions.renewableEnergyUseAmount|floatformat:0|add:emissions.nonrenewableEnergyUseAmount|floatformat:0 }} {{ emissions.emissionsUom }}</td>
+              <td align="right">{{ emissions.renewableEnergyUseAmount|floatformat:0 }} {{ emissions.emissionsUom }}</td>
+              <td align="right">{{ emissions.nonrenewableEnergyUseAmount|floatformat:0 }} {{ emissions.emissionsUom }}</td>
+              <td align="right">{{ emissions.factorSource }}</td>
             </tr>
             {% endfor %}
           </tbody>

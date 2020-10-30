@@ -29,9 +29,9 @@ register = template.Library()
 
 class JsCsrfTokenNode(Node):
     def render(self, context):
-        csrf_token = context.get('csrf_token')
+        csrf_token = context.get("csrf_token")
         if csrf_token:
-            if csrf_token == 'NOTPROVIDED':
+            if csrf_token == "NOTPROVIDED":
                 return mark_safe("")
             else:
                 return mark_safe(csrf_token)
@@ -44,7 +44,19 @@ class JsCsrfTokenNode(Node):
                     "did not provide the value.  This is usually caused by not "
                     "using RequestContext."
                 )
-            return ''
+            return ""
+
+
+@register.filter(is_safe=False)
+def add(value, arg):
+    """Adds the arg to the value."""
+    try:
+        return int(value) + int(arg)
+    except (ValueError, TypeError):
+        try:
+            return value + arg
+        except Exception:
+            return ""
 
 
 @register.tag
@@ -56,14 +68,14 @@ def js_csrf_token(parser, token):
 def fmttime_str(value):
     epoch = int(value.timestamp() * 1000)
     t = utils.format_epoch(epoch)
-    return t['fmttime']
+    return t["fmttime"]
 
 
 @register.filter
 def time_str(value):
     epoch = int(value.timestamp() * 1000)
     t = utils.format_epoch(epoch)
-    return t['time']
+    return t["time"]
 
 
 @register.filter
@@ -76,13 +88,13 @@ def decamel(value):
 
 @register.filter
 def qs_order_by(queryset, args):
-    args = [x.strip() for x in args.split(',')]
+    args = [x.strip() for x in args.split(",")]
     return queryset.order_by(*args)
 
 
 @register.filter
 def get(d, key):
-    if hasattr(d, 'get'):
+    if hasattr(d, "get"):
         return d.get(key)
     else:
         if isinstance(d, str):
