@@ -196,10 +196,7 @@
   </div>
   <script>
     (function () {
-      {
-        %
-        load js_csrf_token from core_tags %
-      }
+      {% load js_csrf_token from core_tags %}
       const CSRF_TOKEN = '{% js_csrf_token %}';
 
       new Vue({
