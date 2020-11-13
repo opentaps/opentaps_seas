@@ -23,18 +23,15 @@ from django.shortcuts import render, redirect
 from opentaps_seas.users.models import User
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
-ENROLL_ADMIN_URL = (
-    "http://localhost:9000/api/v1/utilityemissionchannel/registerEnroll/admin"
-)
 
-
-ENROLL_USER_URL = (
-    "http://localhost:9000/api/v1/utilityemissionchannel/registerEnroll/user"
-)
+API_URL = settings.EMISSIONS_API_URL
+ENROLL_ADMIN_URL = API_URL + "/registerEnroll/admin"
+ENROLL_USER_URL = API_URL + "/registerEnroll/user"
 
 
 def hyperledger_query_admin_view(request):
@@ -45,6 +42,8 @@ def hyperledger_query_admin_view(request):
             name = form.cleaned_data["name"]
             data = {"orgName": name}
             headers = {"Content-type": "application/json", "Accept": "application/json"}
+            print("calling url here\n\n\n\n\n\n")
+            print(ENROLL_ADMIN_URL)
             response = requests.post(
                 ENROLL_ADMIN_URL, data=json.dumps(data), headers=headers
             )
