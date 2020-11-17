@@ -153,6 +153,7 @@
               <th scope="col" align="right">Renewable Energy</th>
               <th scope="col" align="right">Non-Renewable Energy</th>
               <th scope="col" align="right">Factor Source</th>
+              <th scope="col" align="right">Document</th>
             </tr>
           </thead>
           <tbody>
@@ -165,6 +166,11 @@
               <td align="right">{{ emissions.renewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
               <td align="right">{{ emissions.nonrenewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
               <td align="right">{{ emissions.factorSource }}</td>
+              {% if emissions.url|length > 0 %}
+              <td align="right"><a href="{{ emissions.url }}">View</a></td>
+              {% else %}
+              <td align="right">N/A</td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
