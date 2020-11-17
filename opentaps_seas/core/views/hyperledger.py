@@ -42,8 +42,6 @@ def hyperledger_query_admin_view(request):
             name = form.cleaned_data["name"]
             data = {"orgName": name}
             headers = {"Content-type": "application/json", "Accept": "application/json"}
-            print("calling url here\n\n\n\n\n\n")
-            print(ENROLL_ADMIN_URL)
             response = requests.post(
                 ENROLL_ADMIN_URL, data=json.dumps(data), headers=headers
             )

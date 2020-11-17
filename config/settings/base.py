@@ -283,9 +283,9 @@ AWS_STORAGE_BUCKET_NAME = get_secret('AWS_STORAGE_BUCKET_NAME')
 
 GRAFANA_USER_NAME = get_secret('GRAFANA_USER_NAME')
 GRAFANA_USER_PASSWORD = get_secret('GRAFANA_USER_PASSWORD')
-GRAFANA_BASE_URL = get_secret('GRAFANA_BASE_URL')
+GRAFANA_BASE_URL = "http://10.0.0.32:3000"
 
-VOLTTRON_VC_URL = get_secret('VOLTTRON_VC_URL', required=False)
+VOLTTRON_VC_URL = "http://localhost:8080/vc/jsonrpc"
 VOLTTRON_VC_USER_NAME = get_secret('VOLTTRON_VC_USER_NAME', required=False)
 VOLTTRON_VC_PASSWORD = get_secret('VOLTTRON_VC_PASSWORD', required=False)
 
@@ -294,7 +294,7 @@ CRATE_TAG_AUTOSYNC = get_secret('CRATE_TAG_AUTOSYNC', required=False)
 OPENEI_API_KEY = get_secret('OPENEI_API_KEY', required=False)
 UTILITY_API_KEY = get_secret('UTILITY_API_KEY', required=False)
 
-EMISSIONS_API_URL = get_secret('EMISSIONS_API_URL', required=False)
+EMISSIONS_API_URL = "http://localhost:9000/api/v1/utilityemissionchannel"
 
 # Celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379'
