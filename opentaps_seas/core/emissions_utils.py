@@ -19,6 +19,7 @@ import logging
 import requests
 from django.conf import settings
 import json
+from base64 import b64decode, b64encode
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ def get_emissions_data(
 
 
 def record_emissions(
-    user_id, org_name, utility_id, account_number, from_date, thru_date, amount, uom
+    user_id, org_name, utility_id, account_number, from_date, thru_date, amount, uom, document
 ):
     # /emissionscontract/recordEmissions
     if settings.EMISSIONS_API_URL:
@@ -64,7 +65,7 @@ def record_emissions(
         raise NameError("Missing Emissions API configuration")
 
     api_url += "/emissionscontract/recordEmissions"
-    headers = {"accept": "application/json", "Content-Type": "application/json"}
+    headers = {"Content-Type": "multipart/form-data"}
     data = {
         "userId": user_id,
         "orgName": org_name,
@@ -75,10 +76,13 @@ def record_emissions(
         "energyUseAmount": amount,
         "energyUseUom": uom,
     }
+    # shave header off
+    doc_bytes = b64decode(document[28:])
+    files={'emissionsDoc': doc_bytes}
 
     emissions_data = None
     try:
-        r = requests.post(api_url, headers=headers, json=data)
+        r = requests.post(api_url, files=files, data=data)
         if r.status_code == 201:
             emissions_data = r.json()
     except requests.exceptions.ConnectionError as e:

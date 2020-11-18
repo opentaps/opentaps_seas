@@ -104,7 +104,7 @@ def record_emissions(request):
         thru_date = data.get("thru_date")
         amount = data.get("amount")
         uom = data.get("uom")
-
+        document = data.get("document")
         emissions_data = emissions_utils.record_emissions(
             user_id,
             org_name,
@@ -114,6 +114,7 @@ def record_emissions(request):
             thru_date,
             amount,
             uom,
+            document
         )
 
         if emissions_data:

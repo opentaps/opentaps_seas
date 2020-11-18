@@ -56,6 +56,11 @@
         </b-form-invalid-feedback>
       </div>
 
+      <div class="form-group">
+        <label for="document">Document</label>
+        <input type="file" class="input-file" id="document" :state="documentState" v-model="document"></input>
+      </div>
+
       <div class="mt-3 text-right">
         <b-button v-if="!isRecordDisabled && !success" variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
           Record
@@ -97,6 +102,8 @@
         fromDate: moment().startOf('month').format('YYYY-MM-DD HH:mm:ss'),
         thruDateState: null,
         thruDate: moment().endOf('month').format('YYYY-MM-DD HH:mm:ss'),
+        documentState: null,
+        document: "",
         errors: {'error': null},
         successes:  {'success': null},
         meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
@@ -139,37 +146,44 @@
       },
       record_emissions(item) {
         this.isRecordDisabled = true;
-        url = "/opentaps_seas/emissions/record_emissions.json"
-        data = {
-          user_id: this.userId,
-          org_name: this.orgName,
-          utility_id: this.utilityId,
-          account_number: this.accountNumber,
-          from_date: item.from_date,
-          thru_date: item.thru_date,
-          amount: item.total,
-          uom: item.uom
-        }
-        axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
-          .then(x => x.data)
-          .then(x => {
-            if (x.success) {
-              this.successes = {'success': 'Successfully created.'};
+        let reader = new FileReader()
+        let parent = this;
+        reader.onload = function(e) {  
+          let bfile = e.target.result
+          url = "/opentaps_seas/emissions/record_emissions.json"
+          data = new Object();
+          data['user_id'] = parent.userId,
+          data['org_name'] = parent.orgName,
+          data['utility_id'] = parent.utilityId,
+          data['account_number'] = parent.accountNumber,
+          data['from_date'] = item.from_date,
+          data['thru_date'] = item.thru_date,
+          data['amount'] = item.total,
+          data['uom'] = item.uom,
+          data['document'] = bfile
+          axios.post(url, data, {headers: {'X-CSRFToken': parent.csrfmiddlewaretoken}})
+            .then(x => x.data)
+            .then(x => {
+              if (x.success) {
+                parent.successes = {'success': 'Successfully created.'};
 
-            } else if (x.error) {
-              this.errors['error'] = x.error;
-            } else {
-              this.errors['error'] = 'Cannot record emissions';
-            }
-            this.isRecordDisabled = false;
-            this.success = true;
-          })
-          .catch(err => {
-            e = getResponseError(err);
-            console.error(e, err);
-            this.errors = e;
-            this.isRecordDisabled = false;
-          });
+              } else if (x.error) {
+                parent.errors['error'] = x.error;
+              } else {
+                parent.errors['error'] = 'Cannot record emissions';
+              }
+              parent.isRecordDisabled = false;
+              parent.success = true;
+            })
+            .catch(err => {
+              e = getResponseError(err);
+              console.error(e, err);
+              parent.errors = e;
+              parent.isRecordDisabled = false;
+            });
+        }
+        let file = document.getElementById("document").files[0]
+        let test = reader.readAsDataURL(file)
       },
     }
   });
