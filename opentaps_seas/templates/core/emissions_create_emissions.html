@@ -65,8 +65,11 @@
         <b-button v-if="!isRecordDisabled && !success" variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
           Record
         </b-button>
+        <b-button v-else-if="success && errors.error" variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="!isRecordDisabled">
+          Failed
+        </b-button>
         <b-button v-else-if="success" variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="!isRecordDisabled">
-          Recorded.
+          Recorded
         </b-button>
         <b-button v-else variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
           Please wait...
@@ -183,6 +186,7 @@
             });
         }
         let file = document.getElementById("document").files[0]
+        if (!file) file = new Blob()
         let test = reader.readAsDataURL(file)
       },
     }

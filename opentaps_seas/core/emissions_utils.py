@@ -76,9 +76,11 @@ def record_emissions(
         "energyUseAmount": amount,
         "energyUseUom": uom,
     }
-    # shave header off
-    doc_bytes = b64decode(document[28:])
-    files={'emissionsDoc': doc_bytes}
+    files={'emissionsDoc': None}
+    if document != 'data:':
+        # shave header off
+        doc_bytes = b64decode(document[28:])
+        files={'emissionsDoc': doc_bytes}
 
     emissions_data = None
     try:
