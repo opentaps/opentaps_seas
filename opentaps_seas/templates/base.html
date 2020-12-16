@@ -45,64 +45,44 @@
     <script src="{% static 'js/dutils.js' %}"></script>
     <script type="text/javascript">
       dutils.conf.urls = {
-        'get_task_progress_json': '{% url "core:get_task_progress_json" '
-        999 ' %}'.replace('999', '<id>'),
+        'get_task_progress_json': '{% url "core:get_task_progress_json" '999' %}'.replace('999', '<id>'),
         'model_list_json': '{% url "core:model_list_json" %}',
         'model_list': '{% url "core:model_list" %}',
-        'model_detail': '{% url "core:model_detail" '
-        999 ' %}'.replace('999', '<id>'),
+        'model_detail': '{% url "core:model_detail" '999' %}'.replace('999', '<id>'),
         'site_list_json': '{% url "core:site_list_json" %}',
         'site_list': '{% url "core:site_list" %}',
-        'site_detail': '{% url "core:site_detail" '
-        999 ' %}'.replace('999', '<id>'),
+        'site_detail': '{% url "core:site_detail" '999' %}'.replace('999', '<id>'),
         'equipment_list_json': '{% url "core:equipment_list_json" %}',
         'equipment_list': '{% url "core:equipment_list" %}',
-        'equipment_detail': '{% url "core:equipment_detail" '
-        999 ' %}'.replace('999', '<id>'),
-        'equipment_dashboard': '{% url "core:equipment_dashboard" '
-        999 ' %}'.replace('999', '<id>'),
-        'equipment_data_points_table': '{% url "core:equipment_data_points_table" '
-        999 ' %}'.replace('999', '<id>'),
-        'point_detail': '{% url "core:point_detail" '
-        999 ' %}'.replace('999', '<id>'),
+        'equipment_detail': '{% url "core:equipment_detail" '999' %}'.replace('999', '<id>'),
+        'equipment_dashboard': '{% url "core:equipment_dashboard" '999' %}'.replace('999', '<id>'),
+        'equipment_data_points_table': '{% url "core:equipment_data_points_table" '999' %}'.replace('999', '<id>'),
+        'point_detail': '{% url "core:point_detail" '999' %}'.replace('999', '<id>'),
         'topic_list': '{% url "core:topic_list" %}',
         'topic_list_table': '{% url "core:topic_table" %}',
         'topic_json': '{% url "core:topic_json" %}',
         'topic_rules': '{% url "core:topic_rules" %}',
         'topic_table_fields': '{% url "core:topic_table_fields" %}',
-        'topictagruleset_run': '{% url "core:topictagruleset_run" '
-        999 ' %}'.replace('999', '<id>'),
-        'topictagrule_run': '{% url "core:topictagrule_run" '
-        999 ' %}'.replace('999', '<id>'),
+        'topictagruleset_run': '{% url "core:topictagruleset_run" '999' %}'.replace('999', '<id>'),
+        'topictagrule_run': '{% url "core:topictagrule_run" '999' %}'.replace('999', '<id>'),
         'tag_topics': '{% url "core:tag_topics" %}',
-        'topic_assoc': '{% url "core:topic_assoc" '
-        999 ' %}'.replace('999', '<id>'),
-        'topic_setup': '{% url "core:topic_setup" '
-        999 ' %}'.replace('999', '<id>'),
-        'state_list_json': '{% url "core:state_list_json" '
-        999 ' %}'.replace('999', '<country>'),
-        'timezone_list_json': '{% url "core:timezone_list_json" '
-        999 ' %}'.replace('999', '<geo_id>'),
-        'bacnet_prefix_list_json': '{% url "core:bacnet_prefix_list_json" '
-        999 ' %}'.replace('999', '<site>'),
+        'topic_assoc': '{% url "core:topic_assoc" '999' %}'.replace('999', '<id>'),
+        'topic_setup': '{% url "core:topic_setup" '999' %}'.replace('999', '<id>'),
+        'state_list_json': '{% url "core:state_list_json" '999' %}'.replace('999', '<country>'),
+        'timezone_list_json': '{% url "core:timezone_list_json" '999' %}'.replace('999', '<geo_id>'),
+        'bacnet_prefix_list_json': '{% url "core:bacnet_prefix_list_json" '999' %}'.replace('999', '<site>'),
         'utility_rates_json': '{% url "core:utility_rates_json" %}',
-        'meter_rate_plan_history': '{% url "core:meter_rate_plan_history" %}',
-        'meter_rate_plan_history_detail': '{% url "core:meter_rate_plan_history_detail" '
-        999 ' %}'.replace('999', '<rate_plan_history_id>'),
-        'meter_rate_plan_history_edit': '{% url "core:meter_rate_plan_history_edit" '
-        999 ' %}'.replace('999', '<rate_plan_history_id>'),
-        'utilityapi_meters_json': '{% url "core:utilityapi_meters_json" %}',
-        'utilityapi_meter_bills_import': '{% url "core:utilityapi_meter_bills_import" '
-        999 ' %}'.replace('999', '<meter_id>'),
-        'utilityapi_meter_data_import': '{% url "core:utilityapi_meter_data_import" '
-        999 ' %}'.replace('999', '<meter_id>'),
-        'utilityapi_meters_data_import': '{% url "core:utilityapi_meters_data_import" '
-        999 ' %}'.replace('999', '<site_id>'),
-        'utilityapi_create_form': '{% url "core:utilityapi_create_form" %}',
-        'weather_stations_json': '{% url "core:weather_stations_json" %}',
-        'meter_history_total_json': '{% url "core:meter_history_total_json" '
-        999 ' %}'.replace('999', '<meter_id>'),
-        'emissions_record_emissions_json': '{% url "core:emissions_record_emissions_json" %}',
+        'meter_rate_plan_history' : '{% url "core:meter_rate_plan_history" %}',
+        'meter_rate_plan_history_detail' : '{% url "core:meter_rate_plan_history_detail" '999' %}'.replace('999', '<rate_plan_history_id>'),
+        'meter_rate_plan_history_edit' : '{% url "core:meter_rate_plan_history_edit" '999' %}'.replace('999', '<rate_plan_history_id>'),
+        'utilityapi_meters_json' : '{% url "core:utilityapi_meters_json" %}',
+        'utilityapi_meter_bills_import' : '{% url "core:utilityapi_meter_bills_import" '999' %}'.replace('999', '<meter_id>'),
+        'utilityapi_meter_data_import' : '{% url "core:utilityapi_meter_data_import" '999' %}'.replace('999', '<meter_id>'),
+        'utilityapi_meters_data_import' : '{% url "core:utilityapi_meters_data_import" '999' %}'.replace('999', '<site_id>'),
+        'utilityapi_create_form' : '{% url "core:utilityapi_create_form" %}',
+        'weather_stations_json' : '{% url "core:weather_stations_json" %}',
+        'meter_history_total_json' : '{% url "core:meter_history_total_json" '999' %}'.replace('999', '<meter_id>'),
+        'emissions_record_emissions_json' : '{% url "core:emissions_record_emissions_json" %}',
 
       };
 
