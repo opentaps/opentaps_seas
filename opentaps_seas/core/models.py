@@ -882,7 +882,7 @@ def query_timeseries(qs, start=None, end=None):
 
 
 class Utility(models.Model):
-    utility_id = IntegerField(_("Utility Number"), primary_key=True)
+    utility_id = CharField(_("Utility Number"), max_length=100, primary_key=True)
     utility_name = CharField(max_length=255, blank=True, null=True)
     country = CharField(max_length=2, blank=True, null=True)
     state = CharField(max_length=2, blank=True, null=True)
