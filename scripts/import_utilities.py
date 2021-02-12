@@ -73,7 +73,7 @@ def import_entities(source_file_name):
             if first_row:
                 first_row = False
             else:
-                utility_id = 'US_EIA_' + row[0]
+                utility_id = 'USA_EIA_' + row[0]
                 utility_name = row[1]
                 state = row[2]
                 country = row[3]
