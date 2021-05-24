@@ -34,6 +34,7 @@ from ..core.models import FinancialTransaction
 from ..core.models import WeatherStation
 from ..core.models import WeatherHistory
 from .models import BaselineModel
+from django.utils.timezone import now
 
 logger = logging.getLogger(__name__)
 
@@ -394,7 +395,7 @@ def save_model(model, meter_id=None, frequency=None, description=None, from_date
         meter_id=meter_id,
         frequency=frequency,
         from_datetime=from_datetime,
-        thru_datetime=thru_datetime,
+        thru_datetime=thru_datetime or now(),
         description=description,
         model_params=model_params,
         plot_data=plot_data,
