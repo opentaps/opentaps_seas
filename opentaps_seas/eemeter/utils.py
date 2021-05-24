@@ -320,9 +320,10 @@ def get_hourly_model(data):
 
     # assign temperatures to bins
     logger.info('get_hourly_model: creating temperature_bins ...')
-    temperature_bins = eemeter.fit_temperature_bins(
+    occupied_temperature_bins, unoccupied_temperature_bins = eemeter.fit_temperature_bins(
         preliminary_design_matrix,
         segmentation=segmentation,
+        occupancy_lookup=occupancy_lookup,
     )
 
     # build a design matrix for each monthly segment
@@ -332,7 +333,8 @@ def get_hourly_model(data):
             preliminary_design_matrix,
             segmentation,
             occupancy_lookup,
-            temperature_bins,
+            occupied_temperature_bins,
+            unoccupied_temperature_bins,
         )
     )
 
@@ -341,7 +343,8 @@ def get_hourly_model(data):
     baseline_model = eemeter.fit_caltrack_hourly_model(
         segmented_design_matrices,
         occupancy_lookup,
-        temperature_bins,
+        occupied_temperature_bins,
+        unoccupied_temperature_bins,
     )
 
     logger.info('get_hourly_model: DONE')

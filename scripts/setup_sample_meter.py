@@ -58,7 +58,7 @@ def import_data(which):
     is_demo = which == 'demo'
 
     if is_demo:
-        # setup a sample meter and calcualte the savings
+        # setup a sample meter and calculate the savings
         site, meter, model = eemeter_utils.setup_demo_sample_models('demo-site-1', calc_savings=True)
         # setup a demo rate plan and calculate the financial values
         rp, _ = core_utils.setup_sample_rate_plan_history(meter, rate_paln_description='Simple Rate Plan')

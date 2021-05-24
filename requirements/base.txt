@@ -23,7 +23,7 @@ Pillow==7.0.0  # https://github.com/python-pillow/Pillow
 argon2-cffi==19.1.0  # https://github.com/hynek/argon2_cffi
 redis>=3.2
 
-crate==0.23.2
+crate==0.26.0
 matplotlib==3.1.2
 celery==4.4.0
 
@@ -56,8 +56,8 @@ boto3==1.11.15
 django-storages==1.9.1
 django-filer==1.6.0
 
-numpy==1.18.4
-pandas==0.25.3
+numpy==1.20.3
+pandas==1.2.4
 geocoder==1.38.1
 eeweather==0.3.24
 sqlalchemy==1.3.13
@@ -65,7 +65,7 @@ solaredge==0.0.3
 NREL-PySAM==2.2.2
 
 # Our eemeter fork
--e git+https://github.com/opentaps/eemeter.git@e544a295c3ab8721e632b61510232454ea24932d#egg=eemeter
+-e git+https://github.com/jwickers/eemeter.git@15f5b89c51e74a23bb5f10fbca25454c0996b936#egg=eemeter
 
 # Our greenbutton-python fork
 -e git+https://github.com/opentaps/greenbutton-python.git#egg=greenbutton
