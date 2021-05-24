@@ -24,7 +24,7 @@ argon2-cffi==19.1.0  # https://github.com/hynek/argon2_cffi
 redis>=3.2
 
 crate==0.26.0
-matplotlib==3.1.2
+matplotlib==3.4.2
 celery==4.4.0
 
 # Django
