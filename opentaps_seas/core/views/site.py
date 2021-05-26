@@ -17,7 +17,7 @@
 
 import logging
 
-from .common import GoogleApiMixin
+from .common import GoogleApiMixin, check_entity_permission_or_not_allowed, filter_entities_by_permission
 from .common import WithBreadcrumbsMixin
 from .common import WithFilesAndNotesAndTagsMixin
 from .. import utils
@@ -103,6 +103,11 @@ class SiteListView(LoginRequiredMixin, SingleTableMixin, GoogleApiMixin, WithBre
     table_pagination = {'per_page': 15}
     template_name = 'core/site_list.html'
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        # for normal users only show sites they have permissions to
+        return filter_entities_by_permission(qs, self.request.user)
+
     def get_context_data(self, **kwargs):
         context = super(SiteListView, self).get_context_data(**kwargs)
         table = context['table']
@@ -145,6 +150,8 @@ class SiteListJsonView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
+        # for normal users only show sites they have permissions to
+        qs = filter_entities_by_permission(qs, self.request.user)
         return qs.order_by(Lower('object_id'), Lower('description'))
 
     def render_to_response(self, context, **response_kwargs):
@@ -184,6 +191,8 @@ class SiteDetailView(LoginRequiredMixin, SingleTableMixin, WithFilesAndNotesAndT
         context = super(SiteDetailView, self).get_context_data(**kwargs)
         results = []
         site = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
+        # for normal users only show sites they have permissions to
+        check_entity_permission_or_not_allowed(self.kwargs['site'], self.request.user)
         equipments = EquipmentView.objects.filter(site_id=site.object_id).exclude(m_tags__contains=['point'])
         for e in equipments:
             data_points = PointView.objects.filter(equipment_id=e.object_id).count()
@@ -226,6 +235,8 @@ site_detail_view = SiteDetailView.as_view()
 @login_required()
 def site_ahu_summary_json(request, site):
     s = get_object_or_404(SiteView, entity_id=site)
+    # for normal users only show sites they have permissions to
+    check_entity_permission_or_not_allowed(site, request.user)
     ahus = EquipmentView.objects.filter(site_id=s.object_id).filter(m_tags__contains=['ahu'])
     logger.info('site_ahu_summary_json found AHU equipments: %s', ahus)
     results = {}
@@ -277,6 +288,8 @@ def site_ahu_summary_json(request, site):
 @login_required()
 def site_pie_chart_data_json(request, site):
     s = get_object_or_404(SiteView, entity_id=site)
+    # for normal users only show sites they have permissions to
+    check_entity_permission_or_not_allowed(site, request.user)
     equipments = EquipmentView.objects.filter(site_id=s.object_id).exclude(m_tags__contains=['point'])
     pie = {}
     if request.GET.get('cold_threshold'):

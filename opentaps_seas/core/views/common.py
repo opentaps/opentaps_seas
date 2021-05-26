@@ -17,9 +17,13 @@
 
 import logging
 import json
+
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import PermissionDenied
 from .. import utils
 from ..celery import Progress
-from ..models import Geo
+from ..models import EntityPermission, Geo
 from ..models import TimeZone
 from ..models import UnitOfMeasure
 
@@ -257,3 +261,15 @@ class UOMListJsonView(LoginRequiredMixin, ListView):
 
 
 uom_list_json_view = UOMListJsonView.as_view()
+
+
+def filter_entities_by_permission(queryset, user):
+    if not user.is_superuser:
+        return queryset.filter(entity_id__in=EntityPermission.objects.filter(user=user))
+    return queryset
+
+
+def check_entity_permission_or_not_allowed(entity_id, user):
+    if not user.is_superuser and not EntityPermission.objects.filter(entity_id=entity_id, user_id=user.id).exists():
+        raise PermissionDenied()
+

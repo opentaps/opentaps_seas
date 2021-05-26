@@ -17,7 +17,7 @@
 
 import logging
 
-from .common import WithBreadcrumbsMixin
+from .common import WithBreadcrumbsMixin, check_entity_permission_or_not_allowed, filter_entities_by_permission
 from .common import WithFilesAndNotesAndTagsMixin
 from .common import WithPointBreadcrumbsMixin
 from .point import PointTable
@@ -26,7 +26,7 @@ from .. import tasks
 from ..celery import Progress
 from ..forms.equipment import EquipmentCreateForm
 from ..forms.equipment import SolarEdgeUpdateForm
-from ..models import Entity
+from ..models import Entity, EntityPermission
 from ..models import EquipmentView
 from ..models import PointView
 from ..models import SiteView
@@ -56,6 +56,14 @@ from django_tables2.views import SingleTableMixin
 from django.shortcuts import get_object_or_404
 
 logger = logging.getLogger(__name__)
+
+
+def filter_equipments_by_permission(queryset, user):
+    # for normal users only show equipments for sites they have permissions to
+    if not user.is_superuser:
+        allowed_sites = filter_entities_by_permission(SiteView.objects, user)
+        queryset = queryset.filter(kv_tags__siteRef__in=allowed_sites.values('object_id'))
+    return queryset
 
 
 class EquipmentTable(Table):
@@ -115,7 +123,7 @@ class EquipmentCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
         context = super(EquipmentCreateView, self).get_context_data(**kwargs)
         # add the parent Site
         context['object'] = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
-
+        check_entity_permission_or_not_allowed(self.kwargs['site'], self.request.user)
         return context
 
     def get_form_kwargs(self):
@@ -136,6 +144,11 @@ class EquipmentListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMix
     table_pagination = {'per_page': 15}
     template_name = 'core/equipment_list.html'
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        # for normal users only show equipments for sites they have permissions to
+        return filter_equipments_by_permission(qs, self.request.user)
+
 
 equipment_list_view = EquipmentListView.as_view()
 
@@ -145,6 +158,8 @@ class EquipmentListJsonView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
+        # for normal users only show equipments for sites they have permissions to
+        qs = filter_equipments_by_permission(qs, self.request.user)
         return qs.order_by(Lower('object_id'), Lower('description'))
 
     def render_to_response(self, context, **response_kwargs):
@@ -198,6 +213,8 @@ class EquipmentDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin, Wit
         # add the parent Site (optional)
         try:
             context['site'] = SiteView.objects.get(object_id=context['object'].site_id)
+            # for normal users only show equipment for sites they have permissions to
+            check_entity_permission_or_not_allowed(context['site'].entity_id, self.request.user)
         except SiteView.DoesNotExist:
             pass
         # check SolarEdge data
@@ -240,6 +257,8 @@ class EquipmentSolarEdgeEditView(LoginRequiredMixin, WithBreadcrumbsMixin, Updat
             equip = EquipmentView.objects.get(entity_id=o.entity_id)
             try:
                 site = SiteView.objects.get(kv_tags__id=equip.site_id)
+                # for normal users only show equipment for sites they have permissions to
+                check_entity_permission_or_not_allowed(site.entity_id, self.request.user)
                 site_desc = site.description or equip.site_id
                 b.append({'url': reverse('core:site_detail', kwargs={'site': site.entity_id}),
                           'label': 'Site {}'.format(site_desc)})
@@ -269,6 +288,8 @@ class EquipmentSiteDetailView(EquipmentDetailView):
         context = super(EquipmentSiteDetailView, self).get_context_data(**kwargs)
         # add the parent Site
         context['site'] = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
+        # for normal users only show equipment for sites they have permissions to
+        check_entity_permission_or_not_allowed(context['site'].entity_id, self.request.user)
         return context
 
 
@@ -281,6 +302,13 @@ def equipment_fetch_solaredge_details(request, equip):
     equipment = get_object_or_404(EquipmentView, entity_id=equip)
     se = get_object_or_404(SolarEdgeSetting, entity_id=equip)
     result = {}
+    
+    try:
+        site = SiteView.objects.get(kv_tags__id=equipment.site_id)
+        # for normal users only show equipment for sites they have permissions to
+        check_entity_permission_or_not_allowed(site.entity_id, request.user)
+    except SiteView.DoesNotExist:
+        pass
 
     kwargs = {
         'user': request.user,
@@ -320,6 +348,14 @@ def equipment_fetch_solaredge_details(request, equip):
 def equipment_data_points_table(request, equip):
     logger.info('equipment_data_points_table: equip = %s', equip)
     equipment = get_object_or_404(EquipmentView, entity_id=equip)
+    
+    try:
+        site = SiteView.objects.get(kv_tags__id=equipment.site_id)
+        # for normal users only show equipment for sites they have permissions to
+        check_entity_permission_or_not_allowed(site.entity_id, request.user)
+    except SiteView.DoesNotExist:
+        pass
+
     data = PointView.objects.filter(equipment_id=equipment.object_id).order_by('description')
     d2 = utils.add_current_values(data)
     table = PointTable(d2, orderable=False)
@@ -339,6 +375,7 @@ class EquipmentPointDetailView(LoginRequiredMixin, WithFilesAndNotesAndTagsMixin
         context['grafana_url'] = settings.GRAFANA_BASE_URL + "/d/"
         # add the parent Site
         context['site'] = get_object_or_404(SiteView, entity_id=self.kwargs['site'])
+        check_entity_permission_or_not_allowed(self.kwargs['site'], self.request.user)
 
         # add the parent Equipment
         context['equipment'] = get_object_or_404(EquipmentView, entity_id=self.kwargs['equip'])
@@ -362,9 +399,16 @@ def equipment_dashboard(request, equip):
     result = {}
     try:
         entity = Entity.objects.get(entity_id=equip)
-    except EquipmentView.DoesNotExist:
+    except Entity.DoesNotExist:
         result = {'errors': 'Equipment not found : {}'.format(equip)}
     else:
+        if entity.kv_tags.get('siteRef'):
+            try:
+                site = SiteView.objects.get(kv_tags__id=entity.kv_tags['siteRef'])
+                # for normal users only show equipment for sites they have permissions to
+                check_entity_permission_or_not_allowed(site.entity_id, request.user)
+            except SiteView.DoesNotExist:
+                pass
         topic = None
         if entity.kv_tags['dis']:
             topic = entity.kv_tags['dis']

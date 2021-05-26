@@ -23,7 +23,7 @@ from calendar import monthrange
 import logging
 from math import isnan
 
-from .common import WithBreadcrumbsMixin
+from .common import WithBreadcrumbsMixin, check_entity_permission_or_not_allowed
 from .. import utils
 from .. import pysam_utils
 from .. import emissions_utils
@@ -68,6 +68,56 @@ from opentaps_seas.eemeter.models import BaselineModel
 from rest_framework.decorators import api_view
 
 logger = logging.getLogger(__name__)
+
+class MeterBCMixin(WithBreadcrumbsMixin):
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({"url": reverse("core:site_list"), "label": "Sites"})
+
+        site = None
+        site_id = None
+        if context.get("object") and context["object"].site_id:
+            site_id = context["object"].site_id
+        if self.kwargs.get("site_id"):
+            site_id = self.kwargs["site_id"]
+        if site_id:
+            try:
+                site = SiteView.objects.get(entity_id=site_id)
+                label = "Site"
+                if site.description:
+                    label = site.description
+                url = reverse(
+                    "core:site_detail", kwargs={"site": site_id}
+                )
+                b.append({"url": url, "label": label})
+                # for normal users only show equipment for sites they have permissions to
+                check_entity_permission_or_not_allowed(site.entity_id, self.request.user)
+            except Entity.DoesNotExist:
+                pass
+
+        if self.kwargs.get("meter_id"):
+            if not site_id:
+                try:
+                    meter = Meter.objects.get(meter_id=self.kwargs["meter_id"])
+                except Meter.DoesNotExist:
+                    pass
+                else:
+                    try:
+                        site = SiteView.objects.get(entity_id=meter.site_id)
+                    except SiteView.DoesNotExist:
+                        pass
+                    else:
+                        label = "Site"
+                        if site.description:
+                            label = site.description
+                        url = reverse("core:site_detail", kwargs={"site": meter.site_id})
+                        b.append({"url": url, "label": label})
+                        # for normal users only show equipment for sites they have permissions to
+                        check_entity_permission_or_not_allowed(site.entity_id, self.request.user)
+
+            b.append({"label": "Meter {}".format(self.kwargs["meter_id"])})
+        return b
 
 
 class MeterFinancialValueTable(Table):
@@ -121,9 +171,7 @@ def meter_financial_value_items_table(request, meter_value_id):
     return HttpResponse(table.as_html(request))
 
 
-class MeterFinancialValueDetailView(
-    LoginRequiredMixin, WithBreadcrumbsMixin, DetailView
-):
+class MeterFinancialValueDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     model = MeterFinancialValue
     slug_field = "meter_value_id"
     slug_url_kwarg = "meter_value_id"
@@ -467,7 +515,7 @@ class MeterRatePlanDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailVi
 meter_rate_plan_detail_view = MeterRatePlanDetailView.as_view()
 
 
-class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListView):
+class MeterRatePlanHistoryView(LoginRequiredMixin, MeterBCMixin, ListView):
     model = MeterRatePlanHistory
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
@@ -491,33 +539,9 @@ class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListVie
         return qs.filter(meter_id=meter_id)
 
     def get_breadcrumbs(self, context):
-        b = []
-        b.append({"url": reverse("core:site_list"), "label": "Sites"})
-        meter = None
-        if self.kwargs["meter_id"]:
-            try:
-                meter = Meter.objects.get(meter_id=self.kwargs["meter_id"])
-            except Meter.DoesNotExist:
-                pass
-            else:
-                try:
-                    site = SiteView.objects.get(entity_id=meter.site_id)
-                except SiteView.DoesNotExist:
-                    pass
-                else:
-                    label = "Site"
-                    if site.description:
-                        label = site.description
-                    url = reverse("core:site_detail", kwargs={"site": meter.site_id})
-                    b.append({"url": url, "label": label})
-
-        if meter:
-            url = reverse("core:meter_detail", kwargs={"meter_id": meter.meter_id})
-            label = "Meter " + meter.meter_id
-            if meter.description:
-                label = "Meter " + meter.description
-            b.append({"url": url, "label": label})
-
+        b = super().get_breadcrumbs(context)
+        if b and b[-1] and not b[-1].get("url"):
+            b[-1]['url'] = reverse("core:meter_detail", kwargs={"meter_id": self.kwargs["meter_id"]})
         b.append({"label": "Meter Rate Plan History"})
         return b
 
@@ -525,7 +549,7 @@ class MeterRatePlanHistoryView(LoginRequiredMixin, WithBreadcrumbsMixin, ListVie
 meter_rate_plan_history_view = MeterRatePlanHistoryView.as_view()
 
 
-class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+class MeterDetailView(LoginRequiredMixin, MeterBCMixin, DetailView):
     model = Meter
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
@@ -591,32 +615,11 @@ class MeterDetailView(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
 
         return context
 
-    def get_breadcrumbs(self, context):
-        b = []
-        b.append({"url": reverse("core:site_list"), "label": "Sites"})
-
-        site = None
-        if context["object"] and context["object"].site_id:
-            try:
-                site = SiteView.objects.get(entity_id=context["object"].site_id)
-                label = "Site"
-                if site.description:
-                    label = site.description
-                url = reverse(
-                    "core:site_detail", kwargs={"site": context["object"].site_id}
-                )
-                b.append({"url": url, "label": label})
-            except Entity.DoesNotExist:
-                pass
-
-        b.append({"label": "Meter {}".format(self.kwargs["meter_id"])})
-        return b
-
 
 meter_detail_view = MeterDetailView.as_view()
 
 
-class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
+class MeterCreateView(LoginRequiredMixin, MeterBCMixin, CreateView):
     model = Meter
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
@@ -653,7 +656,7 @@ class MeterCreateView(LoginRequiredMixin, WithBreadcrumbsMixin, CreateView):
 meter_create_view = MeterCreateView.as_view()
 
 
-class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
+class MeterEditView(LoginRequiredMixin, MeterBCMixin, UpdateView):
     model = Meter
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
@@ -669,7 +672,7 @@ class MeterEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
 meter_edit_view = MeterEditView.as_view()
 
 
-class MeterDeactivateView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
+class MeterDeactivateView(LoginRequiredMixin, MeterBCMixin, DeleteView):
     model = Meter
     slug_field = "meter_id"
     slug_url_kwarg = "meter_id"
@@ -702,6 +705,8 @@ def utility_rates_json(request):
         else:
             try:
                 site = SiteView.objects.get(entity_id=meter.site_id)
+                # for normal users only show equipment for sites they have permissions to
+                check_entity_permission_or_not_allowed(site.entity_id, request.user)
             except SiteView.DoesNotExist:
                 return JsonResponse(
                     {"error": "Site not found : {}".format(meter.site_id)}
@@ -776,6 +781,20 @@ def meter_rate_plan_history(request):
     if request.method == "POST":
         data = request.data
         meter_id = data.get("meter_id")
+        if meter_id:
+            try:
+                meter = Meter.objects.get(meter_id=meter_id)
+            except Meter.DoesNotExist:
+                return JsonResponse({"error": "Meter not found : {}".format(meter_id)})
+            else:
+                try:
+                    site = SiteView.objects.get(entity_id=meter.site_id)
+                    # for normal users only show equipment for sites they have permissions to
+                    check_entity_permission_or_not_allowed(site.entity_id, request.user)
+                except SiteView.DoesNotExist:
+                    return JsonResponse(
+                        {"error": "Site not found : {}".format(meter.site_id)}
+                    )
 
         page_label = data.get("page_label")
 
@@ -854,6 +873,20 @@ def meter_rate_plan_history(request):
                 )
     elif request.method == "GET":
         meter_id = request.GET.get("meter_id")
+        if meter_id:
+            try:
+                meter = Meter.objects.get(meter_id=meter_id)
+            except Meter.DoesNotExist:
+                return JsonResponse({"error": "Meter not found : {}".format(meter_id)})
+            else:
+                try:
+                    site = SiteView.objects.get(entity_id=meter.site_id)
+                    # for normal users only show equipment for sites they have permissions to
+                    check_entity_permission_or_not_allowed(site.entity_id, request.user)
+                except SiteView.DoesNotExist:
+                    return JsonResponse(
+                        {"error": "Site not found : {}".format(meter.site_id)}
+                    )
         items = MeterRatePlanHistory.objects.filter(meter_id=meter_id).order_by(
             "-from_datetime"
         )

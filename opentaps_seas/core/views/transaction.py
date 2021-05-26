@@ -17,7 +17,9 @@
 
 import logging
 
-from .common import _read_notes
+from django.core.exceptions import PermissionDenied
+
+from .common import _read_notes, check_entity_permission_or_not_allowed, filter_entities_by_permission
 from .common import _read_files
 from .common import WithBreadcrumbsMixin
 from .. import utils
@@ -29,7 +31,7 @@ from ..forms.transaction import FinancialTransactionLinkForm
 from ..forms.transaction import FinancialTransactionFileDeleteForm
 from ..forms.transaction import FinancialTransactionFileUpdateForm
 from ..forms.transaction import FinancialTransactionFileUploadForm
-from ..models import FinancialTransaction
+from ..models import EntityPermission, FinancialTransaction
 from ..models import FinancialTransactionFile
 from ..models import FinancialTransactionNote
 from ..models import SiteView
@@ -61,6 +63,21 @@ from filer.models import Image as FilerFile
 logger = logging.getLogger(__name__)
 
 
+def filter_transactions_by_permission(queryset, user):
+    # for normal users only show transactions for meters in sites they have permissions to
+    if not user.is_superuser:
+        queryset = queryset.filter(meter__site__in=EntityPermission.objects.filter(user=user).values('entity_id'))
+    return queryset
+
+
+def check_transaction_permission_or_not_allowed(trans_id, user):
+    if user.is_superuser:
+        return
+    if not FinancialTransaction.objects.filter(financial_transaction_id=trans_id, meter__site__in=EntityPermission.objects.filter(user=user).values('entity_id')).exists():
+        raise PermissionDenied()
+
+
+
 class FinancialTransactionTable(Table):
     financial_transaction_id = Column(verbose_name='ID', linkify=lambda record: record.get_absolute_url())
     amount = Column(attrs={'th': {'align': 'right'}, 'td': {'align': 'right'}})
@@ -85,17 +102,29 @@ class FinancialTransactionTable(Table):
         order_by = '-transaction_datetime'
 
 
+class CheckTransactionPermissionMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj_id = self.kwargs["financial_transaction_id"]
+        check_transaction_permission_or_not_allowed(obj_id, self.request.user)
+        return context
+
 class TransactionListView(LoginRequiredMixin, SingleTableMixin, WithBreadcrumbsMixin, ListView):
     model = FinancialTransaction
     table_class = FinancialTransactionTable
     table_pagination = {'per_page': 10}
     template_name = 'core/transaction_list.html'
 
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        # for normal users only show transactions for meters in sites they have permissions to
+        return filter_transactions_by_permission(qs, self.request.user)
+
 
 transaction_list_view = TransactionListView.as_view()
 
 
-class TransactionDetailView(LoginRequiredMixin, DetailView):
+class TransactionDetailView(LoginRequiredMixin, CheckTransactionPermissionMixin, DetailView):
     model = FinancialTransaction
     slug_field = "financial_transaction_id"
     slug_url_kwarg = "financial_transaction_id"
@@ -127,7 +156,7 @@ class TransactionDetailView(LoginRequiredMixin, DetailView):
 transaction_detail_view = TransactionDetailView.as_view()
 
 
-class TransactionEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
+class TransactionEditView(LoginRequiredMixin, CheckTransactionPermissionMixin, WithBreadcrumbsMixin, UpdateView):
     model = FinancialTransaction
     slug_field = "financial_transaction_id"
     slug_url_kwarg = "financial_transaction_id"
@@ -138,7 +167,7 @@ class TransactionEditView(LoginRequiredMixin, WithBreadcrumbsMixin, UpdateView):
 transaction_edit_view = TransactionEditView.as_view()
 
 
-class TransactionDeleteView(LoginRequiredMixin, WithBreadcrumbsMixin, DeleteView):
+class TransactionDeleteView(LoginRequiredMixin, CheckTransactionPermissionMixin, WithBreadcrumbsMixin, DeleteView):
     model = FinancialTransaction
     slug_field = "financial_transaction_id"
     slug_url_kwarg = "financial_transaction_id"
@@ -163,6 +192,7 @@ transaction_delete_view = TransactionDeleteView.as_view()
 
 @login_required()
 def transaction_note(request, financial_transaction_id):
+    check_transaction_permission_or_not_allowed(financial_transaction_id, request.user)
     if request.method == 'GET':
         items = []
         _read_notes(FinancialTransactionNote.objects.filter(financial_transaction_id=financial_transaction_id), items)
@@ -208,6 +238,7 @@ def transaction_note(request, financial_transaction_id):
 
 @login_required()
 def transaction_file_upload(request, financial_transaction_id):
+    check_transaction_permission_or_not_allowed(financial_transaction_id, request.user)
     if request.method == 'GET':
         items = []
         _read_files(FinancialTransactionFile.objects.filter(financial_transaction_id=financial_transaction_id), items)
@@ -273,6 +304,7 @@ def transaction_file_upload(request, financial_transaction_id):
 @require_POST
 @login_required()
 def transaction_link(request, financial_transaction_id):
+    check_transaction_permission_or_not_allowed(financial_transaction_id, request.user)
     if request.POST.get('update'):
         try:
             e = FinancialTransactionFile.objects.get(id=request.POST.get('id'),
@@ -301,6 +333,7 @@ def transaction_link(request, financial_transaction_id):
 
 @login_required()
 def site_transactions_table(request, site):
+    check_entity_permission_or_not_allowed(site, request.user)
     s = get_object_or_404(SiteView, entity_id=site)
     rc = RequestConfig(request, paginate={"per_page": 10})
     table = rc.configure(FinancialTransactionTable(s.transactions()))
@@ -310,6 +343,7 @@ def site_transactions_table(request, site):
 @login_required()
 def meter_transactions_table(request, meter):
     s = get_object_or_404(Meter, meter_id=meter)
+    check_entity_permission_or_not_allowed(meter.site_id, request.user)
     rc = RequestConfig(request, paginate={"per_page": 10})
     table = rc.configure(FinancialTransactionTable(s.transactions()))
     return HttpResponse(table.as_html(request))

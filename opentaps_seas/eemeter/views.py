@@ -20,7 +20,7 @@ from datetime import datetime
 from datetime import timedelta
 from ..core.models import Meter
 from ..core.models import SiteView
-from ..core.views.common import WithBreadcrumbsMixin
+from ..core.views.common import WithBreadcrumbsMixin, check_entity_permission_or_not_allowed
 from .models import BaselineModel
 from .forms import CalcMeterSavingsForm
 from .forms import MeterModelCreateForm
@@ -57,6 +57,8 @@ class ModelBCMixin(WithBreadcrumbsMixin):
                 label = site.description
             url = reverse("core:site_detail", kwargs={'site': site.entity_id})
             b.append({'url': url, 'label': label})
+            # for normal users only show equipment for sites they have permissions to
+            check_entity_permission_or_not_allowed(site.entity_id, self.request.user)
 
         if meter:
             label = 'Meter'

@@ -257,6 +257,13 @@ class Entity(models.Model):
             self.save()
 
 
+class EntityPermission(models.Model):
+    entity_id = CharField(_("Entity ID"), max_length=255, primary_key=True)
+    user = ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, on_delete=models.CASCADE)
+    # Later on can add a permission type field to restrict what permissions this gives
+    # for now we just use the assoc existence.
+
+
 class ModelView(models.Model):
     entity_id = CharField(_("Model ID"), max_length=255, primary_key=True)
     object_id = CharField(_("Object ID"), max_length=255, blank=True)
