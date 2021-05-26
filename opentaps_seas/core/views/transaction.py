@@ -343,7 +343,7 @@ def site_transactions_table(request, site):
 @login_required()
 def meter_transactions_table(request, meter):
     s = get_object_or_404(Meter, meter_id=meter)
-    check_entity_permission_or_not_allowed(meter.site_id, request.user)
+    check_entity_permission_or_not_allowed(s.site_id, request.user)
     rc = RequestConfig(request, paginate={"per_page": 10})
     table = rc.configure(FinancialTransactionTable(s.transactions()))
     return HttpResponse(table.as_html(request))
