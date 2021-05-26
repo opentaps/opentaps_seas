@@ -66,7 +66,7 @@ class SitesAPITests(OpentapsSeasTestCase):
 
     def setUp(self):
         self._cleanup_data()
-        get_user_model().objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        get_user_model().objects.create_superuser('temporary', 'temporary@gmail.com', 'temporary')
 
     def tearDown(self):
         self._cleanup_data()
