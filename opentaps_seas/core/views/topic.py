@@ -28,7 +28,7 @@ from zipfile import ZipFile
 
 from .common import WithBreadcrumbsMixin
 from .. import utils
-from ..models import Entity
+from ..models import Entity, EntityPermission
 from ..models import EquipmentView
 from ..models import Tag
 from ..models import Topic
@@ -1442,6 +1442,9 @@ def topic_assoc(request, topic):
             logger.info('topic_assoc create Site : %s', site)
             site_entity_id = site.entity_id
             site.save()
+            # Add permission for the current user (even if that user is Admin)
+            permission = EntityPermission(entity_id=entity_id, user=request.user)
+            permission.save()
         if equipment:
             logger.info('topic_assoc create Equipment : %s', equipment)
             equipment_entity_id = equipment.entity_id

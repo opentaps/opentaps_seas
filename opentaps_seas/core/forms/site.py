@@ -17,7 +17,7 @@
 
 import logging
 from .. import utils
-from ..models import Entity
+from ..models import Entity, EntityPermission
 from ..models import TimeZone
 from django import forms
 from django.template.defaultfilters import slugify
@@ -36,6 +36,7 @@ class SiteCreateForm(forms.ModelForm):
     timezone = forms.ChoiceField(required=True)
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
         super(SiteCreateForm, self).__init__(*args, **kwargs)
         self.fields['timezone'] = forms.ChoiceField(choices=TimeZone.get_choices())
 
@@ -73,6 +74,11 @@ class SiteCreateForm(forms.ModelForm):
             site.add_tag('tz', timezone, commit=False)
 
         site.save()
+
+        # Add permission for the current user (even if that user is Admin)
+        permission = EntityPermission(entity_id=entity_id, user=self.user)
+        permission.save()
+
         self.instance = Entity.objects.get(entity_id=entity_id)
         self._post_clean()  # reset the form as updating the just created instance
         return self.instance

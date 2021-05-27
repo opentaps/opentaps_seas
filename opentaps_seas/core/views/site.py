@@ -169,10 +169,14 @@ class SiteCreateView(LoginRequiredMixin, SiteBCMixin, CreateView):
     template_name = 'core/site_edit.html'
     form_class = SiteCreateForm
 
+    def get_form_kwargs(self):
+        kwargs = super(SiteCreateView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super(SiteCreateView, self).get_context_data(**kwargs)
         context['country_list'] = Geo.get_country_choices()
-
         return context
 
 
