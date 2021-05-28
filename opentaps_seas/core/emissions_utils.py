@@ -18,13 +18,12 @@
 import logging
 import requests
 from django.conf import settings
-import json
-from base64 import b64decode, b64encode
+from base64 import b64decode
 
 logger = logging.getLogger(__name__)
 
 
-def get_emissions_data(
+def get_all_emissions_data(
     user_id, user_org, utility_id, account_number, from_date, thru_date
 ):
     emissions_data = None
@@ -32,8 +31,7 @@ def get_emissions_data(
         api_url = settings.EMISSIONS_API_URL
     else:
         raise NameError("Missing Emissions API configuration")
-    # api_url = ""
-    headers = {"Accept": "application/json"}
+
     api_url += f"/emissionscontract/getAllEmissionsData/{user_id}/{user_org}/{utility_id}/{account_number}"
     try:
         r = requests.get(api_url)
@@ -55,6 +53,35 @@ def get_emissions_data(
     return emissions_data
 
 
+def get_emissions_data(
+    user_id, user_org, emissions_id
+):
+    emissions_data = None
+    if settings.EMISSIONS_API_URL:
+        api_url = settings.EMISSIONS_API_URL
+    else:
+        raise NameError("Missing Emissions API configuration")
+
+    api_url += f"/emissionscontract/getEmissionsData/{user_id}/{user_org}/{emissions_id}"
+    try:
+        r = requests.get(api_url)
+        if r.status_code == 200:
+            emissions_data = r.json()
+    except requests.exceptions.ConnectionError as e:
+        logger.error(e)
+
+    # Format dates for display
+    if emissions_data:
+        emissions_data["fromDate"] = emissions_data["fromDate"].replace(
+            "T", " "
+        )
+        emissions_data["thruDate"] = emissions_data["thruDate"].replace(
+            "T", " "
+        )
+
+    return emissions_data
+
+
 def record_emissions(
     user_id, org_name, utility_id, account_number, from_date, thru_date, amount, uom, document
 ):
@@ -65,7 +92,6 @@ def record_emissions(
         raise NameError("Missing Emissions API configuration")
 
     api_url += "/emissionscontract/recordEmissions"
-    headers = {"Content-Type": "multipart/form-data"}
     data = {
         "userId": user_id,
         "orgName": org_name,
@@ -76,11 +102,11 @@ def record_emissions(
         "energyUseAmount": amount,
         "energyUseUom": uom,
     }
-    files={'emissionsDoc': None}
+    files = {'emissionsDoc': None}
     if document != 'data:':
         # shave header off
         doc_bytes = b64decode(document[28:])
-        files={'emissionsDoc': doc_bytes}
+        files = {'emissionsDoc': doc_bytes}
 
     emissions_data = None
     try:
@@ -91,3 +117,33 @@ def record_emissions(
         logger.error(e)
 
     return emissions_data
+
+
+def record_emissions_token(
+    user_id, user_org, account_number, emissions_id, address_to_issue
+):
+    # /emissionscontract/recordAuditedEmissionsToken
+    if settings.EMISSIONS_API_URL:
+        api_url = settings.EMISSIONS_API_URL
+    else:
+        raise NameError("Missing Emissions API configuration")
+
+    api_url += "/emissionscontract/recordAuditedEmissionsToken"
+
+    data = {
+        "userId": user_id,
+        "orgName": user_org,
+        "partyId": account_number,
+        "emissionsRecordsToAudit": emissions_id,
+        "addressToIssue": address_to_issue,
+    }
+
+    token_data = None
+    try:
+        r = requests.post(api_url, data=data)
+        if r.status_code == 201:
+            token_data = r.json()
+    except requests.exceptions.ConnectionError as e:
+        logger.error(e)
+
+    return token_data

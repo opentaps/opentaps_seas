@@ -504,4 +504,15 @@ urlpatterns = [
         view=meter.meter_history_total_json,
         name="meter_history_total_json",
     ),
+
+    path(
+        "emissions/tokenize_emissions/<path:meter_id>/<path:emissions_id>",
+        view=emissions.tokenize_emissions,
+        name="emissions_tokenize_emissions",
+    ),
+    path(
+        "emissions/record_emissions_token.json",
+        view=emissions.record_emissions_token,
+        name="emissions_record_emissions_token_json",
+    ),
 ]

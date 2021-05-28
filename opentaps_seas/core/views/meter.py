@@ -598,7 +598,7 @@ class MeterDetailView(LoginRequiredMixin, MeterBCMixin, DetailView):
                 thru_date = date(today.year, today.month, last_day)
 
                 try:
-                    emissions_data = emissions_utils.get_emissions_data(
+                    emissions_data = emissions_utils.get_all_emissions_data(
                         user_id,
                         user_org,
                         meter.utility_id,
@@ -1036,4 +1036,3 @@ def meter_history_total_json(request, meter_id):
     }
 
     return JsonResponse({"item": item})
-

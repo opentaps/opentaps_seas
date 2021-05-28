@@ -121,3 +121,93 @@ def record_emissions(request):
             return JsonResponse({"success": 1, "emissions_data": emissions_data})
         else:
             return JsonResponse({"error": "Cannot record emissions"})
+
+
+class TokenizeEmissions(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
+    model = Meter
+    slug_field = "meter_id"
+    slug_url_kwarg = "meter_id"
+    template_name = "core/emissions_tokenize_emissions.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(TokenizeEmissions, self).get_context_data(**kwargs)
+        context["meter_id"] = self.kwargs["meter_id"]
+        emissions_id = self.kwargs["emissions_id"]
+        context["emissions_id"] = emissions_id
+        user_id = self.request.user.username
+        user_org = self.request.user.org_name
+
+        if emissions_id:
+            try:
+                emissions_data = emissions_utils.get_emissions_data(
+                    user_id,
+                    user_org,
+                    emissions_id
+                )
+                if emissions_data:
+                    context["emissions_data"] = emissions_data
+                else:
+                    context["emissions_data_error"] = "Cannot get emissions data"
+            except NameError as e:
+                context["emissions_data_error"] = e
+
+        return context
+
+    def get_breadcrumbs(self, context):
+        b = []
+        b.append({"url": reverse("core:site_list"), "label": "Sites"})
+        meter = None
+        if self.kwargs["meter_id"]:
+            try:
+                meter = Meter.objects.get(meter_id=self.kwargs["meter_id"])
+            except Meter.DoesNotExist:
+                pass
+            else:
+                try:
+                    site = SiteView.objects.get(entity_id=meter.site_id)
+                except SiteView.DoesNotExist:
+                    pass
+                else:
+                    label = "Site"
+                    if site.description:
+                        label = site.description
+                    url = reverse("core:site_detail", kwargs={"site": meter.site_id})
+                    b.append({"url": url, "label": label})
+
+        if meter:
+            url = reverse("core:meter_detail", kwargs={"meter_id": meter.meter_id})
+            label = "Meter " + meter.meter_id
+            if meter.description:
+                label = "Meter " + meter.description
+            b.append({"url": url, "label": label})
+
+        b.append({"label": "Create Emissions Token"})
+        return b
+
+
+tokenize_emissions = TokenizeEmissions.as_view()
+
+
+@login_required()
+@api_view(["POST"])
+def record_emissions_token(request):
+    if request.method == "POST":
+        data = request.data
+        user_id = data.get("user_id")
+        org_name = data.get("org_name")
+        account_number = data.get("account_number")
+        emissions_id = data.get("emissions_id")
+        address_to_issue = data.get("address_to_issue")
+
+        token_data = emissions_utils.record_emissions_token(
+            user_id,
+            org_name,
+            account_number,
+            emissions_id,
+            address_to_issue
+        )
+
+        if token_data:
+            return JsonResponse({"success": 1, "token_data": token_data})
+        else:
+            return JsonResponse({"error": "Cannot record emissions token"})

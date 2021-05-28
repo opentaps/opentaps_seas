@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}Tokenize Emissions for Meter: {{ meter.meter_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3" id="tokenizeemissions">
+    <div class="card-body">
+      <h2>Tokenize Emissions for Meter {% if meter.description %}{{ meter.description }}{% else %}{{ meter.meter_id }}{% endif %}</h2>
+      {% block inner_content %}
+
+      {% if emissions_data %}
+        <div>From date: {{ emissions_data.fromDate }}</div>
+        <div>Thru date: {{ emissions_data.thruDate }}</div>
+        <br>
+      {% endif %}
+
+      {% if emissions_data_error %}
+        <div class="alert alert-danger flex-grow-1">{{ emissions_data_error }}</div>
+      {% endif %}
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error">
+        ${ errors.error }
+      </div>
+      <div class="alert alert-success mt-3" role="alert" v-if="successes.success" v-cloak>
+        ${ successes.success }
+      </div>
+
+      <div class="form-group">
+        <label for="addressToIssue">Address*</label>
+        <b-form-input type="text" id="addressToIssue" placeholder="0x000..." :state="addressToIssueState" v-model="addressToIssue" required></b-form-input>
+        <b-form-invalid-feedback id="addressToIssue">
+            Address is required
+        </b-form-invalid-feedback>
+      </div>
+
+      <div class="mt-3 text-right">
+        <b-button v-if="!isRecordDisabled && !success" variant="primary" v-on:click.stop.prevent="tokenize_emissions()" :disabled="isRecordDisabled">
+          Record Token
+        </b-button>
+
+        <b-button v-else-if="success && errors.error" variant="secondary" :disabled="!isRecordDisabled">
+          Failed
+        </b-button>
+        <b-button v-else-if="success" variant="secondary" :disabled="!isRecordDisabled">
+          Recorded
+        </b-button>
+
+        <b-button v-else variant="secondary" :disabled="isRecordDisabled">
+          Please wait...
+        </b-button>
+        {% comment %} <b-spinner v-if="isRecordDisabled" variant="secondary"></b-spinner> {% endcomment %}
+      </div>
+      <a v-bind:href="url">
+        <button class="btn btn-primary mt-5" type="submit">Back</button>
+      </a>
+     {% endblock inner_content %}
+
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    name: 'tokenizeemissions',
+    el: '#tokenizeemissions',
+    data() {
+      return {
+        userId: "{{user.username}}",
+        orgName: "{{user.org_name}}",
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        isRecordDisabled: false,
+        success: false,
+        url: "/opentaps_seas/meter/view/{{ meter_id|safe}}",
+        addressToIssueState: null,
+        addressToIssue: null,
+        errors: {'error': null},
+        successes:  {'success': null},
+        meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
+        emissionsId: {%if emissions_id %}'{{ emissions_id|safe}}'{%else%}''{%endif%},
+        accountNumber: {%if meter.account_number %}'{{ meter.account_number|safe}}'{%else%}''{%endif%},
+
+      }
+    },
+    mounted() {
+    },
+    methods: {
+      tokenize_emissions(item) {
+        this.addressToIssueState = null;
+        if (!this.addressToIssue) {
+            this.addressToIssueState = false;
+        } else {
+            this.isRecordDisabled = true;
+            url = "/opentaps_seas/emissions/record_emissions_token.json"
+            data = new Object();
+            data['user_id'] = this.userId;
+            data['org_name'] = this.orgName;
+            data['account_number'] = this.accountNumber;
+            data['emissions_id'] = this.emissionsId;
+            data['address_to_issue'] = this.addressToIssue;
+
+            axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+              .then(x => x.data)
+              .then(x => {
+                if (x.success) {
+                  this.successes = {'success': 'Successfully created.'};
+
+                } else if (x.error) {
+                  this.errors['error'] = x.error;
+                } else {
+                  this.errors['error'] = 'Cannot create emissions token';
+                }
+                this.isRecordDisabled = false;
+                this.success = true;
+              })
+              .catch(err => {
+                e = getResponseError(err);
+                console.error(e, err);
+                this.errors = e;
+                this.isRecordDisabled = false;
+              });
+
+        }
+      },
+    }
+  });
+})();
+</script>
+{% endblock content %}
