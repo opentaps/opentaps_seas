@@ -154,7 +154,7 @@
               <th scope="col" align="right">Non-Renewable Energy</th>
               <th scope="col" align="right">Factor Source</th>
               <th scope="col" align="right">Document</th>
-              <th scope="col" align="right"></th>
+              <th scope="col" align="right">Token ID</th>
             </tr>
           </thead>
           <tbody>
@@ -173,7 +173,7 @@
               <td align="right">N/A</td>
               {% endif %}
               {% if emissions.tokenId|length > 0 %}
-              <td align="right">Tokenized</td>
+              <td align="right">{{ emissions.tokenId }}</td>
               {% else %}
               <td align="right"><a href="{% url 'core:emissions_tokenize_emissions' object.meter_id emissions.uuid %}">Tokenize</a></td>
               {% endif %}

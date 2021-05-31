@@ -49,6 +49,10 @@ def get_all_emissions_data(
             emission_data_set["thruDate"] = emission_data_set["thruDate"].replace(
                 "T", " "
             )
+            if emission_data_set["tokenId"]:
+                tmp = emission_data_set["tokenId"].split(":")
+                if tmp and len(tmp) > 1:
+                    emission_data_set["tokenId"] = tmp[1]
 
     return emissions_data
 
@@ -78,6 +82,10 @@ def get_emissions_data(
         emissions_data["thruDate"] = emissions_data["thruDate"].replace(
             "T", " "
         )
+        if emissions_data["tokenId"]:
+            tmp = emissions_data["tokenId"].split(":")
+            if tmp and len(tmp) > 1:
+                emissions_data["tokenId"] = tmp[1]
 
     return emissions_data
 
