@@ -49,6 +49,12 @@ def get_all_emissions_data(
             emission_data_set["thruDate"] = emission_data_set["thruDate"].replace(
                 "T", " "
             )
+            emission_data_set["totalEnergyUsed"] = 0.0
+            if emission_data_set["renewableEnergyUseAmount"]:
+                emission_data_set["totalEnergyUsed"] = float(emission_data_set["renewableEnergyUseAmount"])
+            if emission_data_set["nonrenewableEnergyUseAmount"]:
+                emission_data_set["totalEnergyUsed"] += float(emission_data_set["nonrenewableEnergyUseAmount"])
+
             if emission_data_set["tokenId"]:
                 tmp = emission_data_set["tokenId"].split(":")
                 if tmp and len(tmp) > 1:
@@ -147,11 +153,18 @@ def record_emissions_token(
     }
 
     token_data = None
+    timeout = False
     try:
         r = requests.post(api_url, data=data)
         if r.status_code == 201:
             token_data = r.json()
-    except requests.exceptions.ConnectionError as e:
-        logger.error(e)
+    except requests.exceptions.ConnectTimeout:
+        timeout = True
+    except requests.exceptions.Timeout:
+        timeout = True
+    except requests.exceptions.ConnectionError:
+        timeout = True
+    except Exception as e:
+        logger.error("record_emissions_token: request error:", e)
 
-    return token_data
+    return token_data, timeout

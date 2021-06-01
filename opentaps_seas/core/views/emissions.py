@@ -199,7 +199,7 @@ def record_emissions_token(request):
         emissions_id = data.get("emissions_id")
         address_to_issue = data.get("address_to_issue")
 
-        token_data = emissions_utils.record_emissions_token(
+        token_data, timeout = emissions_utils.record_emissions_token(
             user_id,
             org_name,
             account_number,
@@ -210,4 +210,8 @@ def record_emissions_token(request):
         if token_data:
             return JsonResponse({"success": 1, "token_data": token_data})
         else:
-            return JsonResponse({"error": "Cannot record emissions token"})
+            error = "Cannot record emissions token"
+            if timeout:
+                error = "Please wait for transaction confirmation and refresh meter view page later."
+
+            return JsonResponse({"error": error})

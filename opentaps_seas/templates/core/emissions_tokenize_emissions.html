@@ -33,8 +33,7 @@
       {% block inner_content %}
 
       {% if emissions_data %}
-        <div>From date: {{ emissions_data.fromDate }}</div>
-        <div>Thru date: {{ emissions_data.thruDate }}</div>
+        <div>From {{ emissions_data.fromDate }} to {{ emissions_data.thruDate }}</div>
         <br>
       {% endif %}
 

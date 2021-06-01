@@ -163,7 +163,7 @@
               <td>{{ emissions.fromDate }}</td>
               <td>{{ emissions.thruDate }}</td>
               <td align="right">{{ emissions.emissionsAmount|floatformat:3 }} {{ emissions.emissionsUom }}</td>
-              <td align="right">{{ emissions.renewableEnergyUseAmount|floatformat:0|add:emissions.nonrenewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
+              <td align="right">{{ emissions.totalEnergyUsed|floatformat:0 }} {{ emissions.energyUseUom }}</td>
               <td align="right">{{ emissions.renewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
               <td align="right">{{ emissions.nonrenewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
               <td align="right">{{ emissions.factorSource }}</td>
