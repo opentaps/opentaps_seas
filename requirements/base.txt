@@ -29,7 +29,7 @@ celery==4.4.0
 
 # Django
 # ------------------------------------------------------------------------------
-django==2.2.23
+django==2.2.24
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==4.0.0  # https://github.com/jazzband/django-model-utils
 django-allauth==0.41.0  # https://github.com/pennersr/django-allauth
