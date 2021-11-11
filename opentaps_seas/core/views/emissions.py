@@ -95,9 +95,10 @@ create_emissions = CreateEmissions.as_view()
 @api_view(["POST"])
 def record_emissions(request):
     if request.method == "POST":
+        vault_token = request.user.vault_token
+        web_socket_key = request.user.web_socket_key
+        user_id = request.user.username
         data = request.data
-        user_id = data.get("user_id")
-        org_name = data.get("org_name")
         utility_id = data.get("utility_id")
         account_number = data.get("account_number")
         from_date = data.get("from_date")
@@ -107,14 +108,15 @@ def record_emissions(request):
         document = data.get("document")
         emissions_data = emissions_utils.record_emissions(
             user_id,
-            org_name,
             utility_id,
             account_number,
             from_date,
             thru_date,
             amount,
             uom,
-            document
+            document,
+            vault_token,
+            web_socket_key
         )
 
         if emissions_data:
@@ -135,14 +137,16 @@ class TokenizeEmissions(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
         emissions_id = self.kwargs["emissions_id"]
         context["emissions_id"] = emissions_id
         user_id = self.request.user.username
-        user_org = self.request.user.org_name
+        vault_token = self.request.user.vault_token
+        web_socket_key = self.request.user.web_socket_key
 
         if emissions_id:
             try:
                 emissions_data = emissions_utils.get_emissions_data(
                     user_id,
-                    user_org,
-                    emissions_id
+                    emissions_id,
+                    vault_token,
+                    web_socket_key
                 )
                 if emissions_data:
                     context["emissions_data"] = emissions_data

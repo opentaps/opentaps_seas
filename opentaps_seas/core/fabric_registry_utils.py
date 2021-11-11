@@ -18,50 +18,45 @@ import json
 import logging
 import requests
 from django.conf import settings
+from . import web_socket_utils
 
 logger = logging.getLogger(__name__)
 
 
-def enroll_admin_vault(user):
-    if user and user["vault_token"]:
-        raise ValueError("Admin user already enrolled")
-
-    if settings.EMISSIONS_API_URL:
-        api_url = settings.EMISSIONS_API_URL
-    else:
+def check_configs():
+    if not settings.EMISSIONS_API_URL:
         raise NameError("Missing Emissions API configuration")
 
-    if settings.VAULT_IDENTITY_API_URL:
-        vault_api_url = settings.VAULT_IDENTITY_API_URL
-    else:
+    if not settings.VAULT_IDENTITY_API_URL:
         raise NameError("Missing Vault Identity API configuration")
 
-    if settings.VAULT_TOKEN:
-        vault_token = settings.VAULT_TOKEN
-    else:
+    if not settings.VAULT_TOKEN:
         raise NameError("Missing Vault Token configuration")
 
-    if settings.FABRIC_ADMIN_NAME:
-        fabric_admin_name = settings.FABRIC_ADMIN_NAME
-    else:
+    if not settings.FABRIC_ADMIN_NAME:
         raise NameError("Missing Fabric Admin Name configuration")
 
-    if settings.FABRIC_ADMIN_PASSWORD:
-        fabric_admin_password = settings.FABRIC_ADMIN_PASSWORD
-    else:
+    if not settings.FABRIC_ADMIN_PASSWORD:
         raise NameError("Missing Fabric Admin Password configuration")
 
-    enroll_url = api_url + "/registerEnroll/enroll"
-    vault_identity_url = vault_api_url + "/identity"
-    vault_token_url = vault_api_url + "/token"
-    vault_key_url = vault_api_url + "/key?kty=ecdsa-p256"
+
+def enroll_admin_vault():
+    try:
+        check_configs()
+    except (NameError, ValueError) as e:
+        raise e
+
+    enroll_url = settings.EMISSIONS_API_URL + "/registerEnroll/enroll"
+    vault_identity_url = settings.VAULT_IDENTITY_API_URL + "/identity"
+    vault_token_url = settings.VAULT_IDENTITY_API_URL + "/token"
+    vault_key_url = settings.VAULT_IDENTITY_API_URL + "/key?kty=ecdsa-p256"
 
     headers = {"Content-type": "application/json",
                "Accept": "application/json",
-               "Authorization": "Bearer " + vault_token
+               "Authorization": "Bearer " + settings.VAULT_TOKEN
                }
 
-    data = {"username": fabric_admin_name, "identity_type": "MANAGER"}
+    data = {"username": settings.FABRIC_ADMIN_NAME, "identity_type": "MANAGER"}
 
     try:
         r = requests.post(vault_identity_url, data=json.dumps(data), headers=headers)
@@ -78,7 +73,7 @@ def enroll_admin_vault(user):
         raise ValueError("Cannot get admin identity password")
 
     headers = {"Accept": "application/json",
-               "username": fabric_admin_name,
+               "username": settings.FABRIC_ADMIN_NAME,
                "password": password
                }
 
@@ -112,7 +107,7 @@ def enroll_admin_vault(user):
                "vault_token": token
                }
 
-    data = {"enrollmentID": fabric_admin_name, "enrollmentSecret": fabric_admin_password}
+    data = {"enrollmentID": settings.FABRIC_ADMIN_NAME, "enrollmentSecret": settings.FABRIC_ADMIN_PASSWORD}
 
     try:
         r = requests.post(enroll_url, data=json.dumps(data), headers=headers)
@@ -122,3 +117,40 @@ def enroll_admin_vault(user):
         raise ValueError(e)
 
     return token
+
+
+def enroll_user_vault():
+    return None
+
+
+def enroll_admin_web_socket():
+    try:
+        check_configs()
+        new_session = web_socket_utils.create_new_session()
+    except (NameError, ValueError) as e:
+        raise e
+
+    if not new_session:
+        raise ValueError("Cannot create web socket session")
+
+    enroll_url = settings.EMISSIONS_API_URL + "/registerEnroll/enroll"
+    web_socket_key = json.dumps(new_session)
+    headers = {"Content-type": "application/json",
+               "Accept": "*/*",
+               "web_socket_key": web_socket_key
+               }
+
+    data = {"enrollmentID": settings.FABRIC_ADMIN_NAME, "enrollmentSecret": settings.FABRIC_ADMIN_PASSWORD}
+
+    try:
+        r = requests.post(enroll_url, data=json.dumps(data), headers=headers)
+        if not r.status_code == 201:
+            raise ValueError("Cannot enroll admin")
+    except requests.exceptions.ConnectionError as e:
+        raise ValueError(e)
+
+    return web_socket_key
+
+
+def enroll_user_web_socket():
+    return None

@@ -31,6 +31,7 @@ from .views import weather
 from .views import utilityapi
 from .views import emissions
 from .views import hyperledger
+from .views import fabric
 
 from ..eemeter.views import meter_model_calc_saving_view
 from ..eemeter.views import meter_model_create_view
@@ -198,6 +199,9 @@ urlpatterns = [
         view=hyperledger.hyperledger_enroll_result_view,
         name="hyperledger_enroll_result",
     ),
+    path("fabric/enroll/<str:sec_type>", view=fabric.fabric_enroll, name="fabric_enroll"),
+    path("fabric/enroll.json", view=fabric.fabric_enroll_json, name="fabric_enroll_json"),
+
     path("model/", view=model.model_list_view, name="model_list"),
     path("model.json", view=model.model_list_json_view, name="model_list_json"),
     path("meter.json", view=meter.meter_list_json_view, name="meter_list_json"),

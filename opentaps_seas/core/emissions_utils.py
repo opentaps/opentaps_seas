@@ -23,18 +23,25 @@ from base64 import b64decode
 logger = logging.getLogger(__name__)
 
 
-def get_all_emissions_data(
-    user_id, user_org, utility_id, account_number, from_date, thru_date
-):
+def get_all_emissions_data(user_id, utility_id, account_number, vault_token, web_socket_key):
     emissions_data = None
     if settings.EMISSIONS_API_URL:
         api_url = settings.EMISSIONS_API_URL
     else:
         raise NameError("Missing Emissions API configuration")
 
-    api_url += f"/emissionscontract/getAllEmissionsData/{user_id}/{user_org}/{utility_id}/{account_number}"
+    if not web_socket_key and not vault_token:
+        return None
+
+    api_url += f"/emissionscontract/getAllEmissionsData/{utility_id}/{account_number}?userId={user_id}"
+    headers = {"Accept": "application/json"}
+    if web_socket_key:
+        headers["web_socket_key"] = web_socket_key
+    elif vault_token:
+        headers["vault_token"] = vault_token
+
     try:
-        r = requests.get(api_url)
+        r = requests.get(api_url, headers=headers)
         if r.status_code == 200:
             emissions_data = r.json()
     except requests.exceptions.ConnectionError as e:
@@ -63,18 +70,25 @@ def get_all_emissions_data(
     return emissions_data
 
 
-def get_emissions_data(
-    user_id, user_org, emissions_id
-):
+def get_emissions_data(user_id, emissions_id, vault_token, web_socket_key):
     emissions_data = None
     if settings.EMISSIONS_API_URL:
         api_url = settings.EMISSIONS_API_URL
     else:
         raise NameError("Missing Emissions API configuration")
 
-    api_url += f"/emissionscontract/getEmissionsData/{user_id}/{user_org}/{emissions_id}"
+    if not web_socket_key and not vault_token:
+        return None
+
+    api_url += f"/emissionscontract/getEmissionsData/{emissions_id}?userId={user_id}"
+    headers = {"Accept": "application/json"}
+    if web_socket_key:
+        headers["web_socket_key"] = web_socket_key
+    elif vault_token:
+        headers["vault_token"] = vault_token
+
     try:
-        r = requests.get(api_url)
+        r = requests.get(api_url, headers=headers)
         if r.status_code == 200:
             emissions_data = r.json()
     except requests.exceptions.ConnectionError as e:
@@ -96,19 +110,25 @@ def get_emissions_data(
     return emissions_data
 
 
-def record_emissions(
-    user_id, org_name, utility_id, account_number, from_date, thru_date, amount, uom, document
-):
+def record_emissions(user_id, utility_id, account_number, from_date, thru_date, amount, uom, document,
+                     vault_token, web_socket_key):
     # /emissionscontract/recordEmissions
     if settings.EMISSIONS_API_URL:
         api_url = settings.EMISSIONS_API_URL
     else:
         raise NameError("Missing Emissions API configuration")
 
-    api_url += "/emissionscontract/recordEmissions"
+    if not web_socket_key and not vault_token:
+        return None
+
+    api_url += f"/emissionscontract/recordEmissions?userId={user_id}"
+    headers = {"Accept": "application/json", "Content-Type": "multipart/form-data"}
+    if web_socket_key:
+        headers["web_socket_key"] = web_socket_key
+    elif vault_token:
+        headers["vault_token"] = vault_token
     data = {
         "userId": user_id,
-        "orgName": org_name,
         "utilityId": utility_id,
         "partyId": account_number,
         "fromDate": from_date,
@@ -124,7 +144,7 @@ def record_emissions(
 
     emissions_data = None
     try:
-        r = requests.post(api_url, files=files, data=data)
+        r = requests.post(api_url, files=files, data=data, headers=headers)
         if r.status_code == 201:
             emissions_data = r.json()
     except requests.exceptions.ConnectionError as e:

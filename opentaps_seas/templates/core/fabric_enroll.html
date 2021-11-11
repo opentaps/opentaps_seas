@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% comment 'header' %}
+# This file is part of opentaps Smart Energy Applications Suite (SEAS).
+
+# opentaps Smart Energy Applications Suite (SEAS) is free software:
+# you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# opentaps Smart Energy Applications Suite (SEAS) is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with opentaps Smart Energy Applications Suite (SEAS).
+# If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}Enroll: {{ user_name }} {% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% include "core/_breadcrumbs.html" %}
+
+  <div class="card mb-3" id="enrolluser">
+    <div class="card-body">
+      <h2>Enroll: {{ user_name }}</h2>
+      <br/>
+      {% block inner_content %}
+
+      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error" v-cloak>
+          ${ errors.error }
+      </div>
+      <div class="alert alert-success mt-3" role="alert" v-if="successes.success" v-cloak>
+        ${ successes.success }
+      </div>
+
+      {% if already_enrolled %}
+        <div class="alert alert-danger flex-grow-1">Already enrolled</div>
+      {% else %}
+        <div class="mt-3 text-left">
+          <b-button v-if="!success && !processing" variant="primary" v-on:click.stop.prevent="enroll_user()">
+            Enroll
+          </b-button>
+          <div v-if="processing">Please, input user password into the ws-wallet app console.</div>
+        </div>
+      {% endif %}
+      {% endblock inner_content %}
+
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  {% load js_csrf_token from core_tags %}
+  const CSRF_TOKEN = '{% js_csrf_token %}';
+
+  new Vue({
+    delimiters: ['${', '}'],
+    name: 'enrolluser',
+    el: '#enrolluser',
+    data() {
+      return {
+        userId: "{{user_id}}",
+        userName: "{{user_name}}",
+        secType: "{{sec_type}}",
+        csrfmiddlewaretoken: CSRF_TOKEN,
+        errors: {'error': null},
+        successes:  {'success': null},
+        success: false,
+        processing: false,
+        isAdmin: {%if is_admin %}true{%else%}false{%endif%},
+      }
+    },
+    methods: {
+      enroll_user() {
+        this.errors = {'error': null};
+        this.successes =  {'success': null};
+        url = "/opentaps_seas/fabric/enroll.json";
+        this.processing = true;
+        this.success = false;
+        data = new Object();
+        data['sec_type'] = this.secType;
+        axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
+          .then(x => x.data)
+          .then(x => {
+            if (x.success) {
+              this.successes = {'success': 'Successfully enrolled'};
+              this.success = true;
+             } else if (x.error) {
+              this.errors['error'] = x.error;
+            } else {
+              this.errors['error'] = 'Cannot enroll';
+            }
+            this.processing = false;
+          })
+          .catch(err => {
+            e = getResponseError(err);
+            console.error(e, err);
+            this.errors = e;
+            this.processing = false;
+          });
+      }
+    },
+  });
+})();
+</script>
+{% endblock content %}

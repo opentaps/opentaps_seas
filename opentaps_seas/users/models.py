@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField
+from django.db.models import TextField
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -12,6 +13,7 @@ class User(AbstractUser):
     org_name = CharField(_("User's Organization"), blank=True, max_length=255)
     department = CharField(_("User's Department"), blank=True, max_length=255)
     vault_token = CharField(_("User's Vault Token"), blank=True, max_length=255)
+    web_socket_key = TextField(_("Web Socket Key"), null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})

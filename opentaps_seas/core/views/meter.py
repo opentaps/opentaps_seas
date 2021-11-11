@@ -558,7 +558,8 @@ class MeterDetailView(LoginRequiredMixin, MeterBCMixin, DetailView):
         context = super(MeterDetailView, self).get_context_data(**kwargs)
         context["is_solaredge"] = False
         user_id = self.request.user.username
-        user_org = self.request.user.org_name
+        vault_token = self.request.user.vault_token
+        web_socket_key = self.request.user.web_socket_key
         if context["object"]:
             meter = context["object"]
             if meter.weather_station:
@@ -600,11 +601,10 @@ class MeterDetailView(LoginRequiredMixin, MeterBCMixin, DetailView):
                 try:
                     emissions_data = emissions_utils.get_all_emissions_data(
                         user_id,
-                        user_org,
                         meter.utility_id,
                         meter.account_number,
-                        f"{from_date.strftime('%Y-%m-%dT')}00:00:00",
-                        f"{thru_date.strftime('%Y-%m-%dT')}23:59:59",
+                        vault_token,
+                        web_socket_key
                     )
                     if emissions_data:
                         context["emissions_data"] = emissions_data
