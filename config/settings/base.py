@@ -295,6 +295,7 @@ OPENEI_API_KEY = get_secret('OPENEI_API_KEY', required=False)
 UTILITY_API_KEY = get_secret('UTILITY_API_KEY', required=False)
 
 EMISSIONS_API_URL = "http://localhost:9000/api/v1/utilityemissionchannel"
+EMISSIONS_API_ORGNAME = get_secret('EMISSIONS_API_ORGNAME', required=False)
 FABRIC_ADMIN_NAME = get_secret('FABRIC_ADMIN_NAME', required=False)
 FABRIC_ADMIN_PASSWORD = get_secret('FABRIC_ADMIN_PASSWORD', required=False)
 VAULT_IDENTITY_API_URL = "http://localhost:9090/api/v1"

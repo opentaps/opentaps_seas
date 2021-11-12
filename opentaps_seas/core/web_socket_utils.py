@@ -30,11 +30,8 @@ def check_configs():
     if not settings.WEB_SOCKET_API_URL:
         raise NameError("Missing Emissions API configuration")
 
-    if not settings.FABRIC_ADMIN_NAME:
-        raise NameError("Missing Fabric Admin Name configuration")
 
-
-def create_new_session():
+def create_new_session(key_name):
     try:
         check_configs()
     except (NameError, ValueError) as e:
@@ -45,7 +42,7 @@ def create_new_session():
 
     headers = {"Content-type": "application/json"}
 
-    data = {"key_name": settings.FABRIC_ADMIN_NAME, "endpoint": endpoint}
+    data = {"key_name": key_name, "endpoint": endpoint}
 
     try:
         r = requests.post(url, data=json.dumps(data), headers=headers)

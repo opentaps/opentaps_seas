@@ -43,6 +43,15 @@
       {% if already_enrolled %}
         <div class="alert alert-danger flex-grow-1">Already enrolled</div>
       {% else %}
+        {% if not is_admin %}
+        <div class="form-group" v-if="!success && !processing">
+          <label for="department">Department*</label>
+          <b-form-input type="text" id="department" :state="departmentState" v-model="department" required></b-form-input>
+          <b-form-invalid-feedback id="department">
+              Department is required
+          </b-form-invalid-feedback>
+        </div>
+        {% endif %}
         <div class="mt-3 text-left">
           <b-button v-if="!success && !processing" variant="primary" v-on:click.stop.prevent="enroll_user()">
             Enroll
@@ -75,10 +84,17 @@
         success: false,
         processing: false,
         isAdmin: {%if is_admin %}true{%else%}false{%endif%},
+        department: null,
+        departmentState: null,
       }
     },
     methods: {
       enroll_user() {
+        this.departmentState = null;
+        if (!this.isAdmin && !this.department) {
+          this.departmentState = false;
+          return;
+        }
         this.errors = {'error': null};
         this.successes =  {'success': null};
         url = "/opentaps_seas/fabric/enroll.json";
@@ -86,6 +102,9 @@
         this.success = false;
         data = new Object();
         data['sec_type'] = this.secType;
+        if (!this.isAdmin) {
+          data['department'] = this.department;
+        }
         axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
           .then(x => x.data)
           .then(x => {

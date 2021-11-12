@@ -122,13 +122,12 @@ def record_emissions(user_id, utility_id, account_number, from_date, thru_date, 
         return None
 
     api_url += f"/emissionscontract/recordEmissions?userId={user_id}"
-    headers = {"Accept": "application/json", "Content-Type": "multipart/form-data"}
+    headers = {"Accept": "application/json"}
     if web_socket_key:
         headers["web_socket_key"] = web_socket_key
     elif vault_token:
         headers["vault_token"] = vault_token
     data = {
-        "userId": user_id,
         "utilityId": utility_id,
         "partyId": account_number,
         "fromDate": from_date,

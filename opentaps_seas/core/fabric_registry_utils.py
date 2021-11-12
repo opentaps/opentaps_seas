@@ -27,6 +27,9 @@ def check_configs():
     if not settings.EMISSIONS_API_URL:
         raise NameError("Missing Emissions API configuration")
 
+    if not settings.EMISSIONS_API_ORGNAME:
+        raise NameError("Missing Organization Name configuration")
+
     if not settings.VAULT_IDENTITY_API_URL:
         raise NameError("Missing Vault Identity API configuration")
 
@@ -126,7 +129,7 @@ def enroll_user_vault():
 def enroll_admin_web_socket():
     try:
         check_configs()
-        new_session = web_socket_utils.create_new_session()
+        new_session = web_socket_utils.create_new_session(settings.FABRIC_ADMIN_NAME)
     except (NameError, ValueError) as e:
         raise e
 
@@ -152,5 +155,55 @@ def enroll_admin_web_socket():
     return web_socket_key
 
 
-def enroll_user_web_socket():
-    return None
+def enroll_user_web_socket(user_name, department, admin_web_socket_key):
+    try:
+        check_configs()
+        identity = register_user_web_socket(user_name, department, admin_web_socket_key)
+        new_session = web_socket_utils.create_new_session(user_name)
+    except (NameError, ValueError) as e:
+        raise e
+
+    enroll_url = settings.EMISSIONS_API_URL + "/registerEnroll/enroll"
+    web_socket_key = json.dumps(new_session)
+    headers = {"Content-type": "application/json",
+               "Accept": "*/*",
+               "web_socket_key": web_socket_key
+               }
+
+    data = {"enrollmentID": user_name, "enrollmentSecret": identity["enrollmentSecret"]}
+
+    try:
+        r = requests.post(enroll_url, data=json.dumps(data), headers=headers)
+        if not r.status_code == 201:
+            raise ValueError("Cannot enroll user")
+    except requests.exceptions.ConnectionError as e:
+        raise ValueError(e)
+
+    return web_socket_key
+
+
+def register_user_web_socket(user_name, department, admin_web_socket_key):
+    try:
+        check_configs()
+    except (NameError, ValueError) as e:
+        raise e
+
+    register_url = settings.EMISSIONS_API_URL + "/registerEnroll/register?userId=" + settings.FABRIC_ADMIN_NAME
+    headers = {"Content-type": "application/json",
+               "Accept": "application/json",
+               "web_socket_key": admin_web_socket_key
+               }
+
+    affiliation = settings.EMISSIONS_API_ORGNAME + "." + department
+    data = {"enrollmentID": user_name, "affiliation": affiliation}
+
+    try:
+        r = requests.post(register_url, data=json.dumps(data), headers=headers)
+        if r.status_code == 201:
+            identity = r.json()
+        else:
+            raise ValueError("Cannot register user")
+    except requests.exceptions.ConnectionError as e:
+        raise ValueError(e)
+
+    return identity

@@ -73,6 +73,19 @@ def fabric_enroll_json(request):
         if request.user.vault_token:
             return JsonResponse({"error": "Already enrolled"})
 
+        admin_web_socket_key = None
+        admin_vault_token = None
+        department = None
+        if not request.user.is_superuser:
+            department = data.get("department")
+            if not department:
+                return JsonResponse({"error": "Department is required"})
+            # get admin keys
+            admin = User.objects.filter(username="admin", is_superuser=True).first()
+            if admin:
+                admin_web_socket_key = admin.web_socket_key
+                admin_vault_token = admin.vault_token
+
         error = None
         token = None
         web_socket_key = None
@@ -84,9 +97,14 @@ def fabric_enroll_json(request):
                     web_socket_key = fabric_registry_utils.enroll_admin_web_socket()
             else:
                 if sec_type == 'vault':
+                    if not admin_vault_token:
+                        return JsonResponse({"error": "Admin vault_token is required"})
                     token = fabric_registry_utils.enroll_user_vault()
                 else:
-                    web_socket_key = fabric_registry_utils.enroll_user_web_socket()
+                    if not admin_web_socket_key:
+                        return JsonResponse({"error": "Admin web_socket_key is required"})
+                    web_socket_key = fabric_registry_utils.enroll_user_web_socket(
+                        request.user.username, department, admin_web_socket_key)
         except (NameError, ValueError) as e:
             error = e
 
@@ -97,6 +115,8 @@ def fabric_enroll_json(request):
                 request.user.vault_token = token
             if web_socket_key:
                 request.user.web_socket_key = web_socket_key
+            if department:
+                request.user.department = department
             request.user.save()
             return JsonResponse({"success": 1})
         else:
