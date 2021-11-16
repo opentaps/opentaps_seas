@@ -20,7 +20,7 @@
 
 {% load static %}
 
-{% block title %}Enroll: {{ user_name }} {% endblock %}
+{% block title %}Enroll User{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -29,7 +29,7 @@
 
   <div class="card mb-3" id="enrolluser">
     <div class="card-body">
-      <h2>Enroll: {{ user_name }}</h2>
+      <h2>Enroll: <span v-if="isAdminEnrolled">User</span><span v-if="!isAdminEnrolled">Admin</span></h2>
       <br/>
       {% block inner_content %}
 
@@ -40,23 +40,31 @@
         ${ successes.success }
       </div>
 
-      {% if already_enrolled %}
-        <div class="alert alert-danger flex-grow-1">Already enrolled</div>
+      {% if not is_admin %}
+        <div class="alert alert-danger flex-grow-1">Only admin is allowed to enroll users</div>
       {% else %}
-        {% if not is_admin %}
-        <div class="form-group" v-if="!success && !processing">
+        <div v-if="isAdminEnrolled" v-cloak>
+        <div class="form-group" v-if="(!success || allowEnrollUserAfterSuccess) && !processing">
+          <label for="username">User Name*</label>
+          <b-form-input type="text" id="username" :state="usernameState" v-model="username" required></b-form-input>
+          <b-form-invalid-feedback id="username">
+              User Name is required
+          </b-form-invalid-feedback>
+        </div>
+
+        <div class="form-group" v-if="(!success || allowEnrollUserAfterSuccess) && !processing">
           <label for="department">Department*</label>
           <b-form-input type="text" id="department" :state="departmentState" v-model="department" required></b-form-input>
           <b-form-invalid-feedback id="department">
               Department is required
           </b-form-invalid-feedback>
         </div>
-        {% endif %}
+        </div>
         <div class="mt-3 text-left">
-          <b-button v-if="!success && !processing" variant="primary" v-on:click.stop.prevent="enroll_user()">
+          <b-button v-if="(!success || allowEnrollUserAfterSuccess) && !processing" variant="primary" v-on:click.stop.prevent="enroll_user()">
             Enroll
           </b-button>
-          <div v-if="processing">Please, input user password into the ws-wallet app console.</div>
+          <div v-if="processing">Please, input <b>${ username || 'admin' }</b> password into the ws-wallet app console.</div>
         </div>
       {% endif %}
       {% endblock inner_content %}
@@ -75,8 +83,6 @@
     el: '#enrolluser',
     data() {
       return {
-        userId: "{{user_id}}",
-        userName: "{{user_name}}",
         secType: "{{sec_type}}",
         csrfmiddlewaretoken: CSRF_TOKEN,
         errors: {'error': null},
@@ -84,6 +90,10 @@
         success: false,
         processing: false,
         isAdmin: {%if is_admin %}true{%else%}false{%endif%},
+        isAdminEnrolled: {%if already_enrolled %}true{%else%}false{%endif%},
+        allowEnrollUserAfterSuccess: {%if already_enrolled %}false{%else%}true{%endif%},
+        username: null,
+        usernameState: null,
         department: null,
         departmentState: null,
       }
@@ -91,8 +101,17 @@
     methods: {
       enroll_user() {
         this.departmentState = null;
-        if (!this.isAdmin && !this.department) {
+        this.usernameState = null;
+        var inputErrors = false;
+        if (this.isAdminEnrolled && !this.department) {
           this.departmentState = false;
+          inputErrors = true;
+        }
+        if (this.isAdminEnrolled && !this.username) {
+          this.usernameState = false;
+          inputErrors = true;
+        }
+        if (inputErrors) {
           return;
         }
         this.errors = {'error': null};
@@ -102,8 +121,12 @@
         this.success = false;
         data = new Object();
         data['sec_type'] = this.secType;
-        if (!this.isAdmin) {
+        if (this.isAdminEnrolled) {
           data['department'] = this.department;
+          data['username'] = this.username;
+          data['enroll_user'] = true;
+
+          this.allowEnrollUserAfterSuccess = false;
         }
         axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
           .then(x => x.data)
@@ -111,6 +134,9 @@
             if (x.success) {
               this.successes = {'success': 'Successfully enrolled'};
               this.success = true;
+              if (!this.isAdminEnrolled) {
+                this.isAdminEnrolled = true;
+              }
              } else if (x.error) {
               this.errors['error'] = x.error;
             } else {

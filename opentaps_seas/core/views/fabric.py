@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with opentaps Smart Energy Applications Suite (SEAS).
 # If not, see <https://www.gnu.org/licenses/>.
-
+import json
 import logging
 
 from django.contrib.auth.decorators import login_required
 from .common import WithBreadcrumbsMixin
-from .. import fabric_registry_utils
+from .. import fabric_registry_utils, web_socket_utils
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
@@ -37,22 +37,18 @@ class FabricEnrollView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(FabricEnrollView, self).get_context_data(**kwargs)
-        user_id = self.request.user.id
-        user_name = self.request.user.username
         is_admin = self.request.user.is_superuser
         already_enrolled = False
         sec_type = self.kwargs["sec_type"]
 
-        if sec_type == 'vault':
-            if self.request.user.vault_token:
+        if is_admin:
+            if self.request.user.org_name:
                 already_enrolled = True
-        elif sec_type == 'websocket':
-            if self.request.user.web_socket_key:
+        else:
+            if self.request.user.department:
                 already_enrolled = True
 
         context["sec_type"] = sec_type
-        context["user_id"] = user_id
-        context["user_name"] = user_name
         context["already_enrolled"] = already_enrolled
         context["is_admin"] = is_admin
 
@@ -60,6 +56,20 @@ class FabricEnrollView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
 
 
 fabric_enroll = FabricEnrollView.as_view()
+
+
+class FabricWebsocketkeyView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
+    model = User
+    template_name = 'core/fabric_websocketkey.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FabricWebsocketkeyView, self).get_context_data(**kwargs)
+        context["user_name"] = self.request.user.username
+
+        return context
+
+
+fabric_websocketkey = FabricWebsocketkeyView.as_view()
 
 
 @login_required()
@@ -70,54 +80,87 @@ def fabric_enroll_json(request):
         sec_type = data.get("sec_type")
         if not sec_type or sec_type not in ['vault', 'websocket']:
             return JsonResponse({"error": "Unknown security type"})
-        if request.user.vault_token:
-            return JsonResponse({"error": "Already enrolled"})
 
-        admin_web_socket_key = None
-        admin_vault_token = None
-        department = None
         if not request.user.is_superuser:
-            department = data.get("department")
+            return JsonResponse({"error": "Only admin is allowed to enroll users"})
+
+        department = data.get("department")
+        username = data.get("username")
+        enroll_user = data.get("enroll_user")
+        user = None
+        if not enroll_user:
+            if request.user.org_name:
+                return JsonResponse({"error": "Admin is already enrolled"})
+        else:
             if not department:
                 return JsonResponse({"error": "Department is required"})
-            # get admin keys
-            admin = User.objects.filter(username="admin", is_superuser=True).first()
-            if admin:
-                admin_web_socket_key = admin.web_socket_key
-                admin_vault_token = admin.vault_token
+            if not username:
+                return JsonResponse({"error": "User Name is required"})
+            # find user by name and check if it is already enrolled
+            user = User.objects.filter(username=username).first()
+            if not user:
+                return JsonResponse({"error": f"Cannot find user {username}"})
+            if user.department:
+                return JsonResponse({"error": "User is already enrolled"})
+
+        admin_vault_token = None
+        admin_web_socket_key = None
+        if enroll_user:
+            # check if admin user already has web_socket_key in session
+            admin_web_socket_key = request.session.get("web_socket_key")
+            if not admin_web_socket_key:
+                return JsonResponse({"error": "Please, get web socket key first"})
 
         error = None
-        token = None
-        web_socket_key = None
         try:
-            if request.user.is_superuser:
+            if not enroll_user:
                 if sec_type == 'vault':
-                    token = fabric_registry_utils.enroll_admin_vault()
+                    vault_token, org_name = fabric_registry_utils.enroll_admin_vault()
                 else:
-                    web_socket_key = fabric_registry_utils.enroll_admin_web_socket()
+                    web_socket_key, org_name = fabric_registry_utils.enroll_admin_web_socket()
+                    request.session["web_socket_key"] = web_socket_key
+
+                request.user.org_name = org_name
+                request.user.save()
             else:
                 if sec_type == 'vault':
                     if not admin_vault_token:
                         return JsonResponse({"error": "Admin vault_token is required"})
-                    token = fabric_registry_utils.enroll_user_vault()
+                    vault_token, org_name = fabric_registry_utils.enroll_user_vault()
                 else:
                     if not admin_web_socket_key:
                         return JsonResponse({"error": "Admin web_socket_key is required"})
-                    web_socket_key = fabric_registry_utils.enroll_user_web_socket(
-                        request.user.username, department, admin_web_socket_key)
+                    web_socket_key, org_name = fabric_registry_utils.enroll_user_web_socket(
+                        username, department, admin_web_socket_key)
+
+                user.org_name = org_name
+                user.department = department
+                user.save()
         except (NameError, ValueError) as e:
             error = e
 
         if error:
             return JsonResponse({"error": str(error)})
-        elif token or web_socket_key:
-            if token:
-                request.user.vault_token = token
-            if web_socket_key:
-                request.user.web_socket_key = web_socket_key
-            if department:
-                request.user.department = department
-            request.user.save()
-            return JsonResponse({"success": 1})
         else:
-            return JsonResponse({"error": "Cannot enroll"})
+            return JsonResponse({"success": 1})
+
+
+@login_required()
+@api_view(["POST"])
+def fabric_websocketkey_json(request):
+    if request.method == "POST":
+        data = request.data
+        username = data.get("username")
+
+        try:
+            new_session = web_socket_utils.create_new_session(username)
+            web_socket_key = json.dumps(new_session)
+            if web_socket_key:
+                request.session["web_socket_key"] = web_socket_key
+            else:
+                return JsonResponse({"error": "Cannot get web socket key"})
+
+        except (NameError, ValueError) as e:
+            return JsonResponse({"error": str(e)})
+
+        return JsonResponse({"success": 1})

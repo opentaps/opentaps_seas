@@ -559,7 +559,7 @@ class MeterDetailView(LoginRequiredMixin, MeterBCMixin, DetailView):
         context["is_solaredge"] = False
         user_id = self.request.user.username
         vault_token = self.request.user.vault_token
-        web_socket_key = self.request.user.web_socket_key
+        web_socket_key = self.request.session.get("web_socket_key")
         if context["object"]:
             meter = context["object"]
             if meter.weather_station:

@@ -96,7 +96,9 @@ create_emissions = CreateEmissions.as_view()
 def record_emissions(request):
     if request.method == "POST":
         vault_token = request.user.vault_token
-        web_socket_key = request.user.web_socket_key
+        web_socket_key = request.session.get("web_socket_key")
+        if not web_socket_key:
+            return JsonResponse({"error": "Please, get web socket key first"})
         user_id = request.user.username
         data = request.data
         utility_id = data.get("utility_id")
@@ -138,7 +140,7 @@ class TokenizeEmissions(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
         context["emissions_id"] = emissions_id
         user_id = self.request.user.username
         vault_token = self.request.user.vault_token
-        web_socket_key = self.request.user.web_socket_key
+        web_socket_key = self.request.session.get("web_socket_key")
 
         if emissions_id:
             try:

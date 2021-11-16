@@ -119,11 +119,11 @@ def enroll_admin_vault():
     except requests.exceptions.ConnectionError as e:
         raise ValueError(e)
 
-    return token
+    return token, settings.EMISSIONS_API_ORGNAME
 
 
 def enroll_user_vault():
-    return None
+    return None, settings.EMISSIONS_API_ORGNAME
 
 
 def enroll_admin_web_socket():
@@ -152,7 +152,7 @@ def enroll_admin_web_socket():
     except requests.exceptions.ConnectionError as e:
         raise ValueError(e)
 
-    return web_socket_key
+    return web_socket_key, settings.EMISSIONS_API_ORGNAME
 
 
 def enroll_user_web_socket(user_name, department, admin_web_socket_key):
@@ -179,7 +179,7 @@ def enroll_user_web_socket(user_name, department, admin_web_socket_key):
     except requests.exceptions.ConnectionError as e:
         raise ValueError(e)
 
-    return web_socket_key
+    return web_socket_key, settings.EMISSIONS_API_ORGNAME
 
 
 def register_user_web_socket(user_name, department, admin_web_socket_key):
@@ -201,6 +201,8 @@ def register_user_web_socket(user_name, department, admin_web_socket_key):
         r = requests.post(register_url, data=json.dumps(data), headers=headers)
         if r.status_code == 201:
             identity = r.json()
+        elif r.status_code == 409:
+            raise ValueError("User is already registered")
         else:
             raise ValueError("Cannot register user")
     except requests.exceptions.ConnectionError as e:
