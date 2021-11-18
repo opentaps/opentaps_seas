@@ -43,7 +43,22 @@ class CreateEmissions(LoginRequiredMixin, WithBreadcrumbsMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(CreateEmissions, self).get_context_data(**kwargs)
         context["meter_id"] = self.kwargs["meter_id"]
+        is_admin = self.request.user.is_superuser
+        enrolled = False
+        has_web_socket_key = False
+        web_socket_key = self.request.session.get("web_socket_key")
 
+        if web_socket_key:
+            has_web_socket_key = True
+        if is_admin:
+            if self.request.user.org_name:
+                enrolled = True
+        else:
+            if self.request.user.department:
+                enrolled = True
+
+        context["has_web_socket_key"] = has_web_socket_key
+        context["enrolled"] = enrolled
         try:
             meter = Meter.objects.get(meter_id=self.kwargs["meter_id"])
         except Meter.DoesNotExist:

@@ -20,16 +20,20 @@
 
 {% load static %}
 
-{% block title %}Enroll User{% endblock %}
+{% block title %}Fabric{% endblock %}
 
 {% block content %}
 <div class="container">
 
-  {% include "core/_breadcrumbs.html" %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">Fabric</li>
+    </ol>
+  </nav>
 
-  <div class="card mb-3" id="enrolluser">
-    <div class="card-body">
-      <h2>Enroll: <span v-if="isAdminEnrolled">User</span><span v-if="!isAdminEnrolled">Admin</span></h2>
+  <div class="card card-body mb-3" >
+    <div id="enrolluser">
+      <h2>Enroll: <span v-if="isAdminEnrolled">User</span><span v-if="!isAdminEnrolled && isAdmin">Admin</span></h2>
       <br/>
       {% block inner_content %}
 
@@ -43,33 +47,34 @@
       {% if not is_admin %}
         <div class="alert alert-danger flex-grow-1">Only admin is allowed to enroll users</div>
       {% else %}
-        <div v-if="isAdminEnrolled" v-cloak>
-        <div class="form-group" v-if="(!success || allowEnrollUserAfterSuccess) && !processing">
-          <label for="username">User Name*</label>
-          <b-form-input type="text" id="username" :state="usernameState" v-model="username" required></b-form-input>
-          <b-form-invalid-feedback id="username">
-              User Name is required
-          </b-form-invalid-feedback>
+        <div v-if="isAdminEnrolled && hasWebSocketKey" v-cloak>
+          <div class="form-group" v-if="(!success || allowEnrollUserAfterSuccess) && !processing">
+            <label for="username">User Name*</label>
+            <b-form-input type="text" id="username" :state="usernameState" v-model="username" required></b-form-input>
+            <b-form-invalid-feedback id="username">
+                User Name is required
+            </b-form-invalid-feedback>
+          </div>
+          <div class="form-group" v-if="(!success || allowEnrollUserAfterSuccess) && !processing">
+            <label for="department">Department*</label>
+            <b-form-input type="text" id="department" :state="departmentState" v-model="department" required></b-form-input>
+            <b-form-invalid-feedback id="department">
+                Department is required
+            </b-form-invalid-feedback>
+          </div>
         </div>
 
-        <div class="form-group" v-if="(!success || allowEnrollUserAfterSuccess) && !processing">
-          <label for="department">Department*</label>
-          <b-form-input type="text" id="department" :state="departmentState" v-model="department" required></b-form-input>
-          <b-form-invalid-feedback id="department">
-              Department is required
-          </b-form-invalid-feedback>
-        </div>
-        </div>
-        <div class="mt-3 text-left">
+        <div class="mt-3 text-left" v-if="hasWebSocketKey || !isAdminEnrolled">
           <b-button v-if="(!success || allowEnrollUserAfterSuccess) && !processing" variant="primary" v-on:click.stop.prevent="enroll_user()">
             Enroll
           </b-button>
-          <div v-if="processing">Please, input <b>${ username || 'admin' }</b> password into the ws-wallet app console.</div>
+          <div v-if="processing" v-cloak>Please, input <b>${ username || 'admin' }</b> password into the ws-wallet app console.</div>
         </div>
       {% endif %}
       {% endblock inner_content %}
 
     </div>
+    {% include "core/_fabric_websocketkey.html" %}
   </div>
 </div>
 <script>
@@ -83,7 +88,7 @@
     el: '#enrolluser',
     data() {
       return {
-        secType: "{{sec_type}}",
+        secType: 'websocket',
         csrfmiddlewaretoken: CSRF_TOKEN,
         errors: {'error': null},
         successes:  {'success': null},
@@ -92,10 +97,17 @@
         isAdmin: {%if is_admin %}true{%else%}false{%endif%},
         isAdminEnrolled: {%if already_enrolled %}true{%else%}false{%endif%},
         allowEnrollUserAfterSuccess: {%if already_enrolled %}false{%else%}true{%endif%},
+        hasWebSocketKey: {%if has_web_socket_key %}true{%else%}false{%endif%},
         username: null,
         usernameState: null,
         department: null,
         departmentState: null,
+      }
+    },
+    created: function () {
+      eventHub.$on('get_websocketkey', x => {this.hasWebSocketKey = true; this.successes = x;});
+      if (this.isAdminEnrolled && !this.hasWebSocketKey) {
+        eventHub.$emit('show_get_websocketkey', {});
       }
     },
     methods: {
@@ -134,6 +146,7 @@
             if (x.success) {
               this.successes = {'success': 'Successfully enrolled'};
               this.success = true;
+              this.hasWebSocketKey = true;
               if (!this.isAdminEnrolled) {
                 this.isAdminEnrolled = true;
               }

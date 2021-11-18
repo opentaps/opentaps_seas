@@ -130,7 +130,7 @@
   {% if emissions_data or emissions_data_error %}
   <div class="card mb-3">
     <div class="card-body">
-      <h3>
+      <h3 id="emissionsheader">
         <div class="row m-0">
           <div class="">
             Emissions
@@ -140,52 +140,60 @@
                 class="fa fa-plus"></i> Record Emissions</a>
           </div>
         </div>
+        <div style="font-size: 1rem;" class="alert alert-success row m-0" role="alert" v-if="successes.success" v-cloak>
+          ${ successes.success }
+        </div>
       </h3>
-      <div class="row m-0 mb-2">
-        {% if emissions_data %}
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">From Date</th>
-              <th scope="col">Thru Date</th>
-              <th scope="col" align="right">Emissions</th>
-              <th scope="col" align="right">Total Energy Used</th>
-              <th scope="col" align="right">Renewable Energy</th>
-              <th scope="col" align="right">Non-Renewable Energy</th>
-              <th scope="col" align="right">Factor Source</th>
-              <th scope="col" align="right">Document</th>
-              <th scope="col" align="right">Token ID</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for emissions in emissions_data %}
-            <tr>
-              <td>{{ emissions.fromDate }}</td>
-              <td>{{ emissions.thruDate }}</td>
-              <td align="right">{{ emissions.emissionsAmount|floatformat:3 }} {{ emissions.emissionsUom }}</td>
-              <td align="right">{{ emissions.totalEnergyUsed|floatformat:0 }} {{ emissions.energyUseUom }}</td>
-              <td align="right">{{ emissions.renewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
-              <td align="right">{{ emissions.nonrenewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
-              <td align="right">{{ emissions.factorSource }}</td>
-              {% if emissions.url|length > 0 %}
-              <td align="right"><a href="{{ emissions.url }}">View</a></td>
-              {% else %}
-              <td align="right">N/A</td>
-              {% endif %}
-              {% if emissions.tokenId|length > 0 %}
-              <td align="right">{{ emissions.tokenId }}</td>
-              {% else %}
-              <td align="right"><a href="{% url 'core:emissions_tokenize_emissions' object.meter_id emissions.uuid %}">Tokenize</a></td>
-              {% endif %}
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% endif %}
-        {% if emissions_data_error %}
-        <div class="alert alert-danger flex-grow-1">{{ emissions_data_error }}</div>
-        {% endif %}
-      </div>
+      {% if not enrolled %}
+        <div class="alert alert-danger flex-grow-1">You're not set up to view data from Hyperledger Fabric</div>
+      {% else %}
+        <div class="row m-0 mb-2">
+          {% if emissions_data %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">From Date</th>
+                <th scope="col">Thru Date</th>
+                <th scope="col" align="right">Emissions</th>
+                <th scope="col" align="right">Total Energy Used</th>
+                <th scope="col" align="right">Renewable Energy</th>
+                <th scope="col" align="right">Non-Renewable Energy</th>
+                <th scope="col" align="right">Factor Source</th>
+                <th scope="col" align="right">Document</th>
+                <th scope="col" align="right">Token ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for emissions in emissions_data %}
+              <tr>
+                <td>{{ emissions.fromDate }}</td>
+                <td>{{ emissions.thruDate }}</td>
+                <td align="right">{{ emissions.emissionsAmount|floatformat:3 }} {{ emissions.emissionsUom }}</td>
+                <td align="right">{{ emissions.totalEnergyUsed|floatformat:0 }} {{ emissions.energyUseUom }}</td>
+                <td align="right">{{ emissions.renewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
+                <td align="right">{{ emissions.nonrenewableEnergyUseAmount|floatformat:0 }} {{ emissions.energyUseUom }}</td>
+                <td align="right">{{ emissions.factorSource }}</td>
+                {% if emissions.url|length > 0 %}
+                <td align="right"><a href="{{ emissions.url }}">View</a></td>
+                {% else %}
+                <td align="right">N/A</td>
+                {% endif %}
+                {% if emissions.tokenId|length > 0 %}
+                <td align="right">{{ emissions.tokenId }}</td>
+                {% else %}
+                <td align="right"><a href="{% url 'core:emissions_tokenize_emissions' object.meter_id emissions.uuid %}">Tokenize</a></td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+          {% if emissions_data_error and has_web_socket_key%}
+            <div class="alert alert-danger flex-grow-1">{{ emissions_data_error }}</div>
+          {% endif %}
+        </div>
+        {% include "core/_fabric_websocketkey.html" %}
+      {% endif %}
     </div>
   </div>
   {% endif %}
@@ -302,6 +310,32 @@
               });
           }
         }
+      });
+    })();
+
+    (function() {
+      {% load js_csrf_token from core_tags %}
+      const CSRF_TOKEN = '{% js_csrf_token %}';
+
+      new Vue({
+        delimiters: ['${', '}'],
+        name: 'emissionsheader',
+        el: '#emissionsheader',
+        data() {
+          return {
+            csrfmiddlewaretoken: CSRF_TOKEN,
+            hasWebSocketKey: {%if has_web_socket_key %}true{%else%}false{%endif%},
+            successes:  {'success': null},
+          }
+        },
+        created: function () {
+          eventHub.$on('get_websocketkey', x => {this.hasWebSocketKey = true; this.successes = x;});
+          if (!this.hasWebSocketKey) {
+            eventHub.$emit('show_get_websocketkey', {});
+          }
+        },
+        methods: {
+        },
       });
     })();
 

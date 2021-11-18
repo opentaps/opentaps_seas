@@ -1,4 +1,3 @@
-{% extends "base.html" %}
 {% comment 'header' %}
 # This file is part of opentaps Smart Energy Applications Suite (SEAS).
 
@@ -18,38 +17,23 @@
 # If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load static %}
-
-{% block title %}Get web socket key: {{ user_name }} {% endblock %}
-
 {% block content %}
-<div class="container">
-
-  {% include "core/_breadcrumbs.html" %}
-  <div class="card mb-3" id="getwebsocketkey">
-    <div class="card-body">
-      <h2>Get web socket key: {{ user_name }}</h2>
-      <br/>
-      {% block inner_content %}
-
-      <div class="alert alert-danger mt-3" role="alert" v-if="errors.error" v-cloak>
-          ${ errors.error }
-      </div>
-      <div class="alert alert-success mt-3" role="alert" v-if="successes.success" v-cloak>
-        ${ successes.success }
-      </div>
-
-      <div class="mt-3 text-left">
-        <b-button v-if="!success && !processing" variant="primary" v-on:click.stop.prevent="get_websocketkey()">
-          Process
-        </b-button>
-        <div v-if="processing">Please, input user password into the ws-wallet app console.</div>
-      </div>
-
-      {% endblock inner_content %}
+<div id="getwebsocketkey">
+  <div v-if="show">
+    <div class="alert alert-danger mt-3" role="alert" v-if="errors.error" v-cloak>
+      ${ errors.error }
     </div>
+
+    <div class="mt-3 text-left" v-if="!success && !processing">
+      <span>Click button to connect to Hyperledger Fabric</span>
+      <b-button variant="primary" v-on:click.stop.prevent="get_websocketkey()">
+        Connect
+      </b-button>
+    </div>
+    <div v-if="processing">Please, input user password into the ws-wallet app console.</div>
   </div>
 </div>
+
 <script>
 (function() {
   {% load js_csrf_token from core_tags %}
@@ -66,8 +50,11 @@
         successes:  {'success': null},
         success: false,
         processing: false,
-        username: "{{user_name}}"
+        show: false,
       }
+    },
+    created: function () {
+      eventHub.$on('show_get_websocketkey', x => {this.show = true;});
     },
     methods: {
       get_websocketkey() {
@@ -76,14 +63,16 @@
         url = "/opentaps_seas/fabric/websocketkey.json";
         this.processing = true;
         this.success = false;
+
         data = new Object();
-        data['username'] = this.username;
         axios.post(url, data, {headers: {'X-CSRFToken': this.csrfmiddlewaretoken}})
           .then(x => x.data)
           .then(x => {
             if (x.success) {
-              this.successes = {'success': 'Successfully processed'};
+              this.successes = {'success': 'Successfully connected'};
               this.success = true;
+              this.show = false;
+              eventHub.$emit('get_websocketkey', this.successes);
              } else if (x.error) {
               this.errors['error'] = x.error;
             } else {

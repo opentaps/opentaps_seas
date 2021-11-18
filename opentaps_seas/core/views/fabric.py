@@ -31,16 +31,19 @@ from rest_framework.decorators import api_view
 logger = logging.getLogger(__name__)
 
 
-class FabricEnrollView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
+class FabricMainView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
     model = User
-    template_name = 'core/fabric_enroll.html'
+    template_name = 'core/fabric_main.html'
 
     def get_context_data(self, **kwargs):
-        context = super(FabricEnrollView, self).get_context_data(**kwargs)
+        context = super(FabricMainView, self).get_context_data(**kwargs)
         is_admin = self.request.user.is_superuser
         already_enrolled = False
-        sec_type = self.kwargs["sec_type"]
+        has_web_socket_key = False
+        web_socket_key = self.request.session.get("web_socket_key")
 
+        if web_socket_key:
+            has_web_socket_key = True
         if is_admin:
             if self.request.user.org_name:
                 already_enrolled = True
@@ -48,28 +51,14 @@ class FabricEnrollView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
             if self.request.user.department:
                 already_enrolled = True
 
-        context["sec_type"] = sec_type
         context["already_enrolled"] = already_enrolled
         context["is_admin"] = is_admin
+        context["has_web_socket_key"] = has_web_socket_key
 
         return context
 
 
-fabric_enroll = FabricEnrollView.as_view()
-
-
-class FabricWebsocketkeyView(LoginRequiredMixin, WithBreadcrumbsMixin, TemplateView):
-    model = User
-    template_name = 'core/fabric_websocketkey.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(FabricWebsocketkeyView, self).get_context_data(**kwargs)
-        context["user_name"] = self.request.user.username
-
-        return context
-
-
-fabric_websocketkey = FabricWebsocketkeyView.as_view()
+fabric_main = FabricMainView.as_view()
 
 
 @login_required()
@@ -149,8 +138,7 @@ def fabric_enroll_json(request):
 @api_view(["POST"])
 def fabric_websocketkey_json(request):
     if request.method == "POST":
-        data = request.data
-        username = data.get("username")
+        username = request.user.username
 
         try:
             new_session = web_socket_utils.create_new_session(username)

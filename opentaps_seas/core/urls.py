@@ -199,9 +199,8 @@ urlpatterns = [
         view=hyperledger.hyperledger_enroll_result_view,
         name="hyperledger_enroll_result",
     ),
-    path("fabric/enroll/<str:sec_type>", view=fabric.fabric_enroll, name="fabric_enroll"),
+    path("fabric/main", view=fabric.fabric_main, name="fabric_main"),
     path("fabric/enroll.json", view=fabric.fabric_enroll_json, name="fabric_enroll_json"),
-    path("fabric/websocketkey", view=fabric.fabric_websocketkey, name="fabric_websocketkey"),
     path("fabric/websocketkey.json", view=fabric.fabric_websocketkey_json, name="fabric_websocketkey_json"),
 
     path("model/", view=model.model_list_view, name="model_list"),

@@ -27,9 +27,16 @@
 
   {% include "core/_breadcrumbs.html" %}
 
-  <div class="card mb-3" id="createemissions">
-    <div class="card-body">
-      <h2>Record Emissions for Meter {% if meter.description %}{{ meter.description }}{% else %}{{ meter.meter_id }}{% endif %}</h2>
+  <div class="card card-body mb-3">
+    <div id="createemissions">
+      <h2>
+        <div class="row m-0">
+          <div>Record Emissions for Meter {% if meter.description %}{{ meter.description }}{% else %}{{ meter.meter_id }}{% endif %}</div>
+          <div class="text-right flex-grow-1">
+            <a class="btn btn-primary" v-bind:href="url">Back</a>
+          </div>
+        </div>
+      </h2>
       <br/>
       {% block inner_content %}
 
@@ -39,49 +46,52 @@
       <div class="alert alert-success mt-3" role="alert" v-if="successes.success" v-cloak>
         ${ successes.success }
       </div>
+      {% if not enrolled %}
+        <div class="alert alert-danger flex-grow-1">You're not set up to record emissions to Hyperledger Fabric</div>
+      {% else %}
+        <div v-if="hasWebSocketKey" v-cloak>
+          <div class="form-group">
+            <label for="fromDate">From Date*</label>
+            <b-form-input type="text" class="datetime" id="fromDate" placeholder="Input Date" :state="fromDateState" v-model="fromDate" required></b-form-input>
+            <b-form-invalid-feedback id="fromDate">
+                From Date is required
+            </b-form-invalid-feedback>
+          </div>
 
-      <div class="form-group">
-        <label for="fromDate">From Date*</label>
-        <b-form-input type="text" class="datetime" id="fromDate" placeholder="Input Date" :state="fromDateState" v-model="fromDate" required></b-form-input>
-        <b-form-invalid-feedback id="fromDate">
-            From Date is required
-        </b-form-invalid-feedback>
-      </div>
+          <div class="form-group">
+            <label for="thruDate">Thru Date*</label>
+            <b-form-input type="text" class="datetime" id="thruDate" placeholder="Input Date" :state="thruDateState" v-model="thruDate" required></b-form-input>
+            <b-form-invalid-feedback id="thruDate">
+                Thru Date is required
+            </b-form-invalid-feedback>
+          </div>
 
-      <div class="form-group">
-        <label for="thruDate">Thru Date*</label>
-        <b-form-input type="text" class="datetime" id="thruDate" placeholder="Input Date" :state="thruDateState" v-model="thruDate" required></b-form-input>
-        <b-form-invalid-feedback id="thruDate">
-            Thru Date is required
-        </b-form-invalid-feedback>
-      </div>
+          <div class="form-group">
+            <label for="document">Document</label>
+            <input type="file" class="input-file" id="document" :state="documentState" v-model="document"></input>
+          </div>
 
-      <div class="form-group">
-        <label for="document">Document</label>
-        <input type="file" class="input-file" id="document" :state="documentState" v-model="document"></input>
-      </div>
-
-      <div class="mt-3 text-right">
-        <b-button v-if="!isRecordDisabled && !success" variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
-          Record
-        </b-button>
-        <b-button v-else-if="success && errors.error" variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="!isRecordDisabled">
-          Failed
-        </b-button>
-        <b-button v-else-if="success" variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="!isRecordDisabled">
-          Recorded
-        </b-button>
-        <b-button v-else variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
-          Please wait...
-        </b-button>
-        {% comment %} <b-spinner v-if="isRecordDisabled" variant="secondary"></b-spinner> {% endcomment %}
-      </div>
-      <a v-bind:href="url">
-        <button class="btn btn-primary mt-5" type="submit">Back</button>
-      </a>
-     {% endblock inner_content %}
+          <div class="mt-3 text-right">
+            <b-button v-if="!isRecordDisabled && !success" variant="primary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
+              Record
+            </b-button>
+            <b-button v-else-if="success && errors.error" variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="!isRecordDisabled">
+              Failed
+            </b-button>
+            <b-button v-else-if="success" variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="!isRecordDisabled">
+              Recorded
+            </b-button>
+            <b-button v-else variant="secondary" v-on:click.stop.prevent="get_meter_total_energy_used()" :disabled="isRecordDisabled">
+              Please wait...
+            </b-button>
+            {% comment %} <b-spinner v-if="isRecordDisabled" variant="secondary"></b-spinner> {% endcomment %}
+          </div>
+        </div>
+      {% endif %}
+      {% endblock inner_content %}
 
     </div>
+    {% include "core/_fabric_websocketkey.html" %}
   </div>
 </div>
 <script>
@@ -112,7 +122,13 @@
         meterId: {%if meter_id %}'{{ meter_id|safe}}'{%else%}''{%endif%},
         utilityId: {%if meter.utility_id %}'{{ meter.utility_id|safe}}'{%else%}''{%endif%},
         accountNumber: {%if meter.account_number %}'{{ meter.account_number|safe}}'{%else%}''{%endif%},
-
+        hasWebSocketKey: {%if has_web_socket_key %}true{%else%}false{%endif%},
+      }
+    },
+    created: function () {
+      eventHub.$on('get_websocketkey', x => {this.hasWebSocketKey = true; this.successes = x;});
+      if (!this.hasWebSocketKey) {
+        eventHub.$emit('show_get_websocketkey', {});
       }
     },
     mounted() {
@@ -151,7 +167,7 @@
         this.isRecordDisabled = true;
         let reader = new FileReader()
         let parent = this;
-        reader.onload = function(e) {  
+        reader.onload = function(e) {
           let bfile = e.target.result
           url = "/opentaps_seas/emissions/record_emissions.json"
           data = new Object();

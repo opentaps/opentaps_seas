@@ -559,7 +559,20 @@ class MeterDetailView(LoginRequiredMixin, MeterBCMixin, DetailView):
         context["is_solaredge"] = False
         user_id = self.request.user.username
         vault_token = self.request.user.vault_token
+        is_admin = self.request.user.is_superuser
+        enrolled = False
+        has_web_socket_key = False
         web_socket_key = self.request.session.get("web_socket_key")
+        if web_socket_key:
+            has_web_socket_key = True
+        if is_admin:
+            if self.request.user.org_name:
+                enrolled = True
+        else:
+            if self.request.user.department:
+                enrolled = True
+        context["has_web_socket_key"] = has_web_socket_key
+        context["enrolled"] = enrolled
         if context["object"]:
             meter = context["object"]
             if meter.weather_station:
@@ -609,7 +622,7 @@ class MeterDetailView(LoginRequiredMixin, MeterBCMixin, DetailView):
                     if emissions_data:
                         context["emissions_data"] = emissions_data
                     else:
-                        context["emissions_data_error"] = "Cannot get emissions data"
+                        context["emissions_data_error"] = "No emissions records found"
                 except NameError as e:
                     context["emissions_data_error"] = e
 
