@@ -91,7 +91,9 @@
       {% endblock inner_content %}
 
     </div>
-    {% include "core/_fabric_websocketkey.html" %}
+    {% if enrolled %}
+      {% include "core/_fabric_websocketkey.html" %}
+    {% endif %}
   </div>
 </div>
 <script>
