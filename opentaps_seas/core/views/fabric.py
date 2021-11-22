@@ -98,7 +98,7 @@ def fabric_enroll_json(request):
             # check if admin user already has web_socket_key in session
             admin_web_socket_key = request.session.get("web_socket_key")
             if not admin_web_socket_key:
-                return JsonResponse({"error": "Please, get web socket key first"})
+                return JsonResponse({"error": "Please get web socket key first"})
 
         error = None
         try:

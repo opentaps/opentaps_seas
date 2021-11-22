@@ -113,7 +113,7 @@ def record_emissions(request):
         vault_token = request.user.vault_token
         web_socket_key = request.session.get("web_socket_key")
         if not web_socket_key:
-            return JsonResponse({"error": "Please, get web socket key first"})
+            return JsonResponse({"error": "Please get web socket key first"})
         user_id = request.user.username
         data = request.data
         utility_id = data.get("utility_id")
