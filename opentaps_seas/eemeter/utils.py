@@ -113,6 +113,8 @@ def setup_demo_sample_models(site_id, meter_id=None, description=None, calc_savi
         meter_id=meter_id,
         site_id=site.entity_id,
         description=description,
+        account_number='123456789',
+        utility_id='USA_EIA_11208',
         weather_station_id='eemeter_ws')
     # setup the meter data (note this is slightly different format than temps)
     logger.info('setup_demo_sample_models: adding Sample Meter %s data ...', meter_id)

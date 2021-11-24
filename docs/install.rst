@@ -138,8 +138,10 @@ Hyperledger Fabric
 
 Emissions recording is done with the Hyperledger Fabric utility emissions channel (see https://github.com/opentaps/blockchain-carbon-accounting)  Once you have that set up, you can connect opentaps SEAS to it through the Web Socket interface.  Set the `WEB_SOCKET_API_URL` in your `config/settings/base.py` to the base URL of the Web Socket REST endpoint. 
 
-Go to the Config tab of the main user interface.  You will first need to enroll the admin of your organization and then enroll each of your users.  Note that the 
-organization must be one of the recognized organizations of your Fabric network.
+Go to the Config tab - Fabric option of the main user interface.  You will first need to enroll the admin of your organization and then enroll each of your users.  Note that the
+organization must be one of the recognized organizations of your Fabric network. Organization name is set up in the ``secrets.json`` (EMISSIONS_API_ORGNAME parameter).
+
+Make sure admin and other users web socket keys are set up in the ws-wallet application (see https://github.com/opentaps/blockchain-carbon-accounting/blob/main/secure-identities/README.md#example-of-a-web-socket-connection).
 
 
 VOLTTRON
